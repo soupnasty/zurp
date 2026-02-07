@@ -6,6 +6,8 @@ import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { SignOutButton } from "./_components/SignOutButton";
 import { ThemeToggle } from "./_components/ThemeToggle";
+import { UnlinkButton } from "./_components/UnlinkButton";
+import { RemoveCardButton } from "../cards/_components/RemoveCardButton";
 import { Link2, CreditCard, Plus } from "lucide-react";
 import Link from "next/link";
 
@@ -66,7 +68,7 @@ export default async function SettingsPage() {
                       })}
                     </p>
                   </div>
-                  {uc.isPrimary && <Badge variant="info">Primary</Badge>}
+                  <RemoveCardButton userCardId={uc.id} cardName={uc.name} />
                 </div>
               </Card>
             ))}
@@ -110,21 +112,27 @@ export default async function SettingsPage() {
                           : "Never"}
                       </p>
                     </div>
-                    <Badge
-                      variant={
-                        conn.status === "active"
-                          ? "success"
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        variant={
+                          conn.status === "active"
+                            ? "success"
+                            : conn.status === "needs_reauth"
+                              ? "warning"
+                              : "danger"
+                        }
+                      >
+                        {conn.status === "active"
+                          ? "Active"
                           : conn.status === "needs_reauth"
-                            ? "warning"
-                            : "danger"
-                      }
-                    >
-                      {conn.status === "active"
-                        ? "Active"
-                        : conn.status === "needs_reauth"
-                          ? "Needs reauth"
-                          : "Disconnected"}
-                    </Badge>
+                            ? "Needs reauth"
+                            : "Disconnected"}
+                      </Badge>
+                      <UnlinkButton
+                        connectionId={conn.id}
+                        institutionName={conn.institutionName}
+                      />
+                    </div>
                   </div>
                 </Card>
               ))}
