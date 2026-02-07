@@ -25,7 +25,7 @@ Use your Sapphire Reserve to pay for any purchase that codes as travel. This inc
 
 **Links:**
 - Learn More: https://account.chase.com/sapphire/reserve/benefits
-- Chase Travel Portal: https://ultimate.chase.com
+- Chase Travel Portal: https://www.chase.com/travel
 
 **Transaction Matching Notes:**
 Matches any transaction categorized as "Travel" by Chase. Broad category includes airlines, hotels, car rentals, taxis/rideshares, parking, tolls, trains, buses, cruises, travel agencies, campgrounds, and timeshares.
@@ -56,9 +56,9 @@ Up to $500 in annual statement credits for prepaid hotel stays booked through Th
 The Edit stays also include complimentary perks: $100 property credit, daily breakfast for two, room upgrade (if available), and more. Purchases that qualify for the credit will not earn points.
 
 **Links:**
-- Book via Chase Travel: https://ultimate.chase.com
+- Book via Chase Travel: https://www.chase.com/travel
 - The Edit Collection: https://account.chase.com/sapphire/reserve/benefits
-- Learn More: https://www.chase.com/personal/credit-cards/education/rewards-benefits/the-edit-by-chase-travel
+- Learn More: https://account.chase.com/sapphire/reserve/benefits
 
 **Transaction Matching Notes:**
 Only matches prepaid hotel bookings made through The Edit on Chase Travel. Direct hotel bookings or non-Edit Chase Travel bookings do not qualify. Look for Chase Travel merchant name on the transaction.
@@ -159,7 +159,7 @@ Complimentary DashPass membership ($0 delivery fee, lower service fees) plus up 
 - Activate DashPass: https://www.doordash.com/dashpass/partner/chase/sapphire-reserve
 - DoorDash App: https://www.doordash.com
 - Terms: https://help.doordash.com/consumers/s/article/offer-terms-conditions?language=en_US
-- Learn More: https://www.chase.com/personal/credit-cards/education/rewards-benefits/doordash-and-chase
+- Learn More: https://www.doordash.com/dashpass/partner/chase/sapphire-reserve
 
 **Transaction Matching Notes:**
 DoorDash promos are in-app discounts, not statement credits — they won't appear as Chase credits on the statement. Track by looking for DoorDash transactions where promo was applied (the order total will be reduced). The DashPass membership value ($120/yr) is the avoided subscription fee, not a trackable transaction.
@@ -260,7 +260,7 @@ To use a different Apple ID, activate via web instead of the app. Both Apple TV+
 - Activate: Chase app → Benefits & Travel → Apple TV / Apple Music
 - Apple TV+: https://tv.apple.com
 - Apple Music: https://music.apple.com
-- Learn More: https://www.chase.com/personal/credit-cards/education/rewards-benefits/apple-tv-and-chase-sapphire-reserve-credit
+- Learn More: https://account.chase.com/sapphire/reserve/benefits
 
 **Transaction Matching Notes:**
 No transactions to match — this is a complimentary subscription, not a statement credit. Track by verifying the subscription is active in Apple account settings. If not activated, the full value ($250/yr) is being left on the table.

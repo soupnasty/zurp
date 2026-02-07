@@ -163,6 +163,7 @@ export async function getBenefitUsageSummaries(
       displayGroup: benefit.displayGroup,
       displayGroupName: benefit.displayGroupName,
       displayGroupIcon: benefit.displayGroupIcon,
+      details: benefit.details,
       periodKey: bounds.periodKey,
       cycleStart: bounds.cycleStart,
       cycleEnd: bounds.cycleEnd,

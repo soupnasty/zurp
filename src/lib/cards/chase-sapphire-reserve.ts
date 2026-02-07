@@ -1,4 +1,90 @@
-import type { CardDefinition } from "@/lib/types";
+import type { BenefitDetails, CardDefinition } from "@/lib/types";
+
+const doordashDetails: BenefitDetails = {
+  description:
+    "Complimentary DashPass membership ($0 delivery fee, lower service fees) plus up to $25/month in DoorDash promos: one $5 promo on a restaurant order and two $10 promos on non-restaurant orders (grocery, convenience, retail). If the full promo value isn't used on a single order, the remaining value is forfeited for that promo.",
+  howToUse: [
+    "Download or open the DoorDash app",
+    "Add your Sapphire Reserve as the default payment method",
+    "Follow the prompts to activate your complimentary DashPass membership",
+    "Each month, select the promo from your promotion wallet at checkout",
+    "For non-restaurant promos: filter by \"Pickup\" → \"Grocery\" or \"Convenience\" for best value",
+    "Make sure the \"Chase monthly benefit\" toggle is ON at checkout",
+  ],
+  links: [
+    { label: "Activate DashPass", url: "https://www.doordash.com/dashpass/partner/chase/sapphire-reserve" },
+    { label: "DoorDash App", url: "https://www.doordash.com" },
+    { label: "Terms", url: "https://help.doordash.com/consumers/s/article/offer-terms-conditions?language=en_US" },
+    { label: "Learn More", url: "https://www.doordash.com/dashpass/partner/chase/sapphire-reserve" },
+  ],
+};
+
+const editHotelDetails: BenefitDetails = {
+  description:
+    "Up to $500 in annual statement credits for prepaid hotel stays booked through The Edit by Chase Travel — a curated collection of 1,100+ hand-picked luxury hotels and resorts. Starting January 1, 2026, cardmembers receive up to $250 per transaction (previously split biannually). Two-night minimum stay required.",
+  howToUse: [
+    "Go to Chase Travel (chase.com/travel or the Chase app)",
+    "Search for hotels and look for properties marked with \"The Edit\" badge",
+    "Book a prepaid stay of at least 2 nights using your Sapphire Reserve",
+    "The statement credit posts automatically after the charge",
+  ],
+  links: [
+    { label: "Book via Chase Travel", url: "https://www.chase.com/travel" },
+    { label: "The Edit Collection", url: "https://account.chase.com/sapphire/reserve/benefits" },
+    { label: "Learn More", url: "https://account.chase.com/sapphire/reserve/benefits" },
+  ],
+};
+
+const exclusiveTablesDetails: BenefitDetails = {
+  description:
+    "Up to $300 in annual statement credits when dining at restaurants participating in the Sapphire Reserve Exclusive Tables program. The program provides primetime reservations at 275+ curated restaurants in major U.S. cities through the Visa Dining Collection on OpenTable.",
+  howToUse: [
+    "Visit the OpenTable Chase Dining page and add your Sapphire Reserve card to your OpenTable account",
+    "Browse participating restaurants by city",
+    "Dine at any participating restaurant and pay with your Sapphire Reserve",
+    "The statement credit posts automatically — you do NOT need to book through OpenTable to earn the credit, just pay with your CSR at a participating restaurant",
+  ],
+  links: [
+    { label: "OpenTable Exclusive Tables", url: "https://www.opentable.com/c/chasedining/" },
+    { label: "Learn More", url: "https://www.chase.com/personal/credit-cards/education/basics/guide-to-chase-sapphire-reserve-exclusive-tables" },
+    { label: "How to Use", url: "https://www.chase.com/personal/credit-cards/education/basics/how-to-use-dining-credit-chase-sapphire-reserve-exclusive-tables" },
+  ],
+};
+
+const stubhubDetails: BenefitDetails = {
+  description:
+    "Up to $300 in annual statement credits for concert, event, and sports tickets purchased on StubHub.com and viagogo.com. Purchases made before activation are NOT eligible.",
+  howToUse: [
+    "Log in to chase.com or the Chase Mobile app",
+    "Go to Benefits (or Offers) and find the StubHub credit",
+    "Click to activate the benefit",
+    "Purchase tickets on StubHub.com or viagogo.com using your Sapphire Reserve",
+    "Statement credit posts within 1–2 billing cycles",
+  ],
+  links: [
+    { label: "StubHub", url: "https://www.stubhub.com" },
+    { label: "viagogo", url: "https://www.viagogo.com" },
+    { label: "Learn More", url: "https://www.chase.com/personal/credit-cards/education/rewards-benefits/how-to-use-the-$300-stubhub-credit-with-chase-sapphire-reserve" },
+  ],
+};
+
+const appleSubscriptionDetails: BenefitDetails = {
+  description:
+    "Complimentary individual subscriptions to Apple TV+ and Apple Music through June 22, 2027. These are direct subscription waivers (not statement credits) — once activated, Apple won't charge you. If you have an existing paid subscription, it will be automatically suspended. Note: only covers individual Apple Music plan, not family or Apple One bundles.",
+  howToUse: [
+    "Open the Chase Mobile app or log in to chase.com",
+    "Go to Benefits & Travel → Card Benefits",
+    "Find the Apple TV+ offer and tap \"Activate Now\" — this links your Apple ID",
+    "Repeat for Apple Music (activated separately)",
+    "You'll be redirected to Apple to connect your subscription",
+    "On Apple devices, the benefit auto-links to the Apple ID signed in on your device",
+  ],
+  links: [
+    { label: "Apple TV+", url: "https://tv.apple.com" },
+    { label: "Apple Music", url: "https://music.apple.com" },
+    { label: "Learn More", url: "https://account.chase.com/sapphire/reserve/benefits" },
+  ],
+};
 
 export const chaseSapphireReserve: CardDefinition = {
   id: "chase_sapphire_reserve",
@@ -70,6 +156,19 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroup: null,
       displayGroupName: null,
       displayGroupIcon: null,
+      details: {
+        description:
+          "Up to $300 in automatic statement credits each cardmember anniversary year as reimbursement for travel purchases charged to your card. This is the most flexible travel credit available — there's no need to book through Chase Travel.",
+        howToUse: [
+          "Use your Sapphire Reserve to pay for any purchase that codes as travel",
+          "This includes flights, hotels, car rentals, taxis, rideshares, tolls, parking, campgrounds, cruises, and more",
+          "The credit posts automatically — no activation or portal booking required",
+        ],
+        links: [
+          { label: "Learn More", url: "https://account.chase.com/sapphire/reserve/benefits" },
+          { label: "Chase Travel Portal", url: "https://www.chase.com/travel" },
+        ],
+      },
     },
 
     // ── The Edit Hotel ($250 × 2 biannual) ──
@@ -98,6 +197,7 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroup: null,
       displayGroupName: null,
       displayGroupIcon: null,
+      details: editHotelDetails,
     },
     {
       id: "csr_edit_h2",
@@ -124,6 +224,7 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroup: null,
       displayGroupName: null,
       displayGroupIcon: null,
+      details: editHotelDetails,
     },
 
     // ── Exclusive Tables ($150 × 2 biannual) ──
@@ -152,6 +253,7 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroup: null,
       displayGroupName: null,
       displayGroupIcon: null,
+      details: exclusiveTablesDetails,
     },
     {
       id: "csr_dining_h2",
@@ -178,6 +280,7 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroup: null,
       displayGroupName: null,
       displayGroupIcon: null,
+      details: exclusiveTablesDetails,
     },
 
     // ── StubHub ($150 × 2 biannual) ──
@@ -206,6 +309,7 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroup: null,
       displayGroupName: null,
       displayGroupIcon: null,
+      details: stubhubDetails,
     },
     {
       id: "csr_stubhub_h2",
@@ -232,6 +336,7 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroup: null,
       displayGroupName: null,
       displayGroupIcon: null,
+      details: stubhubDetails,
     },
 
     // ── DoorDash (3 sub-credits, displayed as one $25/month group) ──
@@ -261,6 +366,7 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroup: "csr_doordash",
       displayGroupName: "DoorDash Credits",
       displayGroupIcon: "Bike",
+      details: doordashDetails,
     },
     {
       id: "csr_doordash_nonrestaurant_1",
@@ -287,6 +393,7 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroup: "csr_doordash",
       displayGroupName: "DoorDash Credits",
       displayGroupIcon: "Bike",
+      details: doordashDetails,
     },
     {
       id: "csr_doordash_nonrestaurant_2",
@@ -312,6 +419,7 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroup: "csr_doordash",
       displayGroupName: "DoorDash Credits",
       displayGroupIcon: "Bike",
+      details: doordashDetails,
     },
 
     // ── Lyft ($10/month) ──
@@ -339,6 +447,20 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroup: null,
       displayGroupName: null,
       displayGroupIcon: null,
+      details: {
+        description:
+          "Up to $10 in monthly in-app Lyft credits, plus 5x total points on all Lyft rides. The credit applies automatically to your first qualifying ride each month. Cannot be used on Wait & Save rides, or bike/scooter rentals.",
+        howToUse: [
+          "Download or open the Lyft app",
+          "Add your Sapphire Reserve as the default payment method",
+          "The $10 monthly credit applies automatically to your next qualifying ride",
+          "You also earn 5x total points (4 bonus + 1 base) on all Lyft rides",
+        ],
+        links: [
+          { label: "Lyft App", url: "https://www.lyft.com" },
+          { label: "Learn More", url: "https://account.chase.com/sapphire/reserve/benefits" },
+        ],
+      },
     },
 
     // ── Peloton ($10/month) ──
@@ -367,6 +489,22 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroup: null,
       displayGroupName: null,
       displayGroupIcon: null,
+      details: {
+        description:
+          "Up to $120 in annual statement credits toward Peloton memberships, including All-Access Membership, Rental, App One, App+, Guide, or Strength+. Also earn 10x total points on eligible Peloton equipment/accessory purchases over $150 (up to $5,000 total, through 12/31/2027).",
+        howToUse: [
+          "Log in to chase.com or the Chase Mobile app",
+          "Go to Benefits & Travel → Benefits",
+          "Find the Peloton offer and activate it",
+          "Go to onepeloton.com and sign up for (or sign into) a Peloton membership",
+          "Use your Sapphire Reserve as the payment method",
+          "Statement credits post automatically each month (allow 6–8 weeks)",
+        ],
+        links: [
+          { label: "Peloton × Chase", url: "https://www.onepeloton.com/chase-sapphire-reserve" },
+          { label: "Learn More", url: "https://www.chase.com/personal/credit-cards/education/rewards-benefits/how-to-earn-10x-points-on-peloton-with-chase-sapphire-reserve" },
+        ],
+      },
     },
 
     // ── Global Entry / TSA PreCheck ($120/4 years) ──
@@ -395,6 +533,21 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroup: null,
       displayGroupName: null,
       displayGroupIcon: null,
+      details: {
+        description:
+          "One statement credit of up to $120 every four years to reimburse the application fee for Global Entry ($120), TSA PreCheck ($78–$98), or NEXUS ($50). Only one program per 4-year cycle. The credit covers the primary cardmember or an authorized user.",
+        howToUse: [
+          "Apply for Global Entry, TSA PreCheck, or NEXUS through the official government site",
+          "Pay the application fee with your Sapphire Reserve card",
+          "The statement credit posts automatically within 1–2 billing cycles",
+          "No activation needed — just use your CSR for payment",
+        ],
+        links: [
+          { label: "Global Entry Application", url: "https://ttp.cbp.dhs.gov/" },
+          { label: "TSA PreCheck", url: "https://www.tsa.gov/precheck" },
+          { label: "Learn More", url: "https://www.chase.com/personal/credit-cards/education/basics/sapphire-reserve-tsa-precheck-global-entry" },
+        ],
+      },
     },
 
     // ── Apple TV+ (subscription) ──
@@ -422,6 +575,7 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroup: null,
       displayGroupName: null,
       displayGroupIcon: null,
+      details: appleSubscriptionDetails,
     },
 
     // ── Apple Music (subscription) ──
@@ -449,6 +603,7 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroup: null,
       displayGroupName: null,
       displayGroupIcon: null,
+      details: appleSubscriptionDetails,
     },
 
     // ── DashPass (subscription) ──
@@ -477,6 +632,7 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroup: null,
       displayGroupName: null,
       displayGroupIcon: null,
+      details: doordashDetails,
     },
   ],
 };

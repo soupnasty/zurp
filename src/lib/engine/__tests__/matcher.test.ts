@@ -33,6 +33,7 @@ function makeBenefit(
     displayGroup: null,
     displayGroupName: null,
     displayGroupIcon: null,
+    details: null,
     ...overrides,
   };
 }

@@ -26,6 +26,14 @@ export type MatchedStatus = "unmatched" | "matched" | "ambiguous" | "skipped";
 export type AnniversarySource = "auto_detected" | "user_provided" | "pending";
 export type ConnectionStatus = "active" | "needs_reauth" | "disconnected";
 
+// ── Benefit detail content (modal data) ──
+
+export interface BenefitDetails {
+  description: string;
+  howToUse: string[];
+  links: { label: string; url: string }[];
+}
+
 // ── Card definition (code-side, used in registry) ──
 
 export interface CardDefinition {
@@ -64,6 +72,7 @@ export interface BenefitDefinition {
   displayGroup: string | null;
   displayGroupName: string | null;
   displayGroupIcon: string | null;
+  details: BenefitDetails | null;
 }
 
 // ── Computed summaries ──
@@ -99,6 +108,7 @@ export interface BenefitUsageSummary {
   displayGroup: string | null;
   displayGroupName: string | null;
   displayGroupIcon: string | null;
+  details: BenefitDetails | null;
   periodKey: string;
   cycleStart: Date;
   cycleEnd: Date;

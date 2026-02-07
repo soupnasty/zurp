@@ -1,5 +1,5 @@
 import { requireAuth } from "@/lib/auth-helpers";
-import type { BenefitUsageSummary } from "@/lib/types";
+import type { BenefitDetails, BenefitUsageSummary } from "@/lib/types";
 import { redirect } from "next/navigation";
 import {
   getCardSummary,
@@ -170,7 +170,7 @@ export default async function DashboardPage({
 }
 
 // Group DoorDash sub-credits into a single display card
-interface BenefitGroup {
+export interface BenefitGroup {
   id: string;
   name: string;
   icon: string;
@@ -186,6 +186,7 @@ interface BenefitGroup {
   type: string;
   cycleStart: string;
   cycleEnd: string;
+  details: BenefitDetails | null;
   benefits: BenefitUsageSummary[];
 }
 
@@ -207,6 +208,7 @@ function groupBenefits(
           existing.daysRemaining,
           b.daysRemaining
         );
+        if (!existing.details && b.details) existing.details = b.details;
         existing.benefits.push(b);
       } else {
         groups.set(b.displayGroup, {
@@ -225,6 +227,7 @@ function groupBenefits(
           type: b.type,
           cycleStart: b.cycleStart.toISOString(),
           cycleEnd: b.cycleEnd.toISOString(),
+          details: b.details,
           benefits: [b],
         });
       }
@@ -245,6 +248,7 @@ function groupBenefits(
         type: b.type,
         cycleStart: b.cycleStart.toISOString(),
         cycleEnd: b.cycleEnd.toISOString(),
+        details: b.details,
         benefits: [b],
       });
     }
