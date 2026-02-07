@@ -134,13 +134,13 @@ export function BenefitCard({ group }: { group: BenefitGroup }) {
             </>
           )}
 
-          {group.sunsetDate ? (
-            <p className="mt-2 text-[var(--text-caption)] text-[var(--text-secondary)]">
-              Expires {group.sunsetDate}
-            </p>
-          ) : cycleExpiry ? (
+          {cycleExpiry ? (
             <p className="mt-2 text-[var(--text-caption)] text-[var(--text-secondary)]">
               {cycleExpiry}
+            </p>
+          ) : group.sunsetDate ? (
+            <p className="mt-2 text-[var(--text-caption)] text-[var(--text-secondary)]">
+              Expires {formatSunsetDate(group.sunsetDate!)}
             </p>
           ) : null}
 
@@ -161,7 +161,14 @@ function formatCycleExpiry(cycle: string, endIso: string): string | null {
 
   const end = new Date(endIso);
   const month = end.toLocaleString("en-US", { month: "short", timeZone: "UTC" });
-  return `Expires ${month} ${end.getUTCDate()}, ${end.getUTCFullYear()}`;
+  const prefix = cycle === "monthly" ? "Resets" : "Expires";
+  return `${prefix} ${month} ${end.getUTCDate()}, ${end.getUTCFullYear()}`;
+}
+
+function formatSunsetDate(dateStr: string): string {
+  const d = new Date(dateStr + "T00:00:00Z");
+  const month = d.toLocaleString("en-US", { month: "short", timeZone: "UTC" });
+  return `${month} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
 }
 
 function getCycleLabel(cycle: string): string {
