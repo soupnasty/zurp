@@ -47,11 +47,8 @@ export function BenefitCard({ group }: { group: BenefitGroup }) {
 
   return (
     <>
-      <Card hover>
-        <div
-          onClick={() => setModalOpen(true)}
-          className={`cursor-pointer${group.isFullyUsed ? " opacity-50" : ""}`}
-        >
+      <Card hover onClick={() => setModalOpen(true)} className={group.isFullyUsed ? "opacity-50" : ""}>
+        <div>
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent)]/10">
@@ -67,9 +64,14 @@ export function BenefitCard({ group }: { group: BenefitGroup }) {
               </div>
             </div>
 
-            {group.type === "subscription" ? (
-              <Badge variant="neutral">Sub</Badge>
-            ) : null}
+            <div className="flex items-center gap-2">
+              {group.type === "subscription" && (
+                <Badge variant="neutral">Sub</Badge>
+              )}
+              <span className="rounded-[var(--radius-md)] border border-[var(--accent)]/30 px-2.5 py-1 text-[var(--text-caption)] font-medium text-[var(--accent)] transition-colors hover:bg-[var(--accent)]/10">
+                view
+              </span>
+            </div>
           </div>
 
           {group.type === "credit" && (
@@ -141,6 +143,7 @@ export function BenefitCard({ group }: { group: BenefitGroup }) {
               {cycleExpiry}
             </p>
           ) : null}
+
         </div>
       </Card>
 

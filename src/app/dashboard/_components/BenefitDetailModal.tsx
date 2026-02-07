@@ -70,7 +70,7 @@ export function BenefitDetailModal({
 
       {/* Usage stats for credit-type benefits */}
       {isCredit && (
-        <div className="mb-[var(--space-lg)] rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-tertiary)] p-[var(--space-md)]">
+        <div className="mb-[var(--space-lg)] rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-primary)] p-[var(--space-md)]">
           <div className="flex items-baseline justify-between">
             <span className="font-data text-h3 font-semibold text-[var(--accent)]">
               ${used.toFixed(0)}
