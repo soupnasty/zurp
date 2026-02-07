@@ -3,34 +3,9 @@
 import { Modal } from "@/components/ui/Modal";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Badge } from "@/components/ui/Badge";
-import {
-  Plane,
-  Building,
-  UtensilsCrossed,
-  Ticket,
-  Bike,
-  Car,
-  Dumbbell,
-  ShieldCheck,
-  Tv,
-  Music,
-  CreditCard,
-  ExternalLink,
-} from "lucide-react";
+import { ExternalLink } from "lucide-react";
+import { BenefitIcon } from "@/components/ui/BenefitIcon";
 import type { BenefitGroup } from "../page";
-
-const iconMap: Record<string, any> = {
-  Plane,
-  Building,
-  UtensilsCrossed,
-  Ticket,
-  Bike,
-  Car,
-  Dumbbell,
-  ShieldCheck,
-  Tv,
-  Music,
-};
 
 interface BenefitDetailModalProps {
   open: boolean;
@@ -45,14 +20,13 @@ export function BenefitDetailModal({
 }: BenefitDetailModalProps) {
   const details = group.details;
   const isCredit = group.type === "credit";
-  const Icon = iconMap[group.icon] || CreditCard;
   const remaining = Math.max(0, group.totalRemaining);
   const used = group.totalCredit - remaining;
   const isGrouped = group.benefits.length > 1;
 
   const iconElement = (
     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent)]/10">
-      <Icon size={20} strokeWidth={1.75} className="text-[var(--accent)]" />
+      <BenefitIcon icon={group.icon} size={20} />
     </div>
   );
 

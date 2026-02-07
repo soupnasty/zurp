@@ -2,40 +2,13 @@
 
 import { useState } from "react";
 import { Card } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { BenefitDetailModal } from "./BenefitDetailModal";
-import {
-  Plane,
-  Building,
-  UtensilsCrossed,
-  Ticket,
-  Bike,
-  Car,
-  Dumbbell,
-  ShieldCheck,
-  Tv,
-  Music,
-  CreditCard,
-} from "lucide-react";
+import { BenefitIcon } from "@/components/ui/BenefitIcon";
 import type { BenefitGroup } from "../page";
-
-const iconMap: Record<string, any> = {
-  Plane,
-  Building,
-  UtensilsCrossed,
-  Ticket,
-  Bike,
-  Car,
-  Dumbbell,
-  ShieldCheck,
-  Tv,
-  Music,
-};
 
 export function BenefitCard({ group }: { group: BenefitGroup }) {
   const [modalOpen, setModalOpen] = useState(false);
-  const Icon = iconMap[group.icon] || CreditCard;
 
   // Derive "used" from credit − remaining so grouped sub-credits never contradict
   const remaining = Math.max(0, group.totalRemaining);
@@ -52,7 +25,7 @@ export function BenefitCard({ group }: { group: BenefitGroup }) {
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent)]/10">
-                <Icon size={20} strokeWidth={1.75} className="text-[var(--accent)]" />
+                <BenefitIcon icon={group.icon} size={20} />
               </div>
               <div>
                 <h3 className="text-[var(--text-body)] font-semibold text-[var(--text-primary)]">
@@ -64,14 +37,9 @@ export function BenefitCard({ group }: { group: BenefitGroup }) {
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              {group.type === "subscription" && (
-                <Badge variant="neutral">Sub</Badge>
-              )}
-              <span className="rounded-[var(--radius-md)] border border-[var(--accent)]/30 px-2.5 py-1 text-[var(--text-caption)] font-medium text-[var(--accent)] transition-colors hover:bg-[var(--accent)]/10">
-                view
-              </span>
-            </div>
+            <span className="rounded-[var(--radius-md)] border border-[var(--accent)]/30 px-2.5 py-1 text-[var(--text-caption)] font-medium text-[var(--accent)] transition-colors hover:bg-[var(--accent)]/10">
+              view
+            </span>
           </div>
 
           {group.type === "credit" && (

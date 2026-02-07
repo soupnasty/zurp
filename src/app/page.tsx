@@ -1,31 +1,12 @@
 import Link from "next/link";
-import {
-  Plane,
-  Building,
-  UtensilsCrossed,
-  Ticket,
-  Bike,
-  Car,
-  Dumbbell,
-  ShieldCheck,
-} from "lucide-react";
 import { chaseSapphireReserve } from "@/lib/cards/chase-sapphire-reserve";
+import { BenefitIcon } from "@/components/ui/BenefitIcon";
 
 // Build display benefits from the real card registry
 // Group biannual H1+H2, merge DoorDash sub-credits, annualize monthly
-const iconMap: Record<string, React.ComponentType<any>> = {
-  Plane,
-  Building,
-  UtensilsCrossed,
-  Ticket,
-  Bike,
-  Car,
-  Dumbbell,
-  ShieldCheck,
-};
 
 interface DisplayBenefit {
-  icon: React.ComponentType<any>;
+  icon: string;
   name: string;
   amount: number;
   cycle: string;
@@ -66,7 +47,7 @@ function buildDisplayBenefits(): {
         existing.annualValue += b.creditAmount * 12;
       } else {
         grouped.set("doordash", {
-          icon: iconMap[b.icon] || Bike,
+          icon: b.icon,
           name: "DoorDash",
           amount: b.creditAmount,
           cycle: "/mo",
@@ -84,7 +65,7 @@ function buildDisplayBenefits(): {
         .replace("The Edit Hotel Credit", "The Edit Hotels")
         .replace(" Credit", "");
       grouped.set(baseName, {
-        icon: iconMap[b.icon] || Plane,
+        icon: b.icon,
         name: displayName,
         amount: b.creditAmount,
         cycle: "/yr",
@@ -107,7 +88,7 @@ function buildDisplayBenefits(): {
     if (b.cycle === "monthly") {
       const displayName = b.name.replace(" Credit", "");
       result.push({
-        icon: iconMap[b.icon] || Plane,
+        icon: b.icon,
         name: displayName,
         amount: b.creditAmount,
         cycle: "/mo",
@@ -120,7 +101,7 @@ function buildDisplayBenefits(): {
     // Quadrennial (Global Entry) → show face value, use /4yr
     if (b.cycle === "quadrennial") {
       result.push({
-        icon: iconMap[b.icon] || ShieldCheck,
+        icon: b.icon,
         name: "Global Entry",
         amount: b.creditAmount,
         cycle: "/4yr",
@@ -133,7 +114,7 @@ function buildDisplayBenefits(): {
     // Annual → show as-is
     const displayName = b.name.replace(" Credit", "");
     result.push({
-      icon: iconMap[b.icon] || Plane,
+      icon: b.icon,
       name: displayName,
       amount: b.creditAmount,
       cycle: "/yr",
@@ -278,11 +259,7 @@ export default function Home() {
                 }`}
               >
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--accent)]/10">
-                  <b.icon
-                    size={16}
-                    strokeWidth={1.75}
-                    className="text-[var(--accent)]"
-                  />
+                  <BenefitIcon icon={b.icon} size={16} />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between">
