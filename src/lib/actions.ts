@@ -19,5 +19,5 @@ export async function removeUserCard(userCardId: string) {
 
   await db.delete(schema.userCards).where(eq(schema.userCards.id, userCardId));
 
-  revalidatePath("/cards");
+  revalidatePath("/settings");
 }

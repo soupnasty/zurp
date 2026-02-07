@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
-import { removeUserCard } from "../actions";
+import { removeUserCard } from "@/lib/actions";
 
 interface RemoveCardButtonProps {
   userCardId: string;

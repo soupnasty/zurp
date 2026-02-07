@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/Badge";
 import { SignOutButton } from "./_components/SignOutButton";
 import { ThemeToggle } from "./_components/ThemeToggle";
 import { UnlinkButton } from "./_components/UnlinkButton";
-import { RemoveCardButton } from "../cards/_components/RemoveCardButton";
+import { RemoveCardButton } from "@/components/RemoveCardButton";
 import { Link2, CreditCard, Plus } from "lucide-react";
 import Link from "next/link";
 
