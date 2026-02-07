@@ -8,7 +8,6 @@ import {
   Car,
   Dumbbell,
   ShieldCheck,
-  ArrowRight,
 } from "lucide-react";
 import { chaseSapphireReserve } from "@/lib/cards/chase-sapphire-reserve";
 
@@ -197,17 +196,14 @@ export default function Home() {
               opacity="0.2"
             />
           </svg>
-          <span className="text-[40px] font-semibold tracking-tight">
-            zurp
-          </span>
+          <span className="text-[40px] font-semibold tracking-tight">zurp</span>
         </div>
 
         {/* Subheader + CTA */}
         <div className="mb-[var(--space-xl)] max-w-lg text-center">
-          <p className="text-[var(--text-h3)] leading-relaxed text-[var(--text-primary)]">
-            Zurp tracks your card benefits automatically — so you always know
-            what you&apos;ve used, what&apos;s left, and what&apos;s expiring
-            soon.
+          <p className="text-[var(--text-h2)] leading-snug text-[var(--text-primary)]">
+            Track your card benefits automatically — so you always know what
+            you&apos;ve used, what&apos;s left, and what&apos;s expiring soon.
           </p>
 
           <div className="mt-[var(--space-lg)] flex flex-col items-center gap-[var(--space-sm)]">
@@ -215,8 +211,7 @@ export default function Home() {
               href="/login"
               className="inline-flex items-center gap-2 rounded-[var(--radius-md)] bg-[var(--accent)] px-8 py-3.5 text-[16px] font-semibold text-[var(--color-void)] transition-all duration-[var(--duration-fast)] hover:opacity-90 hover:shadow-[var(--shadow-glow)]"
             >
-              Connect Your Card
-              <ArrowRight size={18} strokeWidth={2} />
+              zurp your card &rarr;
             </Link>
             <span className="text-[var(--text-caption)] text-[var(--text-secondary)]">
               Secure, read-only connection via Plaid
@@ -228,8 +223,7 @@ export default function Home() {
         <div className="mx-auto w-full max-w-lg">
           {/* Headline */}
           <h1 className="mb-[var(--space-lg)] text-center text-[clamp(24px,4vw,36px)] font-bold leading-[1.1] tracking-tight text-[var(--text-primary)]">
-            Your card comes with{" "}
-            <br />
+            Your card comes with <br />
             <span className="text-[var(--color-success)]">
               ${totalAnnual.toLocaleString()}
             </span>{" "}
@@ -338,14 +332,6 @@ export default function Home() {
                 $10 in Lyft credits
               </span>{" "}
               expire in 6 days.
-              <br />
-              <span className="text-[var(--text-secondary)]">
-                You&apos;ve left{" "}
-                <span className="font-data font-semibold text-[var(--color-warning)]">
-                  ${(totalAnnual - totalUsed).toFixed(0)}
-                </span>{" "}
-                on the table this year.
-              </span>
             </p>
           </div>
         </div>
@@ -354,7 +340,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-[var(--border-default)] py-[var(--space-lg)] text-center text-[var(--text-caption)] text-[var(--text-secondary)]">
         <p>
-          zurp — track your card benefits
+          &copy; 2026 zurp
           <span className="mx-2">&middot;</span>
           <Link href="/privacy" className="hover:text-[var(--accent)]">
             Privacy Policy
