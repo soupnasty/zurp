@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { CardSelection } from "./CardSelection";
 import { AnniversarySetup } from "./AnniversarySetup";
 import { PlaidLinkButton } from "@/components/PlaidLink";
-import { addUserCard, setAnniversaryDate } from "../actions";
+import { addUserCardAndLinkConnection, setAnniversaryDate } from "../actions";
 import { CheckCircle2 } from "lucide-react";
 
 interface Card {
@@ -15,49 +15,59 @@ interface Card {
   annualFee: number;
 }
 
+interface DetectedCard {
+  cardId: string;
+  confidence: "high" | "low";
+}
+
 interface OnboardingWizardProps {
   userId: string;
   cards: Card[];
 }
 
-type Step = "select-card" | "link-plaid" | "anniversary" | "done";
+type Step = "link-plaid" | "confirm-card" | "anniversary" | "done";
 
 export function OnboardingWizard({ userId, cards }: OnboardingWizardProps) {
   const router = useRouter();
-  const [step, setStep] = useState<Step>("select-card");
-  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
-  const [userCardId, setUserCardId] = useState<string | null>(null);
+  const [step, setStep] = useState<Step>("link-plaid");
   const [connectionId, setConnectionId] = useState<string | null>(null);
+  const [detectedCard, setDetectedCard] = useState<DetectedCard | null>(null);
+  const [userCardId, setUserCardId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleCardSelect = async (cardId: string) => {
+  const handlePlaidSuccess = async (result: {
+    connectionId: string;
+    detectedCard: DetectedCard | null;
+  }) => {
+    setConnectionId(result.connectionId);
+    setDetectedCard(result.detectedCard);
     setError(null);
+    setStep("confirm-card");
+  };
+
+  const handleCardSelect = async (cardId: string) => {
+    if (!connectionId) return;
+    setError(null);
+
     try {
-      const userCard = await addUserCard(cardId);
-      setSelectedCardId(cardId);
+      const userCard = await addUserCardAndLinkConnection(cardId, connectionId);
       setUserCardId(userCard.id);
-      setStep("link-plaid");
+
+      // Trigger initial sync
+      try {
+        await fetch("/api/plaid/sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ connectionId }),
+        });
+      } catch {
+        // Non-blocking: sync will happen later
+      }
+
+      setStep("anniversary");
     } catch {
       setError("Failed to add card. Please try again.");
     }
-  };
-
-  const handlePlaidSuccess = async (connId: string) => {
-    setConnectionId(connId);
-    setError(null);
-
-    // Trigger initial sync
-    try {
-      await fetch("/api/plaid/sync", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ connectionId: connId }),
-      });
-    } catch {
-      // Non-blocking: sync will happen later
-    }
-
-    setStep("anniversary");
   };
 
   const handleAnniversarySubmit = async (date: Date) => {
@@ -79,7 +89,7 @@ export function OnboardingWizard({ userId, cards }: OnboardingWizardProps) {
   };
 
   const stepNumber =
-    step === "select-card" ? 1 : step === "link-plaid" ? 2 : step === "anniversary" ? 3 : 4;
+    step === "link-plaid" ? 1 : step === "confirm-card" ? 2 : step === "anniversary" ? 3 : 4;
 
   return (
     <div>
@@ -98,26 +108,31 @@ export function OnboardingWizard({ userId, cards }: OnboardingWizardProps) {
       </div>
 
       <div className="rounded-lg border bg-[var(--bg-secondary)] p-6 shadow-sm">
-        {step === "select-card" && (
-          <CardSelection cards={cards} onSelect={handleCardSelect} />
-        )}
-
-        {step === "link-plaid" && userCardId && (
+        {step === "link-plaid" && (
           <div>
             <h2 className="text-h3 font-semibold">Link Your Bank Account</h2>
             <p className="mt-2 text-[var(--text-secondary)]">
-              Connect your Chase account so we can track your card benefits
-              automatically.
+              Connect your bank account so we can detect your card and track
+              benefits automatically.
             </p>
             <div className="mt-6">
               <PlaidLinkButton
                 userId={userId}
-                userCardId={userCardId}
                 onSuccess={handlePlaidSuccess}
                 onError={setError}
               />
             </div>
           </div>
+        )}
+
+        {step === "confirm-card" && (
+          <CardSelection
+            cards={cards}
+            onSelect={handleCardSelect}
+            detectedCardId={
+              detectedCard?.confidence === "high" ? detectedCard.cardId : null
+            }
+          />
         )}
 
         {step === "anniversary" && (

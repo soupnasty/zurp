@@ -22,6 +22,31 @@ export async function addUserCard(cardId: string) {
   return userCard;
 }
 
+export async function addUserCardAndLinkConnection(
+  cardId: string,
+  connectionId: string
+) {
+  const user = await requireAuth();
+
+  const [userCard] = await db
+    .insert(schema.userCards)
+    .values({
+      userId: user.id!,
+      cardId,
+      isPrimary: true,
+      anniversarySource: "pending",
+    })
+    .returning();
+
+  // Link the plaid connection to the new user card
+  await db
+    .update(schema.plaidConnections)
+    .set({ userCardId: userCard.id })
+    .where(eq(schema.plaidConnections.id, connectionId));
+
+  return userCard;
+}
+
 export async function setAnniversaryDate(
   userCardId: string,
   date: Date

@@ -6,7 +6,6 @@ import { PlaidLinkButton } from "@/components/PlaidLink";
 export default function SandboxPage() {
   const [enabled, setEnabled] = useState<boolean | null>(null);
   const [userId] = useState("sandbox-user-001");
-  const [userCardId] = useState("sandbox-usercard-001");
   const [connectionId, setConnectionId] = useState<string | null>(null);
   const [syncResult, setSyncResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
@@ -74,9 +73,8 @@ export default function SandboxPage() {
           <div className="mt-3">
             <PlaidLinkButton
               userId={userId}
-              userCardId={userCardId}
-              onSuccess={(id) => {
-                setConnectionId(id);
+              onSuccess={(result) => {
+                setConnectionId(result.connectionId);
                 setError(null);
               }}
               onError={setError}

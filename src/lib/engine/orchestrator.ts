@@ -25,6 +25,8 @@ export async function processTransactionsForConnection(
   if (!connection) throw new Error(`Connection ${plaidConnectionId} not found`);
 
   const userCard = connection.userCard;
+  if (!userCard) throw new Error(`Connection ${plaidConnectionId} has no linked card`);
+
   const cardDef = getCardDefinition(userCard.cardId);
   if (!cardDef) throw new Error(`Card definition ${userCard.cardId} not found`);
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
@@ -29,8 +29,11 @@ const navItems = [
 
 export function AppShell({ children, userEmail }: AppShellProps) {
   const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const [collapsed, setCollapsed] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   return (
     <div className="flex min-h-screen">
@@ -133,19 +136,19 @@ export function AppShell({ children, userEmail }: AppShellProps) {
         <div className="border-t border-[var(--border-default)] px-2 py-3 space-y-1">
           {/* Theme toggle */}
           <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
             className={`flex w-full items-center gap-3 rounded-[var(--radius-md)] px-3 py-2 text-[var(--text-body)] text-[var(--text-secondary)] transition-colors duration-[var(--duration-fast)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)] ${
               collapsed ? "justify-center" : ""
             }`}
             title={collapsed ? "Toggle theme" : undefined}
           >
-            {theme === "dark" ? (
+            {mounted && resolvedTheme === "dark" ? (
               <Sun size={20} strokeWidth={1.75} />
             ) : (
               <Moon size={20} strokeWidth={1.75} />
             )}
             {!collapsed && (
-              <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
+              <span>{mounted && resolvedTheme === "dark" ? "Light mode" : "Dark mode"}</span>
             )}
           </button>
 

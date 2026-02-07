@@ -3,16 +3,22 @@
 import { useCallback, useState } from "react";
 import { usePlaidLink } from "react-plaid-link";
 
+interface DetectedCard {
+  cardId: string;
+  confidence: "high" | "low";
+}
+
 interface PlaidLinkProps {
   userId: string;
-  userCardId: string;
-  onSuccess: (connectionId: string) => void;
+  onSuccess: (result: {
+    connectionId: string;
+    detectedCard: DetectedCard | null;
+  }) => void;
   onError?: (error: string) => void;
 }
 
 export function PlaidLinkButton({
   userId,
-  userCardId,
   onSuccess,
   onError,
 }: PlaidLinkProps) {
@@ -44,8 +50,13 @@ export function PlaidLinkButton({
     token: linkToken,
     onSuccess: async (publicToken, metadata) => {
       try {
-        const accountId = metadata.accounts[0]?.id || "";
+        const account = metadata.accounts[0];
+        const accountId = account?.id || "";
         const institutionName = metadata.institution?.name || "Unknown";
+        const accountName = account?.name || "";
+        // react-plaid-link types don't include official_name but Plaid returns it
+        const accountOfficialName =
+          (account as unknown as Record<string, unknown>)?.official_name as string || "";
 
         const res = await fetch("/api/plaid/exchange-token", {
           method: "POST",
@@ -53,15 +64,19 @@ export function PlaidLinkButton({
           body: JSON.stringify({
             publicToken,
             userId,
-            userCardId,
             institutionName,
             accountId,
+            accountName,
+            accountOfficialName,
           }),
         });
 
         const data = await res.json();
         if (data.connectionId) {
-          onSuccess(data.connectionId);
+          onSuccess({
+            connectionId: data.connectionId,
+            detectedCard: data.detectedCard || null,
+          });
         } else {
           onError?.("Failed to exchange token");
         }

@@ -146,7 +146,6 @@ export const plaidConnections = pgTable("plaid_connections", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   userCardId: text("user_card_id")
-    .notNull()
     .references(() => userCards.id, { onDelete: "cascade" }),
   plaidItemId: text("plaid_item_id").notNull(),
   plaidAccessToken: text("plaid_access_token").notNull(), // encrypted
