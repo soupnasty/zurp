@@ -19,7 +19,7 @@ import { SyncButton } from "./_components/SyncButton";
 import { ConnectionAlerts } from "./_components/ConnectionAlerts";
 import { CardSwitcher } from "./_components/CardSwitcher";
 import Link from "next/link";
-import { Plus, LinkIcon } from "lucide-react";
+import { LinkIcon } from "lucide-react";
 
 export default async function DashboardPage({
   searchParams,
@@ -76,9 +76,9 @@ export default async function DashboardPage({
     : null;
 
   return (
-    <div className="p-[var(--space-lg)]">
+    <div className="p-[var(--space-md)] md:p-[var(--space-lg)] min-w-0">
       {/* Header */}
-      <div className="mb-[var(--space-lg)] flex items-center justify-between">
+      <div className="mb-[var(--space-lg)] flex items-start justify-between gap-3">
         <div>
           <h1 className="text-h1 font-semibold tracking-tight">Dashboard</h1>
           <div className="mt-1">
@@ -92,20 +92,11 @@ export default async function DashboardPage({
               activeCardId={activeCardId}
             />
             {userCards.length <= 1 && (
-              <p className="text-[var(--text-secondary)]">
-                {summary.cardName}
-              </p>
+              <p className="text-[var(--text-secondary)]">{summary.cardName}</p>
             )}
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/onboarding"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] px-3 py-1.5 text-[var(--text-caption)] font-medium text-[var(--text-secondary)] transition-colors hover:border-[var(--border-emphasis)] hover:text-[var(--text-primary)]"
-          >
-            <Plus size={16} />
-            Add Card
-          </Link>
+        <div className="shrink-0">
           {activeConnection ? (
             <SyncButton connectionId={activeConnection.id} />
           ) : (
@@ -114,7 +105,7 @@ export default async function DashboardPage({
               className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--accent)] px-3 py-1.5 text-[var(--text-caption)] font-medium text-[var(--color-void)] transition-opacity hover:opacity-90"
             >
               <LinkIcon size={16} />
-              Link Bank Account
+              Link Card
             </Link>
           )}
         </div>
@@ -141,7 +132,9 @@ export default async function DashboardPage({
       {nearestExpiring && (
         <div className="mt-[var(--space-lg)]">
           <CountdownTimer
-            benefitName={nearestExpiring.displayGroupName || nearestExpiring.benefitName}
+            benefitName={
+              nearestExpiring.displayGroupName || nearestExpiring.benefitName
+            }
             daysRemaining={nearestExpiring.daysRemaining}
             amountRemaining={nearestExpiring.amountRemaining}
           />
@@ -160,9 +153,7 @@ export default async function DashboardPage({
 
       {/* Recent transactions */}
       <div className="mt-[var(--space-xl)]">
-        <h2 className="label-caps mb-[var(--space-md)]">
-          Recent Transactions
-        </h2>
+        <h2 className="label-caps mb-[var(--space-md)]">Recent Transactions</h2>
         <TransactionFeed transactions={transactions} />
       </div>
     </div>

@@ -76,7 +76,7 @@ export function SummaryBar({ summary }: SummaryBarProps) {
             <Tooltip text={stat.tooltip} />
           </p>
           <p
-            className="mt-2 font-data text-h2 font-semibold"
+            className="mt-2 font-data text-h3 md:text-h2 font-semibold"
             style={{ color: stat.color }}
           >
             {stat.format === "dollar"

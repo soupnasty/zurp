@@ -5,6 +5,7 @@ import { getPlaidConnectionStatus, getUserCards } from "@/lib/queries";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { SignOutButton } from "./_components/SignOutButton";
+import { ThemeToggle } from "./_components/ThemeToggle";
 import { Link2, CreditCard, Plus } from "lucide-react";
 import Link from "next/link";
 
@@ -129,6 +130,24 @@ export default async function SettingsPage() {
               ))}
             </div>
           )}
+        </section>
+
+        {/* Appearance */}
+        <section>
+          <h2 className="label-caps mb-[var(--space-md)]">Appearance</h2>
+          <Card>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[var(--text-body)] font-semibold text-[var(--text-primary)]">
+                  Theme
+                </p>
+                <p className="text-[var(--text-caption)] text-[var(--text-secondary)]">
+                  Switch between dark and light mode
+                </p>
+              </div>
+              <ThemeToggle />
+            </div>
+          </Card>
         </section>
 
         {/* Sign Out */}

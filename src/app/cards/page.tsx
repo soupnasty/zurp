@@ -7,7 +7,7 @@ import * as schema from "@/db/schema";
 import { redirect } from "next/navigation";
 import { getCardDefinition } from "@/lib/cards";
 import Link from "next/link";
-import { CreditCard } from "lucide-react";
+import { CreditCard, Plus } from "lucide-react";
 import { RemoveCardButton } from "./_components/RemoveCardButton";
 
 export default async function CardsPage() {
@@ -36,6 +36,13 @@ export default async function CardsPage() {
       </p>
 
       <div className="mt-[var(--space-lg)] flex flex-col gap-4">
+        <Link
+          href="/onboarding"
+          className="flex items-center justify-center gap-2 rounded-[var(--radius-lg)] border border-dashed border-[var(--border-default)] p-[var(--space-md)] text-[var(--text-body)] font-medium text-[var(--text-secondary)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+        >
+          <Plus size={18} strokeWidth={1.75} />
+          Add Card
+        </Link>
         {userCards.map((uc) => {
           const cardDef = getCardDefinition(uc.cardId);
           return (

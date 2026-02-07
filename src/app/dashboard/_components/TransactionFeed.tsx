@@ -69,83 +69,159 @@ export function TransactionFeed({ transactions }: TransactionFeedProps) {
   }
 
   return (
-    <div className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-secondary)] overflow-hidden">
-      <Table>
-        <TableHeader>
-          <tr>
-            <TableHead>
-              <button
-                onClick={() => toggleSort("date")}
-                className="hover:text-[var(--text-primary)] transition-colors"
-              >
-                Date{sortIndicator("date")}
-              </button>
-            </TableHead>
-            <TableHead>Merchant</TableHead>
-            <TableHead align="right">
-              <button
-                onClick={() => toggleSort("amount")}
-                className="hover:text-[var(--text-primary)] transition-colors"
-              >
-                Amount{sortIndicator("amount")}
-              </button>
-            </TableHead>
-            <TableHead>Matched Benefit</TableHead>
-            <TableHead align="right">Credit</TableHead>
-            <TableHead align="center">Confidence</TableHead>
-          </tr>
-        </TableHeader>
-        <tbody>
-          {sorted.map((tx) => (
-            <TableRow
-              key={tx.id}
-              highlight={tx.matchedStatus === "ambiguous"}
-            >
-              <TableCell>
-                <span className="text-[var(--text-secondary)]">
+    <>
+      {/* Sort controls — shared between mobile and desktop */}
+      <div className="mb-2 flex items-center gap-2 md:hidden">
+        <span className="text-[var(--text-caption)] text-[var(--text-secondary)]">Sort by:</span>
+        <button
+          onClick={() => toggleSort("date")}
+          className={`text-[var(--text-caption)] font-medium transition-colors ${
+            sortKey === "date" ? "text-[var(--accent)]" : "text-[var(--text-secondary)]"
+          }`}
+        >
+          Date{sortIndicator("date")}
+        </button>
+        <button
+          onClick={() => toggleSort("amount")}
+          className={`text-[var(--text-caption)] font-medium transition-colors ${
+            sortKey === "amount" ? "text-[var(--accent)]" : "text-[var(--text-secondary)]"
+          }`}
+        >
+          Amount{sortIndicator("amount")}
+        </button>
+      </div>
+
+      {/* Mobile card list */}
+      <div className="space-y-2 md:hidden">
+        {sorted.map((tx) => (
+          <div
+            key={tx.id}
+            className={`rounded-[var(--radius-lg)] border bg-[var(--bg-secondary)] p-3 ${
+              tx.matchedStatus === "ambiguous"
+                ? "border-[var(--color-warning)]/30"
+                : "border-[var(--border-default)]"
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div className="min-w-0 flex-1">
+                <p className="text-[var(--text-body)] font-medium text-[var(--text-primary)] truncate">
+                  {tx.merchantName || "Unknown"}
+                </p>
+                <p className="text-[var(--text-caption)] text-[var(--text-secondary)]">
                   {new Date(tx.date).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
                   })}
-                </span>
-              </TableCell>
-              <TableCell>
-                <span className="text-[var(--text-primary)]">
-                  {tx.merchantName || "Unknown"}
-                </span>
-              </TableCell>
-              <TableCell align="right" mono>
-                ${tx.amount.toFixed(2)}
-              </TableCell>
-              <TableCell>
+                </p>
+              </div>
+              <div className="text-right ml-3 shrink-0">
+                <p className="font-data text-[var(--text-body)] font-medium text-[var(--text-primary)]">
+                  ${tx.amount.toFixed(2)}
+                </p>
+                {tx.creditApplied ? (
+                  <p className="font-data text-[var(--text-caption)] text-[var(--color-success)]">
+                    -${tx.creditApplied.toFixed(2)}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+            {(tx.matchedBenefitName || tx.matchedStatus === "ambiguous") && (
+              <div className="mt-2 flex items-center gap-2 border-t border-[var(--border-default)] pt-2">
                 {tx.matchedBenefitName ? (
-                  <span className="text-[var(--accent)]">
+                  <span className="text-[var(--text-caption)] text-[var(--accent)]">
                     {tx.matchedBenefitName}
                   </span>
-                ) : tx.matchedStatus === "ambiguous" ? (
-                  <span className="text-[var(--color-warning)]">
+                ) : (
+                  <span className="text-[var(--text-caption)] text-[var(--color-warning)]">
                     Needs review
                   </span>
-                ) : (
-                  <span className="text-[var(--text-secondary)]">&mdash;</span>
                 )}
-              </TableCell>
-              <TableCell align="right" mono>
-                {tx.creditApplied ? (
-                  <span className="text-[var(--color-success)]">
-                    -${tx.creditApplied.toFixed(2)}
-                  </span>
-                ) : (
-                  <span className="text-[var(--text-secondary)]">&mdash;</span>
-                )}
-              </TableCell>
-              <TableCell align="center">
                 {confidenceBadge(tx.matchConfidence)}
-              </TableCell>
-            </TableRow>
-          ))}
-        </tbody>
-      </Table>
-    </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop table */}
+      <div className="hidden md:block rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-secondary)] overflow-hidden">
+        <Table>
+          <TableHeader>
+            <tr>
+              <TableHead>
+                <button
+                  onClick={() => toggleSort("date")}
+                  className="hover:text-[var(--text-primary)] transition-colors"
+                >
+                  Date{sortIndicator("date")}
+                </button>
+              </TableHead>
+              <TableHead>Merchant</TableHead>
+              <TableHead align="right">
+                <button
+                  onClick={() => toggleSort("amount")}
+                  className="hover:text-[var(--text-primary)] transition-colors"
+                >
+                  Amount{sortIndicator("amount")}
+                </button>
+              </TableHead>
+              <TableHead>Matched Benefit</TableHead>
+              <TableHead align="right">Credit</TableHead>
+              <TableHead align="center">Confidence</TableHead>
+            </tr>
+          </TableHeader>
+          <tbody>
+            {sorted.map((tx) => (
+              <TableRow
+                key={tx.id}
+                highlight={tx.matchedStatus === "ambiguous"}
+              >
+                <TableCell>
+                  <span className="text-[var(--text-secondary)]">
+                    {new Date(tx.date).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <span className="text-[var(--text-primary)]">
+                    {tx.merchantName || "Unknown"}
+                  </span>
+                </TableCell>
+                <TableCell align="right" mono>
+                  ${tx.amount.toFixed(2)}
+                </TableCell>
+                <TableCell>
+                  {tx.matchedBenefitName ? (
+                    <span className="text-[var(--accent)]">
+                      {tx.matchedBenefitName}
+                    </span>
+                  ) : tx.matchedStatus === "ambiguous" ? (
+                    <span className="text-[var(--color-warning)]">
+                      Needs review
+                    </span>
+                  ) : (
+                    <span className="text-[var(--text-secondary)]">&mdash;</span>
+                  )}
+                </TableCell>
+                <TableCell align="right" mono>
+                  {tx.creditApplied ? (
+                    <span className="text-[var(--color-success)]">
+                      -${tx.creditApplied.toFixed(2)}
+                    </span>
+                  ) : (
+                    <span className="text-[var(--text-secondary)]">&mdash;</span>
+                  )}
+                </TableCell>
+                <TableCell align="center">
+                  {confidenceBadge(tx.matchConfidence)}
+                </TableCell>
+              </TableRow>
+            ))}
+          </tbody>
+        </Table>
+      </div>
+    </>
   );
 }
