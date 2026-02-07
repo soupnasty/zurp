@@ -124,7 +124,13 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="border-t border-[var(--border-default)] py-[var(--space-lg)] text-center text-[var(--text-caption)] text-[var(--text-secondary)]">
-        <p>zurp — track your card benefits</p>
+        <p>
+          zurp — track your card benefits
+          <span className="mx-2">&middot;</span>
+          <Link href="/privacy" className="hover:text-[var(--accent)]">
+            Privacy Policy
+          </Link>
+        </p>
       </footer>
     </div>
   );

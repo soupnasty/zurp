@@ -26,7 +26,7 @@ const authConfig = () =>
     }),
     providers: [
       Resend({
-        from: "Zurp <noreply@zurp.app>",
+        from: "Zurp <noreply@zurp.io>",
       }),
     ],
     pages: {

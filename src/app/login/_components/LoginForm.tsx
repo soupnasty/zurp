@@ -4,15 +4,17 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { Mail } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import Link from "next/link";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
+  const [consent, setConsent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    if (!email || !consent) return;
 
     setLoading(true);
     setError(null);
@@ -55,13 +57,38 @@ export function LoginForm() {
         </div>
       </div>
 
+      <label className="flex items-start gap-[var(--space-sm)] cursor-pointer">
+        <input
+          type="checkbox"
+          checked={consent}
+          onChange={(e) => setConsent(e.target.checked)}
+          className="mt-0.5 h-4 w-4 shrink-0 rounded border-[var(--border-default)] accent-[var(--accent)]"
+        />
+        <span className="text-[var(--text-caption)] leading-snug text-[var(--text-secondary)]">
+          I agree to the{" "}
+          <Link
+            href="/privacy"
+            target="_blank"
+            className="text-[var(--accent)] hover:opacity-80"
+          >
+            Privacy Policy
+          </Link>{" "}
+          and consent to the collection and use of my data as described.
+        </span>
+      </label>
+
       {error && (
         <p className="text-[var(--text-caption)] text-[var(--color-danger)]">
           {error}
         </p>
       )}
 
-      <Button type="submit" disabled={!email} loading={loading} className="w-full">
+      <Button
+        type="submit"
+        disabled={!email || !consent}
+        loading={loading}
+        className="w-full"
+      >
         Continue with Email
       </Button>
 
