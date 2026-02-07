@@ -81,7 +81,7 @@ export default async function DashboardPage({
       {/* Header */}
       <div className="mb-[var(--space-lg)] flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-h1 font-semibold tracking-tight">Dashboard</h1>
+          <h1 className="text-h1 font-semibold tracking-tight">Benefits</h1>
           <div className="mt-1">
             <CardSwitcher
               cards={userCards.map((c) => ({
@@ -154,7 +154,7 @@ export default async function DashboardPage({
         return (
           <>
             <div className="mt-[var(--space-lg)]">
-              <h2 className="label-caps mb-[var(--space-md)]">Benefits</h2>
+              <h2 className="label-caps mb-[var(--space-md)]">Active Benefits</h2>
               <div className="grid grid-cols-1 gap-[var(--space-md)] sm:grid-cols-2 lg:grid-cols-3">
                 {activeBenefits.map((group) => (
                   <BenefitCard key={group.id} group={group} transactions={transactions} />
@@ -169,7 +169,7 @@ export default async function DashboardPage({
       {/* Recent transactions */}
       <div className="mt-[var(--space-xl)]">
         <h2 className="label-caps mb-[var(--space-md)]">Recent Transactions</h2>
-        <TransactionFeed transactions={transactions} benefits={benefits} />
+        <TransactionFeed transactions={transactions} benefits={benefits} connectionId={activeConnection?.id} />
       </div>
     </div>
   );

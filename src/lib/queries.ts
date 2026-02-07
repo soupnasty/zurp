@@ -177,7 +177,8 @@ export async function getBenefitUsageSummaries(
 export async function getRecentTransactions(
   userId: string,
   limit = 50,
-  connectionId?: string
+  connectionId?: string,
+  offset = 0
 ): Promise<TransactionWithMatch[]> {
   const txs = await db.query.transactions.findMany({
     where: connectionId
@@ -185,6 +186,7 @@ export async function getRecentTransactions(
       : eq(schema.transactions.userId, userId),
     orderBy: desc(schema.transactions.date),
     limit,
+    offset,
     with: {
       matches: {
         with: {

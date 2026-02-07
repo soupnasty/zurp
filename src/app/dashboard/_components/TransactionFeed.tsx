@@ -17,6 +17,7 @@ import type { TransactionWithMatch, BenefitUsageSummary } from "@/lib/types";
 interface TransactionFeedProps {
   transactions: TransactionWithMatch[];
   benefits: BenefitUsageSummary[];
+  connectionId?: string;
 }
 
 type SortKey = "date" | "amount";
@@ -28,7 +29,9 @@ const REMOVE_REASONS = [
   "Other",
 ] as const;
 
-export function TransactionFeed({ transactions, benefits }: TransactionFeedProps) {
+const PAGE_SIZE = 50;
+
+export function TransactionFeed({ transactions, benefits, connectionId }: TransactionFeedProps) {
   const router = useRouter();
   const [, startTransition] = useTransition();
   const { addToast } = useToast();
@@ -41,6 +44,44 @@ export function TransactionFeed({ transactions, benefits }: TransactionFeedProps
   const [pendingRemoves, setPendingRemoves] = useState<Set<string>>(new Set());
   const [pendingAdds, setPendingAdds] = useState<Map<string, string>>(new Map()); // txId -> benefitName
   const [filterBenefitId, setFilterBenefitId] = useState<string | null>(null);
+  // "View More" state
+  const [extraTransactions, setExtraTransactions] = useState<TransactionWithMatch[]>([]);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(transactions.length >= PAGE_SIZE);
+
+  // Reset extra transactions when the server-rendered props change (e.g. after sync/refresh)
+  const [prevTransactions, setPrevTransactions] = useState(transactions);
+  if (transactions !== prevTransactions) {
+    setPrevTransactions(transactions);
+    setExtraTransactions([]);
+    setHasMore(transactions.length >= PAGE_SIZE);
+  }
+
+  const allTransactions = useMemo(
+    () => [...transactions, ...extraTransactions],
+    [transactions, extraTransactions]
+  );
+
+  const handleLoadMore = useCallback(async () => {
+    setLoadingMore(true);
+    try {
+      const params = new URLSearchParams({
+        offset: String(allTransactions.length),
+        limit: String(PAGE_SIZE),
+      });
+      if (connectionId) params.set("connectionId", connectionId);
+      const res = await fetch(`/api/transactions?${params}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      const batch: TransactionWithMatch[] = data.transactions;
+      setExtraTransactions((prev) => [...prev, ...batch]);
+      if (batch.length < PAGE_SIZE) setHasMore(false);
+    } catch (err) {
+      console.error("Failed to load more transactions:", err);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [allTransactions.length, connectionId]);
 
   // Derive filter options from benefits prop (credit-type only, deduplicated by displayGroup)
   const filterOptions = useMemo(() => {
@@ -68,30 +109,30 @@ export function TransactionFeed({ transactions, benefits }: TransactionFeedProps
 
   // Filter transactions by selected benefit
   const filtered = useMemo(() => {
-    if (filterBenefitId === null) return transactions;
+    if (filterBenefitId === null) return allTransactions;
     if (filterBenefitId === "unmatched") {
-      return transactions.filter((tx) => tx.matchedStatus === "unmatched");
+      return allTransactions.filter((tx) => tx.matchedStatus === "unmatched");
     }
     const option = filterOptions.find((o) => o.id === filterBenefitId);
     if (option) {
-      return transactions.filter((tx) => option.benefitIds.includes(tx.benefitId ?? ""));
+      return allTransactions.filter((tx) => option.benefitIds.includes(tx.benefitId ?? ""));
     }
-    return transactions.filter((tx) => tx.benefitId === filterBenefitId);
-  }, [transactions, filterBenefitId, filterOptions]);
+    return allTransactions.filter((tx) => tx.benefitId === filterBenefitId);
+  }, [allTransactions, filterBenefitId, filterOptions]);
 
   // Count matching transactions for each filter option
   const filterCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: transactions.length };
+    const counts: Record<string, number> = { all: allTransactions.length };
     for (const opt of filterOptions) {
-      counts[opt.id] = transactions.filter((tx) =>
+      counts[opt.id] = allTransactions.filter((tx) =>
         opt.benefitIds.includes(tx.benefitId ?? "")
       ).length;
     }
-    counts["unmatched"] = transactions.filter(
+    counts["unmatched"] = allTransactions.filter(
       (tx) => tx.matchedStatus === "unmatched"
     ).length;
     return counts;
-  }, [transactions, filterOptions]);
+  }, [allTransactions, filterOptions]);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -277,7 +318,7 @@ export function TransactionFeed({ transactions, benefits }: TransactionFeedProps
     [addToast, router]
   );
 
-  if (transactions.length === 0) {
+  if (allTransactions.length === 0) {
     return (
       <div className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-secondary)] p-[var(--space-xl)] text-center">
         <p className="text-[var(--text-secondary)]">
@@ -709,6 +750,19 @@ export function TransactionFeed({ transactions, benefits }: TransactionFeedProps
           </tbody>
         </Table>
       </div>
+
+      {/* View More button */}
+      {hasMore && (
+        <div className="mt-[var(--space-md)] flex justify-center">
+          <button
+            onClick={handleLoadMore}
+            disabled={loadingMore}
+            className="rounded-lg border border-[var(--border-default)] bg-[var(--bg-secondary)] px-5 py-2 text-[var(--text-body)] font-medium text-[var(--text-secondary)] transition-colors hover:border-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-50"
+          >
+            {loadingMore ? "Loading..." : "View More"}
+          </button>
+        </div>
+      )}
     </>
   );
 }
