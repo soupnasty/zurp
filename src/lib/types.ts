@@ -25,6 +25,18 @@ export type MatchMethod = "auto" | "manual";
 export type MatchedStatus = "unmatched" | "matched" | "ambiguous" | "skipped";
 export type AnniversarySource = "auto_detected" | "user_provided" | "pending";
 export type ConnectionStatus = "active" | "needs_reauth" | "disconnected";
+export type FlagType = "removed" | "added";
+
+export interface TransactionFlag {
+  id: string;
+  userId: string;
+  transactionId: string;
+  benefitId: string;
+  flagType: FlagType;
+  reason: string | null;
+  originalMatch: boolean;
+  createdAt: Date;
+}
 
 // ── Benefit detail content (modal data) ──
 
@@ -121,6 +133,8 @@ export interface TransactionWithMatch {
   amount: number;
   matchedStatus: MatchedStatus;
   matchedBenefitName: string | null;
+  benefitId: string | null;
+  benefitUsageId: string | null;
   creditApplied: number | null;
   matchConfidence: MatchConfidence | null;
   matchMethod: MatchMethod | null;

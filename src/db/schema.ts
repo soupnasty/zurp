@@ -228,6 +228,37 @@ export const benefitUsage = pgTable(
   ]
 );
 
+export const transactionFlags = pgTable(
+  "transaction_flags",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    transactionId: text("transaction_id")
+      .notNull()
+      .references(() => transactions.id, { onDelete: "cascade" }),
+    benefitId: text("benefit_id")
+      .notNull()
+      .references(() => benefits.id, { onDelete: "cascade" }),
+    flagType: text("flag_type").notNull(), // "removed" | "added"
+    reason: text("reason"),
+    originalMatch: boolean("original_match").notNull(),
+    createdAt: timestamp("created_at", { mode: "date" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => [
+    unique("transaction_flags_unique").on(
+      table.userId,
+      table.transactionId,
+      table.benefitId
+    ),
+  ]
+);
+
 export const matchedTx = pgTable(
   "matched_tx",
   {
@@ -261,6 +292,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   plaidConnections: many(plaidConnections),
   transactions: many(transactions),
   benefitUsage: many(benefitUsage),
+  transactionFlags: many(transactionFlags),
 }));
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -348,6 +380,24 @@ export const benefitUsageRelations = relations(
       references: [cards.id],
     }),
     matches: many(matchedTx),
+  })
+);
+
+export const transactionFlagsRelations = relations(
+  transactionFlags,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [transactionFlags.userId],
+      references: [users.id],
+    }),
+    transaction: one(transactions, {
+      fields: [transactionFlags.transactionId],
+      references: [transactions.id],
+    }),
+    benefit: one(benefits, {
+      fields: [transactionFlags.benefitId],
+      references: [benefits.id],
+    }),
   })
 );
 

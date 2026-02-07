@@ -169,7 +169,7 @@ export default async function DashboardPage({
       {/* Recent transactions */}
       <div className="mt-[var(--space-xl)]">
         <h2 className="label-caps mb-[var(--space-md)]">Recent Transactions</h2>
-        <TransactionFeed transactions={transactions} />
+        <TransactionFeed transactions={transactions} benefits={benefits} />
       </div>
     </div>
   );

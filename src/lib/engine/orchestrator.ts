@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { eq, and } from "drizzle-orm";
+import { eq, and, inArray } from "drizzle-orm";
 import * as schema from "@/db/schema";
 import type { MatcherTransaction, BenefitDefinition, MatchedStatus } from "@/lib/types";
 import { runMatcher } from "./matcher";
@@ -112,8 +112,24 @@ export async function processTransactionsForConnection(
     anniversaryDate: userCard.anniversaryDate,
   });
 
+  // Fetch removed flags for this user to skip flagged-out matches
+  const removedFlags = await db.query.transactionFlags.findMany({
+    where: and(
+      eq(schema.transactionFlags.userId, connection.userId),
+      eq(schema.transactionFlags.flagType, "removed")
+    ),
+  });
+
+  const removedFlagSet = new Set(
+    removedFlags.map((f) => `${f.transactionId}:${f.benefitId}`)
+  );
+
   // Write matches to DB
   for (const match of result.matches) {
+    // Skip if user has a removed flag for this transaction+benefit pair
+    if (removedFlagSet.has(`${match.transactionId}:${match.benefitId}`)) {
+      continue;
+    }
     // Find the benefit usage record for this benefit's current period
     const benefit = cardDef.benefits.find((b) => b.id === match.benefitId)!;
     const bounds = getCurrentCycleBounds(

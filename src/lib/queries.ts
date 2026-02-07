@@ -204,6 +204,8 @@ export async function getRecentTransactions(
       amount: tx.amount,
       matchedStatus: tx.matchedStatus as any,
       matchedBenefitName: match?.benefitUsage?.benefit?.name ?? null,
+      benefitId: match?.benefitUsage?.benefit?.id ?? null,
+      benefitUsageId: match?.benefitUsageId ?? null,
       creditApplied: match?.creditApplied ?? null,
       matchConfidence: (match?.matchConfidence as any) ?? null,
       matchMethod: (match?.matchMethod as any) ?? null,
