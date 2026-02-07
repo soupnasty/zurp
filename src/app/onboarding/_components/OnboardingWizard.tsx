@@ -76,7 +76,7 @@ export function OnboardingWizard({ userId, cards }: OnboardingWizardProps) {
     try {
       await setAnniversaryDate(userCardId, date);
       setStep("done");
-      setTimeout(() => window.location.href = "/dashboard", 1500);
+      setTimeout(() => window.location.href = "/benefits", 1500);
     } catch {
       setError("Failed to save anniversary date.");
     }
@@ -84,7 +84,7 @@ export function OnboardingWizard({ userId, cards }: OnboardingWizardProps) {
 
   const handleSkipAnniversary = () => {
     setStep("done");
-    setTimeout(() => window.location.href = "/dashboard", 1500);
+    setTimeout(() => window.location.href = "/benefits", 1500);
   };
 
   const stepNumber =

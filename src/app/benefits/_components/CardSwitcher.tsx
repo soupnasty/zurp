@@ -26,7 +26,7 @@ export function CardSwitcher({ cards, activeCardId }: CardSwitcherProps) {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("cardId", e.target.value);
-    router.replace(`/dashboard?${params.toString()}`);
+    router.replace(`/benefits?${params.toString()}`);
   };
 
   return (

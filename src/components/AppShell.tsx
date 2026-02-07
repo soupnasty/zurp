@@ -22,7 +22,7 @@ interface AppShellProps {
 }
 
 const navItems = [
-  { href: "/dashboard", label: "Benefits", icon: CircleDollarSign },
+  { href: "/benefits", label: "Benefits", icon: CircleDollarSign },
   { href: "/spending", label: "Spending", icon: Wallet },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
@@ -46,7 +46,7 @@ export function AppShell({ children, userEmail }: AppShellProps) {
         {/* Logo */}
         <div className="flex h-14 items-center border-b border-[var(--border-default)] px-4">
           {!collapsed && (
-            <Link href="/dashboard" className="flex items-center gap-2">
+            <Link href="/benefits" className="flex items-center gap-2">
               <svg width="24" height="16" viewBox="0 0 50 34" fill="none">
                 <rect
                   x="0"

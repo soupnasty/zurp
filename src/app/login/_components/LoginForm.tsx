@@ -21,7 +21,7 @@ export function LoginForm() {
     try {
       await signIn("resend", {
         email,
-        callbackUrl: "/dashboard",
+        callbackUrl: "/benefits",
       });
     } catch {
       setError("Something went wrong. Please try again.");
