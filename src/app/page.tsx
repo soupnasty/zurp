@@ -161,7 +161,7 @@ export default function Home() {
       <main className="flex flex-1 flex-col items-center px-4 pt-[var(--space-3xl)] pb-[var(--space-2xl)]">
         {/* Logo */}
         <div className="mb-[var(--space-xl)] flex items-center gap-[var(--space-sm)]">
-          <svg width="32" height="22" viewBox="0 0 50 34" fill="none">
+          <svg width="56" height="38" viewBox="0 0 50 34" fill="none">
             <rect
               x="0"
               y="0"
@@ -197,7 +197,7 @@ export default function Home() {
               opacity="0.2"
             />
           </svg>
-          <span className="text-[var(--text-h3)] font-semibold tracking-tight">
+          <span className="text-[40px] font-semibold tracking-tight">
             zurp
           </span>
         </div>
