@@ -1,0 +1,174 @@
+@import "tailwindcss";
+
+/* ── Design System Tokens (from zurp-style-guide.md) ── */
+
+@theme inline {
+  /* Brand colors */
+  --color-void: #0D1117;
+  --color-surface: #161B22;
+  --color-border: #21262D;
+  --color-frost: #E6EDF3;
+  --color-muted: #484F58;
+  --color-signal: #58A6FF;
+  --color-ghost: rgba(88, 166, 255, 0.2);
+
+  /* Semantic */
+  --color-success: #3FB950;
+  --color-warning: #D29922;
+  --color-danger: #F85149;
+  --color-info: #58A6FF;
+
+  /* Light mode colors */
+  --color-light-bg: #F6F8FA;
+  --color-light-surface: #FFFFFF;
+  --color-light-text: #1F2328;
+  --color-light-text-secondary: #656D76;
+  --color-light-signal: #0969DA;
+
+  /* Typography */
+  --font-display: "Inter", "Helvetica Neue", Helvetica, sans-serif;
+  --font-body: "Inter", "Helvetica Neue", Helvetica, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", "Consolas", monospace;
+
+  --text-display: 62px;
+  --text-h1: 36px;
+  --text-h2: 24px;
+  --text-h3: 18px;
+  --text-body: 15px;
+  --text-caption: 12px;
+  --text-mono: 14px;
+
+  /* Spacing (4px base) */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  /* Border radii */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Shadows — dark mode uses subtle glows */
+  --shadow-sm: 0 0 0 1px rgba(88, 166, 255, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(88, 166, 255, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(88, 166, 255, 0.06);
+  --shadow-glow: 0 0 16px rgba(88, 166, 255, 0.15);
+
+  /* Motion */
+  --duration-fast: 150ms;
+  --duration-default: 300ms;
+  --duration-slow: 500ms;
+  --ease-default: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Theme variables ── */
+
+:root {
+  --bg-primary: var(--color-void);
+  --bg-secondary: var(--color-surface);
+  --bg-tertiary: var(--color-border);
+  --text-primary: var(--color-frost);
+  --text-secondary: var(--color-muted);
+  --text-tertiary: var(--color-border);
+  --border-default: var(--color-border);
+  --border-strong: var(--color-muted);
+  --accent: var(--color-signal);
+  --accent-ghost: var(--color-ghost);
+}
+
+.light {
+  --bg-primary: var(--color-light-bg);
+  --bg-secondary: var(--color-light-surface);
+  --bg-tertiary: #EAEEF2;
+  --text-primary: var(--color-light-text);
+  --text-secondary: var(--color-light-text-secondary);
+  --text-tertiary: #8B949E;
+  --border-default: #D0D7DE;
+  --border-strong: #AFB8C1;
+  --accent: var(--color-light-signal);
+  --accent-ghost: rgba(9, 105, 218, 0.15);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-glow: none;
+}
+
+/* ── Base styles ── */
+
+html {
+  color-scheme: dark;
+}
+
+html.light {
+  color-scheme: light;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Transitions on theme toggle ── */
+
+*,
+*::before,
+*::after {
+  border-color: var(--border-default);
+}
+
+/* ── Focus styles (WCAG AA) ── */
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ── Scrollbar ── */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+.light ::-webkit-scrollbar-thumb {
+  background: #C1C8D1;
+}
+
+/* ── Utility: monospace dollar amounts ── */
+
+.font-data {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  font-weight: 500;
+}
+
+/* ── Utility: caption labels ── */
+
+.label-caps {
+  font-size: var(--text-caption);
+  font-weight: 400;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
