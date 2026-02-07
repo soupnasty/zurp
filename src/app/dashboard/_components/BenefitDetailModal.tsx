@@ -46,6 +46,9 @@ export function BenefitDetailModal({
   const details = group.details;
   const isCredit = group.type === "credit";
   const Icon = iconMap[group.icon] || CreditCard;
+  const remaining = Math.max(0, group.totalRemaining);
+  const used = group.totalCredit - remaining;
+  const isGrouped = group.benefits.length > 1;
 
   const iconElement = (
     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent)]/10">
@@ -70,23 +73,41 @@ export function BenefitDetailModal({
         <div className="mb-[var(--space-lg)] rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-tertiary)] p-[var(--space-md)]">
           <div className="flex items-baseline justify-between">
             <span className="font-data text-h3 font-semibold text-[var(--accent)]">
-              ${Math.min(group.totalUsed, group.totalCredit).toFixed(0)}
+              ${used.toFixed(0)}
             </span>
             <span className="text-[var(--text-caption)] text-[var(--text-secondary)]">
               of ${group.totalCredit.toFixed(0)}
             </span>
           </div>
           <div className="mt-2">
-            <ProgressBar value={group.totalUsed} max={group.totalCredit} />
+            <ProgressBar value={used} max={group.totalCredit} />
           </div>
           <div className="mt-2 flex items-center justify-between text-[var(--text-caption)]">
             <span className="text-[var(--text-secondary)]">
-              ${Math.max(0, group.totalRemaining).toFixed(0)} remaining
+              ${remaining.toFixed(0)} remaining
             </span>
             <span className="text-[var(--text-secondary)]">
               {group.daysRemaining}d left in cycle
             </span>
           </div>
+
+          {/* Sub-credit breakdown for grouped benefits */}
+          {isGrouped && (
+            <div className="mt-3 space-y-1.5 border-t border-[var(--border-default)] pt-3">
+              {group.benefits.map((b) => {
+                const subRemaining = Math.max(0, b.amountRemaining);
+                const subUsed = b.creditAmount - subRemaining;
+                return (
+                  <div key={b.benefitId} className="flex items-center justify-between text-[var(--text-caption)]">
+                    <span className="text-[var(--text-secondary)]">{b.benefitName}</span>
+                    <span className="font-data text-[var(--text-secondary)]">
+                      ${subUsed.toFixed(0)} / ${b.creditAmount.toFixed(0)}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 

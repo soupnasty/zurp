@@ -45,14 +45,14 @@ export function AnniversaryPrompt({ userCardId }: AnniversaryPromptProps) {
             We couldn&apos;t detect your anniversary date from transactions.
             This helps us track your $300 travel credit cycle accurately.
           </p>
-          <div className="mt-3 flex items-center gap-3">
-            <div className="relative">
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <div className="relative min-w-0 flex-1">
               <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-secondary)]" />
               <input
                 type="date"
                 value={dateStr}
                 onChange={(e) => setDateStr(e.target.value)}
-                className="rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-primary)] py-2 pl-10 pr-3 text-[var(--text-body)] text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/20"
+                className="box-border w-full min-w-0 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-primary)] py-2 pl-10 pr-3 text-[var(--text-body)] text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/20"
               />
             </div>
             <Button

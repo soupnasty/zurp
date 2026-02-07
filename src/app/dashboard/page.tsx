@@ -18,6 +18,7 @@ import { AnniversaryPrompt } from "./_components/AnniversaryPrompt";
 import { SyncButton } from "./_components/SyncButton";
 import { ConnectionAlerts } from "./_components/ConnectionAlerts";
 import { CardSwitcher } from "./_components/CardSwitcher";
+import { UpcomingBenefits } from "./_components/UpcomingBenefits";
 import Link from "next/link";
 import { LinkIcon } from "lucide-react";
 
@@ -141,15 +142,29 @@ export default async function DashboardPage({
         </div>
       )}
 
-      {/* Benefits grid */}
-      <div className="mt-[var(--space-lg)]">
-        <h2 className="label-caps mb-[var(--space-md)]">Benefits</h2>
-        <div className="grid grid-cols-1 gap-[var(--space-md)] sm:grid-cols-2 lg:grid-cols-3">
-          {groupedBenefits.map((group) => (
-            <BenefitCard key={group.id} group={group} />
-          ))}
-        </div>
-      </div>
+      {/* Benefits grid — split active vs upcoming, sorted by urgency */}
+      {(() => {
+        const now = new Date();
+        const activeBenefits = groupedBenefits
+          .filter((g) => now >= new Date(g.cycleStart))
+          .sort(sortByUrgency);
+        const upcomingBenefits = groupedBenefits
+          .filter((g) => now < new Date(g.cycleStart))
+          .sort(sortByUrgency);
+        return (
+          <>
+            <div className="mt-[var(--space-lg)]">
+              <h2 className="label-caps mb-[var(--space-md)]">Benefits</h2>
+              <div className="grid grid-cols-1 gap-[var(--space-md)] sm:grid-cols-2 lg:grid-cols-3">
+                {activeBenefits.map((group) => (
+                  <BenefitCard key={group.id} group={group} />
+                ))}
+              </div>
+            </div>
+            <UpcomingBenefits benefits={upcomingBenefits} />
+          </>
+        );
+      })()}
 
       {/* Recent transactions */}
       <div className="mt-[var(--space-xl)]">
@@ -246,4 +261,20 @@ function groupBenefits(
   }
 
   return [...groups.values(), ...ungrouped];
+}
+
+// Sort benefits by urgency: actionable items first, fully-used last.
+// Within actionable: expiring soonest with remaining value on top,
+// then partially used, then untouched. Ties broken by daysRemaining.
+function sortByUrgency(a: BenefitGroup, b: BenefitGroup): number {
+  const tierA = urgencyTier(a);
+  const tierB = urgencyTier(b);
+  if (tierA !== tierB) return tierA - tierB;
+  return a.daysRemaining - b.daysRemaining;
+}
+
+function urgencyTier(g: BenefitGroup): number {
+  if (g.isFullyUsed) return 3; // nothing to do
+  if (g.totalUsed > 0) return 1; // partially used — finish it
+  return 2; // untouched — start it
 }

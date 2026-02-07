@@ -91,9 +91,9 @@ export function OnboardingWizard({ userId, cards }: OnboardingWizardProps) {
     step === "link-plaid" ? 1 : step === "confirm-card" ? 2 : step === "anniversary" ? 3 : 4;
 
   return (
-    <div>
+    <div className="flex max-h-full flex-col overflow-hidden">
       {/* Progress indicator */}
-      <div className="mb-8 flex items-center justify-center gap-2">
+      <div className="mb-8 flex shrink-0 items-center justify-center gap-2">
         {[1, 2, 3].map((n) => (
           <div
             key={n}
@@ -106,7 +106,7 @@ export function OnboardingWizard({ userId, cards }: OnboardingWizardProps) {
         ))}
       </div>
 
-      <div className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-secondary)] p-6">
+      <div className="min-h-0 overflow-y-auto rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-secondary)] p-6">
         {step === "link-plaid" && (
           <div>
             <h2 className="text-h3 font-semibold">Link Your Bank Account</h2>

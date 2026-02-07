@@ -40,7 +40,7 @@ export function AnniversarySetup({ onSubmit, onSkip }: AnniversarySetupProps) {
               type="date"
               value={dateStr}
               onChange={(e) => setDateStr(e.target.value)}
-              className="w-full rounded-[var(--radius-md)] border border-[var(--border-strong)] bg-[var(--bg-tertiary)] py-2.5 pl-10 pr-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/20"
+              className="box-border w-full max-w-full min-w-0 rounded-[var(--radius-md)] border border-[var(--border-strong)] bg-[var(--bg-tertiary)] py-2.5 pl-10 pr-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/20"
             />
           </div>
           <p className="mt-1.5 text-caption text-[var(--text-secondary)]">

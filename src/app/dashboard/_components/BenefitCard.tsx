@@ -36,18 +36,22 @@ const iconMap: Record<string, any> = {
 export function BenefitCard({ group }: { group: BenefitGroup }) {
   const [modalOpen, setModalOpen] = useState(false);
   const Icon = iconMap[group.icon] || CreditCard;
-  const percent =
-    group.totalCredit > 0
-      ? (group.totalUsed / group.totalCredit) * 100
-      : 0;
+
+  // Derive "used" from credit − remaining so grouped sub-credits never contradict
+  const remaining = Math.max(0, group.totalRemaining);
+  const used = group.totalCredit - remaining;
 
   const cycleLabel = getCycleLabel(group.cycle);
   const cycleExpiry = formatCycleExpiry(group.cycle, group.cycleEnd);
+  const isGrouped = group.benefits.length > 1;
 
   return (
     <>
       <Card hover>
-        <div onClick={() => setModalOpen(true)} className="cursor-pointer">
+        <div
+          onClick={() => setModalOpen(true)}
+          className={`cursor-pointer${group.isFullyUsed ? " opacity-50" : ""}`}
+        >
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent)]/10">
@@ -63,11 +67,7 @@ export function BenefitCard({ group }: { group: BenefitGroup }) {
               </div>
             </div>
 
-            {group.isFullyUsed ? (
-              <Badge variant="success">Used</Badge>
-            ) : group.requiresActivation ? (
-              <Badge variant="info">Activate</Badge>
-            ) : group.type === "subscription" ? (
+            {group.type === "subscription" ? (
               <Badge variant="neutral">Sub</Badge>
             ) : null}
           </div>
@@ -77,20 +77,43 @@ export function BenefitCard({ group }: { group: BenefitGroup }) {
               <div className="mt-4">
                 <div className="flex items-baseline justify-between">
                   <span className="font-data text-h3 font-semibold text-[var(--accent)]">
-                    ${Math.min(group.totalUsed, group.totalCredit).toFixed(0)}
+                    ${used.toFixed(0)}
                   </span>
                   <span className="text-[var(--text-caption)] text-[var(--text-secondary)]">
                     of ${group.totalCredit.toFixed(0)}
                   </span>
                 </div>
                 <div className="mt-2">
-                  <ProgressBar value={group.totalUsed} max={group.totalCredit} />
+                  <ProgressBar value={used} max={group.totalCredit} />
                 </div>
               </div>
 
+              {/* Sub-credit breakdown for grouped benefits (e.g. DoorDash) */}
+              {isGrouped && (
+                <div className="mt-3 space-y-1 border-t border-[var(--border-default)] pt-3">
+                  {group.benefits.map((b) => {
+                    const subRemaining = Math.max(0, b.amountRemaining);
+                    const subUsed = b.creditAmount - subRemaining;
+                    return (
+                      <div
+                        key={b.benefitId}
+                        className="flex items-center justify-between text-[var(--text-caption)]"
+                      >
+                        <span className="truncate mr-2 text-[var(--text-secondary)]">
+                          {b.benefitName}
+                        </span>
+                        <span className="font-data shrink-0 text-[var(--text-secondary)]">
+                          ${subUsed.toFixed(0)}/{b.creditAmount.toFixed(0)}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
               <div className="mt-3 flex items-center justify-between text-[var(--text-caption)]">
                 <span className="text-[var(--text-secondary)]">
-                  ${Math.max(0, group.totalRemaining).toFixed(0)} remaining
+                  ${remaining.toFixed(0)} remaining
                 </span>
                 {group.daysRemaining <= 30 && (
                   <span
