@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+
 import { CardSelection } from "./CardSelection";
 import { AnniversarySetup } from "./AnniversarySetup";
 import { PlaidLinkButton } from "@/components/PlaidLink";
@@ -28,7 +28,6 @@ interface OnboardingWizardProps {
 type Step = "link-plaid" | "confirm-card" | "anniversary" | "done";
 
 export function OnboardingWizard({ userId, cards }: OnboardingWizardProps) {
-  const router = useRouter();
   const [step, setStep] = useState<Step>("link-plaid");
   const [connectionId, setConnectionId] = useState<string | null>(null);
   const [detectedCard, setDetectedCard] = useState<DetectedCard | null>(null);
@@ -77,7 +76,7 @@ export function OnboardingWizard({ userId, cards }: OnboardingWizardProps) {
     try {
       await setAnniversaryDate(userCardId, date);
       setStep("done");
-      setTimeout(() => router.push("/dashboard"), 1500);
+      setTimeout(() => window.location.href = "/dashboard", 1500);
     } catch {
       setError("Failed to save anniversary date.");
     }
@@ -85,7 +84,7 @@ export function OnboardingWizard({ userId, cards }: OnboardingWizardProps) {
 
   const handleSkipAnniversary = () => {
     setStep("done");
-    setTimeout(() => router.push("/dashboard"), 1500);
+    setTimeout(() => window.location.href = "/dashboard", 1500);
   };
 
   const stepNumber =

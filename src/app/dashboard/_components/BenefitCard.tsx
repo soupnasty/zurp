@@ -42,6 +42,8 @@ interface BenefitGroup {
   autoMatchable: boolean;
   sunsetDate: string | null;
   type: string;
+  cycleStart: string;
+  cycleEnd: string;
 }
 
 export function BenefitCard({ group }: { group: BenefitGroup }) {
@@ -52,6 +54,7 @@ export function BenefitCard({ group }: { group: BenefitGroup }) {
       : 0;
 
   const cycleLabel = getCycleLabel(group.cycle);
+  const dateRange = formatDateRange(group.cycleStart, group.cycleEnd);
 
   return (
     <Card hover>
@@ -65,7 +68,7 @@ export function BenefitCard({ group }: { group: BenefitGroup }) {
               {group.name}
             </h3>
             <p className="text-[var(--text-caption)] text-[var(--text-secondary)]">
-              {cycleLabel}
+              {cycleLabel} &middot; {dateRange}
             </p>
           </div>
         </div>
@@ -84,7 +87,7 @@ export function BenefitCard({ group }: { group: BenefitGroup }) {
           <div className="mt-4">
             <div className="flex items-baseline justify-between">
               <span className="font-data text-h3 font-semibold text-[var(--accent)]">
-                ${group.totalUsed.toFixed(0)}
+                ${Math.min(group.totalUsed, group.totalCredit).toFixed(0)}
               </span>
               <span className="text-[var(--text-caption)] text-[var(--text-secondary)]">
                 of ${group.totalCredit.toFixed(0)}
@@ -97,7 +100,7 @@ export function BenefitCard({ group }: { group: BenefitGroup }) {
 
           <div className="mt-3 flex items-center justify-between text-[var(--text-caption)]">
             <span className="text-[var(--text-secondary)]">
-              ${group.totalRemaining.toFixed(0)} remaining
+              ${Math.max(0, group.totalRemaining).toFixed(0)} remaining
             </span>
             {group.daysRemaining <= 30 && (
               <span
@@ -123,6 +126,19 @@ export function BenefitCard({ group }: { group: BenefitGroup }) {
       )}
     </Card>
   );
+}
+
+function formatDateRange(startIso: string, endIso: string): string {
+  const start = new Date(startIso);
+  const end = new Date(endIso);
+  const monthShort = (d: Date) =>
+    d.toLocaleString("en-US", { month: "short", timeZone: "UTC" });
+  const day = (d: Date) => d.getUTCDate();
+
+  if (start.getUTCMonth() === end.getUTCMonth() && start.getUTCFullYear() === end.getUTCFullYear()) {
+    return `${monthShort(start)} ${day(start)} – ${day(end)}`;
+  }
+  return `${monthShort(start)} ${day(start)} – ${monthShort(end)} ${day(end)}`;
 }
 
 function getCycleLabel(cycle: string): string {

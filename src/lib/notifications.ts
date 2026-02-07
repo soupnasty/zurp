@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import * as schema from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 export type AlertType = "stale" | "needs_reauth" | "disconnected";
 
@@ -14,10 +14,13 @@ export interface ConnectionAlert {
 const STALE_THRESHOLD_HOURS = 24;
 
 export async function getConnectionAlerts(
-  userId: string
+  userId: string,
+  userCardId?: string
 ): Promise<ConnectionAlert[]> {
   const connections = await db.query.plaidConnections.findMany({
-    where: eq(schema.plaidConnections.userId, userId),
+    where: userCardId
+      ? and(eq(schema.plaidConnections.userId, userId), eq(schema.plaidConnections.userCardId, userCardId))
+      : eq(schema.plaidConnections.userId, userId),
   });
 
   const alerts: ConnectionAlert[] = [];

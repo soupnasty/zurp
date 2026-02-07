@@ -1,18 +1,19 @@
 export const dynamic = "force-dynamic";
 
 import { requireAuth } from "@/lib/auth-helpers";
-import { getPlaidConnectionStatus, getUserAnniversaryStatus } from "@/lib/queries";
+import { getPlaidConnectionStatus, getUserCards } from "@/lib/queries";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { SignOutButton } from "./_components/SignOutButton";
-import { Link2, Calendar, Palette, LogOut } from "lucide-react";
+import { Link2, CreditCard, Plus } from "lucide-react";
+import Link from "next/link";
 
 export default async function SettingsPage() {
   const user = await requireAuth();
 
-  const [connections, anniversary] = await Promise.all([
+  const [connections, userCards] = await Promise.all([
     getPlaidConnectionStatus(user.id!),
-    getUserAnniversaryStatus(user.id!),
+    getUserCards(user.id!),
   ]);
 
   return (
@@ -37,6 +38,45 @@ export default async function SettingsPage() {
               </div>
             </div>
           </Card>
+        </section>
+
+        {/* Your Cards */}
+        <section>
+          <h2 className="label-caps mb-[var(--space-md)]">
+            <div className="flex items-center gap-2">
+              <CreditCard size={14} strokeWidth={1.75} />
+              Your Cards
+            </div>
+          </h2>
+          <div className="space-y-3">
+            {userCards.map((uc) => (
+              <Card key={uc.id}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[var(--text-body)] font-semibold text-[var(--text-primary)]">
+                      {uc.name}
+                    </p>
+                    <p className="text-[var(--text-caption)] text-[var(--text-secondary)]">
+                      {uc.issuer} &middot; Added{" "}
+                      {new Date(uc.addedAt).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </div>
+                  {uc.isPrimary && <Badge variant="info">Primary</Badge>}
+                </div>
+              </Card>
+            ))}
+            <Link
+              href="/onboarding"
+              className="inline-flex items-center gap-1.5 text-[var(--text-caption)] font-medium text-[var(--accent-signal)] hover:text-[var(--accent-signal-hover)] transition-colors"
+            >
+              <Plus size={14} />
+              Add Card
+            </Link>
+          </div>
         </section>
 
         {/* Connections */}
@@ -90,51 +130,6 @@ export default async function SettingsPage() {
             </div>
           )}
         </section>
-
-        {/* Anniversary */}
-        {anniversary && (
-          <section>
-            <h2 className="label-caps mb-[var(--space-md)]">
-              <div className="flex items-center gap-2">
-                <Calendar size={14} strokeWidth={1.75} />
-                Card Anniversary
-              </div>
-            </h2>
-            <Card>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-[var(--text-body)] font-semibold text-[var(--text-primary)]">
-                    {anniversary.anniversaryDate
-                      ? new Date(anniversary.anniversaryDate).toLocaleDateString(
-                          "en-US",
-                          { month: "long", day: "numeric", year: "numeric" }
-                        )
-                      : "Not set"}
-                  </p>
-                  <p className="text-[var(--text-caption)] text-[var(--text-secondary)]">
-                    Source:{" "}
-                    {anniversary.anniversarySource === "auto_detected"
-                      ? "Auto-detected from fee transaction"
-                      : anniversary.anniversarySource === "user_provided"
-                        ? "Manually set"
-                        : "Pending detection"}
-                  </p>
-                </div>
-                <Badge
-                  variant={
-                    anniversary.anniversarySource === "pending"
-                      ? "warning"
-                      : "success"
-                  }
-                >
-                  {anniversary.anniversarySource === "pending"
-                    ? "Pending"
-                    : "Set"}
-                </Badge>
-              </div>
-            </Card>
-          </section>
-        )}
 
         {/* Sign Out */}
         <section>

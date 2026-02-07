@@ -127,6 +127,20 @@ body {
   border-color: var(--border-default);
 }
 
+/* ── Cursor: pointer for interactive elements (Tailwind v4 Preflight removed this) ── */
+
+button,
+a,
+[role="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="button"],
+input[type="date"],
+select,
+summary {
+  cursor: pointer;
+}
+
 /* ── Focus styles (WCAG AA) ── */
 
 :focus-visible {

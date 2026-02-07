@@ -6,6 +6,7 @@ import {
   getBenefitUsageSummaries,
   getRecentTransactions,
   getPlaidConnectionStatus,
+  getUserCards,
   getUserAnniversaryStatus,
 } from "@/lib/queries";
 import { getConnectionAlerts } from "@/lib/notifications";
@@ -16,21 +17,47 @@ import { TransactionFeed } from "./_components/TransactionFeed";
 import { AnniversaryPrompt } from "./_components/AnniversaryPrompt";
 import { SyncButton } from "./_components/SyncButton";
 import { ConnectionAlerts } from "./_components/ConnectionAlerts";
+import { CardSwitcher } from "./_components/CardSwitcher";
+import Link from "next/link";
+import { Plus, LinkIcon } from "lucide-react";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ cardId?: string }>;
+}) {
   const user = await requireAuth();
+  const params = await searchParams;
 
-  const [summary, benefits, transactions, connections, anniversary, alerts] =
+  // Fetch all user cards to power the switcher
+  const userCards = await getUserCards(user.id!);
+  if (userCards.length === 0) {
+    redirect("/onboarding");
+  }
+
+  // Resolve active card: use searchParam if valid, else primary, else first
+  const requestedCardId = params.cardId;
+  const activeCard =
+    (requestedCardId && userCards.find((c) => c.id === requestedCardId)) ||
+    userCards.find((c) => c.isPrimary) ||
+    userCards[0];
+
+  const activeCardId = activeCard.id;
+
+  // Fetch card-specific connections first (needed for transaction filtering)
+  const connections = await getPlaidConnectionStatus(user.id!, activeCardId);
+  const activeConnection = connections.find((c) => c.status === "active");
+
+  const [summary, benefits, transactions, anniversary, alerts] =
     await Promise.all([
-      getCardSummary(user.id!),
-      getBenefitUsageSummaries(user.id!),
-      getRecentTransactions(user.id!),
-      getPlaidConnectionStatus(user.id!),
-      getUserAnniversaryStatus(user.id!),
-      getConnectionAlerts(user.id!),
+      getCardSummary(user.id!, activeCardId),
+      getBenefitUsageSummaries(user.id!, activeCardId),
+      getRecentTransactions(user.id!, 50, activeConnection?.id),
+      getUserAnniversaryStatus(user.id!, activeCardId),
+      getConnectionAlerts(user.id!, activeCardId),
     ]);
 
-  // If no card, redirect to onboarding
+  // If selected card has no summary (shouldn't happen but safety)
   if (!summary) {
     redirect("/onboarding");
   }
@@ -48,19 +75,49 @@ export default async function DashboardPage() {
       )
     : null;
 
-  const activeConnection = connections.find((c) => c.status === "active");
-
   return (
     <div className="p-[var(--space-lg)]">
       {/* Header */}
       <div className="mb-[var(--space-lg)] flex items-center justify-between">
         <div>
           <h1 className="text-h1 font-semibold tracking-tight">Dashboard</h1>
-          <p className="mt-1 text-[var(--text-secondary)]">
-            {summary.cardName}
-          </p>
+          <div className="mt-1">
+            <CardSwitcher
+              cards={userCards.map((c) => ({
+                id: c.id,
+                name: c.name,
+                issuer: c.issuer,
+                isPrimary: c.isPrimary,
+              }))}
+              activeCardId={activeCardId}
+            />
+            {userCards.length <= 1 && (
+              <p className="text-[var(--text-secondary)]">
+                {summary.cardName}
+              </p>
+            )}
+          </div>
         </div>
-        <SyncButton connectionId={activeConnection?.id ?? null} />
+        <div className="flex items-center gap-3">
+          <Link
+            href="/onboarding"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] px-3 py-1.5 text-[var(--text-caption)] font-medium text-[var(--text-secondary)] transition-colors hover:border-[var(--border-emphasis)] hover:text-[var(--text-primary)]"
+          >
+            <Plus size={16} />
+            Add Card
+          </Link>
+          {activeConnection ? (
+            <SyncButton connectionId={activeConnection.id} />
+          ) : (
+            <Link
+              href="/onboarding"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--accent)] px-3 py-1.5 text-[var(--text-caption)] font-medium text-[var(--color-void)] transition-opacity hover:opacity-90"
+            >
+              <LinkIcon size={16} />
+              Link Bank Account
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Connection alerts */}
@@ -127,6 +184,8 @@ interface BenefitGroup {
   autoMatchable: boolean;
   sunsetDate: string | null;
   type: string;
+  cycleStart: string;
+  cycleEnd: string;
   benefits: BenefitUsageSummary[];
 }
 
@@ -164,6 +223,8 @@ function groupBenefits(
           autoMatchable: b.autoMatchable,
           sunsetDate: b.sunsetDate,
           type: b.type,
+          cycleStart: b.cycleStart.toISOString(),
+          cycleEnd: b.cycleEnd.toISOString(),
           benefits: [b],
         });
       }
@@ -182,6 +243,8 @@ function groupBenefits(
         autoMatchable: b.autoMatchable,
         sunsetDate: b.sunsetDate,
         type: b.type,
+        cycleStart: b.cycleStart.toISOString(),
+        cycleEnd: b.cycleEnd.toISOString(),
         benefits: [b],
       });
     }

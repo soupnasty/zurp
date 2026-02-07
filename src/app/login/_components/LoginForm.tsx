@@ -8,13 +8,12 @@ import Link from "next/link";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
-  const [consent, setConsent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !consent) return;
+    if (!email) return;
 
     setLoading(true);
     setError(null);
@@ -57,25 +56,17 @@ export function LoginForm() {
         </div>
       </div>
 
-      <label className="flex items-start gap-[var(--space-sm)] cursor-pointer">
-        <input
-          type="checkbox"
-          checked={consent}
-          onChange={(e) => setConsent(e.target.checked)}
-          className="mt-0.5 h-4 w-4 shrink-0 rounded border-[var(--border-default)] accent-[var(--accent)]"
-        />
-        <span className="text-[var(--text-caption)] leading-snug text-[var(--text-secondary)]">
-          I agree to the{" "}
-          <Link
-            href="/privacy"
-            target="_blank"
-            className="text-[var(--accent)] hover:opacity-80"
-          >
-            Privacy Policy
-          </Link>{" "}
-          and consent to the collection and use of my data as described.
-        </span>
-      </label>
+      <p className="text-[var(--text-caption)] leading-snug text-[var(--text-secondary)]">
+        By continuing, you agree to our{" "}
+        <Link
+          href="/privacy"
+          target="_blank"
+          className="text-[var(--accent)] hover:opacity-80"
+        >
+          Privacy Policy
+        </Link>
+        .
+      </p>
 
       {error && (
         <p className="text-[var(--text-caption)] text-[var(--color-danger)]">
@@ -85,7 +76,7 @@ export function LoginForm() {
 
       <Button
         type="submit"
-        disabled={!email || !consent}
+        disabled={!email}
         loading={loading}
         className="w-full"
       >

@@ -12,10 +12,13 @@ import type {
 } from "@/lib/types";
 
 export async function getCardSummary(
-  userId: string
+  userId: string,
+  userCardId?: string
 ): Promise<CardSummary | null> {
   const userCard = await db.query.userCards.findFirst({
-    where: eq(schema.userCards.userId, userId),
+    where: userCardId
+      ? and(eq(schema.userCards.userId, userId), eq(schema.userCards.id, userCardId))
+      : eq(schema.userCards.userId, userId),
     with: { card: true },
   });
 
@@ -101,10 +104,13 @@ export async function getCardSummary(
 }
 
 export async function getBenefitUsageSummaries(
-  userId: string
+  userId: string,
+  userCardId?: string
 ): Promise<BenefitUsageSummary[]> {
   const userCard = await db.query.userCards.findFirst({
-    where: eq(schema.userCards.userId, userId),
+    where: userCardId
+      ? and(eq(schema.userCards.userId, userId), eq(schema.userCards.id, userCardId))
+      : eq(schema.userCards.userId, userId),
   });
 
   if (!userCard) return [];
@@ -168,10 +174,13 @@ export async function getBenefitUsageSummaries(
 
 export async function getRecentTransactions(
   userId: string,
-  limit = 50
+  limit = 50,
+  connectionId?: string
 ): Promise<TransactionWithMatch[]> {
   const txs = await db.query.transactions.findMany({
-    where: eq(schema.transactions.userId, userId),
+    where: connectionId
+      ? and(eq(schema.transactions.userId, userId), eq(schema.transactions.plaidConnectionId, connectionId))
+      : eq(schema.transactions.userId, userId),
     orderBy: desc(schema.transactions.date),
     limit,
     with: {
@@ -201,9 +210,11 @@ export async function getRecentTransactions(
   });
 }
 
-export async function getPlaidConnectionStatus(userId: string) {
+export async function getPlaidConnectionStatus(userId: string, userCardId?: string) {
   const connections = await db.query.plaidConnections.findMany({
-    where: eq(schema.plaidConnections.userId, userId),
+    where: userCardId
+      ? and(eq(schema.plaidConnections.userId, userId), eq(schema.plaidConnections.userCardId, userCardId))
+      : eq(schema.plaidConnections.userId, userId),
   });
 
   return connections.map((c) => ({
@@ -214,9 +225,28 @@ export async function getPlaidConnectionStatus(userId: string) {
   }));
 }
 
-export async function getUserAnniversaryStatus(userId: string) {
-  const userCard = await db.query.userCards.findFirst({
+export async function getUserCards(userId: string) {
+  const userCardRows = await db.query.userCards.findMany({
     where: eq(schema.userCards.userId, userId),
+    with: { card: true },
+  });
+
+  return userCardRows.map((uc) => ({
+    id: uc.id,
+    cardId: uc.cardId,
+    name: uc.card.name,
+    issuer: uc.card.issuer,
+    annualFee: uc.card.annualFee,
+    isPrimary: uc.isPrimary,
+    addedAt: uc.addedAt,
+  }));
+}
+
+export async function getUserAnniversaryStatus(userId: string, userCardId?: string) {
+  const userCard = await db.query.userCards.findFirst({
+    where: userCardId
+      ? and(eq(schema.userCards.userId, userId), eq(schema.userCards.id, userCardId))
+      : eq(schema.userCards.userId, userId),
   });
 
   if (!userCard) return null;
