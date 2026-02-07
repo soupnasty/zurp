@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useTransition, useEffect } from "react";
+import { useState, useMemo, useCallback, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { X, Plus } from "lucide-react";
 import {
@@ -40,6 +40,58 @@ export function TransactionFeed({ transactions, benefits }: TransactionFeedProps
   // Optimistic state: transactions being flagged
   const [pendingRemoves, setPendingRemoves] = useState<Set<string>>(new Set());
   const [pendingAdds, setPendingAdds] = useState<Map<string, string>>(new Map()); // txId -> benefitName
+  const [filterBenefitId, setFilterBenefitId] = useState<string | null>(null);
+
+  // Derive filter options from benefits prop (credit-type only, deduplicated by displayGroup)
+  const filterOptions = useMemo(() => {
+    const seen = new Set<string>();
+    const options: { id: string; name: string; benefitIds: string[] }[] = [];
+
+    for (const b of benefits) {
+      if (b.type !== "credit") continue;
+      const key = b.displayGroup || b.benefitId;
+      if (seen.has(key)) {
+        // Add this benefitId to the existing group
+        const existing = options.find((o) => o.id === key);
+        if (existing) existing.benefitIds.push(b.benefitId);
+        continue;
+      }
+      seen.add(key);
+      options.push({
+        id: key,
+        name: b.displayGroupName || b.benefitName,
+        benefitIds: [b.benefitId],
+      });
+    }
+    return options;
+  }, [benefits]);
+
+  // Filter transactions by selected benefit
+  const filtered = useMemo(() => {
+    if (filterBenefitId === null) return transactions;
+    if (filterBenefitId === "unmatched") {
+      return transactions.filter((tx) => tx.matchedStatus === "unmatched");
+    }
+    const option = filterOptions.find((o) => o.id === filterBenefitId);
+    if (option) {
+      return transactions.filter((tx) => option.benefitIds.includes(tx.benefitId ?? ""));
+    }
+    return transactions.filter((tx) => tx.benefitId === filterBenefitId);
+  }, [transactions, filterBenefitId, filterOptions]);
+
+  // Count matching transactions for each filter option
+  const filterCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: transactions.length };
+    for (const opt of filterOptions) {
+      counts[opt.id] = transactions.filter((tx) =>
+        opt.benefitIds.includes(tx.benefitId ?? "")
+      ).length;
+    }
+    counts["unmatched"] = transactions.filter(
+      (tx) => tx.matchedStatus === "unmatched"
+    ).length;
+    return counts;
+  }, [transactions, filterOptions]);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -65,7 +117,7 @@ export function TransactionFeed({ transactions, benefits }: TransactionFeedProps
     );
   };
 
-  const sorted = [...transactions].sort((a, b) => {
+  const sorted = [...filtered].sort((a, b) => {
     let cmp: number;
     if (sortKey === "date") {
       cmp = new Date(a.date).getTime() - new Date(b.date).getTime();
@@ -414,8 +466,54 @@ export function TransactionFeed({ transactions, benefits }: TransactionFeedProps
     return null;
   };
 
+  const filterPillRow = (
+    <div className="mb-3 flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+      <button
+        onClick={() => setFilterBenefitId(null)}
+        className={`shrink-0 rounded-full border px-3 py-1 text-[var(--text-caption)] font-medium transition-colors ${
+          filterBenefitId === null
+            ? "bg-[var(--accent)]/10 text-[var(--accent)] border-[var(--accent)]/30"
+            : "text-[var(--text-secondary)] border-[var(--border-default)] hover:border-[var(--text-secondary)]"
+        }`}
+      >
+        All <span className="ml-1 font-data">{filterCounts.all}</span>
+      </button>
+      {filterOptions.map((opt) => {
+        const count = filterCounts[opt.id] ?? 0;
+        if (count === 0) return null;
+        return (
+          <button
+            key={opt.id}
+            onClick={() => setFilterBenefitId(opt.id)}
+            className={`shrink-0 rounded-full border px-3 py-1 text-[var(--text-caption)] font-medium transition-colors ${
+              filterBenefitId === opt.id
+                ? "bg-[var(--accent)]/10 text-[var(--accent)] border-[var(--accent)]/30"
+                : "text-[var(--text-secondary)] border-[var(--border-default)] hover:border-[var(--text-secondary)]"
+            }`}
+          >
+            {opt.name} <span className="ml-1 font-data">{count}</span>
+          </button>
+        );
+      })}
+      {filterCounts.unmatched > 0 && (
+        <button
+          onClick={() => setFilterBenefitId("unmatched")}
+          className={`shrink-0 rounded-full border px-3 py-1 text-[var(--text-caption)] font-medium transition-colors ${
+            filterBenefitId === "unmatched"
+              ? "bg-[var(--accent)]/10 text-[var(--accent)] border-[var(--accent)]/30"
+              : "text-[var(--text-secondary)] border-[var(--border-default)] hover:border-[var(--text-secondary)]"
+          }`}
+        >
+          Unmatched <span className="ml-1 font-data">{filterCounts.unmatched}</span>
+        </button>
+      )}
+    </div>
+  );
+
   return (
     <>
+      {filterPillRow}
+
       {/* Sort controls — shared between mobile and desktop */}
       <div className="mb-2 flex items-center gap-2 md:hidden">
         <span className="text-[var(--text-caption)] text-[var(--text-secondary)]">Sort by:</span>
@@ -506,7 +604,9 @@ export function TransactionFeed({ transactions, benefits }: TransactionFeedProps
                       {renderMobileFlagButton(tx)}
                     </>
                   ) : null}
-                  {!isRemoved && !addedBenefit && confidenceBadge(tx)}
+                  {!isRemoved && !addedBenefit && (
+                    <span className="ml-auto">{confidenceBadge(tx)}</span>
+                  )}
                 </div>
               )}
             </div>

@@ -157,7 +157,7 @@ export default async function DashboardPage({
               <h2 className="label-caps mb-[var(--space-md)]">Benefits</h2>
               <div className="grid grid-cols-1 gap-[var(--space-md)] sm:grid-cols-2 lg:grid-cols-3">
                 {activeBenefits.map((group) => (
-                  <BenefitCard key={group.id} group={group} />
+                  <BenefitCard key={group.id} group={group} transactions={transactions} />
                 ))}
               </div>
             </div>
@@ -184,6 +184,7 @@ export interface BenefitGroup {
   totalUsed: number;
   totalRemaining: number;
   isFullyUsed: boolean;
+  manualOverride: boolean;
   daysRemaining: number;
   cycle: string;
   requiresActivation: boolean;
@@ -210,6 +211,7 @@ function groupBenefits(
         existing.totalUsed += b.amountUsed;
         existing.totalRemaining += b.amountRemaining;
         existing.isFullyUsed = existing.isFullyUsed && b.isFullyUsed;
+        existing.manualOverride = existing.manualOverride && b.manualOverride;
         existing.daysRemaining = Math.min(
           existing.daysRemaining,
           b.daysRemaining
@@ -225,6 +227,7 @@ function groupBenefits(
           totalUsed: b.amountUsed,
           totalRemaining: b.amountRemaining,
           isFullyUsed: b.isFullyUsed,
+          manualOverride: b.manualOverride,
           daysRemaining: b.daysRemaining,
           cycle: b.cycle,
           requiresActivation: b.requiresActivation,
@@ -246,6 +249,7 @@ function groupBenefits(
         totalUsed: b.amountUsed,
         totalRemaining: b.amountRemaining,
         isFullyUsed: b.isFullyUsed,
+        manualOverride: b.manualOverride,
         daysRemaining: b.daysRemaining,
         cycle: b.cycle,
         requiresActivation: b.requiresActivation,

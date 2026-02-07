@@ -156,6 +156,7 @@ export async function getBenefitUsageSummaries(
       amountUsed: usage?.amountUsed ?? 0,
       amountRemaining: usage?.amountRemaining ?? benefit.creditAmount,
       isFullyUsed: usage?.isFullyUsed ?? false,
+      manualOverride: usage?.manualOverride ?? false,
       daysRemaining: days,
       requiresActivation: benefit.requiresActivation,
       autoMatchable: benefit.autoMatchable,

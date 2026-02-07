@@ -5,9 +5,10 @@ import { Card } from "@/components/ui/Card";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { BenefitDetailModal } from "./BenefitDetailModal";
 import { BenefitIcon } from "@/components/ui/BenefitIcon";
+import type { TransactionWithMatch } from "@/lib/types";
 import type { BenefitGroup } from "../page";
 
-export function BenefitCard({ group }: { group: BenefitGroup }) {
+export function BenefitCard({ group, transactions = [] }: { group: BenefitGroup; transactions?: TransactionWithMatch[] }) {
   const [modalOpen, setModalOpen] = useState(false);
 
   // Derive "used" from credit − remaining so grouped sub-credits never contradict
@@ -119,6 +120,7 @@ export function BenefitCard({ group }: { group: BenefitGroup }) {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         group={group}
+        transactions={transactions}
       />
     </>
   );

@@ -113,6 +113,7 @@ export interface BenefitUsageSummary {
   amountUsed: number;
   amountRemaining: number;
   isFullyUsed: boolean;
+  manualOverride: boolean;
   daysRemaining: number;
   requiresActivation: boolean;
   autoMatchable: boolean;
