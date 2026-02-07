@@ -34,16 +34,16 @@ export function AnniversarySetup({ onSubmit, onSkip }: AnniversarySetupProps) {
             Anniversary date
           </label>
           <div className="relative mt-1.5">
-            <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-tertiary)]" />
+            <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-secondary)]" />
             <input
               id="anniversary"
               type="date"
               value={dateStr}
               onChange={(e) => setDateStr(e.target.value)}
-              className="w-full rounded-md border bg-[var(--bg-primary)] py-2.5 pl-10 pr-3 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+              className="w-full rounded-[var(--radius-md)] border border-[var(--border-strong)] bg-[var(--bg-tertiary)] py-2.5 pl-10 pr-3 text-sm text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/20"
             />
           </div>
-          <p className="mt-1.5 text-caption text-[var(--text-tertiary)]">
+          <p className="mt-1.5 text-caption text-[var(--text-secondary)]">
             This is usually the month you were approved for the card.
           </p>
         </div>
@@ -52,14 +52,14 @@ export function AnniversarySetup({ onSubmit, onSkip }: AnniversarySetupProps) {
           <button
             type="submit"
             disabled={!dateStr}
-            className="flex-1 rounded-md bg-primary-500 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-600 disabled:opacity-50"
+            className="flex-1 rounded-[var(--radius-md)] bg-[var(--accent)] py-2.5 text-sm font-medium text-[var(--color-void)] transition-opacity hover:opacity-90 disabled:opacity-50"
           >
             Save Date
           </button>
           <button
             type="button"
             onClick={onSkip}
-            className="rounded-md border px-4 py-2.5 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
+            className="rounded-[var(--radius-md)] border border-[var(--border-strong)] bg-[var(--bg-tertiary)] px-4 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--accent)]"
           >
             Skip for now
           </button>

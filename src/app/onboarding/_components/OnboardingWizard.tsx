@@ -100,14 +100,14 @@ export function OnboardingWizard({ userId, cards }: OnboardingWizardProps) {
             key={n}
             className={`h-2 w-12 rounded-full transition-colors ${
               n <= stepNumber
-                ? "bg-primary-500"
-                : "bg-gray-200 dark:bg-gray-700"
+                ? "bg-[var(--accent)]"
+                : "bg-[var(--border-default)]"
             }`}
           />
         ))}
       </div>
 
-      <div className="rounded-lg border bg-[var(--bg-secondary)] p-6 shadow-sm">
+      <div className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-secondary)] p-6">
         {step === "link-plaid" && (
           <div>
             <h2 className="text-h3 font-semibold">Link Your Bank Account</h2>

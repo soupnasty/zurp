@@ -7,8 +7,8 @@ import * as schema from "@/db/schema";
 import { redirect } from "next/navigation";
 import { getCardDefinition } from "@/lib/cards";
 import Link from "next/link";
-import { Card } from "@/components/ui/Card";
 import { CreditCard } from "lucide-react";
+import { RemoveCardButton } from "./_components/RemoveCardButton";
 
 export default async function CardsPage() {
   const user = await requireAuth();
@@ -35,13 +35,19 @@ export default async function CardsPage() {
         Manage your tracked credit cards.
       </p>
 
-      <div className="mt-[var(--space-lg)] space-y-3">
+      <div className="mt-[var(--space-lg)] flex flex-col gap-4">
         {userCards.map((uc) => {
           const cardDef = getCardDefinition(uc.cardId);
           return (
-            <Link key={uc.id} href={`/cards/${uc.cardId}`}>
-              <Card className="flex items-center gap-4 transition-colors hover:border-[var(--accent)]">
-                <div className="flex h-12 w-12 items-center justify-center rounded-[var(--radius-lg)] bg-[var(--accent)]/10">
+            <div
+              key={uc.id}
+              className="flex items-center gap-4 rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-secondary)] p-[var(--space-md)]"
+            >
+              <Link
+                href={`/cards/${uc.cardId}`}
+                className="flex flex-1 items-center gap-4 transition-colors"
+              >
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-lg)] bg-[var(--accent)]/10">
                   <CreditCard
                     size={24}
                     strokeWidth={1.75}
@@ -56,8 +62,9 @@ export default async function CardsPage() {
                     ${cardDef?.annualFee ?? uc.card.annualFee}/year
                   </p>
                 </div>
-              </Card>
-            </Link>
+              </Link>
+              <RemoveCardButton userCardId={uc.id} cardName={cardDef?.name ?? uc.card.name} />
+            </div>
           );
         })}
       </div>

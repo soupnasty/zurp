@@ -108,7 +108,7 @@ export function PlaidLinkButton({
     <button
       onClick={handleClick}
       disabled={loading}
-      className="inline-flex items-center gap-2 rounded-md bg-primary-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:opacity-50"
+      className="inline-flex items-center gap-2 rounded-[var(--radius-md)] bg-[var(--accent)] px-5 py-2.5 font-medium text-[var(--color-void)] transition-opacity duration-[var(--duration-fast)] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] disabled:opacity-50"
     >
       {loading ? "Connecting..." : "Link Bank Account"}
     </button>
