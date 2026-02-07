@@ -23,7 +23,7 @@ export function UpcomingBenefits({ benefits }: { benefits: BenefitGroup[] }) {
           className="text-[var(--text-secondary)] transition-transform duration-200"
           style={{ transform: open ? "rotate(90deg)" : "rotate(0deg)" }}
         />
-        <span className="label-caps">Upcoming</span>
+        <span className="label-caps">Upcoming Benefits</span>
         <Badge variant="neutral">{benefits.length}</Badge>
       </button>
 

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import {
-  LayoutDashboard,
+  CircleDollarSign,
   CreditCard,
   Settings,
   Sun,
@@ -22,7 +22,7 @@ interface AppShellProps {
 }
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Benefits", icon: CircleDollarSign },
   { href: "/cards", label: "Cards", icon: CreditCard },
   { href: "/settings", label: "Settings", icon: Settings },
 ];

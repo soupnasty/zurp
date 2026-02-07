@@ -73,14 +73,14 @@ export function SummaryBar({ summary }: SummaryBarProps) {
     },
     {
       label: "Effective Fee",
-      tooltip: "Annual fee minus credits used — negative means you're ahead",
+      tooltip: "Annual fee minus credits used",
       value: summary.effectiveFee,
       format: "dollar" as const,
       color: summary.effectiveFee <= 0 ? "var(--color-success)" : "var(--text-primary)",
     },
     {
       label: "ROI",
-      tooltip: "Percentage of the annual fee recovered through benefits",
+      tooltip: "Percentage of the annual fee recovered",
       value: summary.roiPercent,
       format: "percent" as const,
       color:
