@@ -1,6 +1,6 @@
 import "server-only";
 import { db } from "@/db";
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, gte, lt } from "drizzle-orm";
 import * as schema from "@/db/schema";
 import { getCardDefinition } from "@/lib/cards";
 import { getCurrentCycleBounds, daysRemainingInCycle } from "@/lib/engine/cycle-utils";
@@ -178,12 +178,22 @@ export async function getRecentTransactions(
   userId: string,
   limit = 50,
   connectionId?: string,
-  offset = 0
+  offset = 0,
+  dateFilter?: { year: number; month: number }
 ): Promise<TransactionWithMatch[]> {
+  const conditions = [eq(schema.transactions.userId, userId)];
+  if (connectionId) {
+    conditions.push(eq(schema.transactions.plaidConnectionId, connectionId));
+  }
+  if (dateFilter) {
+    const startDate = new Date(Date.UTC(dateFilter.year, dateFilter.month - 1, 1));
+    const endDate = new Date(Date.UTC(dateFilter.year, dateFilter.month, 1));
+    conditions.push(gte(schema.transactions.date, startDate));
+    conditions.push(lt(schema.transactions.date, endDate));
+  }
+
   const txs = await db.query.transactions.findMany({
-    where: connectionId
-      ? and(eq(schema.transactions.userId, userId), eq(schema.transactions.plaidConnectionId, connectionId))
-      : eq(schema.transactions.userId, userId),
+    where: and(...conditions),
     orderBy: desc(schema.transactions.date),
     limit,
     offset,

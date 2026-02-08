@@ -10,15 +10,17 @@ import {
   getUserAnniversaryStatus,
 } from "@/lib/queries";
 import { getConnectionAlerts } from "@/lib/notifications";
+import { getMonthlyTransactions, generateInsights } from "@/lib/spending";
 import { SummaryBar } from "./_components/SummaryBar";
 import { BenefitCard } from "./_components/BenefitCard";
 import { CountdownTimer } from "./_components/CountdownTimer";
-import { TransactionFeed } from "./_components/TransactionFeed";
 import { AnniversaryPrompt } from "./_components/AnniversaryPrompt";
 import { SyncButton } from "./_components/SyncButton";
 import { ConnectionAlerts } from "./_components/ConnectionAlerts";
 import { CardSwitcher } from "./_components/CardSwitcher";
 import { UpcomingBenefits } from "./_components/UpcomingBenefits";
+import { InsightsSection } from "@/app/spending/_components/InsightsSection";
+import { Badge } from "@/components/ui/Badge";
 import Link from "next/link";
 import { LinkIcon } from "lucide-react";
 
@@ -62,6 +64,15 @@ export default async function DashboardPage({
   if (!summary) {
     redirect("/onboarding");
   }
+
+  // Generate insights from current month's spending + benefit usage
+  const now = new Date();
+  const spendingTxs = await getMonthlyTransactions(
+    user.id!,
+    now.getFullYear(),
+    now.getMonth() + 1
+  );
+  const insights = generateInsights(spendingTxs, benefits, 2);
 
   // Group benefits by displayGroup for DoorDash
   const groupedBenefits = groupBenefits(benefits);
@@ -142,6 +153,9 @@ export default async function DashboardPage({
         </div>
       )}
 
+      {/* Benefit insights */}
+      <InsightsSection insights={insights} />
+
       {/* Benefits grid — split active vs upcoming, sorted by urgency */}
       {(() => {
         const now = new Date();
@@ -154,7 +168,10 @@ export default async function DashboardPage({
         return (
           <>
             <div className="mt-[var(--space-lg)]">
-              <h2 className="label-caps mb-[var(--space-md)]">Active Benefits</h2>
+              <div className="flex items-center gap-2 mb-[var(--space-md)]">
+                <h2 className="label-caps">Active Benefits</h2>
+                <Badge variant="neutral">{activeBenefits.length}</Badge>
+              </div>
               <div className="grid grid-cols-1 gap-[var(--space-md)] sm:grid-cols-2 lg:grid-cols-3">
                 {activeBenefits.map((group) => (
                   <BenefitCard key={group.id} group={group} transactions={transactions} />
@@ -165,12 +182,6 @@ export default async function DashboardPage({
           </>
         );
       })()}
-
-      {/* Recent transactions */}
-      <div className="mt-[var(--space-xl)]">
-        <h2 className="label-caps mb-[var(--space-md)]">Recent Transactions</h2>
-        <TransactionFeed transactions={transactions} benefits={benefits} connectionId={activeConnection?.id} />
-      </div>
     </div>
   );
 }
