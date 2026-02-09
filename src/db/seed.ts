@@ -104,6 +104,86 @@ async function seed() {
     }
   }
 
+  // ── Seed competitor map ──
+  console.log("\n  Seeding competitor map...");
+
+  const competitorEntries = [
+    // Events → StubHub (A1)
+    { benefitKey: "csr_stubhub_h1", benefitPartner: "StubHub", competitorMerchant: "Ticketmaster", plaidMerchantPattern: "ticketmaster", category: "events", insightType: "A1" },
+    { benefitKey: "csr_stubhub_h1", benefitPartner: "StubHub", competitorMerchant: "AXS", plaidMerchantPattern: "axs", category: "events", insightType: "A1" },
+    { benefitKey: "csr_stubhub_h1", benefitPartner: "StubHub", competitorMerchant: "SeatGeek", plaidMerchantPattern: "seatgeek", category: "events", insightType: "A1" },
+    { benefitKey: "csr_stubhub_h1", benefitPartner: "StubHub", competitorMerchant: "Vivid Seats", plaidMerchantPattern: "vivid seats", category: "events", insightType: "A1" },
+    { benefitKey: "csr_stubhub_h1", benefitPartner: "StubHub", competitorMerchant: "Eventbrite", plaidMerchantPattern: "eventbrite", category: "events", insightType: "A1" },
+    { benefitKey: "csr_stubhub_h1", benefitPartner: "StubHub", competitorMerchant: "Dice", plaidMerchantPattern: "dice.fm", category: "events", insightType: "A1" },
+    // Food delivery → DoorDash (A1)
+    { benefitKey: "csr_doordash_restaurant", benefitPartner: "DoorDash", competitorMerchant: "Uber Eats", plaidMerchantPattern: "uber eats", category: "food_delivery", insightType: "A1" },
+    { benefitKey: "csr_doordash_restaurant", benefitPartner: "DoorDash", competitorMerchant: "Uber Eats", plaidMerchantPattern: "ubereats", category: "food_delivery", insightType: "A1" },
+    { benefitKey: "csr_doordash_restaurant", benefitPartner: "DoorDash", competitorMerchant: "Grubhub", plaidMerchantPattern: "grubhub", category: "food_delivery", insightType: "A1" },
+    { benefitKey: "csr_doordash_restaurant", benefitPartner: "DoorDash", competitorMerchant: "Postmates", plaidMerchantPattern: "postmates", category: "food_delivery", insightType: "A1" },
+    { benefitKey: "csr_doordash_restaurant", benefitPartner: "DoorDash", competitorMerchant: "Seamless", plaidMerchantPattern: "seamless", category: "food_delivery", insightType: "A1" },
+    { benefitKey: "csr_doordash_restaurant", benefitPartner: "DoorDash", competitorMerchant: "Caviar", plaidMerchantPattern: "caviar", category: "food_delivery", insightType: "A1" },
+    { benefitKey: "csr_doordash_restaurant", benefitPartner: "DoorDash", competitorMerchant: "Instacart", plaidMerchantPattern: "instacart", category: "food_delivery", insightType: "A1" },
+    // Rideshare → Lyft (A1)
+    { benefitKey: "csr_lyft", benefitPartner: "Lyft", competitorMerchant: "Uber", plaidMerchantPattern: "uber", category: "rideshare", insightType: "A1", notes: "Exclude uber eats" },
+    { benefitKey: "csr_lyft", benefitPartner: "Lyft", competitorMerchant: "Taxi", plaidMerchantPattern: "taxi", category: "rideshare", insightType: "A1" },
+    { benefitKey: "csr_lyft", benefitPartner: "Lyft", competitorMerchant: "Yellow Cab", plaidMerchantPattern: "yellow cab", category: "rideshare", insightType: "A1" },
+    { benefitKey: "csr_lyft", benefitPartner: "Lyft", competitorMerchant: "Curb", plaidMerchantPattern: "curb", category: "rideshare", insightType: "A1" },
+    // Hotels → The Edit (A1)
+    { benefitKey: "csr_edit_h1", benefitPartner: "The Edit", competitorMerchant: "Hotels.com", plaidMerchantPattern: "hotels.com", category: "travel", insightType: "A1" },
+    { benefitKey: "csr_edit_h1", benefitPartner: "The Edit", competitorMerchant: "Expedia", plaidMerchantPattern: "expedia", category: "travel", insightType: "A1" },
+    { benefitKey: "csr_edit_h1", benefitPartner: "The Edit", competitorMerchant: "Booking.com", plaidMerchantPattern: "booking.com", category: "travel", insightType: "A1" },
+    { benefitKey: "csr_edit_h1", benefitPartner: "The Edit", competitorMerchant: "Marriott", plaidMerchantPattern: "marriott", category: "travel", insightType: "A1" },
+    { benefitKey: "csr_edit_h1", benefitPartner: "The Edit", competitorMerchant: "Hilton", plaidMerchantPattern: "hilton", category: "travel", insightType: "A1" },
+    { benefitKey: "csr_edit_h1", benefitPartner: "The Edit", competitorMerchant: "Hyatt", plaidMerchantPattern: "hyatt", category: "travel", insightType: "A1" },
+    { benefitKey: "csr_edit_h1", benefitPartner: "The Edit", competitorMerchant: "IHG", plaidMerchantPattern: "ihg", category: "travel", insightType: "A1" },
+    { benefitKey: "csr_edit_h1", benefitPartner: "The Edit", competitorMerchant: "Airbnb", plaidMerchantPattern: "airbnb", category: "travel", insightType: "A1" },
+    { benefitKey: "csr_edit_h1", benefitPartner: "The Edit", competitorMerchant: "VRBO", plaidMerchantPattern: "vrbo", category: "travel", insightType: "A1" },
+    { benefitKey: "csr_edit_h1", benefitPartner: "The Edit", competitorMerchant: "Priceline", plaidMerchantPattern: "priceline", category: "travel", insightType: "A1" },
+    { benefitKey: "csr_edit_h1", benefitPartner: "The Edit", competitorMerchant: "Travelocity", plaidMerchantPattern: "travelocity", category: "travel", insightType: "A1" },
+    // Fitness → Peloton (A1)
+    { benefitKey: "csr_peloton", benefitPartner: "Peloton", competitorMerchant: "ClassPass", plaidMerchantPattern: "classpass", category: "fitness", insightType: "A1" },
+    { benefitKey: "csr_peloton", benefitPartner: "Peloton", competitorMerchant: "Equinox", plaidMerchantPattern: "equinox", category: "fitness", insightType: "A1" },
+    { benefitKey: "csr_peloton", benefitPartner: "Peloton", competitorMerchant: "SoulCycle", plaidMerchantPattern: "soulcycle", category: "fitness", insightType: "A1" },
+    { benefitKey: "csr_peloton", benefitPartner: "Peloton", competitorMerchant: "Planet Fitness", plaidMerchantPattern: "planet fitness", category: "fitness", insightType: "A1" },
+    { benefitKey: "csr_peloton", benefitPartner: "Peloton", competitorMerchant: "24 Hour Fitness", plaidMerchantPattern: "24 hour fitness", category: "fitness", insightType: "A1" },
+    { benefitKey: "csr_peloton", benefitPartner: "Peloton", competitorMerchant: "Orangetheory", plaidMerchantPattern: "orangetheory", category: "fitness", insightType: "A1" },
+    { benefitKey: "csr_peloton", benefitPartner: "Peloton", competitorMerchant: "Barry's", plaidMerchantPattern: "barrys", category: "fitness", insightType: "A1" },
+    { benefitKey: "csr_peloton", benefitPartner: "Peloton", competitorMerchant: "Life Time", plaidMerchantPattern: "life time", category: "fitness", insightType: "A1" },
+    { benefitKey: "csr_peloton", benefitPartner: "Peloton", competitorMerchant: "LA Fitness", plaidMerchantPattern: "la fitness", category: "fitness", insightType: "A1" },
+    { benefitKey: "csr_peloton", benefitPartner: "Peloton", competitorMerchant: "YMCA", plaidMerchantPattern: "ymca", category: "fitness", insightType: "A1" },
+    { benefitKey: "csr_peloton", benefitPartner: "Peloton", competitorMerchant: "Crunch", plaidMerchantPattern: "crunch", category: "fitness", insightType: "A1" },
+    // Streaming → Apple Music (A2)
+    { benefitKey: "csr_apple_music", benefitPartner: "Apple Music", competitorMerchant: "Spotify", plaidMerchantPattern: "spotify", category: "streaming", insightType: "A2" },
+    { benefitKey: "csr_apple_music", benefitPartner: "Apple Music", competitorMerchant: "YouTube Music", plaidMerchantPattern: "youtube music", category: "streaming", insightType: "A2" },
+    { benefitKey: "csr_apple_music", benefitPartner: "Apple Music", competitorMerchant: "Tidal", plaidMerchantPattern: "tidal", category: "streaming", insightType: "A2" },
+    { benefitKey: "csr_apple_music", benefitPartner: "Apple Music", competitorMerchant: "Amazon Music", plaidMerchantPattern: "amazon music", category: "streaming", insightType: "A2" },
+    { benefitKey: "csr_apple_music", benefitPartner: "Apple Music", competitorMerchant: "Deezer", plaidMerchantPattern: "deezer", category: "streaming", insightType: "A2" },
+    { benefitKey: "csr_apple_music", benefitPartner: "Apple Music", competitorMerchant: "Pandora", plaidMerchantPattern: "pandora", category: "streaming", insightType: "A2" },
+    // Streaming → Apple TV+ (A2)
+    { benefitKey: "csr_apple_tv", benefitPartner: "Apple TV+", competitorMerchant: "Netflix", plaidMerchantPattern: "netflix", category: "streaming", insightType: "A2" },
+    { benefitKey: "csr_apple_tv", benefitPartner: "Apple TV+", competitorMerchant: "Hulu", plaidMerchantPattern: "hulu", category: "streaming", insightType: "A2" },
+    { benefitKey: "csr_apple_tv", benefitPartner: "Apple TV+", competitorMerchant: "Disney+", plaidMerchantPattern: "disney+", category: "streaming", insightType: "A2" },
+    { benefitKey: "csr_apple_tv", benefitPartner: "Apple TV+", competitorMerchant: "Disney+", plaidMerchantPattern: "disneyplus", category: "streaming", insightType: "A2" },
+    { benefitKey: "csr_apple_tv", benefitPartner: "Apple TV+", competitorMerchant: "Max", plaidMerchantPattern: "max.com", category: "streaming", insightType: "A2" },
+    { benefitKey: "csr_apple_tv", benefitPartner: "Apple TV+", competitorMerchant: "HBO Max", plaidMerchantPattern: "hbo max", category: "streaming", insightType: "A2" },
+    { benefitKey: "csr_apple_tv", benefitPartner: "Apple TV+", competitorMerchant: "Paramount+", plaidMerchantPattern: "paramount+", category: "streaming", insightType: "A2" },
+    { benefitKey: "csr_apple_tv", benefitPartner: "Apple TV+", competitorMerchant: "Paramount+", plaidMerchantPattern: "paramountplus", category: "streaming", insightType: "A2" },
+    { benefitKey: "csr_apple_tv", benefitPartner: "Apple TV+", competitorMerchant: "Peacock", plaidMerchantPattern: "peacock", category: "streaming", insightType: "A2" },
+    { benefitKey: "csr_apple_tv", benefitPartner: "Apple TV+", competitorMerchant: "Amazon Prime Video", plaidMerchantPattern: "prime video", category: "streaming", insightType: "A2" },
+  ];
+
+  for (const entry of competitorEntries) {
+    await db
+      .insert(schema.competitorMap)
+      .values({
+        cardType: "csr",
+        ...entry,
+      })
+      .onConflictDoNothing();
+  }
+
+  console.log(`  ${competitorEntries.length} competitor map entries`);
+
   console.log("\nSeed complete!");
   console.log(
     `  ${cardRegistry.length} card(s), ${cardRegistry.reduce((sum, c) => sum + c.benefits.length, 0)} benefit(s)`

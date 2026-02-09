@@ -8,6 +8,8 @@ import {
   unique,
   index,
   primaryKey,
+  jsonb,
+  serial,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -283,6 +285,90 @@ export const matchedTx = pgTable(
   ]
 );
 
+// ── Insights Engine v2 ──
+
+export const insights = pgTable(
+  "insights",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    category: text("category").notNull(), // A1, A2, B1, B2, B3, C0, C1, C2
+    benefitId: text("benefit_id").references(() => benefits.id),
+    templateKey: text("template_key").notNull(),
+    templateVars: jsonb("template_vars").notNull().$type<Record<string, string | number>>(),
+    renderedTitle: text("rendered_title").notNull(),
+    renderedBody: text("rendered_body").notNull(),
+
+    // Scoring
+    dollarImpactScore: integer("dollar_impact_score").notNull(),
+    urgencyScore: integer("urgency_score").notNull(),
+    actionabilityScore: integer("actionability_score").notNull(),
+    noveltyScore: integer("novelty_score").notNull(),
+    confidenceScore: integer("confidence_score").notNull(),
+    totalScore: integer("total_score").notNull(),
+    floorOverride: boolean("floor_override").notNull().default(false),
+
+    // Lifecycle
+    state: text("state").notNull().default("pending"), // pending, shown, expired, superseded
+    dedupKey: text("dedup_key").notNull(),
+
+    // Context
+    triggeredByTransactionId: text("triggered_by_transaction_id").references(
+      () => transactions.id
+    ),
+    periodStart: timestamp("period_start", { mode: "date" }),
+    periodEnd: timestamp("period_end", { mode: "date" }),
+
+    // Timestamps
+    generatedAt: timestamp("generated_at", { mode: "date" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    shownAt: timestamp("shown_at", { mode: "date" }),
+    resolvedAt: timestamp("resolved_at", { mode: "date" }),
+  },
+  (table) => [
+    unique("insights_user_dedup").on(table.userId, table.dedupKey),
+    index("insights_user_state_idx").on(table.userId, table.state),
+    index("insights_user_score_idx").on(table.userId, table.totalScore),
+  ]
+);
+
+export const insightImpressions = pgTable("insight_impressions", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  insightId: text("insight_id")
+    .notNull()
+    .references(() => insights.id, { onDelete: "cascade" }),
+  surface: text("surface").notNull(), // "benefits_page", "spending_page"
+  shownAt: timestamp("shown_at", { mode: "date" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+});
+
+export const competitorMap = pgTable(
+  "competitor_map",
+  {
+    id: serial("id").primaryKey(),
+    cardType: text("card_type").notNull(),
+    benefitKey: text("benefit_key").notNull(),
+    benefitPartner: text("benefit_partner").notNull(),
+    competitorMerchant: text("competitor_merchant").notNull(),
+    plaidMerchantPattern: text("plaid_merchant_pattern").notNull(),
+    category: text("category").notNull(),
+    insightType: text("insight_type").notNull(), // "A1" | "A2"
+    notes: text("notes"),
+  },
+  (table) => [
+    index("competitor_map_card_idx").on(table.cardType),
+    index("competitor_map_pattern_idx").on(table.plaidMerchantPattern),
+  ]
+);
+
 // ── Relations ──
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -293,6 +379,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   transactions: many(transactions),
   benefitUsage: many(benefitUsage),
   transactionFlags: many(transactionFlags),
+  insights: many(insights),
 }));
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -411,3 +498,29 @@ export const matchedTxRelations = relations(matchedTx, ({ one }) => ({
     references: [benefitUsage.id],
   }),
 }));
+
+export const insightsRelations = relations(insights, ({ one, many }) => ({
+  user: one(users, {
+    fields: [insights.userId],
+    references: [users.id],
+  }),
+  benefit: one(benefits, {
+    fields: [insights.benefitId],
+    references: [benefits.id],
+  }),
+  triggeredByTransaction: one(transactions, {
+    fields: [insights.triggeredByTransactionId],
+    references: [transactions.id],
+  }),
+  impressions: many(insightImpressions),
+}));
+
+export const insightImpressionsRelations = relations(
+  insightImpressions,
+  ({ one }) => ({
+    insight: one(insights, {
+      fields: [insightImpressions.insightId],
+      references: [insights.id],
+    }),
+  })
+);

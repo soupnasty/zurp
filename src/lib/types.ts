@@ -125,6 +125,7 @@ export interface BenefitUsageSummary {
   periodKey: string;
   cycleStart: Date;
   cycleEnd: Date;
+  ytdUsed?: number;
 }
 
 export interface TransactionWithMatch {

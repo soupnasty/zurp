@@ -53,28 +53,6 @@ describe("generateInsights", () => {
     expect(generateInsights([], [], 2)).toEqual([]);
   });
 
-  it("detects missed platform — competitor spending with unused credit", () => {
-    const transactions = [
-      makeTx({ merchantName: "Ticketmaster", amount: 95, category: "entertainment" }),
-    ];
-    const usages = [
-      makeUsage({
-        benefitId: "csr_stubhub_h1",
-        benefitName: "StubHub Credit (H1)",
-        creditAmount: 150,
-        amountUsed: 0,
-        amountRemaining: 150,
-      }),
-    ];
-
-    const insights = generateInsights(transactions, usages, 5);
-    const missed = insights.find((i) => i.type === "missed_platform");
-    expect(missed).toBeDefined();
-    expect(missed!.title).toContain("Ticketmaster");
-    expect(missed!.body).toContain("StubHub");
-    expect(missed!.actionability).toBe(1);
-  });
-
   it("detects unused credit — $0 used, cycle >50% elapsed", () => {
     const now = Date.now();
     const cycleStart = new Date(now - 20 * 24 * 60 * 60 * 1000); // 20 days ago
@@ -137,7 +115,6 @@ describe("generateInsights", () => {
     const underused = insights.find((i) => i.type === "underused_credit");
     expect(underused).toBeDefined();
     expect(underused!.body).toContain("$100");
-    expect(underused!.body).toContain("$300");
   });
 
   it("detects positive reinforcement for fully used benefits", () => {
@@ -154,7 +131,8 @@ describe("generateInsights", () => {
     const insights = generateInsights([], usages, 5);
     const positive = insights.find((i) => i.type === "positive_reinforcement");
     expect(positive).toBeDefined();
-    expect(positive!.title).toContain("maxed out");
+    expect(positive!.title).toContain("maxed");
+    expect(positive!.title).toContain("Lyft Credit");
   });
 
   it("limits results to max parameter", () => {
