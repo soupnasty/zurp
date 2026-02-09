@@ -98,6 +98,7 @@ export interface CardSummary {
   creditsExpired: number;
   effectiveFee: number;
   roiPercent: number;
+  yearProgressPct: number;
   daysUntilNextExpiry: number | null;
   valueAtRisk: number;
 }

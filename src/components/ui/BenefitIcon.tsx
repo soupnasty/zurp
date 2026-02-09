@@ -53,10 +53,11 @@ export function BenefitIcon({ icon, size = 20, className = "text-[var(--accent)]
         width={size}
         height={size}
         className={className}
+        style={{ filter: "var(--benefit-icon-invert, none)" }}
       />
     );
   }
 
   const LucideIcon = lucideMap[icon] || CreditCard;
-  return <LucideIcon size={size} strokeWidth={1.75} className={className} style={{ color: "white" }} />;
+  return <LucideIcon size={size} strokeWidth={1.75} className={className} style={{ color: "var(--benefit-icon-color)" }} />;
 }

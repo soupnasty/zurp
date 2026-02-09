@@ -139,7 +139,7 @@ export default async function DashboardPage({
       {/* Anniversary prompt */}
       {anniversary && anniversary.anniversarySource === "pending" && (
         <div className="mb-[var(--space-lg)]">
-          <AnniversaryPrompt cardProfileId={anniversary.cardProfileId} />
+          <AnniversaryPrompt cardProfileId={anniversary.cardProfileId} hasActivity={summary.creditsUsed > 0} />
         </div>
       )}
 

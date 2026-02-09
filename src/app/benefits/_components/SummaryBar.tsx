@@ -58,6 +58,21 @@ function FlipCard({
   );
 }
 
+/**
+ * ROI color based on pace: compare ROI% against how far through the card year we are.
+ * Green = on track or ahead, Warning = falling behind, Danger = significantly behind.
+ */
+function getRoiColor(roiPct: number, yearProgressPct: number): string {
+  if (roiPct >= 100) return "var(--color-success)";
+
+  // Expected ROI at this point in the year (linear pace to break even)
+  const expectedPct = yearProgressPct;
+
+  if (roiPct >= expectedPct * 0.5) return "var(--color-success)";
+  if (roiPct >= expectedPct * 0.25) return "var(--color-warning)";
+  return "var(--color-danger)";
+}
+
 interface SummaryBarProps {
   summary: CardSummary;
 }
@@ -83,20 +98,19 @@ export function SummaryBar({ summary }: SummaryBarProps) {
       tooltip: "Percentage of the annual fee recovered",
       value: summary.roiPercent,
       format: "percent" as const,
-      color:
-        summary.roiPercent >= 100
-          ? "var(--color-success)"
-          : summary.roiPercent >= 50
-            ? "var(--color-warning)"
-            : "var(--text-primary)",
+      color: getRoiColor(summary.roiPercent, summary.yearProgressPct),
     },
     {
-      label: "Value at Risk",
-      tooltip: "Unused credits expiring within 14 days",
+      label: "Expiring Soon",
+      tooltip: "Unused credits that reset within 14 days — use them or lose them",
       value: summary.valueAtRisk,
       format: "dollar" as const,
       color:
-        summary.valueAtRisk > 0 ? "var(--color-danger)" : "var(--text-secondary)",
+        summary.valueAtRisk === 0
+          ? "var(--color-success)"
+          : summary.valueAtRisk >= 50
+            ? "var(--color-danger)"
+            : "var(--color-warning)",
     },
   ];
 

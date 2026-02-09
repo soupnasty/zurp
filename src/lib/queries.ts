@@ -105,6 +105,11 @@ export async function getCardSummary(
       ? Math.round((creditsUsed / cardDef.annualFee) * 100)
       : 0;
 
+  // What % of the card year has elapsed (for pace-based ROI coloring)
+  const yearTotal = cardYearBounds.cycleEnd.getTime() - cardYearBounds.cycleStart.getTime();
+  const yearElapsed = now.getTime() - cardYearBounds.cycleStart.getTime();
+  const yearProgressPct = yearTotal > 0 ? Math.round((yearElapsed / yearTotal) * 100) : 0;
+
   return {
     cardId: cardDef.id,
     cardName: cardDef.name,
@@ -114,6 +119,7 @@ export async function getCardSummary(
     creditsExpired,
     effectiveFee,
     roiPercent,
+    yearProgressPct,
     daysUntilNextExpiry: nearestExpiry,
     valueAtRisk,
   };
