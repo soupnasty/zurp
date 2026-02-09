@@ -5,15 +5,13 @@ import { Card } from "@/components/ui/Card";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { BenefitDetailModal } from "./BenefitDetailModal";
 import { BenefitIcon } from "@/components/ui/BenefitIcon";
-import type { TransactionWithMatch } from "@/lib/types";
 import type { BenefitGroup } from "../page";
 
-export function BenefitCard({ group, transactions = [] }: { group: BenefitGroup; transactions?: TransactionWithMatch[] }) {
+export function BenefitCard({ group }: { group: BenefitGroup }) {
   const [modalOpen, setModalOpen] = useState(false);
 
-  // Derive "used" from credit − remaining so grouped sub-credits never contradict
+  const used = group.totalUsed;
   const remaining = Math.max(0, group.totalRemaining);
-  const used = group.totalCredit - remaining;
 
   const cycleLabel = getCycleLabel(group.cycle);
   const cycleExpiry = formatCycleExpiry(group.cycle, group.cycleEnd);
@@ -100,6 +98,15 @@ export function BenefitCard({ group, transactions = [] }: { group: BenefitGroup;
                   </span>
                 )}
               </div>
+
+              {group.ytdUsed != null && (
+                <div className="mt-2 text-[var(--text-caption)] text-[var(--text-secondary)]">
+                  <span className={`font-data ${group.ytdUsed > 0 ? "text-[var(--color-success)]" : "text-[var(--text-secondary)]"}`}>
+                    ${group.ytdUsed.toFixed(0)}
+                  </span>{" "}
+                  captured this year
+                </div>
+              )}
             </>
           )}
 
@@ -120,7 +127,6 @@ export function BenefitCard({ group, transactions = [] }: { group: BenefitGroup;
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         group={group}
-        transactions={transactions}
       />
     </>
   );

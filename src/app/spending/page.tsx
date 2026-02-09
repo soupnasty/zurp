@@ -11,6 +11,7 @@ import {
   buildCategoryBreakdown,
   getTransactionDateRange,
 } from "@/lib/spending";
+import { CardSwitcher } from "@/app/benefits/_components/CardSwitcher";
 import { MonthSelector } from "./_components/MonthSelector";
 import { SpendingHeadline } from "./_components/SpendingHeadline";
 import { CategoryBreakdown } from "./_components/CategoryBreakdown";
@@ -19,7 +20,7 @@ import { TransactionFeed } from "@/app/benefits/_components/TransactionFeed";
 export default async function SpendingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ year?: string; month?: string }>;
+  searchParams: Promise<{ year?: string; month?: string; cardId?: string }>;
 }) {
   const user = await requireAuth();
   const params = await searchParams;
@@ -28,6 +29,13 @@ export default async function SpendingPage({
   if (userCards.length === 0) {
     redirect("/onboarding");
   }
+
+  // Resolve active card: use searchParam if valid, else primary, else first
+  const requestedCardId = params.cardId;
+  const activeCard =
+    (requestedCardId && userCards.find((c) => c.id === requestedCardId)) ||
+    userCards.find((c) => c.isPrimary) ||
+    userCards[0];
 
   // Fetch date range first so we can default to the most recent month with data
   const now = new Date();
@@ -38,8 +46,7 @@ export default async function SpendingPage({
   const year = params.year ? parseInt(params.year, 10) : defaultDate.getFullYear();
   const month = params.month ? parseInt(params.month, 10) : defaultDate.getMonth() + 1;
 
-  // Resolve active card for connection lookup
-  const activeCard = userCards.find((c) => c.isPrimary) || userCards[0];
+  // Resolve connection for active card
   const connections = await getPlaidConnectionStatus(user.id!, activeCard.id);
   const activeConnection = connections.find((c) => c.status === "active");
 
@@ -66,6 +73,26 @@ export default async function SpendingPage({
 
   return (
     <div className="p-[var(--space-md)] md:p-[var(--space-lg)]">
+      {/* Header */}
+      <div className="mb-[var(--space-lg)]">
+        <h1 className="text-h1 font-semibold tracking-tight">Spending</h1>
+        <div className="mt-1">
+          <CardSwitcher
+            cards={userCards.map((c) => ({
+              id: c.id,
+              name: c.name,
+              issuer: c.issuer,
+              isPrimary: c.isPrimary,
+            }))}
+            activeCardId={activeCard.id}
+            basePath="/spending"
+          />
+          {userCards.length <= 1 && (
+            <p className="text-[var(--text-secondary)]">{activeCard.name}</p>
+          )}
+        </div>
+      </div>
+
       {/* Month selector */}
       <div className="mb-[var(--space-lg)]">
         <MonthSelector

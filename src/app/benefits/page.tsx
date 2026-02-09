@@ -4,13 +4,16 @@ import { redirect } from "next/navigation";
 import {
   getCardSummary,
   getBenefitUsageSummaries,
+  getBenefitTransactions,
   getRecentTransactions,
   getPlaidConnectionStatus,
   getUserCards,
   getUserAnniversaryStatus,
+  getCreditsDebugBreakdown,
 } from "@/lib/queries";
+import type { BenefitTransaction } from "@/lib/queries";
 import { getConnectionAlerts } from "@/lib/notifications";
-import { getMonthlyTransactions, generateInsights } from "@/lib/spending";
+import { getInsightsForDisplay } from "@/lib/insights/orchestrator";
 import { SummaryBar } from "./_components/SummaryBar";
 import { BenefitCard } from "./_components/BenefitCard";
 import { CountdownTimer } from "./_components/CountdownTimer";
@@ -19,10 +22,13 @@ import { SyncButton } from "./_components/SyncButton";
 import { ConnectionAlerts } from "./_components/ConnectionAlerts";
 import { CardSwitcher } from "./_components/CardSwitcher";
 import { UpcomingBenefits } from "./_components/UpcomingBenefits";
-import { InsightsSection } from "@/app/spending/_components/InsightsSection";
+import { InsightsSection } from "./_components/InsightsSection";
+import { DebugCreditsTable } from "./_components/DebugCreditsTable";
 import { Badge } from "@/components/ui/Badge";
 import Link from "next/link";
 import { LinkIcon } from "lucide-react";
+
+const isDev = process.env.NODE_ENV === "development";
 
 export default async function DashboardPage({
   searchParams,
@@ -65,17 +71,16 @@ export default async function DashboardPage({
     redirect("/onboarding");
   }
 
-  // Generate insights from current month's spending + benefit usage
-  const now = new Date();
-  const spendingTxs = await getMonthlyTransactions(
-    user.id!,
-    now.getFullYear(),
-    now.getMonth() + 1
-  );
-  const insights = generateInsights(spendingTxs, benefits, 2);
+  // Fetch benefit-linked transactions and insights
+  const allBenefitIds = benefits.map((b) => b.benefitId);
+  const [benefitTxs, insights, debugData] = await Promise.all([
+    getBenefitTransactions(user.id!, allBenefitIds, activeCardId),
+    getInsightsForDisplay(user.id!, "benefits_page", 3),
+    isDev ? getCreditsDebugBreakdown(user.id!, activeCardId) : null,
+  ]);
 
   // Group benefits by displayGroup for DoorDash
-  const groupedBenefits = groupBenefits(benefits);
+  const groupedBenefits = groupBenefits(benefits, benefitTxs);
 
   // Find nearest expiring benefit
   const creditBenefits = benefits.filter(
@@ -174,7 +179,7 @@ export default async function DashboardPage({
               </div>
               <div className="grid grid-cols-1 gap-[var(--space-md)] sm:grid-cols-2 lg:grid-cols-3">
                 {activeBenefits.map((group) => (
-                  <BenefitCard key={group.id} group={group} transactions={transactions} />
+                  <BenefitCard key={group.id} group={group} />
                 ))}
               </div>
             </div>
@@ -182,6 +187,8 @@ export default async function DashboardPage({
           </>
         );
       })()}
+
+      {isDev && debugData && <DebugCreditsTable data={debugData} />}
     </div>
   );
 }
@@ -206,15 +213,28 @@ export interface BenefitGroup {
   cycleEnd: string;
   details: BenefitDetails | null;
   benefits: BenefitUsageSummary[];
+  ytdUsed?: number;
+  benefitTransactions: BenefitTransaction[];
 }
 
 function groupBenefits(
-  benefits: Awaited<ReturnType<typeof getBenefitUsageSummaries>>
+  benefits: Awaited<ReturnType<typeof getBenefitUsageSummaries>>,
+  allTxs: BenefitTransaction[] = []
 ) {
+  // Index transactions by benefitId
+  const txByBenefit = new Map<string, BenefitTransaction[]>();
+  for (const tx of allTxs) {
+    const list = txByBenefit.get(tx.benefitId) ?? [];
+    list.push(tx);
+    txByBenefit.set(tx.benefitId, list);
+  }
+
   const groups = new Map<string, any>();
   const ungrouped: any[] = [];
 
   for (const b of benefits) {
+    const bTxs = txByBenefit.get(b.benefitId) ?? [];
+
     if (b.displayGroup) {
       const existing = groups.get(b.displayGroup);
       if (existing) {
@@ -222,13 +242,17 @@ function groupBenefits(
         existing.totalUsed += b.amountUsed;
         existing.totalRemaining += b.amountRemaining;
         existing.isFullyUsed = existing.isFullyUsed && b.isFullyUsed;
-        existing.manualOverride = existing.manualOverride && b.manualOverride;
+        existing.manualOverride = existing.manualOverride || b.manualOverride;
         existing.daysRemaining = Math.min(
           existing.daysRemaining,
           b.daysRemaining
         );
+        if (b.ytdUsed != null) {
+          existing.ytdUsed = (existing.ytdUsed ?? 0) + b.ytdUsed;
+        }
         if (!existing.details && b.details) existing.details = b.details;
         existing.benefits.push(b);
+        existing.benefitTransactions.push(...bTxs);
       } else {
         groups.set(b.displayGroup, {
           id: b.displayGroup,
@@ -249,6 +273,8 @@ function groupBenefits(
           cycleEnd: b.cycleEnd.toISOString(),
           details: b.details,
           benefits: [b],
+          ytdUsed: b.ytdUsed,
+          benefitTransactions: [...bTxs],
         });
       }
     } else {
@@ -271,6 +297,8 @@ function groupBenefits(
         cycleEnd: b.cycleEnd.toISOString(),
         details: b.details,
         benefits: [b],
+        ytdUsed: b.ytdUsed,
+        benefitTransactions: bTxs,
       });
     }
   }

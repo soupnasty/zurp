@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const MONTH_NAMES = [
@@ -22,6 +22,7 @@ export function MonthSelector({
   canGoNext,
 }: MonthSelectorProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   function navigate(direction: -1 | 1) {
     let newMonth = month + direction;
@@ -33,7 +34,10 @@ export function MonthSelector({
       newMonth = 1;
       newYear++;
     }
-    router.push(`/spending?year=${newYear}&month=${newMonth}`);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("year", String(newYear));
+    params.set("month", String(newMonth));
+    router.push(`/spending?${params.toString()}`);
   }
 
   return (

@@ -13,9 +13,10 @@ interface CardOption {
 interface CardSwitcherProps {
   cards: CardOption[];
   activeCardId: string;
+  basePath?: string;
 }
 
-export function CardSwitcher({ cards, activeCardId }: CardSwitcherProps) {
+export function CardSwitcher({ cards, activeCardId, basePath = "/benefits" }: CardSwitcherProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -26,7 +27,7 @@ export function CardSwitcher({ cards, activeCardId }: CardSwitcherProps) {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("cardId", e.target.value);
-    router.replace(`/benefits?${params.toString()}`);
+    router.replace(`${basePath}?${params.toString()}`);
   };
 
   return (

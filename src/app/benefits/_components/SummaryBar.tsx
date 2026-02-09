@@ -66,17 +66,17 @@ export function SummaryBar({ summary }: SummaryBarProps) {
   const stats = [
     {
       label: "Credits Used",
-      tooltip: "Total card benefits redeemed this period",
+      tooltip: "Total card benefits redeemed this card year",
       value: summary.creditsUsed,
       format: "dollar" as const,
       color: summary.creditsUsed > 0 ? "var(--color-success)" : "var(--text-primary)",
     },
     {
-      label: "Effective Fee",
-      tooltip: "Annual fee minus credits used",
+      label: "Net Cost",
+      tooltip: "Your annual fee after benefits. Green means it's paid off.",
       value: summary.effectiveFee,
       format: "dollar" as const,
-      color: summary.effectiveFee <= 0 ? "var(--color-success)" : "var(--text-primary)",
+      color: summary.effectiveFee <= 0 ? "var(--color-success)" : "var(--color-danger)",
     },
     {
       label: "ROI",

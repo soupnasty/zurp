@@ -1,52 +1,35 @@
 "use client";
 
-import { useMemo, useTransition } from "react";
+import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Modal } from "@/components/ui/Modal";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Badge } from "@/components/ui/Badge";
-import { ExternalLink, Check, Undo2 } from "lucide-react";
+import { ExternalLink, Check, Undo2, RotateCcw } from "lucide-react";
 import { BenefitIcon } from "@/components/ui/BenefitIcon";
 import { useToast } from "@/components/ui/ToastProvider";
-import type { TransactionWithMatch } from "@/lib/types";
 import type { BenefitGroup } from "../page";
 
 interface BenefitDetailModalProps {
   open: boolean;
   onClose: () => void;
   group: BenefitGroup;
-  transactions: TransactionWithMatch[];
 }
 
 export function BenefitDetailModal({
   open,
   onClose,
   group,
-  transactions,
 }: BenefitDetailModalProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const { addToast } = useToast();
 
   const details = group.details;
-
-  const benefitIds = useMemo(
-    () => new Set(group.benefits.map((b) => b.benefitId)),
-    [group.benefits]
-  );
-
-  const matchedTransactions = useMemo(
-    () =>
-      transactions
-        .filter((tx) => tx.benefitId && benefitIds.has(tx.benefitId))
-        .sort(
-          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-        ),
-    [transactions, benefitIds]
-  );
+  const matchedTransactions = group.benefitTransactions;
   const isCredit = group.type === "credit";
+  const used = group.totalUsed;
   const remaining = Math.max(0, group.totalRemaining);
-  const used = group.totalCredit - remaining;
   const isGrouped = group.benefits.length > 1;
 
   const iconElement = (
@@ -92,10 +75,13 @@ export function BenefitDetailModal({
   };
 
   const handleUndoRedeem = async () => {
-    const benefitIds = group.benefits.map((b) => b.benefitId);
+    // Only undo sub-credits that were manually redeemed
+    const manualBenefitIds = group.benefits
+      .filter((b) => b.manualOverride)
+      .map((b) => b.benefitId);
 
     try {
-      for (const id of benefitIds) {
+      for (const id of manualBenefitIds) {
         const res = await fetch("/api/benefits/redeem", {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
@@ -112,6 +98,33 @@ export function BenefitDetailModal({
     } catch (err: any) {
       console.error("Failed to undo redemption:", err);
       addToast(err.message || "Failed to undo redemption");
+    }
+  };
+
+  const handleReset = async () => {
+    // Reset sub-credits that are fully used but have no linked transactions
+    const stuckBenefitIds = group.benefits
+      .filter((b) => b.isFullyUsed && !b.manualOverride)
+      .map((b) => b.benefitId);
+
+    try {
+      for (const id of stuckBenefitIds) {
+        const res = await fetch("/api/benefits/redeem", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ benefitId: id, reset: true }),
+        });
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error);
+        }
+      }
+
+      addToast(`${group.name} usage reset`);
+      startTransition(() => router.refresh());
+    } catch (err: any) {
+      console.error("Failed to reset benefit:", err);
+      addToast(err.message || "Failed to reset usage");
     }
   };
 
@@ -179,7 +192,7 @@ export function BenefitDetailModal({
         </div>
       )}
 
-      {/* Redeem / Undo button */}
+      {/* Redeem / Undo / Reset buttons */}
       {isCredit && !group.isFullyUsed && (
         <button
           onClick={handleRedeem}
@@ -198,6 +211,16 @@ export function BenefitDetailModal({
         >
           <Undo2 size={16} />
           Undo Redemption
+        </button>
+      )}
+      {isCredit && group.isFullyUsed && !group.manualOverride && matchedTransactions.length === 0 && (
+        <button
+          onClick={handleReset}
+          disabled={isPending}
+          className="mb-[var(--space-md)] flex w-full items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--border-default)] px-4 py-2.5 text-[var(--text-body)] font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-primary)] disabled:opacity-50"
+        >
+          <RotateCcw size={16} />
+          Reset Usage
         </button>
       )}
 
@@ -273,20 +296,28 @@ export function BenefitDetailModal({
                       month: "short",
                       day: "numeric",
                     })}
+                    {" "}
+                    <span className="text-[var(--text-muted)]">
+                      ({tx.periodKey})
+                    </span>
                   </span>
                 </div>
                 <div className="ml-3 shrink-0 text-right">
                   <span className="font-data text-[var(--text-primary)]">
                     ${tx.amount.toFixed(2)}
                   </span>
-                  {tx.creditApplied && (
-                    <span className="font-data text-[var(--text-caption)] text-[var(--color-success)] block">
-                      -${tx.creditApplied.toFixed(2)}
-                    </span>
-                  )}
+                  <span className="font-data text-[length:var(--text-caption)] text-[color:var(--color-success)] block">
+                    ${tx.creditApplied.toFixed(2)}
+                  </span>
                 </div>
               </div>
             ))}
+          </div>
+          <div className="mt-2 flex items-center justify-between border-t border-[var(--border-default)] pt-2 text-[var(--text-caption)]">
+            <span className="text-[var(--text-secondary)]">Total credit applied</span>
+            <span className="font-data font-semibold text-[var(--color-success)]">
+              ${matchedTransactions.reduce((sum, tx) => sum + tx.creditApplied, 0).toFixed(2)}
+            </span>
           </div>
         </div>
       )}
