@@ -3,6 +3,7 @@ import { db } from "@/db";
 import * as schema from "@/db/schema";
 import { eq, lt, and } from "drizzle-orm";
 import { triggerSync } from "@/lib/plaid-sync";
+import { expireStaleInsights } from "@/lib/insights/orchestrator";
 
 const STALE_THRESHOLD_HOURS = 6;
 
@@ -44,6 +45,16 @@ export async function GET(request: Request) {
         success: false,
         error: err?.message,
       });
+    }
+  }
+
+  // Expire stale insights for users who had connections synced
+  const userIds = new Set(staleConnections.map((c) => c.userId));
+  for (const userId of userIds) {
+    try {
+      await expireStaleInsights(userId);
+    } catch (err: any) {
+      console.error(`Insight expiration failed for ${userId}:`, err?.message || err);
     }
   }
 

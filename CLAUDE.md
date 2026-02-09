@@ -21,9 +21,9 @@ A credit card benefits tracker that syncs transactions via Plaid, matches them a
 ```bash
 npm run dev          # Start dev server
 npm run build        # Production build
-npm run test:run     # Run all tests (57 tests across 4 files)
+npm run test:run     # Run all tests (134 tests across 9 files)
 npm run db:push      # Push schema to Neon
-npm run db:seed      # Seed cards + benefits from registry
+npm run db:seed      # Seed cards + benefits + competitor map from registry
 npm run db:studio    # Open Drizzle Studio
 ```
 
@@ -64,6 +64,49 @@ Pure-function matching engine with no DB dependencies:
 
 DoorDash has 3 separate sub-credits ($5/$10/$10) tracked internally but displayed as a single $25/month card in the UI. Grouping uses `displayGroup`, `displayGroupName`, and `displayGroupIcon` fields on benefits. The `groupBenefits()` function in the dashboard page handles this.
 
+### Insights Engine v2 (`src/lib/insights/`)
+
+Persistent, scored insight system with 8 categories across 3 groups:
+
+- **Group A — Competitor Redirects**: A1 (one-time competitor spend), A2 (recurring subscription swap)
+- **Group B — Benefit Optimization**: B1 (unused credit), B2 (nearly maxed), B3 (underused credit)
+- **Group C — Positive Reinforcement**: C0 (first-connect value snapshot), C1 (benefit maxed), C2 (ROI milestone)
+
+**Architecture** (three layers, mirrors the engine pattern):
+```
+src/lib/insights/
+  generators/              ← Pure functions, no DB (like matcher.ts)
+    a1-competitor-redirect.ts
+    a2-subscription-swap.ts
+    b1-unused-credit.ts
+    b2-nearly-maxed.ts
+    b3-underused-credit.ts
+    c0-value-snapshot.ts
+    c1-benefit-maxed.ts
+    c2-roi-milestone.ts
+    index.ts               ← Registry, runAllGenerators()
+    types.ts               ← GeneratorContext, InsightGenerator
+  scoring.ts               ← 5-factor weighted scoring (pure)
+  templates.ts             ← ~20 copy templates + interpolation
+  orchestrator.ts          ← DB bridge: persist, display, expire
+  queries.ts               ← Server-only DB queries
+  types.ts                 ← InsightCandidate, ScoredInsight, etc.
+  __tests__/               ← 50 tests (scoring, templates, generators)
+```
+
+**Scoring**: 5-factor weighted composite — dollar_impact (0.35), urgency (0.25), actionability (0.20), novelty (0.10), confidence (0.10). Floor override: if dollar_impact ≥ 80 AND urgency ≥ 80 for Group A/B, always shown.
+
+**Lifecycle**: `pending` → `shown` → `expired` | `superseded`. Dedup via unique `(userId, dedupKey)` constraint; existing insights update-in-place preserving state/generatedAt/shownAt.
+
+**Display rules** (in `getInsightsForDisplay`): Score floor ≥ 30, max 1 per benefit, at least 1 Group C if available, A outranks B within 10 points, C0 always first, max 3 per page.
+
+**DB tables**: `insights`, `insight_impressions`, `competitor_map`. Competitor map seeded from `db:seed` (~50 CSR entries).
+
+**Integration points**:
+- `generateAndPersistInsights(userId)` called after `processTransactionsForConnection()` in engine orchestrator
+- `getInsightsForDisplay(userId, surface, max)` called in benefits + spending pages
+- `expireStaleInsights(userId)` called in cron job
+
 ### Card Registry
 
 Card definitions live in `src/lib/cards/`. Each card file exports a `CardDefinition` with all benefits. The registry at `src/lib/cards/index.ts` aggregates them. CSR has 16 benefits. To add a new card, create a new file in `src/lib/cards/` and register it in `index.ts`.
@@ -78,7 +121,8 @@ src/
 │   ├── page.tsx            # Landing page
 │   ├── login/              # Auth pages (login, verify, error)
 │   ├── onboarding/         # Multi-step wizard (card select, Plaid, anniversary)
-│   ├── dashboard/          # Main dashboard with 7 sub-components
+│   ├── benefits/           # Benefits dashboard (insights, benefit cards, sync)
+│   ├── spending/           # Spending analysis (categories, monthly breakdown)
 │   ├── cards/[cardId]/     # Card detail view
 │   ├── settings/           # User settings
 │   ├── sandbox/            # Plaid test page (gated by NEXT_PUBLIC_ENABLE_SANDBOX)
@@ -92,6 +136,8 @@ src/
 │   └── ThemeProvider.tsx   # Dark mode provider
 ├── lib/
 │   ├── engine/             # Pure matching engine + tests
+│   ├── insights/           # Insights Engine v2 (generators, scoring, orchestrator)
+│   ├── spending/           # Spending analysis (categories, queries)
 │   ├── cards/              # Card definitions registry
 │   ├── auth.ts             # NextAuth config (lazy)
 │   ├── auth-helpers.ts     # getAuthUser(), requireAuth()
@@ -110,11 +156,12 @@ src/
 ## Implementation Status
 
 - [x] Phase 1: Scaffolding, schema, seed data
-- [x] Phase 2: Core engine (matching, anniversary, cycle utils) — 57 tests
+- [x] Phase 2: Core engine (matching, anniversary, cycle utils)
 - [x] Phase 3: Plaid integration (sandbox)
 - [x] Phase 4: Auth + user management
 - [x] Phase 5: Dashboard UI
 - [x] Phase 6: Polish, webhooks, cron, deployment
+- [x] Phase 7: Insights Engine v2 — 8 categories, DB persistence, 5-factor scoring, lifecycle, competitor map
 
 ### Sync Architecture
 
@@ -134,6 +181,7 @@ Connection health alerts (`src/lib/notifications.ts`) surface stale/reauth/disco
 ## Spec Documents
 
 - `docs/zurp.md` — Full app spec (data model, matching engine, benefits)
+- `docs/zurp-insights-engine-v2.md` — Insights Engine v2 spec (categories, scoring, templates, display rules)
 - `docs/design-principles.md` — S-tier SaaS dashboard design checklist
 - `docs/zurp-style-guide.md` — Brand colors, typography, spacing, motion
 - `docs/zurp-logo-5c.svg` — Logo source (also at `public/zurp-logo.svg`)

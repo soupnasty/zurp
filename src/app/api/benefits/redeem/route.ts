@@ -5,6 +5,7 @@ import * as schema from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { getCardDefinition } from "@/lib/cards";
 import { getCurrentCycleBounds } from "@/lib/engine/cycle-utils";
+import { generateAndPersistInsights } from "@/lib/insights/orchestrator";
 import type { BenefitCycle } from "@/lib/types";
 
 export async function POST(request: Request) {
@@ -105,6 +106,13 @@ export async function POST(request: Request) {
       });
     }
 
+    // Refresh insights after manual redeem
+    try {
+      await generateAndPersistInsights(session.user.id);
+    } catch (e) {
+      console.error("Non-fatal: insight refresh failed after redeem", e);
+    }
+
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error("Error redeeming benefit:", error);
@@ -122,7 +130,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { benefitId } = await request.json();
+    const { benefitId, reset } = await request.json();
 
     if (!benefitId) {
       return NextResponse.json(
@@ -160,37 +168,83 @@ export async function DELETE(request: Request) {
       userCard.anniversaryDate
     );
 
-    // Find current-period usage with manual override
-    const usage = await db.query.benefitUsage.findFirst({
-      where: and(
-        eq(schema.benefitUsage.userId, session.user.id),
-        eq(schema.benefitUsage.benefitId, benefitId),
-        eq(schema.benefitUsage.periodKey, bounds.periodKey),
-        eq(schema.benefitUsage.manualOverride, true)
-      ),
-    });
+    if (reset) {
+      // Reset a fully-used benefit that has no linked transactions
+      const usage = await db.query.benefitUsage.findFirst({
+        where: and(
+          eq(schema.benefitUsage.userId, session.user.id),
+          eq(schema.benefitUsage.benefitId, benefitId),
+          eq(schema.benefitUsage.periodKey, bounds.periodKey),
+          eq(schema.benefitUsage.isFullyUsed, true)
+        ),
+        with: { matches: true },
+      });
 
-    if (!usage) {
-      return NextResponse.json(
-        { error: "No manual redemption found to undo" },
-        { status: 404 }
-      );
+      if (!usage) {
+        return NextResponse.json(
+          { error: "No fully-used benefit found to reset" },
+          { status: 404 }
+        );
+      }
+
+      if (usage.matches.length > 0) {
+        return NextResponse.json(
+          { error: "Cannot reset — benefit has linked transactions" },
+          { status: 400 }
+        );
+      }
+
+      await db
+        .update(schema.benefitUsage)
+        .set({
+          amountUsed: 0,
+          amountRemaining: benefitDef.creditAmount,
+          isFullyUsed: false,
+          manualOverride: false,
+          overrideNote: null,
+          updatedAt: new Date(),
+        })
+        .where(eq(schema.benefitUsage.id, usage.id));
+    } else {
+      // Undo a manual redemption
+      const usage = await db.query.benefitUsage.findFirst({
+        where: and(
+          eq(schema.benefitUsage.userId, session.user.id),
+          eq(schema.benefitUsage.benefitId, benefitId),
+          eq(schema.benefitUsage.periodKey, bounds.periodKey),
+          eq(schema.benefitUsage.manualOverride, true)
+        ),
+      });
+
+      if (!usage) {
+        return NextResponse.json(
+          { error: "No manual redemption found to undo" },
+          { status: 404 }
+        );
+      }
+
+      // Restore original values from overrideNote
+      const original = JSON.parse(usage.overrideNote || "{}");
+
+      await db
+        .update(schema.benefitUsage)
+        .set({
+          amountUsed: original.amountUsed ?? 0,
+          amountRemaining: original.amountRemaining ?? benefitDef.creditAmount,
+          isFullyUsed: original.isFullyUsed ?? false,
+          manualOverride: false,
+          overrideNote: null,
+          updatedAt: new Date(),
+        })
+        .where(eq(schema.benefitUsage.id, usage.id));
     }
 
-    // Restore original values from overrideNote
-    const original = JSON.parse(usage.overrideNote || "{}");
-
-    await db
-      .update(schema.benefitUsage)
-      .set({
-        amountUsed: original.amountUsed ?? 0,
-        amountRemaining: original.amountRemaining ?? benefitDef.creditAmount,
-        isFullyUsed: original.isFullyUsed ?? false,
-        manualOverride: false,
-        overrideNote: null,
-        updatedAt: new Date(),
-      })
-      .where(eq(schema.benefitUsage.id, usage.id));
+    // Refresh insights after undo/reset
+    try {
+      await generateAndPersistInsights(session.user.id);
+    } catch (e) {
+      console.error("Non-fatal: insight refresh failed after undo/reset", e);
+    }
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
