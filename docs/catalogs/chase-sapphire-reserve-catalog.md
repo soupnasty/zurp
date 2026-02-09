@@ -25,12 +25,12 @@
 
 ---
 
-**1. csr_travel_credit**
+**1. csr_travel**
 
 | Field | Value |
 |---|---|
 | Name | $300 Annual Travel Credit |
-| benefit_key | `csr_travel_credit` |
+| benefit_key | `csr_travel` |
 | Annual value | $300 |
 | Type | Statement credit |
 | Period | Anniversary year (NOT calendar year) |
@@ -43,21 +43,22 @@
 
 ---
 
-**2. csr_edit_hotel_credit**
+**2a. csr_edit_h1 / 2b. csr_edit_h2**
 
 | Field | Value |
 |---|---|
-| Name | $500 Annual The Edit Hotel Credit |
-| benefit_key | `csr_edit_hotel_credit` |
-| Annual value | $500 |
+| Name | The Edit Hotel Credit |
+| Code IDs | `csr_edit_h1` (H1), `csr_edit_h2` (H2) |
+| Annual value | $500 total (two $250 credits) |
 | Type | Statement credit |
-| Period | Calendar year (as of 2026: two $250 credits usable anytime during year) |
+| Period | **2025**: Biannual — H1 Jan–Jun, H2 Jul–Dec. **2026+**: Calendar year — both $250 credits usable anytime during the year. |
 | Reset | January 1 |
 | Activation | None — auto-applies on qualifying Edit bookings |
-| Expiration | Permanent benefit (terms updated for 2026) |
+| Expiration | Permanent benefit |
 | Trackable | Partially — Plaid can detect Chase Travel credits, but cannot distinguish Edit from other Chase Travel bookings. |
 | Confidence | Medium |
 | Notes | 2-night minimum stay required. Includes complimentary breakfast for two, $100 property credit, room upgrade (if available), early check-in/late checkout. Purchases covered by credit do NOT earn points. Hotel loyalty points and elite night credits still earned on full amount. Over 1,100 curated properties. |
+| ⚠️ Code fix needed | Code currently uses biannual_h1/biannual_h2 period type. For 2026+, should switch to annual_calendar with creditAmount: 500 (or two $250 sub-credits without half-year locking). See code fixes list. |
 
 ---
 
@@ -79,13 +80,13 @@
 
 ---
 
-**4. csr_exclusive_tables_credit**
+**4a. csr_dining_h1 / 4b. csr_dining_h2**
 
 | Field | Value |
 |---|---|
-| Name | $300 Exclusive Tables Dining Credit |
-| benefit_key | `csr_exclusive_tables_credit` |
-| Annual value | $300 |
+| Name | Exclusive Tables Dining Credit |
+| Code IDs | `csr_dining_h1` (H1 Jan–Jun), `csr_dining_h2` (H2 Jul–Dec) |
+| Annual value | $300 total (two $150 credits) |
 | Type | Statement credit |
 | Period | Semi-annual ($150 Jan–Jun, $150 Jul–Dec) |
 | Reset | January 1 and July 1 |
@@ -94,16 +95,17 @@
 | Trackable | Yes — statement credits from qualifying restaurants appear on Plaid. |
 | Confidence | High |
 | Notes | Includes access to primetime reservations at top restaurants. Available in major U.S. cities via Visa Dining Collection on OpenTable. Two separate $150 credits per half-year — unused balance does NOT roll over. Restaurants are curated in collaboration with The Infatuation. |
+| ⚠️ Code fix needed | Code has requiresActivation: false. Should be true — activation requires visiting OpenTable, verifying card, and adding to account. |
 
 ---
 
-**5. csr_stubhub_credit**
+**5a. csr_stubhub_h1 / 5b. csr_stubhub_h2**
 
 | Field | Value |
 |---|---|
-| Name | $300 StubHub/viagogo Credit |
-| benefit_key | `csr_stubhub_credit` |
-| Annual value | $300 |
+| Name | StubHub/viagogo Credit |
+| Code IDs | `csr_stubhub_h1` (H1 Jan–Jun), `csr_stubhub_h2` (H2 Jul–Dec) |
+| Annual value | $300 total (two $150 credits) |
 | Type | Statement credit |
 | Period | Semi-annual ($150 Jan–Jun, $150 Jul–Dec) |
 | Reset | January 1 and July 1 |
@@ -112,15 +114,16 @@
 | Trackable | Yes — Plaid merchant name "STUBHUB" or "VIAGOGO". Statement credit appears separately. |
 | Confidence | High |
 | Notes | Valid for StubHub and viagogo purchases (concerts, sporting events, theater). Two separate $150 credits per half-year — unused balance does NOT roll over. |
+| ⚠️ Code fix needed | Code merchantPatterns missing "viagogo". |
 
 ---
 
-**6. csr_doordash_dashpass**
+**6. csr_dashpass**
 
 | Field | Value |
 |---|---|
 | Name | Complimentary DashPass Membership |
-| benefit_key | `csr_doordash_dashpass` |
+| benefit_key | `csr_dashpass` |
 | Annual value | $120 (membership fee waiver) |
 | Type | Fee waiver (NOT statement credit) |
 | Period | Minimum 12 months from activation |
@@ -133,48 +136,51 @@
 
 ---
 
-**7. csr_doordash_promos**
+**7a. csr_doordash_restaurant / 7b. csr_doordash_nonrestaurant_1 / 7c. csr_doordash_nonrestaurant_2**
 
 | Field | Value |
 |---|---|
-| Name | $300 Annual DoorDash Promos |
-| benefit_key | `csr_doordash_promos` |
-| Annual value | $300 ($25/month) |
+| Name | DoorDash Monthly Promos |
+| Code IDs | `csr_doordash_restaurant` ($5/mo), `csr_doordash_nonrestaurant_1` ($10/mo), `csr_doordash_nonrestaurant_2` ($10/mo) |
+| Annual value | $300 ($25/month = $5 restaurant + 2×$10 non-restaurant) |
 | Type | In-app discount (NOT statement credit) |
-| Period | Monthly ($25/month = $5 restaurant + 2×$10 non-restaurant) |
+| Period | Monthly — each sub-credit tracked independently |
 | Reset | 1st of each month |
+| Carryover | **None** — all three credits are use-it-or-lose-it. If the full value is not used on a single order, remaining value is forfeited. No accumulation across months. (Prior to Feb 2025, the $5 credit could accumulate up to $15 over 3 months — this is no longer the case.) |
 | Activation | Requires DashPass enrollment first |
 | Expiration | Through 12/31/2027 |
 | Trackable | Presence-based only — infer from DoorDash transaction presence. Cannot confirm promo was applied. |
 | Confidence | Low-Medium |
-| Notes | CSR gets $25/month ($5 restaurant + two $10 non-restaurant). CSP gets only $10/month (one $10 non-restaurant). The $180 delta is a key differentiator. Non-restaurant promos apply to groceries, convenience, retail orders. ONE promo per category per month. Same detection challenge as Gold's Uber Cash — transaction presence but no promo verification. |
+| Notes | CSR gets $25/month ($5 restaurant + two $10 non-restaurant). CSP gets only $10/month (one $10 non-restaurant). The $180 delta is a key differentiator. Non-restaurant promos apply to groceries, convenience, retail orders. Each promo must be used on a separate order — cannot stack. Must use Chase card as payment method. |
+| ⚠️ Code fix needed | Code has carriesOver: true, maxCarryoverPeriods: 2, maxAccrued: 15 on csr_doordash_restaurant. Should be carriesOver: false — the old accrual system ended Feb 1, 2025. |
 
 ---
 
-**8. csr_lyft_credit**
+**8. csr_lyft**
 
 | Field | Value |
 |---|---|
 | Name | $120 Annual Lyft In-App Credits |
-| benefit_key | `csr_lyft_credit` |
+| benefit_key | `csr_lyft` |
 | Annual value | $120 |
 | Type | In-app credit (NOT statement credit) |
 | Period | Monthly ($10/month) |
 | Reset | 1st of each month (unused credit forfeited) |
-| Activation | Link card to Lyft account |
+| Activation | Required — link card to Lyft account for credits to appear |
 | Expiration | Through 9/30/2027 |
 | Trackable | Partially — Plaid detects Lyft transactions, but can't confirm in-app credit was applied vs. out-of-pocket spend. |
 | Confidence | Medium |
 | Notes | Does NOT apply to Wait & Save, bike, or scooter rides. Credit is use-it-or-lose-it each month. CSP does NOT receive this credit (CSP only gets 5x points). |
+| ⚠️ Code fix needed | Code has requiresActivation: false. Should be true — card must be linked in Lyft app for credits to appear. |
 
 ---
 
-**9. csr_peloton_credit**
+**9. csr_peloton**
 
 | Field | Value |
 |---|---|
 | Name | $120 Annual Peloton Membership Credit |
-| benefit_key | `csr_peloton_credit` |
+| benefit_key | `csr_peloton` |
 | Annual value | $120 |
 | Type | Statement credit |
 | Period | Monthly ($10/month) |
@@ -223,12 +229,12 @@
 
 ---
 
-**12. csr_global_entry_credit**
+**12. csr_global_entry**
 
 | Field | Value |
 |---|---|
 | Name | Global Entry / TSA PreCheck / NEXUS Credit |
-| benefit_key | `csr_global_entry_credit` |
+| benefit_key | `csr_global_entry` |
 | Annual value | ~$30/yr (amortized: $120 every 4 years) |
 | Type | Statement credit |
 | Period | Every 4 years |
@@ -551,11 +557,11 @@
 | Benefit | Activation Method |
 |---|---|
 | csr_doordash_dashpass | Add card on DoorDash, click activation button |
-| csr_stubhub_credit | One-time activation via Chase account |
+| csr_stubhub_h1/h2 | One-time activation via Chase account |
 | csr_apple_music | Activate via Chase website/app |
 | csr_apple_tv | Activate via Chase website/app (separate from Music) |
-| csr_peloton_credit | Activate via Chase account |
-| csr_exclusive_tables_credit | Verify card on OpenTable |
+| csr_peloton | Activate via Chase account |
+| csr_dining_h1/h2 | Verify card on OpenTable |
 | csr_ihg_platinum_status | Activate via Chase account |
 
 **7 benefits requiring activation** (vs CSP 2, vs Gold 6).
@@ -581,17 +587,17 @@
 | 6 | DoorDash | Grubhub | `GRUBHUB\|GH\*` | food_delivery | A1 | Amount spent | |
 | 7 | DoorDash | Postmates | `POSTMATES` | food_delivery | A1 | Amount spent | Now part of Uber Eats but may still appear separately in Plaid |
 
-### Category 3: Streaming — Apple Music/TV+ Subscription Swap (A3)
+### Category 3: Streaming — Apple Music/TV+ Subscription Swap (A2)
 
 | # | Benefit Partner | Competitor | Plaid Pattern | Category | Type | Dollar Signal | Notes |
 |---|---|---|---|---|---|---|---|
-| 8 | Apple Music | Spotify | `SPOTIFY` | streaming | A3 | Annual subscription cost ($131.88–$203.88/yr) | "You're paying $X/mo for Spotify. Your card includes free Apple Music." |
-| 9 | Apple TV+ | Netflix | `NETFLIX` | streaming | A3 | Annual subscription cost ($82.68–$275.88/yr) | Different content library — softer "consider using both or switching" copy |
-| 10 | Apple TV+ | Hulu | `HULU` | streaming | A3 | Annual subscription cost ($95.88–$215.88/yr) | |
-| 11 | Apple TV+ | Disney+ | `DISNEY PLUS\|DISNEYPLUS` | streaming | A3 | Annual subscription cost | |
-| 12 | Apple TV+ | Max (HBO) | `MAX\|HBO MAX\|HBO` | streaming | A3 | Annual subscription cost | |
-| 13 | Apple TV+ | Paramount+ | `PARAMOUNT\+\|PARAMOUNTPLUS` | streaming | A3 | Annual subscription cost | |
-| 14 | Apple TV+ | Peacock | `PEACOCK\|NBCUNIVERSAL` | streaming | A3 | Annual subscription cost | |
+| 8 | Apple Music | Spotify | `SPOTIFY` | streaming | A2 | Annual subscription cost ($131.88–$203.88/yr) | "You're paying $X/mo for Spotify. Your card includes free Apple Music." |
+| 9 | Apple TV+ | Netflix | `NETFLIX` | streaming | A2 | Annual subscription cost ($82.68–$275.88/yr) | Different content library — softer "consider using both or switching" copy |
+| 10 | Apple TV+ | Hulu | `HULU` | streaming | A2 | Annual subscription cost ($95.88–$215.88/yr) | |
+| 11 | Apple TV+ | Disney+ | `DISNEY PLUS\|DISNEYPLUS` | streaming | A2 | Annual subscription cost | |
+| 12 | Apple TV+ | Max (HBO) | `MAX\|HBO MAX\|HBO` | streaming | A2 | Annual subscription cost | |
+| 13 | Apple TV+ | Paramount+ | `PARAMOUNT\+\|PARAMOUNTPLUS` | streaming | A2 | Annual subscription cost | |
+| 14 | Apple TV+ | Peacock | `PEACOCK\|NBCUNIVERSAL` | streaming | A2 | Annual subscription cost | |
 
 ### Category 4: Rideshare — Lyft Redirect (A1)
 
@@ -607,18 +613,20 @@
 | 17 | Peloton | Equinox+ | `EQUINOX` | fitness | A1 | $10/month credit value | Digital membership competitor |
 | 18 | Peloton | Tonal | `TONAL` | fitness | A1 | $10/month credit value | Home fitness competitor |
 
-### Category 6: Hotels — Channel Redirect (A2, deferred to v2)
+### Category 6: Hotels — OTA Competitor Redirect (A1)
 
-These require detecting that the user booked a hotel through an OTA instead of Chase Travel. As noted in the engine spec, A2 is deferred from v1 due to unreliable Plaid transaction descriptors for OTA bookings.
+These fire when a user books a hotel through an OTA instead of Chase Travel, surfacing the Edit credit as the dollar signal. This is an A1 competitor redirect (OTA vs Chase Travel), NOT an A2 channel redirect (which would require detecting same-hotel booking path differences — that remains deferred).
 
 | # | Benefit Partner | Competitor | Plaid Pattern | Category | Type | Dollar Signal | Notes |
 |---|---|---|---|---|---|---|---|
-| 19 | Chase Travel (Edit) | Expedia | `EXPEDIA` | hotels | A2 | Edit credit + points delta | DEFERRED v2 |
-| 20 | Chase Travel (Edit) | Hotels.com | `HOTELS\.COM\|HOTELS COM` | hotels | A2 | Edit credit + points delta | DEFERRED v2 |
-| 21 | Chase Travel (Edit) | Booking.com | `BOOKING\.COM\|BOOKING COM` | hotels | A2 | Edit credit + points delta | DEFERRED v2 |
-| 22 | Chase Travel (Edit) | Priceline | `PRICELINE` | hotels | A2 | Edit credit + points delta | DEFERRED v2 |
-| 23 | Chase Travel (Edit) | Marriott.com | `MARRIOTT` | hotels | A2 | Edit credit | DEFERRED v2 — hard to distinguish direct booking from portal |
-| 24 | Chase Travel (Edit) | Hilton.com | `HILTON` | hotels | A2 | Edit credit | DEFERRED v2 |
+| 19 | Chase Travel (Edit) | Expedia | `EXPEDIA` | hotels | A1 | Edit credit + points delta | Active — OTA presence is detectable |
+| 20 | Chase Travel (Edit) | Hotels.com | `HOTELS\.COM\|HOTELS COM` | hotels | A1 | Edit credit + points delta | Active |
+| 21 | Chase Travel (Edit) | Booking.com | `BOOKING\.COM\|BOOKING COM` | hotels | A1 | Edit credit + points delta | Active |
+| 22 | Chase Travel (Edit) | Priceline | `PRICELINE` | hotels | A1 | Edit credit + points delta | Active |
+| 23 | Chase Travel (Edit) | Marriott.com | `MARRIOTT` | hotels | A1 | Edit credit | Active — direct hotel chain bookings also detectable |
+| 24 | Chase Travel (Edit) | Hilton.com | `HILTON` | hotels | A1 | Edit credit | Active |
+
+> **Note on A2 (Channel Redirect)**: The A2 insight type — which would detect that a user booked the *same hotel* through the wrong channel — remains deferred from v1 because Plaid cannot reliably distinguish "booked through Chase Travel" from "booked directly with Marriott." The A1 entries above are simpler: they detect OTA/direct hotel spending and surface the Edit credit as unused value.
 
 ### Category 7: Dining — Exclusive Tables Redirect (A1)
 
@@ -628,7 +636,9 @@ These fire when a user dines at a high-end restaurant that is NOT part of Exclus
 |---|---|---|---|---|---|---|---|
 | 25 | Exclusive Tables | High-end dining (non-participating) | Category match: FOOD_AND_DRINK > RESTAURANT with amount > $100 | dining | A1 | Unused Exclusive Tables credit | DEFERRED v2 — requires Exclusive Tables restaurant list integration. Cannot reliably distinguish "dining at a non-participating restaurant" from "dining at a participating one" via Plaid alone. |
 
-**Total competitor map entries: 25 (18 active in v1, 7 deferred to v2)**
+**Catalog competitor map entries: 25 (all active in v1)**
+
+> **Code seed coverage**: The code seed file (chase-sapphire-reserve.ts) contains 51 competitor entries with broader coverage than this catalog, including additional merchants in events (+Eventbrite, +Dice), food delivery (+Seamless, +Caviar, +Instacart), rideshare (+Taxi, +Yellow Cab, +Curb), hotels (+Airbnb, +VRBO, +Travelocity), fitness (+SoulCycle, +Planet Fitness, +24 Hour Fitness, +Orangetheory, +Barry's, +Life Time, +LA Fitness, +YMCA, +Crunch), and streaming (+YouTube Music, +Tidal, +Amazon Music, +Deezer, +Pandora, +Prime Video). The code seed is the authoritative source for the complete competitor list.
 
 ---
 
@@ -636,18 +646,19 @@ These fire when a user dines at a high-end restaurant that is NOT part of Exclus
 
 | Benefit | Detection Method | Reset Logic | Confidence |
 |---|---|---|---|
-| csr_travel_credit | Chase statement credit in TRAVEL category | Anniversary year | High |
-| csr_edit_hotel_credit | Chase Travel statement credits (hotel) | Calendar year (two $250 credits) | Medium |
+| csr_travel | Chase statement credit in TRAVEL category | Anniversary year | High |
+| csr_edit_h1 / csr_edit_h2 | Chase Travel statement credits (hotel) | Calendar year (two $250 credits, usable anytime as of 2026) | Medium |
 | csr_select_hotel_credit_2026 | Chase Travel statement credit | Calendar year 2026 (one-time) | Medium |
-| csr_exclusive_tables_credit | Statement credits from qualifying restaurants | Semi-annual (Jan–Jun, Jul–Dec) | High |
-| csr_stubhub_credit | Plaid: "STUBHUB" or "VIAGOGO" + statement credit | Semi-annual (Jan–Jun, Jul–Dec) | High |
-| csr_doordash_dashpass | Infer from DoorDash transactions with DashPass pricing | Based on activation date | Low |
-| csr_doordash_promos | Presence of DoorDash non-restaurant orders | Monthly (1st of month) | Low-Medium |
-| csr_lyft_credit | Plaid: "LYFT" transactions | Monthly (1st of month, forfeited if unused) | Medium |
-| csr_peloton_credit | Plaid: "PELOTON" recurring charge + statement credit | Monthly | High |
+| csr_dining_h1 / csr_dining_h2 | Statement credits from qualifying restaurants | Semi-annual (Jan–Jun, Jul–Dec) | High |
+| csr_stubhub_h1 / csr_stubhub_h2 | Plaid: "STUBHUB" or "VIAGOGO" + statement credit | Semi-annual (Jan–Jun, Jul–Dec) | High |
+| csr_dashpass | Infer from DoorDash transactions with DashPass pricing | Based on activation date | Low |
+| csr_doordash_restaurant | Presence of DoorDash restaurant orders | Monthly (1st of month, no carryover) | Low-Medium |
+| csr_doordash_nonrestaurant_1/2 | Presence of DoorDash non-restaurant orders | Monthly (1st of month, no carryover) | Low-Medium |
+| csr_lyft | Plaid: "LYFT" transactions | Monthly (1st of month, forfeited if unused) | Medium |
+| csr_peloton | Plaid: "PELOTON" recurring charge + statement credit | Monthly | High |
 | csr_apple_music | Absence of Apple Music charge | Continuous | Low |
 | csr_apple_tv | Absence of Apple TV+ charge | Continuous | Low |
-| csr_global_entry_credit | One-time charge from CBP/TSA + statement credit | 4-year cycle | High |
+| csr_global_entry | One-time charge from CBP/TSA + statement credit | 4-year cycle | High |
 | csr_8x_chase_travel | NOT trackable via Plaid | N/A | N/A |
 | csr_4x_flights_hotels_direct | Plaid category TRAVEL > AIRLINES, TRAVEL > LODGING | N/A | High |
 | csr_3x_dining | Plaid category FOOD_AND_DRINK > RESTAURANT | N/A | High |
@@ -687,7 +698,7 @@ The CSR has the most complex reset schedule of any supported card:
 |---|---|---|
 | Annual fee | $795 | $95 |
 | Hard credits | ~$2,060 | ~$290 |
-| Competitor map entries | 18 active + 7 deferred | 4 active |
+| Competitor map entries | 25 catalog / 51 in code seed | 4 active |
 | Benefits requiring activation | 7 | 2 |
 | Points on Chase Travel | 8x | 5x |
 | Points on direct flights/hotels | 4x | 2x |
