@@ -6,6 +6,7 @@ import { runMatcher } from "./matcher";
 import { detectAnniversary } from "./anniversary-detector";
 import { getCurrentCycleBounds } from "./cycle-utils";
 import { getCardDefinition } from "@/lib/cards";
+import { generateAndPersistInsights } from "@/lib/insights/orchestrator";
 
 /**
  * Process new transactions for a Plaid connection.
@@ -124,6 +125,12 @@ export async function processTransactionsForConnection(
     removedFlags.map((f) => `${f.transactionId}:${f.benefitId}`)
   );
 
+  // Track running usage totals per benefit (avoids stale reads)
+  const runningUsage = new Map<string, number>();
+  for (const usage of usageRecords) {
+    runningUsage.set(usage.benefitId, usage.amountUsed);
+  }
+
   // Write matches to DB
   for (const match of result.matches) {
     // Skip if user has a removed flag for this transaction+benefit pair
@@ -144,21 +151,28 @@ export async function processTransactionsForConnection(
 
     if (!usageRecord) continue;
 
-    // Create matched_tx record
-    await db.insert(schema.matchedTx).values({
-      transactionId: match.transactionId,
-      benefitUsageId: usageRecord.id,
-      creditApplied: match.creditApplied,
-      matchMethod: match.matchMethod,
-      matchConfidence: match.matchConfidence,
-    });
-
-    // Update benefit usage
-    const newUsed = usageRecord.amountUsed + match.creditApplied;
     const effectiveCredit =
       benefit.carriesOver && benefit.maxAccrued
         ? benefit.maxAccrued
         : benefit.creditAmount;
+
+    // Cap creditApplied at remaining credit for this benefit
+    const currentUsed = runningUsage.get(benefit.id) ?? 0;
+    if (currentUsed >= effectiveCredit) continue; // Benefit already full
+    const creditApplied = Math.min(match.creditApplied, effectiveCredit - currentUsed);
+
+    // Create matched_tx record
+    await db.insert(schema.matchedTx).values({
+      transactionId: match.transactionId,
+      benefitUsageId: usageRecord.id,
+      creditApplied,
+      matchMethod: match.matchMethod,
+      matchConfidence: match.matchConfidence,
+    });
+
+    // Update running total and persist to DB
+    const newUsed = currentUsed + creditApplied;
+    runningUsage.set(benefit.id, newUsed);
 
     await db
       .update(schema.benefitUsage)
@@ -183,6 +197,14 @@ export async function processTransactionsForConnection(
       .update(schema.transactions)
       .set({ matchedStatus: "ambiguous" as MatchedStatus })
       .where(eq(schema.transactions.id, txId));
+  }
+
+  // Generate insights after all matches are written
+  try {
+    await generateAndPersistInsights(connection.userId);
+  } catch (err) {
+    console.error("Insight generation failed:", err);
+    // Non-fatal: don't block transaction processing
   }
 }
 

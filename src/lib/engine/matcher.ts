@@ -38,9 +38,9 @@ export function runMatcher(
   const unmatchedTransactionIds: string[] = [];
   const usageUpdates = new Map<string, number>();
 
-  // Filter eligible transactions
+  // Filter eligible transactions (skip pending, already matched, and refunds/negatives)
   const eligibleTx = transactions.filter(
-    (tx) => !tx.pending && tx.matchedStatus === "unmatched"
+    (tx) => !tx.pending && tx.matchedStatus === "unmatched" && tx.amount > 0
   );
 
   // Sort benefits by priority (ascending)
