@@ -79,23 +79,27 @@
   --border-strong: var(--color-muted);
   --accent: var(--color-signal);
   --accent-ghost: var(--color-ghost);
+  --benefit-icon-color: white;
+  --benefit-icon-invert: none;
 }
 
 .light {
-  --bg-primary: var(--color-light-bg);
+  --bg-primary: #F0F3F6;
   --bg-secondary: var(--color-light-surface);
-  --bg-tertiary: #EAEEF2;
+  --bg-tertiary: #E2E8F0;
   --text-primary: var(--color-light-text);
   --text-secondary: var(--color-light-text-secondary);
   --text-tertiary: #8B949E;
-  --border-default: #D0D7DE;
-  --border-strong: #AFB8C1;
+  --border-default: #C5CED8;
+  --border-strong: #A3B1BF;
   --accent: var(--color-light-signal);
   --accent-ghost: rgba(9, 105, 218, 0.15);
+  --benefit-icon-color: black;
+  --benefit-icon-invert: invert(1);
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.10), 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.14), 0 2px 6px rgba(0, 0, 0, 0.06);
   --shadow-glow: none;
 }
 
@@ -103,6 +107,7 @@
 
 html {
   color-scheme: dark;
+  scroll-behavior: smooth;
 }
 
 html.light {
@@ -185,4 +190,38 @@ summary {
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--text-secondary);
+}
+
+/* ── Landing page animations ── */
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  animation: marquee 30s linear infinite;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
