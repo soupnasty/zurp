@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useTransition } from "react";
 import { usePathname } from "next/navigation";
 import { ChevronDown, Check, Plus, CreditCard } from "lucide-react";
 import { updateCardType } from "@/lib/actions";
@@ -30,7 +30,7 @@ export function CardSelector({ cards, activeCardId, collapsed }: CardSelectorPro
   const pathname = usePathname();
   const [cardOpen, setCardOpen] = useState(false);
   const [typeOpen, setTypeOpen] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const cardRef = useRef<HTMLDivElement>(null);
   const typeRef = useRef<HTMLDivElement>(null);
 
@@ -57,20 +57,15 @@ export function CardSelector({ cards, activeCardId, collapsed }: CardSelectorPro
     window.location.href = `${base}?cardId=${cardProfileId}`;
   };
 
-  const handleCardTypeChange = async (newCardType: string) => {
+  const handleCardTypeChange = (newCardType: string) => {
     if (newCardType === activeCard.cardType) {
       setTypeOpen(false);
       return;
     }
-    setSaving(true);
-    try {
+    startTransition(async () => {
       await updateCardType(activeCard.cardProfileId, newCardType);
       setTypeOpen(false);
-    } catch {
-      // Stay open on error
-    } finally {
-      setSaving(false);
-    }
+    });
   };
 
   // Strip issuer prefix from card type names since the card dropdown already shows it
@@ -174,7 +169,7 @@ export function CardSelector({ cards, activeCardId, collapsed }: CardSelectorPro
               setCardOpen(false);
             }
           }}
-          disabled={saving}
+          disabled={isPending}
           className={`flex w-full items-center gap-2 rounded-[var(--radius-md)] bg-[var(--bg-tertiary)] px-3 py-2 text-left transition-colors disabled:opacity-50 ${
             activeCard.issuerCards.length > 1
               ? "hover:bg-[var(--border-default)] cursor-pointer"
@@ -203,7 +198,7 @@ export function CardSelector({ cards, activeCardId, collapsed }: CardSelectorPro
                 <button
                   key={type.id}
                   onClick={() => handleCardTypeChange(type.id)}
-                  disabled={saving}
+                  disabled={isPending}
                   className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors ${
                     isCurrentType
                       ? "text-[var(--accent)]"
