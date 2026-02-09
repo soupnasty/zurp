@@ -13,24 +13,23 @@ import type {
 
 export async function getCardSummary(
   userId: string,
-  userCardId?: string
+  cardProfileId?: string
 ): Promise<CardSummary | null> {
-  const userCard = await db.query.userCards.findFirst({
-    where: userCardId
-      ? and(eq(schema.userCards.userId, userId), eq(schema.userCards.id, userCardId))
-      : eq(schema.userCards.userId, userId),
-    with: { card: true },
+  const cardProfile = await db.query.cardProfiles.findFirst({
+    where: cardProfileId
+      ? and(eq(schema.cardProfiles.userId, userId), eq(schema.cardProfiles.id, cardProfileId))
+      : and(eq(schema.cardProfiles.userId, userId), eq(schema.cardProfiles.isActive, true)),
   });
 
-  if (!userCard) return null;
+  if (!cardProfile) return null;
 
-  const cardDef = getCardDefinition(userCard.cardId);
+  const cardDef = getCardDefinition(cardProfile.cardType);
   if (!cardDef) return null;
 
   const usageRecords = await db.query.benefitUsage.findMany({
     where: and(
       eq(schema.benefitUsage.userId, userId),
-      eq(schema.benefitUsage.cardId, userCard.cardId)
+      eq(schema.benefitUsage.cardProfileId, cardProfile.id)
     ),
   });
 
@@ -40,7 +39,7 @@ export async function getCardSummary(
   const cardYearBounds = getCurrentCycleBounds(
     "annual_anniversary",
     now,
-    userCard.anniversaryDate
+    cardProfile.anniversaryDate
   );
 
   // Year-to-date: sum all usage within the card year
@@ -66,7 +65,7 @@ export async function getCardSummary(
     const bounds = getCurrentCycleBounds(
       benefit.cycle as BenefitCycle,
       now,
-      userCard.anniversaryDate
+      cardProfile.anniversaryDate
     );
 
     const usage = usageRecords.find(
@@ -85,7 +84,7 @@ export async function getCardSummary(
     const days = daysRemainingInCycle(
       benefit.cycle as BenefitCycle,
       now,
-      userCard.anniversaryDate
+      cardProfile.anniversaryDate
     );
 
     if (nearestExpiry === null || days < nearestExpiry) {
@@ -141,24 +140,23 @@ export interface CreditsDebugData {
 
 export async function getCreditsDebugBreakdown(
   userId: string,
-  userCardId?: string
+  cardProfileId?: string
 ): Promise<CreditsDebugData | null> {
-  const userCard = await db.query.userCards.findFirst({
-    where: userCardId
-      ? and(eq(schema.userCards.userId, userId), eq(schema.userCards.id, userCardId))
-      : eq(schema.userCards.userId, userId),
-    with: { card: true },
+  const cardProfile = await db.query.cardProfiles.findFirst({
+    where: cardProfileId
+      ? and(eq(schema.cardProfiles.userId, userId), eq(schema.cardProfiles.id, cardProfileId))
+      : and(eq(schema.cardProfiles.userId, userId), eq(schema.cardProfiles.isActive, true)),
   });
 
-  if (!userCard) return null;
+  if (!cardProfile) return null;
 
-  const cardDef = getCardDefinition(userCard.cardId);
+  const cardDef = getCardDefinition(cardProfile.cardType);
   if (!cardDef) return null;
 
   const usageRecords = await db.query.benefitUsage.findMany({
     where: and(
       eq(schema.benefitUsage.userId, userId),
-      eq(schema.benefitUsage.cardId, userCard.cardId)
+      eq(schema.benefitUsage.cardProfileId, cardProfile.id)
     ),
   });
 
@@ -166,7 +164,7 @@ export async function getCreditsDebugBreakdown(
   const cardYearBounds = getCurrentCycleBounds(
     "annual_anniversary",
     now,
-    userCard.anniversaryDate
+    cardProfile.anniversaryDate
   );
 
   let creditsUsedTotal = 0;
@@ -207,23 +205,23 @@ export async function getCreditsDebugBreakdown(
 
 export async function getBenefitUsageSummaries(
   userId: string,
-  userCardId?: string
+  cardProfileId?: string
 ): Promise<BenefitUsageSummary[]> {
-  const userCard = await db.query.userCards.findFirst({
-    where: userCardId
-      ? and(eq(schema.userCards.userId, userId), eq(schema.userCards.id, userCardId))
-      : eq(schema.userCards.userId, userId),
+  const cardProfile = await db.query.cardProfiles.findFirst({
+    where: cardProfileId
+      ? and(eq(schema.cardProfiles.userId, userId), eq(schema.cardProfiles.id, cardProfileId))
+      : and(eq(schema.cardProfiles.userId, userId), eq(schema.cardProfiles.isActive, true)),
   });
 
-  if (!userCard) return [];
+  if (!cardProfile) return [];
 
-  const cardDef = getCardDefinition(userCard.cardId);
+  const cardDef = getCardDefinition(cardProfile.cardType);
   if (!cardDef) return [];
 
   const usageRecords = await db.query.benefitUsage.findMany({
     where: and(
       eq(schema.benefitUsage.userId, userId),
-      eq(schema.benefitUsage.cardId, userCard.cardId)
+      eq(schema.benefitUsage.cardProfileId, cardProfile.id)
     ),
   });
 
@@ -234,14 +232,14 @@ export async function getBenefitUsageSummaries(
   const cardYearBounds = getCurrentCycleBounds(
     "annual_anniversary",
     now,
-    userCard.anniversaryDate
+    cardProfile.anniversaryDate
   );
 
   for (const benefit of cardDef.benefits) {
     const bounds = getCurrentCycleBounds(
       benefit.cycle as BenefitCycle,
       now,
-      userCard.anniversaryDate
+      cardProfile.anniversaryDate
     );
 
     const usage = usageRecords.find(
@@ -251,7 +249,7 @@ export async function getBenefitUsageSummaries(
     const days = daysRemainingInCycle(
       benefit.cycle as BenefitCycle,
       now,
-      userCard.anniversaryDate
+      cardProfile.anniversaryDate
     );
 
     // YTD: sum all usage for this benefit within the card year
@@ -368,27 +366,27 @@ export interface BenefitTransaction {
 export async function getBenefitTransactions(
   userId: string,
   benefitIds: string[],
-  userCardId?: string
+  cardProfileId?: string
 ): Promise<BenefitTransaction[]> {
-  const userCard = await db.query.userCards.findFirst({
-    where: userCardId
-      ? and(eq(schema.userCards.userId, userId), eq(schema.userCards.id, userCardId))
-      : eq(schema.userCards.userId, userId),
+  const cardProfile = await db.query.cardProfiles.findFirst({
+    where: cardProfileId
+      ? and(eq(schema.cardProfiles.userId, userId), eq(schema.cardProfiles.id, cardProfileId))
+      : and(eq(schema.cardProfiles.userId, userId), eq(schema.cardProfiles.isActive, true)),
   });
 
-  if (!userCard) return [];
+  if (!cardProfile) return [];
 
   const cardYearBounds = getCurrentCycleBounds(
     "annual_anniversary",
     new Date(),
-    userCard.anniversaryDate
+    cardProfile.anniversaryDate
   );
 
   // Get all usage records for these benefits within card year
   const usageRecords = await db.query.benefitUsage.findMany({
     where: and(
       eq(schema.benefitUsage.userId, userId),
-      eq(schema.benefitUsage.cardId, userCard.cardId)
+      eq(schema.benefitUsage.cardProfileId, cardProfile.id)
     ),
     with: {
       matches: {
@@ -427,51 +425,82 @@ export async function getBenefitTransactions(
   return results;
 }
 
-export async function getPlaidConnectionStatus(userId: string, userCardId?: string) {
+export async function getPlaidConnectionStatus(userId: string, cardProfileId?: string) {
+  if (cardProfileId) {
+    // Look up the card profile to get its plaidConnectionId
+    const cardProfile = await db.query.cardProfiles.findFirst({
+      where: and(
+        eq(schema.cardProfiles.userId, userId),
+        eq(schema.cardProfiles.id, cardProfileId)
+      ),
+    });
+    if (!cardProfile) return [];
+
+    const connections = await db.query.plaidConnections.findMany({
+      where: and(
+        eq(schema.plaidConnections.userId, userId),
+        eq(schema.plaidConnections.id, cardProfile.plaidConnectionId)
+      ),
+    });
+
+    return connections.map((c) => ({
+      id: c.id,
+      institutionName: c.institutionName,
+      accountMask: c.accountMask,
+      status: c.status,
+      lastSyncedAt: c.lastSyncedAt,
+    }));
+  }
+
   const connections = await db.query.plaidConnections.findMany({
-    where: userCardId
-      ? and(eq(schema.plaidConnections.userId, userId), eq(schema.plaidConnections.userCardId, userCardId))
-      : eq(schema.plaidConnections.userId, userId),
+    where: eq(schema.plaidConnections.userId, userId),
   });
 
   return connections.map((c) => ({
     id: c.id,
     institutionName: c.institutionName,
+    accountMask: c.accountMask,
     status: c.status,
     lastSyncedAt: c.lastSyncedAt,
   }));
 }
 
-export async function getUserCards(userId: string) {
-  const userCardRows = await db.query.userCards.findMany({
-    where: eq(schema.userCards.userId, userId),
-    with: { card: true },
+export async function getCardProfiles(userId: string) {
+  const profiles = await db.query.cardProfiles.findMany({
+    where: eq(schema.cardProfiles.userId, userId),
+    with: { plaidConnection: true },
   });
 
-  return userCardRows.map((uc) => ({
-    id: uc.id,
-    cardId: uc.cardId,
-    name: uc.card.name,
-    issuer: uc.card.issuer,
-    annualFee: uc.card.annualFee,
-    isPrimary: uc.isPrimary,
-    addedAt: uc.addedAt,
-  }));
+  return profiles.map((cp) => {
+    const cardDef = getCardDefinition(cp.cardType);
+    return {
+      id: cp.id,
+      cardType: cp.cardType,
+      name: cardDef?.name ?? cp.cardType,
+      issuer: cardDef?.issuer ?? "unknown",
+      annualFee: cardDef?.annualFee ?? 0,
+      isActive: cp.isActive,
+      connectionId: cp.plaidConnectionId,
+      institutionName: cp.plaidConnection.institutionName,
+      accountMask: cp.plaidConnection.accountMask,
+      createdAt: cp.createdAt,
+    };
+  });
 }
 
-export async function getUserAnniversaryStatus(userId: string, userCardId?: string) {
-  const userCard = await db.query.userCards.findFirst({
-    where: userCardId
-      ? and(eq(schema.userCards.userId, userId), eq(schema.userCards.id, userCardId))
-      : eq(schema.userCards.userId, userId),
+export async function getUserAnniversaryStatus(userId: string, cardProfileId?: string) {
+  const cardProfile = await db.query.cardProfiles.findFirst({
+    where: cardProfileId
+      ? and(eq(schema.cardProfiles.userId, userId), eq(schema.cardProfiles.id, cardProfileId))
+      : and(eq(schema.cardProfiles.userId, userId), eq(schema.cardProfiles.isActive, true)),
   });
 
-  if (!userCard) return null;
+  if (!cardProfile) return null;
 
   return {
-    userCardId: userCard.id,
-    cardId: userCard.cardId,
-    anniversaryDate: userCard.anniversaryDate,
-    anniversarySource: userCard.anniversarySource,
+    cardProfileId: cardProfile.id,
+    cardType: cardProfile.cardType,
+    anniversaryDate: cardProfile.anniversaryDate,
+    anniversarySource: cardProfile.anniversarySource,
   };
 }

@@ -1,7 +1,7 @@
 import { requireAuth } from "@/lib/auth-helpers";
 import { redirect } from "next/navigation";
 import {
-  getUserCards,
+  getCardProfiles,
   getRecentTransactions,
   getBenefitUsageSummaries,
   getPlaidConnectionStatus,
@@ -25,17 +25,17 @@ export default async function SpendingPage({
   const user = await requireAuth();
   const params = await searchParams;
 
-  const userCards = await getUserCards(user.id!);
-  if (userCards.length === 0) {
+  const cardProfilesList = await getCardProfiles(user.id!);
+  if (cardProfilesList.length === 0) {
     redirect("/onboarding");
   }
 
-  // Resolve active card: use searchParam if valid, else primary, else first
+  // Resolve active card: use searchParam if valid, else first active, else first
   const requestedCardId = params.cardId;
   const activeCard =
-    (requestedCardId && userCards.find((c) => c.id === requestedCardId)) ||
-    userCards.find((c) => c.isPrimary) ||
-    userCards[0];
+    (requestedCardId && cardProfilesList.find((c) => c.id === requestedCardId)) ||
+    cardProfilesList.find((c) => c.isActive) ||
+    cardProfilesList[0];
 
   // Fetch date range first so we can default to the most recent month with data
   const now = new Date();
@@ -78,16 +78,17 @@ export default async function SpendingPage({
         <h1 className="text-h1 font-semibold tracking-tight">Spending</h1>
         <div className="mt-1">
           <CardSwitcher
-            cards={userCards.map((c) => ({
+            cards={cardProfilesList.map((c) => ({
               id: c.id,
               name: c.name,
               issuer: c.issuer,
-              isPrimary: c.isPrimary,
+              isActive: c.isActive,
+              accountMask: c.accountMask,
             }))}
             activeCardId={activeCard.id}
             basePath="/spending"
           />
-          {userCards.length <= 1 && (
+          {cardProfilesList.length <= 1 && (
             <p className="text-[var(--text-secondary)]">{activeCard.name}</p>
           )}
         </div>

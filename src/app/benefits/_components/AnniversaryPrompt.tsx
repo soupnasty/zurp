@@ -8,10 +8,10 @@ import { Button } from "@/components/ui/Button";
 import { setAnniversaryDate } from "@/app/onboarding/actions";
 
 interface AnniversaryPromptProps {
-  userCardId: string;
+  cardProfileId: string;
 }
 
-export function AnniversaryPrompt({ userCardId }: AnniversaryPromptProps) {
+export function AnniversaryPrompt({ cardProfileId }: AnniversaryPromptProps) {
   const router = useRouter();
   const [dateStr, setDateStr] = useState("");
   const [saving, setSaving] = useState(false);
@@ -20,7 +20,7 @@ export function AnniversaryPrompt({ userCardId }: AnniversaryPromptProps) {
     if (!dateStr) return;
     setSaving(true);
     try {
-      await setAnniversaryDate(userCardId, new Date(dateStr + "T00:00:00"));
+      await setAnniversaryDate(cardProfileId, new Date(dateStr + "T00:00:00"));
       router.refresh();
     } catch {
       // Error handling

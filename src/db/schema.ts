@@ -120,26 +120,6 @@ export const benefits = pgTable("benefits", {
     .$defaultFn(() => new Date()),
 });
 
-export const userCards = pgTable("user_cards", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  userId: text("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  cardId: text("card_id")
-    .notNull()
-    .references(() => cards.id),
-  anniversaryDate: timestamp("anniversary_date", { mode: "date" }),
-  anniversarySource: text("anniversary_source")
-    .notNull()
-    .default("pending"), // "auto_detected" | "user_provided" | "pending"
-  isPrimary: boolean("is_primary").notNull().default(true),
-  addedAt: timestamp("added_at", { mode: "date" })
-    .notNull()
-    .$defaultFn(() => new Date()),
-});
-
 export const plaidConnections = pgTable("plaid_connections", {
   id: text("id")
     .primaryKey()
@@ -147,12 +127,11 @@ export const plaidConnections = pgTable("plaid_connections", {
   userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
-  userCardId: text("user_card_id")
-    .references(() => userCards.id, { onDelete: "cascade" }),
   plaidItemId: text("plaid_item_id").notNull(),
   plaidAccessToken: text("plaid_access_token").notNull(), // encrypted
   institutionName: text("institution_name").notNull(),
   accountId: text("account_id").notNull(),
+  accountMask: text("account_mask"), // last 4 digits
   status: text("status").notNull().default("active"), // "active" | "needs_reauth" | "disconnected"
   lastSyncCursor: text("last_sync_cursor"),
   lastSyncedAt: timestamp("last_synced_at", { mode: "date" }),
@@ -160,6 +139,39 @@ export const plaidConnections = pgTable("plaid_connections", {
     .notNull()
     .$defaultFn(() => new Date()),
 });
+
+export const cardProfiles = pgTable(
+  "card_profiles",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    plaidConnectionId: text("plaid_connection_id")
+      .notNull()
+      .references(() => plaidConnections.id, { onDelete: "cascade" }),
+    cardType: text("card_type").notNull(), // e.g. "chase_sapphire_reserve"
+    cardLabel: text("card_label"), // optional user-defined label
+    isActive: boolean("is_active").notNull().default(true),
+    anniversaryDate: timestamp("anniversary_date", { mode: "date" }),
+    anniversarySource: text("anniversary_source")
+      .notNull()
+      .default("pending"), // "auto_detected" | "user_provided" | "pending"
+    createdAt: timestamp("created_at", { mode: "date" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => [
+    index("card_profiles_user_idx").on(table.userId),
+    // One active profile per connection
+    unique("card_profiles_connection_active").on(
+      table.plaidConnectionId,
+      table.isActive
+    ),
+  ]
+);
 
 export const transactions = pgTable(
   "transactions",
@@ -204,9 +216,9 @@ export const benefitUsage = pgTable(
     benefitId: text("benefit_id")
       .notNull()
       .references(() => benefits.id, { onDelete: "cascade" }),
-    cardId: text("card_id")
+    cardProfileId: text("card_profile_id")
       .notNull()
-      .references(() => cards.id),
+      .references(() => cardProfiles.id, { onDelete: "cascade" }),
     periodKey: text("period_key").notNull(),
     cycleStart: timestamp("cycle_start", { mode: "date" }).notNull(),
     cycleEnd: timestamp("cycle_end", { mode: "date" }).notNull(),
@@ -296,6 +308,9 @@ export const insights = pgTable(
     userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
+    cardProfileId: text("card_profile_id").references(() => cardProfiles.id, {
+      onDelete: "cascade",
+    }),
     category: text("category").notNull(), // A1, A2, B1, B2, B3, C0, C1, C2
     benefitId: text("benefit_id").references(() => benefits.id),
     templateKey: text("template_key").notNull(),
@@ -331,7 +346,11 @@ export const insights = pgTable(
     resolvedAt: timestamp("resolved_at", { mode: "date" }),
   },
   (table) => [
-    unique("insights_user_dedup").on(table.userId, table.dedupKey),
+    unique("insights_user_card_dedup").on(
+      table.userId,
+      table.cardProfileId,
+      table.dedupKey
+    ),
     index("insights_user_state_idx").on(table.userId, table.state),
     index("insights_user_score_idx").on(table.userId, table.totalScore),
   ]
@@ -369,17 +388,87 @@ export const competitorMap = pgTable(
   ]
 );
 
+// ── Benefit Overrides (durable manual redemption intent) ──
+
+export const benefitOverrides = pgTable(
+  "benefit_overrides",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    cardProfileId: text("card_profile_id")
+      .notNull()
+      .references(() => cardProfiles.id, { onDelete: "cascade" }),
+    benefitId: text("benefit_id")
+      .notNull()
+      .references(() => benefits.id, { onDelete: "cascade" }),
+    periodKey: text("period_key").notNull(),
+    overrideType: text("override_type").notNull(), // "redeemed"
+    createdAt: timestamp("created_at", { mode: "date" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => [
+    unique("benefit_overrides_unique").on(
+      table.userId,
+      table.benefitId,
+      table.periodKey
+    ),
+  ]
+);
+
+// ── Comparison Results (stub for future Compare page) ──
+
+export const comparisonResults = pgTable(
+  "comparison_results",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    plaidConnectionId: text("plaid_connection_id")
+      .notNull()
+      .references(() => plaidConnections.id, { onDelete: "cascade" }),
+    cardType: text("card_type").notNull(),
+    totalEstimatedValue: real("total_estimated_value").notNull(),
+    creditValue: real("credit_value").notNull(),
+    pointsValue: real("points_value").notNull(),
+    annualFee: integer("annual_fee").notNull(),
+    capturePct: real("capture_pct").notNull(),
+    benefitBreakdown: jsonb("benefit_breakdown").notNull(),
+    analysisPeriodStart: timestamp("analysis_period_start", { mode: "date" }).notNull(),
+    analysisPeriodEnd: timestamp("analysis_period_end", { mode: "date" }).notNull(),
+    transactionCount: integer("transaction_count").notNull(),
+    generatedAt: timestamp("generated_at", { mode: "date" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => [
+    unique("comparison_results_unique").on(
+      table.userId,
+      table.plaidConnectionId,
+      table.cardType
+    ),
+  ]
+);
+
 // ── Relations ──
 
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
   sessions: many(sessions),
-  userCards: many(userCards),
+  cardProfiles: many(cardProfiles),
   plaidConnections: many(plaidConnections),
   transactions: many(transactions),
   benefitUsage: many(benefitUsage),
   transactionFlags: many(transactionFlags),
   insights: many(insights),
+  benefitOverrides: many(benefitOverrides),
 }));
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -398,7 +487,6 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
 
 export const cardsRelations = relations(cards, ({ many }) => ({
   benefits: many(benefits),
-  userCards: many(userCards),
 }));
 
 export const benefitsRelations = relations(benefits, ({ one, many }) => ({
@@ -409,18 +497,6 @@ export const benefitsRelations = relations(benefits, ({ one, many }) => ({
   usage: many(benefitUsage),
 }));
 
-export const userCardsRelations = relations(userCards, ({ one, many }) => ({
-  user: one(users, {
-    fields: [userCards.userId],
-    references: [users.id],
-  }),
-  card: one(cards, {
-    fields: [userCards.cardId],
-    references: [cards.id],
-  }),
-  plaidConnections: many(plaidConnections),
-}));
-
 export const plaidConnectionsRelations = relations(
   plaidConnections,
   ({ one, many }) => ({
@@ -428,11 +504,24 @@ export const plaidConnectionsRelations = relations(
       fields: [plaidConnections.userId],
       references: [users.id],
     }),
-    userCard: one(userCards, {
-      fields: [plaidConnections.userCardId],
-      references: [userCards.id],
-    }),
+    cardProfiles: many(cardProfiles),
     transactions: many(transactions),
+  })
+);
+
+export const cardProfilesRelations = relations(
+  cardProfiles,
+  ({ one, many }) => ({
+    user: one(users, {
+      fields: [cardProfiles.userId],
+      references: [users.id],
+    }),
+    plaidConnection: one(plaidConnections, {
+      fields: [cardProfiles.plaidConnectionId],
+      references: [plaidConnections.id],
+    }),
+    benefitUsage: many(benefitUsage),
+    insights: many(insights),
   })
 );
 
@@ -462,9 +551,9 @@ export const benefitUsageRelations = relations(
       fields: [benefitUsage.benefitId],
       references: [benefits.id],
     }),
-    card: one(cards, {
-      fields: [benefitUsage.cardId],
-      references: [cards.id],
+    cardProfile: one(cardProfiles, {
+      fields: [benefitUsage.cardProfileId],
+      references: [cardProfiles.id],
     }),
     matches: many(matchedTx),
   })
@@ -504,6 +593,10 @@ export const insightsRelations = relations(insights, ({ one, many }) => ({
     fields: [insights.userId],
     references: [users.id],
   }),
+  cardProfile: one(cardProfiles, {
+    fields: [insights.cardProfileId],
+    references: [cardProfiles.id],
+  }),
   benefit: one(benefits, {
     fields: [insights.benefitId],
     references: [benefits.id],
@@ -521,6 +614,24 @@ export const insightImpressionsRelations = relations(
     insight: one(insights, {
       fields: [insightImpressions.insightId],
       references: [insights.id],
+    }),
+  })
+);
+
+export const benefitOverridesRelations = relations(
+  benefitOverrides,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [benefitOverrides.userId],
+      references: [users.id],
+    }),
+    cardProfile: one(cardProfiles, {
+      fields: [benefitOverrides.cardProfileId],
+      references: [cardProfiles.id],
+    }),
+    benefit: one(benefits, {
+      fields: [benefitOverrides.benefitId],
+      references: [benefits.id],
     }),
   })
 );

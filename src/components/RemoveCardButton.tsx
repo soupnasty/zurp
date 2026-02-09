@@ -2,21 +2,21 @@
 
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
-import { removeUserCard } from "@/lib/actions";
+import { removeCardProfile } from "@/lib/actions";
 
 interface RemoveCardButtonProps {
-  userCardId: string;
+  cardProfileId: string;
   cardName: string;
 }
 
-export function RemoveCardButton({ userCardId, cardName }: RemoveCardButtonProps) {
+export function RemoveCardButton({ cardProfileId, cardName }: RemoveCardButtonProps) {
   const [confirming, setConfirming] = useState(false);
   const [removing, setRemoving] = useState(false);
 
   const handleRemove = async () => {
     setRemoving(true);
     try {
-      await removeUserCard(userCardId);
+      await removeCardProfile(cardProfileId);
     } catch {
       setRemoving(false);
       setConfirming(false);

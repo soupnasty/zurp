@@ -79,6 +79,25 @@ export async function POST(request: Request) {
       .set({ matchedStatus: "matched" })
       .where(eq(schema.transactions.id, transactionId));
 
+    // Persist durable "added" flag so this match survives reprocessing
+    const flagBenefitId = benefitId || usage.benefitId;
+    await db
+      .delete(schema.transactionFlags)
+      .where(
+        and(
+          eq(schema.transactionFlags.userId, session.user.id),
+          eq(schema.transactionFlags.transactionId, transactionId),
+          eq(schema.transactionFlags.benefitId, flagBenefitId)
+        )
+      );
+    await db.insert(schema.transactionFlags).values({
+      userId: session.user.id,
+      transactionId,
+      benefitId: flagBenefitId,
+      flagType: "added",
+      originalMatch: false,
+    });
+
     return NextResponse.json({ creditApplied });
   } catch (error: any) {
     console.error("Error confirming benefit:", error);

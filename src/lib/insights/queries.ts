@@ -78,10 +78,10 @@ export async function getCompetitorMap(
   }));
 }
 
-/** Get total benefits captured within a card year for a user+card. */
+/** Get total benefits captured within a card year for a user+cardProfile. */
 export async function getTotalBenefitsCaptured(
   userId: string,
-  cardId: string,
+  cardProfileId: string,
   cardYearStart: Date,
   cardYearEnd: Date
 ): Promise<number> {
@@ -91,7 +91,7 @@ export async function getTotalBenefitsCaptured(
     .where(
       and(
         eq(schema.benefitUsage.userId, userId),
-        eq(schema.benefitUsage.cardId, cardId),
+        eq(schema.benefitUsage.cardProfileId, cardProfileId),
         gte(schema.benefitUsage.cycleStart, cardYearStart),
         lte(schema.benefitUsage.cycleEnd, cardYearEnd)
       )

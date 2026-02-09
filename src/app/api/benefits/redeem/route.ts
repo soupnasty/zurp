@@ -24,19 +24,22 @@ export async function POST(request: Request) {
       );
     }
 
-    // Get user's card to determine anniversary date and card definition
-    const userCard = await db.query.userCards.findFirst({
-      where: eq(schema.userCards.userId, session.user.id),
+    // Get user's active card profile
+    const cardProfile = await db.query.cardProfiles.findFirst({
+      where: and(
+        eq(schema.cardProfiles.userId, session.user.id),
+        eq(schema.cardProfiles.isActive, true)
+      ),
     });
 
-    if (!userCard) {
+    if (!cardProfile) {
       return NextResponse.json(
         { error: "No card found" },
         { status: 404 }
       );
     }
 
-    const cardDef = getCardDefinition(userCard.cardId);
+    const cardDef = getCardDefinition(cardProfile.cardType);
     const benefitDef = cardDef?.benefits.find((b) => b.id === benefitId);
 
     if (!benefitDef) {
@@ -50,7 +53,7 @@ export async function POST(request: Request) {
     const bounds = getCurrentCycleBounds(
       benefitDef.cycle as BenefitCycle,
       now,
-      userCard.anniversaryDate
+      cardProfile.anniversaryDate
     );
 
     // Find current-period usage
@@ -94,7 +97,7 @@ export async function POST(request: Request) {
       await db.insert(schema.benefitUsage).values({
         userId: session.user.id,
         benefitId,
-        cardId: userCard.cardId,
+        cardProfileId: cardProfile.id,
         periodKey: bounds.periodKey,
         cycleStart: bounds.cycleStart,
         cycleEnd: bounds.cycleEnd,
@@ -105,6 +108,24 @@ export async function POST(request: Request) {
         overrideNote: originalNote,
       });
     }
+
+    // Persist durable override (survives reprocessing)
+    await db
+      .delete(schema.benefitOverrides)
+      .where(
+        and(
+          eq(schema.benefitOverrides.userId, session.user.id),
+          eq(schema.benefitOverrides.benefitId, benefitId),
+          eq(schema.benefitOverrides.periodKey, bounds.periodKey)
+        )
+      );
+    await db.insert(schema.benefitOverrides).values({
+      userId: session.user.id,
+      cardProfileId: cardProfile.id,
+      benefitId,
+      periodKey: bounds.periodKey,
+      overrideType: "redeemed",
+    });
 
     // Refresh insights after manual redeem
     try {
@@ -139,19 +160,22 @@ export async function DELETE(request: Request) {
       );
     }
 
-    // Get user's card to determine cycle bounds
-    const userCard = await db.query.userCards.findFirst({
-      where: eq(schema.userCards.userId, session.user.id),
+    // Get user's active card profile
+    const cardProfile = await db.query.cardProfiles.findFirst({
+      where: and(
+        eq(schema.cardProfiles.userId, session.user.id),
+        eq(schema.cardProfiles.isActive, true)
+      ),
     });
 
-    if (!userCard) {
+    if (!cardProfile) {
       return NextResponse.json(
         { error: "No card found" },
         { status: 404 }
       );
     }
 
-    const cardDef = getCardDefinition(userCard.cardId);
+    const cardDef = getCardDefinition(cardProfile.cardType);
     const benefitDef = cardDef?.benefits.find((b) => b.id === benefitId);
 
     if (!benefitDef) {
@@ -165,7 +189,7 @@ export async function DELETE(request: Request) {
     const bounds = getCurrentCycleBounds(
       benefitDef.cycle as BenefitCycle,
       now,
-      userCard.anniversaryDate
+      cardProfile.anniversaryDate
     );
 
     if (reset) {
@@ -238,6 +262,17 @@ export async function DELETE(request: Request) {
         })
         .where(eq(schema.benefitUsage.id, usage.id));
     }
+
+    // Remove durable override
+    await db
+      .delete(schema.benefitOverrides)
+      .where(
+        and(
+          eq(schema.benefitOverrides.userId, session.user.id),
+          eq(schema.benefitOverrides.benefitId, benefitId),
+          eq(schema.benefitOverrides.periodKey, bounds.periodKey)
+        )
+      );
 
     // Refresh insights after undo/reset
     try {

@@ -4,7 +4,7 @@ import { encrypt } from "@/lib/encryption";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
 import { auth } from "@/lib/auth";
-import { detectCard } from "@/lib/cards/detect";
+import { detectCardWithFallback } from "@/lib/cards/detect";
 
 export async function POST(request: Request) {
   try {
@@ -15,11 +15,11 @@ export async function POST(request: Request) {
 
     const {
       publicToken,
-      userCardId,
       institutionName,
       accountId,
       accountName,
       accountOfficialName,
+      accountMask,
     } = await request.json();
 
     if (!publicToken) {
@@ -39,26 +39,47 @@ export async function POST(request: Request) {
     // Encrypt the access token before storing
     const encryptedAccessToken = encrypt(access_token);
 
-    // Create plaid connection record (userCardId is optional now)
+    // Create plaid connection record (standalone, no userCardId)
     const [connection] = await db
       .insert(schema.plaidConnections)
       .values({
         userId: session.user.id,
-        userCardId: userCardId || null,
         plaidItemId: item_id,
         plaidAccessToken: encryptedAccessToken,
         institutionName: institutionName || "Unknown",
         accountId: accountId || "",
+        accountMask: accountMask || null,
         status: "active",
       })
       .returning();
 
-    // Try to auto-detect card from account metadata
-    const detectedCard = detectCard(accountName, accountOfficialName);
+    // Try to auto-detect card from account metadata (with issuer fallback)
+    const detectedCard = detectCardWithFallback(
+      accountName,
+      accountOfficialName,
+      institutionName
+    );
+
+    let cardProfileId: string | null = null;
+
+    if (detectedCard) {
+      const [cardProfile] = await db
+        .insert(schema.cardProfiles)
+        .values({
+          userId: session.user.id,
+          plaidConnectionId: connection.id,
+          cardType: detectedCard.cardId,
+          isActive: true,
+          anniversarySource: "pending",
+        })
+        .returning();
+      cardProfileId = cardProfile.id;
+    }
 
     return NextResponse.json({
       connectionId: connection.id,
       itemId: item_id,
+      cardProfileId,
       detectedCard,
     });
   } catch (error: any) {

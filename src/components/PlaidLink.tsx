@@ -12,6 +12,7 @@ interface PlaidLinkProps {
   userId: string;
   onSuccess: (result: {
     connectionId: string;
+    cardProfileId: string | null;
     detectedCard: DetectedCard | null;
   }) => void;
   onError?: (error: string) => void;
@@ -54,9 +55,10 @@ export function PlaidLinkButton({
         const accountId = account?.id || "";
         const institutionName = metadata.institution?.name || "Unknown";
         const accountName = account?.name || "";
-        // react-plaid-link types don't include official_name but Plaid returns it
-        const accountOfficialName =
-          (account as unknown as Record<string, unknown>)?.official_name as string || "";
+        // react-plaid-link types don't include official_name/mask but Plaid returns them
+        const accountMeta = account as unknown as Record<string, unknown>;
+        const accountOfficialName = (accountMeta?.official_name as string) || "";
+        const accountMask = (accountMeta?.mask as string) || account?.mask || "";
 
         const res = await fetch("/api/plaid/exchange-token", {
           method: "POST",
@@ -68,6 +70,7 @@ export function PlaidLinkButton({
             accountId,
             accountName,
             accountOfficialName,
+            accountMask,
           }),
         });
 
@@ -75,6 +78,7 @@ export function PlaidLinkButton({
         if (data.connectionId) {
           onSuccess({
             connectionId: data.connectionId,
+            cardProfileId: data.cardProfileId || null,
             detectedCard: data.detectedCard || null,
           });
         } else {

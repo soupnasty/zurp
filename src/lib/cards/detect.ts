@@ -47,3 +47,34 @@ export function detectCard(
 
   return null;
 }
+
+/**
+ * Detect a card with issuer fallback.
+ * 1. Try exact detection via detectCard()
+ * 2. Fall back to issuer name match (pick highest annualFee)
+ * Returns null if no match at all.
+ */
+export function detectCardWithFallback(
+  accountName: string | null | undefined,
+  officialName: string | null | undefined,
+  institutionName: string | null | undefined
+): DetectionResult | null {
+  // Try exact detection first
+  const exact = detectCard(accountName, officialName);
+  if (exact) return exact;
+
+  // Issuer fallback: fuzzy match institution name against card issuers
+  // Plaid may return "Chase", "Chase Bank", "JPMorgan Chase", etc.
+  if (!institutionName) return null;
+  const normalized = institutionName.toLowerCase();
+  const allCards = getAllCardDefinitions();
+  const issuerCards = allCards.filter((c) => normalized.includes(c.issuer.toLowerCase()));
+  if (issuerCards.length === 0) return null;
+
+  // Pick the card with the highest annual fee (premium heuristic)
+  const best = issuerCards.reduce((a, b) =>
+    b.annualFee > a.annualFee ? b : a
+  );
+
+  return { cardId: best.id, confidence: "low" };
+}

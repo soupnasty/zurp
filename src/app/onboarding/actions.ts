@@ -6,71 +6,50 @@ import { eq } from "drizzle-orm";
 import { requireAuth } from "@/lib/auth-helpers";
 import { initializeBenefitUsage } from "@/lib/engine/orchestrator";
 
-export async function addUserCard(cardId: string) {
-  const user = await requireAuth();
-
-  const [userCard] = await db
-    .insert(schema.userCards)
-    .values({
-      userId: user.id!,
-      cardId,
-      isPrimary: true,
-      anniversarySource: "pending",
-    })
-    .returning();
-
-  return userCard;
-}
-
-export async function addUserCardAndLinkConnection(
-  cardId: string,
+export async function createCardProfile(
+  cardType: string,
   connectionId: string
 ) {
   const user = await requireAuth();
 
-  const [userCard] = await db
-    .insert(schema.userCards)
+  const [cardProfile] = await db
+    .insert(schema.cardProfiles)
     .values({
       userId: user.id!,
-      cardId,
-      isPrimary: true,
+      plaidConnectionId: connectionId,
+      cardType,
+      isActive: true,
       anniversarySource: "pending",
     })
     .returning();
 
-  // Link the plaid connection to the new user card
-  await db
-    .update(schema.plaidConnections)
-    .set({ userCardId: userCard.id })
-    .where(eq(schema.plaidConnections.id, connectionId));
-
-  return userCard;
+  return cardProfile;
 }
 
 export async function setAnniversaryDate(
-  userCardId: string,
+  cardProfileId: string,
   date: Date
 ) {
   const user = await requireAuth();
 
-  const userCard = await db.query.userCards.findFirst({
-    where: eq(schema.userCards.id, userCardId),
+  const cardProfile = await db.query.cardProfiles.findFirst({
+    where: eq(schema.cardProfiles.id, cardProfileId),
   });
 
-  if (!userCard || userCard.userId !== user.id!) {
+  if (!cardProfile || cardProfile.userId !== user.id!) {
     throw new Error("Unauthorized");
   }
 
   await db
-    .update(schema.userCards)
+    .update(schema.cardProfiles)
     .set({
       anniversaryDate: date,
       anniversarySource: "user_provided",
     })
-    .where(eq(schema.userCards.id, userCardId));
+    .where(eq(schema.cardProfiles.id, cardProfileId));
 
   // Initialize benefit usage records with the anniversary date
-  await initializeBenefitUsage(user.id!, userCard.cardId, date);
+  await initializeBenefitUsage(user.id!, cardProfile.cardType, cardProfileId, date);
 
   return { success: true };
 }

@@ -7,7 +7,8 @@ interface CardOption {
   id: string;
   name: string;
   issuer: string;
-  isPrimary: boolean;
+  isActive: boolean;
+  accountMask?: string | null;
 }
 
 interface CardSwitcherProps {
@@ -21,8 +22,6 @@ export function CardSwitcher({ cards, activeCardId, basePath = "/benefits" }: Ca
   const searchParams = useSearchParams();
 
   if (cards.length <= 1) return null;
-
-  const activeCard = cards.find((c) => c.id === activeCardId);
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -40,6 +39,7 @@ export function CardSwitcher({ cards, activeCardId, basePath = "/benefits" }: Ca
         {cards.map((card) => (
           <option key={card.id} value={card.id}>
             {card.name}
+            {card.accountMask ? ` ····${card.accountMask}` : ""}
           </option>
         ))}
       </select>

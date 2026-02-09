@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { requireAuth } from "@/lib/auth-helpers";
-import { getPlaidConnectionStatus, getUserCards } from "@/lib/queries";
+import { getPlaidConnectionStatus, getCardProfiles } from "@/lib/queries";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { SignOutButton } from "./_components/SignOutButton";
@@ -14,9 +14,9 @@ import Link from "next/link";
 export default async function SettingsPage() {
   const user = await requireAuth();
 
-  const [connections, userCards] = await Promise.all([
+  const [connections, cardProfilesList] = await Promise.all([
     getPlaidConnectionStatus(user.id!),
-    getUserCards(user.id!),
+    getCardProfiles(user.id!),
   ]);
 
   return (
@@ -52,23 +52,26 @@ export default async function SettingsPage() {
             </div>
           </h2>
           <div className="space-y-3">
-            {userCards.map((uc) => (
-              <Card key={uc.id}>
+            {cardProfilesList.map((cp) => (
+              <Card key={cp.id}>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-[var(--text-body)] font-semibold text-[var(--text-primary)]">
-                      {uc.name}
+                      {cp.name}
                     </p>
                     <p className="text-[var(--text-caption)] text-[var(--text-secondary)]">
-                      {uc.issuer} &middot; Added{" "}
-                      {new Date(uc.addedAt).toLocaleDateString("en-US", {
+                      {cp.issuer}
+                      {cp.accountMask && ` \u00b7\u00b7\u00b7\u00b7 ${cp.accountMask}`}
+                      {" \u00b7 "}
+                      Added{" "}
+                      {new Date(cp.createdAt).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
                         year: "numeric",
                       })}
                     </p>
                   </div>
-                  <RemoveCardButton userCardId={uc.id} cardName={uc.name} />
+                  <RemoveCardButton cardProfileId={cp.id} cardName={cp.name} />
                 </div>
               </Card>
             ))}

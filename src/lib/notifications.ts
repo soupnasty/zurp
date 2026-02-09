@@ -15,18 +15,34 @@ const STALE_THRESHOLD_HOURS = 24;
 
 export async function getConnectionAlerts(
   userId: string,
-  userCardId?: string
+  cardProfileId?: string
 ): Promise<ConnectionAlert[]> {
+  let connectionIds: string[] | undefined;
+
+  if (cardProfileId) {
+    const cardProfile = await db.query.cardProfiles.findFirst({
+      where: and(
+        eq(schema.cardProfiles.userId, userId),
+        eq(schema.cardProfiles.id, cardProfileId)
+      ),
+    });
+    if (cardProfile) {
+      connectionIds = [cardProfile.plaidConnectionId];
+    }
+  }
+
   const connections = await db.query.plaidConnections.findMany({
-    where: userCardId
-      ? and(eq(schema.plaidConnections.userId, userId), eq(schema.plaidConnections.userCardId, userCardId))
-      : eq(schema.plaidConnections.userId, userId),
+    where: eq(schema.plaidConnections.userId, userId),
   });
+
+  const filtered = connectionIds
+    ? connections.filter((c) => connectionIds!.includes(c.id))
+    : connections;
 
   const alerts: ConnectionAlert[] = [];
   const now = Date.now();
 
-  for (const conn of connections) {
+  for (const conn of filtered) {
     if (conn.status === "needs_reauth") {
       alerts.push({
         connectionId: conn.id,

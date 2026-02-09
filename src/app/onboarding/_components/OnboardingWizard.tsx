@@ -3,10 +3,8 @@
 import { useState } from "react";
 
 import { CardSelection } from "./CardSelection";
-import { AnniversarySetup } from "./AnniversarySetup";
 import { PlaidLinkButton } from "@/components/PlaidLink";
-import { addUserCardAndLinkConnection, setAnniversaryDate } from "../actions";
-import { CheckCircle2 } from "lucide-react";
+import { createCardProfile } from "../actions";
 
 interface Card {
   id: string;
@@ -25,23 +23,113 @@ interface OnboardingWizardProps {
   cards: Card[];
 }
 
-type Step = "link-plaid" | "confirm-card" | "anniversary" | "done";
+const MIN_LOADING_MS = 2000;
+
+async function syncConnection(connectionId: string) {
+  await fetch("/api/plaid/sync", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ connectionId }),
+  });
+}
+
+function ZurpLoader() {
+  return (
+    <div className="flex items-center justify-center gap-4 py-10">
+      {/* Animated logo mark */}
+      <svg
+        width="80"
+        height="56"
+        viewBox="0 0 50 42"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        {/* Card outline */}
+        <rect
+          x="0"
+          y="8"
+          width="50"
+          height="34"
+          rx="5"
+          stroke="#58A6FF"
+          strokeWidth="2.5"
+          opacity="0.4"
+        />
+        {/* Card stripe */}
+        <line
+          x1="0"
+          y1="20"
+          x2="50"
+          y2="20"
+          stroke="#58A6FF"
+          strokeWidth="1.2"
+          opacity="0.2"
+        />
+        {/* Animated progress dots */}
+        <circle cx="12" cy="32" r="2.5" fill="#58A6FF">
+          <animate
+            attributeName="opacity"
+            values="1;0.2;0.2;1"
+            dur="1.2s"
+            repeatCount="indefinite"
+            begin="0s"
+          />
+        </circle>
+        <circle cx="21" cy="32" r="2.5" fill="#58A6FF">
+          <animate
+            attributeName="opacity"
+            values="0.2;1;0.2;0.2"
+            dur="1.2s"
+            repeatCount="indefinite"
+            begin="0s"
+          />
+        </circle>
+        <circle cx="30" cy="32" r="2.5" fill="#58A6FF">
+          <animate
+            attributeName="opacity"
+            values="0.2;0.2;1;0.2"
+            dur="1.2s"
+            repeatCount="indefinite"
+            begin="0s"
+          />
+        </circle>
+      </svg>
+
+      <p className="text-3xl font-semibold tracking-tight text-[var(--text-primary)]">
+        zurping...
+      </p>
+    </div>
+  );
+}
 
 export function OnboardingWizard({ userId, cards }: OnboardingWizardProps) {
-  const [step, setStep] = useState<Step>("link-plaid");
   const [connectionId, setConnectionId] = useState<string | null>(null);
-  const [detectedCard, setDetectedCard] = useState<DetectedCard | null>(null);
-  const [userCardId, setUserCardId] = useState<string | null>(null);
+  const [showCardFallback, setShowCardFallback] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const syncAndRedirect = async (connId: string) => {
+    setSyncing(true);
+    const minTimer = new Promise((r) => setTimeout(r, MIN_LOADING_MS));
+    const sync = syncConnection(connId).catch(() => {});
+    await Promise.all([sync, minTimer]);
+    window.location.href = "/benefits";
+  };
 
   const handlePlaidSuccess = async (result: {
     connectionId: string;
+    cardProfileId: string | null;
     detectedCard: DetectedCard | null;
   }) => {
     setConnectionId(result.connectionId);
-    setDetectedCard(result.detectedCard);
     setError(null);
-    setStep("confirm-card");
+
+    if (result.cardProfileId) {
+      await syncAndRedirect(result.connectionId);
+    } else {
+      setShowCardFallback(true);
+    }
   };
 
   const handleCardSelect = async (cardId: string) => {
@@ -49,65 +137,27 @@ export function OnboardingWizard({ userId, cards }: OnboardingWizardProps) {
     setError(null);
 
     try {
-      const userCard = await addUserCardAndLinkConnection(cardId, connectionId);
-      setUserCardId(userCard.id);
-
-      // Trigger initial sync
-      try {
-        await fetch("/api/plaid/sync", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ connectionId }),
-        });
-      } catch {
-        // Non-blocking: sync will happen later
-      }
-
-      setStep("anniversary");
+      await createCardProfile(cardId, connectionId);
+      await syncAndRedirect(connectionId);
     } catch {
       setError("Failed to add card. Please try again.");
     }
   };
 
-  const handleAnniversarySubmit = async (date: Date) => {
-    if (!userCardId) return;
-    setError(null);
-
-    try {
-      await setAnniversaryDate(userCardId, date);
-      setStep("done");
-      setTimeout(() => window.location.href = "/benefits", 1500);
-    } catch {
-      setError("Failed to save anniversary date.");
-    }
-  };
-
-  const handleSkipAnniversary = () => {
-    setStep("done");
-    setTimeout(() => window.location.href = "/benefits", 1500);
-  };
-
-  const stepNumber =
-    step === "link-plaid" ? 1 : step === "confirm-card" ? 2 : step === "anniversary" ? 3 : 4;
+  if (syncing) {
+    return (
+      <div className="flex max-h-full flex-col overflow-hidden">
+        <div className="min-h-0 overflow-y-auto rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-secondary)] p-6">
+          <ZurpLoader />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex max-h-full flex-col overflow-hidden">
-      {/* Progress indicator */}
-      <div className="mb-8 flex shrink-0 items-center justify-center gap-2">
-        {[1, 2, 3].map((n) => (
-          <div
-            key={n}
-            className={`h-2 w-12 rounded-full transition-colors ${
-              n <= stepNumber
-                ? "bg-[var(--accent)]"
-                : "bg-[var(--border-default)]"
-            }`}
-          />
-        ))}
-      </div>
-
       <div className="min-h-0 overflow-y-auto rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-secondary)] p-6">
-        {step === "link-plaid" && (
+        {!showCardFallback ? (
           <div>
             <h2 className="text-h3 font-semibold">Link Your Bank Account</h2>
             <p className="mt-2 text-[var(--text-secondary)]">
@@ -122,35 +172,12 @@ export function OnboardingWizard({ userId, cards }: OnboardingWizardProps) {
               />
             </div>
           </div>
-        )}
-
-        {step === "confirm-card" && (
+        ) : (
           <CardSelection
             cards={cards}
             onSelect={handleCardSelect}
-            detectedCardId={
-              detectedCard?.confidence === "high" ? detectedCard.cardId : null
-            }
+            detectedCardId={null}
           />
-        )}
-
-        {step === "anniversary" && (
-          <AnniversarySetup
-            onSubmit={handleAnniversarySubmit}
-            onSkip={handleSkipAnniversary}
-          />
-        )}
-
-        {step === "done" && (
-          <div className="py-6 text-center">
-            <div className="mb-4 flex justify-center">
-              <CheckCircle2 className="h-12 w-12 text-success-500" />
-            </div>
-            <h2 className="text-h3 font-semibold">You&apos;re all set!</h2>
-            <p className="mt-2 text-[var(--text-secondary)]">
-              Redirecting to your dashboard...
-            </p>
-          </div>
         )}
 
         {error && (

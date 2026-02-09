@@ -7,7 +7,7 @@ import {
   getBenefitTransactions,
   getRecentTransactions,
   getPlaidConnectionStatus,
-  getUserCards,
+  getCardProfiles,
   getUserAnniversaryStatus,
   getCreditsDebugBreakdown,
 } from "@/lib/queries";
@@ -38,18 +38,18 @@ export default async function DashboardPage({
   const user = await requireAuth();
   const params = await searchParams;
 
-  // Fetch all user cards to power the switcher
-  const userCards = await getUserCards(user.id!);
-  if (userCards.length === 0) {
+  // Fetch all card profiles to power the switcher
+  const cardProfilesList = await getCardProfiles(user.id!);
+  if (cardProfilesList.length === 0) {
     redirect("/onboarding");
   }
 
-  // Resolve active card: use searchParam if valid, else primary, else first
+  // Resolve active card: use searchParam if valid, else first active, else first
   const requestedCardId = params.cardId;
   const activeCard =
-    (requestedCardId && userCards.find((c) => c.id === requestedCardId)) ||
-    userCards.find((c) => c.isPrimary) ||
-    userCards[0];
+    (requestedCardId && cardProfilesList.find((c) => c.id === requestedCardId)) ||
+    cardProfilesList.find((c) => c.isActive) ||
+    cardProfilesList[0];
 
   const activeCardId = activeCard.id;
 
@@ -100,15 +100,16 @@ export default async function DashboardPage({
           <h1 className="text-h1 font-semibold tracking-tight">Benefits</h1>
           <div className="mt-1">
             <CardSwitcher
-              cards={userCards.map((c) => ({
+              cards={cardProfilesList.map((c) => ({
                 id: c.id,
                 name: c.name,
                 issuer: c.issuer,
-                isPrimary: c.isPrimary,
+                isActive: c.isActive,
+                accountMask: c.accountMask,
               }))}
               activeCardId={activeCardId}
             />
-            {userCards.length <= 1 && (
+            {cardProfilesList.length <= 1 && (
               <p className="text-[var(--text-secondary)]">{summary.cardName}</p>
             )}
           </div>
@@ -138,7 +139,7 @@ export default async function DashboardPage({
       {/* Anniversary prompt */}
       {anniversary && anniversary.anniversarySource === "pending" && (
         <div className="mb-[var(--space-lg)]">
-          <AnniversaryPrompt userCardId={anniversary.userCardId} />
+          <AnniversaryPrompt cardProfileId={anniversary.cardProfileId} />
         </div>
       )}
 

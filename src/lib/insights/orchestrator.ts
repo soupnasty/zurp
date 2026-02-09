@@ -13,7 +13,7 @@ import {
   getActiveInsights,
   getCycleTransactions,
 } from "./queries";
-import { getBenefitUsageSummaries, getUserCards } from "@/lib/queries";
+import { getBenefitUsageSummaries, getCardProfiles } from "@/lib/queries";
 import { getCardDefinition } from "@/lib/cards";
 import { getCurrentCycleBounds } from "@/lib/engine/cycle-utils";
 import { insightGroup } from "./types";
@@ -25,24 +25,24 @@ import type { GeneratorContext } from "./generators/types";
  * Called after transaction sync (manual, webhook, cron).
  */
 export async function generateAndPersistInsights(userId: string) {
-  const userCards = await getUserCards(userId);
-  if (userCards.length === 0) return;
+  const cardProfilesList = await getCardProfiles(userId);
+  if (cardProfilesList.length === 0) return;
 
-  const activeCard = userCards.find((c) => c.isPrimary) || userCards[0];
-  const cardDef = getCardDefinition(activeCard.cardId);
+  const activeCard = cardProfilesList.find((c) => c.isActive) || cardProfilesList[0];
+  const cardDef = getCardDefinition(activeCard.cardType);
   if (!cardDef) return;
 
   const now = new Date();
 
-  // Fetch anniversary date for card year scoping
-  const userCardRow = await db.query.userCards.findFirst({
+  // Fetch anniversary date from card profile
+  const cardProfileRow = await db.query.cardProfiles.findFirst({
     where: and(
-      eq(schema.userCards.userId, userId),
-      eq(schema.userCards.id, activeCard.id)
+      eq(schema.cardProfiles.userId, userId),
+      eq(schema.cardProfiles.id, activeCard.id)
     ),
     columns: { anniversaryDate: true },
   });
-  const anniversaryDate = userCardRow?.anniversaryDate ?? null;
+  const anniversaryDate = cardProfileRow?.anniversaryDate ?? null;
 
   // Compute card year bounds (anniversary-based if available, else calendar year)
   const cardYearBounds = getCurrentCycleBounds(
@@ -72,11 +72,11 @@ export async function generateAndPersistInsights(userId: string) {
     totalCaptured,
     impressionHistory,
   ] = await Promise.all([
-    getCompetitorMap("csr"),
+    getCompetitorMap(activeCard.cardType),
     getRoiMilestonesReached(userId),
     getTotalBenefitsCaptured(
       userId,
-      activeCard.cardId,
+      activeCard.id,
       cardYearBounds.cycleStart,
       cardYearBounds.cycleEnd
     ),
@@ -88,7 +88,7 @@ export async function generateAndPersistInsights(userId: string) {
     transactions,
     benefitUsages: benefits,
     annualFee: cardDef.annualFee,
-    cardType: "csr",
+    cardType: activeCard.cardType,
     competitorEntries,
     totalBenefitsCaptured: totalCaptured,
     existingMilestoneKeys: milestoneKeys,
@@ -108,7 +108,11 @@ export async function generateAndPersistInsights(userId: string) {
     const existing = await getExistingInsight(userId, candidate.dedupKey);
 
     if (existing) {
-      // Update in place: recalculate vars/copy/scores but preserve lifecycle
+      // Revive insights that were superseded/expired but are relevant again
+      // (e.g. user switched card type away and back)
+      const revive =
+        existing.state === "superseded" || existing.state === "expired";
+
       await db
         .update(schema.insights)
         .set({
@@ -123,13 +127,17 @@ export async function generateAndPersistInsights(userId: string) {
           confidenceScore: scores.confidenceScore,
           totalScore: scores.totalScore,
           floorOverride: scores.floorOverride,
-          // state, generatedAt, shownAt preserved
+          // Revive dead insights back to pending; preserve lifecycle for active ones
+          ...(revive
+            ? { state: "pending", resolvedAt: null, shownAt: null }
+            : {}),
         })
         .where(eq(schema.insights.id, existing.id));
     } else {
       // Insert new insight
       await db.insert(schema.insights).values({
         userId,
+        cardProfileId: activeCard.id,
         category: candidate.category,
         benefitId: candidate.benefitId,
         templateKey: candidate.templateKey,

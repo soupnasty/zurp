@@ -1,7 +1,7 @@
 import { db } from "@/db";
-import { eq, and, inArray } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import * as schema from "@/db/schema";
-import type { MatcherTransaction, BenefitDefinition, MatchedStatus } from "@/lib/types";
+import type { MatcherTransaction, MatchedStatus } from "@/lib/types";
 import { runMatcher } from "./matcher";
 import { detectAnniversary } from "./anniversary-detector";
 import { getCurrentCycleBounds } from "./cycle-utils";
@@ -15,21 +15,25 @@ import { generateAndPersistInsights } from "@/lib/insights/orchestrator";
 export async function processTransactionsForConnection(
   plaidConnectionId: string
 ) {
-  // Get the connection and related data
+  // Get the connection
   const connection = await db.query.plaidConnections.findFirst({
     where: eq(schema.plaidConnections.id, plaidConnectionId),
-    with: {
-      userCard: true,
-    },
   });
 
   if (!connection) throw new Error(`Connection ${plaidConnectionId} not found`);
 
-  const userCard = connection.userCard;
-  if (!userCard) throw new Error(`Connection ${plaidConnectionId} has no linked card`);
+  // Find the active card profile for this connection
+  const cardProfile = await db.query.cardProfiles.findFirst({
+    where: and(
+      eq(schema.cardProfiles.plaidConnectionId, plaidConnectionId),
+      eq(schema.cardProfiles.isActive, true)
+    ),
+  });
 
-  const cardDef = getCardDefinition(userCard.cardId);
-  if (!cardDef) throw new Error(`Card definition ${userCard.cardId} not found`);
+  if (!cardProfile) throw new Error(`Connection ${plaidConnectionId} has no active card profile`);
+
+  const cardDef = getCardDefinition(cardProfile.cardType);
+  if (!cardDef) throw new Error(`Card definition ${cardProfile.cardType} not found`);
 
   // Fetch unmatched transactions for this connection
   const rawTransactions = await db.query.transactions.findMany({
@@ -48,7 +52,7 @@ export async function processTransactionsForConnection(
 
   const txForDetection: MatcherTransaction[] = allTransactions.map(txToMatcherTx);
 
-  if (userCard.anniversarySource === "pending") {
+  if (cardProfile.anniversarySource === "pending") {
     const detection = detectAnniversary(
       txForDetection,
       cardDef.annualFee,
@@ -57,32 +61,71 @@ export async function processTransactionsForConnection(
 
     if (detection.detected && detection.anniversaryDate && detection.transactionId) {
       await db
-        .update(schema.userCards)
+        .update(schema.cardProfiles)
         .set({
           anniversaryDate: detection.anniversaryDate,
           anniversarySource: "auto_detected",
         })
-        .where(eq(schema.userCards.id, userCard.id));
+        .where(eq(schema.cardProfiles.id, cardProfile.id));
 
       await db
         .update(schema.transactions)
         .set({ isAnnualFee: true })
         .where(eq(schema.transactions.id, detection.transactionId));
 
-      userCard.anniversaryDate = detection.anniversaryDate;
+      cardProfile.anniversaryDate = detection.anniversaryDate;
     }
   }
 
   // Ensure benefit usage records exist for current periods
   await initializeBenefitUsage(
     connection.userId,
-    userCard.cardId,
-    userCard.anniversaryDate
+    cardProfile.cardType,
+    cardProfile.id,
+    cardProfile.anniversaryDate
   );
+
+  // Replay durable manual redemption overrides (before auto-matching)
+  const overrides = await db.query.benefitOverrides.findMany({
+    where: and(
+      eq(schema.benefitOverrides.userId, connection.userId),
+      eq(schema.benefitOverrides.cardProfileId, cardProfile.id)
+    ),
+  });
+
+  for (const override of overrides) {
+    // Only replay if this benefit exists in the current card definition
+    const benefitDef = cardDef.benefits.find((b) => b.id === override.benefitId);
+    if (!benefitDef) continue;
+
+    const usageRecord = await db.query.benefitUsage.findFirst({
+      where: and(
+        eq(schema.benefitUsage.userId, connection.userId),
+        eq(schema.benefitUsage.benefitId, override.benefitId),
+        eq(schema.benefitUsage.periodKey, override.periodKey)
+      ),
+    });
+
+    if (usageRecord && !usageRecord.isFullyUsed) {
+      await db
+        .update(schema.benefitUsage)
+        .set({
+          amountUsed: benefitDef.creditAmount,
+          amountRemaining: 0,
+          isFullyUsed: true,
+          manualOverride: true,
+          updatedAt: new Date(),
+        })
+        .where(eq(schema.benefitUsage.id, usageRecord.id));
+    }
+  }
 
   // Get current usage
   const usageRecords = await db.query.benefitUsage.findMany({
-    where: eq(schema.benefitUsage.userId, connection.userId),
+    where: and(
+      eq(schema.benefitUsage.userId, connection.userId),
+      eq(schema.benefitUsage.cardProfileId, cardProfile.id)
+    ),
   });
 
   const usageMap = new Map<string, { amountUsed: number; creditAmount: number }>();
@@ -93,7 +136,7 @@ export async function processTransactionsForConnection(
       const currentBounds = getCurrentCycleBounds(
         benefit.cycle as any,
         new Date(),
-        userCard.anniversaryDate
+        cardProfile.anniversaryDate
       );
       if (usage.periodKey === currentBounds.periodKey) {
         usageMap.set(benefit.id, {
@@ -110,7 +153,7 @@ export async function processTransactionsForConnection(
   const result = runMatcher(matcherTx, {
     benefits: cardDef.benefits,
     usageMap,
-    anniversaryDate: userCard.anniversaryDate,
+    anniversaryDate: cardProfile.anniversaryDate,
   });
 
   // Fetch removed flags for this user to skip flagged-out matches
@@ -142,7 +185,7 @@ export async function processTransactionsForConnection(
     const bounds = getCurrentCycleBounds(
       benefit.cycle as any,
       new Date(),
-      userCard.anniversaryDate
+      cardProfile.anniversaryDate
     );
 
     const usageRecord = usageRecords.find(
@@ -199,6 +242,89 @@ export async function processTransactionsForConnection(
       .where(eq(schema.transactions.id, txId));
   }
 
+  // Replay "added" flags — recreate manual matches that survived reprocessing
+  const addedFlags = await db.query.transactionFlags.findMany({
+    where: and(
+      eq(schema.transactionFlags.userId, connection.userId),
+      eq(schema.transactionFlags.flagType, "added")
+    ),
+  });
+
+  for (const flag of addedFlags) {
+    // Only replay if this benefit exists in the current card definition
+    const benefitDef = cardDef.benefits.find((b) => b.id === flag.benefitId);
+    if (!benefitDef) continue;
+
+    const bounds = getCurrentCycleBounds(
+      benefitDef.cycle as any,
+      new Date(),
+      cardProfile.anniversaryDate
+    );
+
+    // Re-fetch usage record (may have been updated by auto-matcher or overrides)
+    const usageRecord = await db.query.benefitUsage.findFirst({
+      where: and(
+        eq(schema.benefitUsage.userId, connection.userId),
+        eq(schema.benefitUsage.benefitId, flag.benefitId),
+        eq(schema.benefitUsage.periodKey, bounds.periodKey)
+      ),
+    });
+
+    if (!usageRecord) continue;
+
+    // Check if a matchedTx already exists for this pair (auto-matcher may have handled it)
+    const existingMatch = await db.query.matchedTx.findFirst({
+      where: and(
+        eq(schema.matchedTx.transactionId, flag.transactionId),
+        eq(schema.matchedTx.benefitUsageId, usageRecord.id)
+      ),
+    });
+
+    if (existingMatch) continue;
+
+    // Get the transaction to determine credit amount
+    const tx = await db.query.transactions.findFirst({
+      where: eq(schema.transactions.id, flag.transactionId),
+    });
+
+    if (!tx) continue;
+
+    const creditApplied = Math.min(tx.amount, usageRecord.amountRemaining);
+    if (creditApplied <= 0) continue;
+
+    // Create manual match
+    await db.insert(schema.matchedTx).values({
+      transactionId: flag.transactionId,
+      benefitUsageId: usageRecord.id,
+      creditApplied,
+      matchMethod: "manual",
+      matchConfidence: "high",
+    });
+
+    // Update usage
+    const newUsed = usageRecord.amountUsed + creditApplied;
+    const effectiveCredit =
+      benefitDef.carriesOver && benefitDef.maxAccrued
+        ? benefitDef.maxAccrued
+        : benefitDef.creditAmount;
+
+    await db
+      .update(schema.benefitUsage)
+      .set({
+        amountUsed: newUsed,
+        amountRemaining: Math.max(0, effectiveCredit - newUsed),
+        isFullyUsed: newUsed >= effectiveCredit,
+        updatedAt: new Date(),
+      })
+      .where(eq(schema.benefitUsage.id, usageRecord.id));
+
+    // Update transaction status
+    await db
+      .update(schema.transactions)
+      .set({ matchedStatus: "matched" as MatchedStatus })
+      .where(eq(schema.transactions.id, flag.transactionId));
+  }
+
   // Generate insights after all matches are written
   try {
     await generateAndPersistInsights(connection.userId);
@@ -213,10 +339,11 @@ export async function processTransactionsForConnection(
  */
 export async function initializeBenefitUsage(
   userId: string,
-  cardId: string,
+  cardType: string,
+  cardProfileId: string,
   anniversaryDate: Date | null
 ) {
-  const cardDef = getCardDefinition(cardId);
+  const cardDef = getCardDefinition(cardType);
   if (!cardDef) return;
 
   for (const benefit of cardDef.benefits) {
@@ -246,7 +373,7 @@ export async function initializeBenefitUsage(
       await db.insert(schema.benefitUsage).values({
         userId,
         benefitId: benefit.id,
-        cardId,
+        cardProfileId,
         periodKey: bounds.periodKey,
         cycleStart: bounds.cycleStart,
         cycleEnd: bounds.cycleEnd,
@@ -261,30 +388,29 @@ export async function initializeBenefitUsage(
 }
 
 /**
- * Reprocess all transactions for a user card (e.g., when anniversary date changes).
+ * Reprocess all transactions for a card profile (e.g., when anniversary date changes).
  */
-export async function reprocessAllTransactions(userCardId: string) {
-  const userCard = await db.query.userCards.findFirst({
-    where: eq(schema.userCards.id, userCardId),
+export async function reprocessAllTransactions(cardProfileId: string) {
+  const cardProfile = await db.query.cardProfiles.findFirst({
+    where: eq(schema.cardProfiles.id, cardProfileId),
   });
 
-  if (!userCard) return;
+  if (!cardProfile) return;
 
-  const connections = await db.query.plaidConnections.findMany({
-    where: eq(schema.plaidConnections.userCardId, userCardId),
-  });
+  const connectionId = cardProfile.plaidConnectionId;
 
   // Reset all matched transactions to unmatched
-  for (const conn of connections) {
-    await db
-      .update(schema.transactions)
-      .set({ matchedStatus: "unmatched" as MatchedStatus })
-      .where(eq(schema.transactions.plaidConnectionId, conn.id));
-  }
+  await db
+    .update(schema.transactions)
+    .set({ matchedStatus: "unmatched" as MatchedStatus })
+    .where(eq(schema.transactions.plaidConnectionId, connectionId));
 
   // Clear existing matches and usage
   const usageRecords = await db.query.benefitUsage.findMany({
-    where: eq(schema.benefitUsage.userId, userCard.userId),
+    where: and(
+      eq(schema.benefitUsage.userId, cardProfile.userId),
+      eq(schema.benefitUsage.cardProfileId, cardProfileId)
+    ),
   });
 
   for (const usage of usageRecords) {
@@ -295,12 +421,13 @@ export async function reprocessAllTransactions(userCardId: string) {
 
   await db
     .delete(schema.benefitUsage)
-    .where(eq(schema.benefitUsage.userId, userCard.userId));
+    .where(and(
+      eq(schema.benefitUsage.userId, cardProfile.userId),
+      eq(schema.benefitUsage.cardProfileId, cardProfileId)
+    ));
 
-  // Re-run processing for each connection
-  for (const conn of connections) {
-    await processTransactionsForConnection(conn.id);
-  }
+  // Re-run processing for the connection
+  await processTransactionsForConnection(connectionId);
 }
 
 function txToMatcherTx(tx: typeof schema.transactions.$inferSelect): MatcherTransaction {
