@@ -2,6 +2,8 @@ import Link from "next/link";
 import { MobileNav } from "./_components/MobileNav";
 import { ScrollReveal } from "./_components/ScrollReveal";
 import { CardChip, MARQUEE_CARDS } from "./_components/CardChip";
+import { AnimatedMockup } from "./_components/AnimatedMockup";
+import { CountUp } from "./_components/CountUp";
 
 /* ── Tracker mockup rows ── */
 const trackerRows = [
@@ -76,11 +78,10 @@ const compareCards = [
     badge: "best" as const,
     pointsPct: 72,
     pointsLabel: "Points $798",
-    pointsColor: "linear-gradient(90deg, #3b82f6, #2563eb)",
     benefitsPct: 15,
     benefitsLabel: "$170",
     feePct: 8,
-    feeLabel: "\u2212$95",
+    feeLabel: "-$95",
     net: "+$873",
     netColor: "#34d399",
     rowBg: "rgba(52,211,153,0.03)",
@@ -92,11 +93,10 @@ const compareCards = [
     badge: null,
     pointsPct: 57,
     pointsLabel: "Points $656",
-    pointsColor: "linear-gradient(90deg, #b8860b, #996515)",
     benefitsPct: 26,
     benefitsLabel: "$304",
     feePct: 12,
-    feeLabel: "\u2212$325",
+    feeLabel: "-$325",
     net: "+$635",
     netColor: "#fbbf24",
     rowBg: undefined,
@@ -108,83 +108,79 @@ const compareCards = [
     badge: "current" as const,
     pointsPct: 69,
     pointsLabel: "Points $838",
-    pointsColor: "linear-gradient(90deg, #1e3a5f, #162d4a)",
     benefitsPct: 6,
     benefitsLabel: "",
     feePct: 20,
-    feeLabel: "\u2212$795",
+    feeLabel: "-$795",
     net: "+$118",
     netColor: "#6b7280",
-    rowBg: "rgba(59,130,246,0.03)",
+    rowBg: "rgba(88,166,255,0.03)",
+    detailedLabels: { points: "Points $838", benefits: "Benefits $75", fee: "Fee -$795" },
   },
 ];
 
 /* ── Insight examples ── */
-const insights = [
+const insightCards = [
   {
-    tag: "A1",
-    tagColor: "bg-[rgba(88,166,255,0.12)] text-[var(--color-info)]",
-    text: (
+    accentColor: "#58A6FF",
+    iconBg: "rgba(88,166,255,0.1)",
+    icon: "\u2197",
+    typeLabel: "Redirect spending",
+    typeColor: "#58A6FF",
+    body: (
       <>
-        You spent <span className="font-semibold">$87 on Lyft</span> last month
-        but only used{" "}
-        <span className="font-data text-[var(--color-warning)]">$10</span> of
-        your monthly credit. Schedule rides on your Reserve card to capture the
-        full{" "}
-        <span className="font-data text-[var(--color-success)]">$10/mo</span>.
+        You spent <strong className="font-semibold text-white">$87 on Uber</strong> last
+        month but only used <span className="ins-hl-blue font-bold" style={{ color: "#58A6FF" }}>$10</span> of
+        your monthly Lyft credit. Switch your rides to Lyft to capture the
+        full <span className="ins-hl-blue font-bold" style={{ color: "#58A6FF" }}>$120/yr</span>.
       </>
     ),
-    meta: "Chase Sapphire Reserve \u00b7 Underused credit",
+    meta: "Chase Sapphire Reserve \u00b7 Lyft credit",
+    enterDelay: "0s",
+    glowClass: "ins-hl-blue",
+    glowDelay: "0.8s",
+    borderAnim: "ins-border-blue",
   },
   {
-    tag: "B1",
-    tagColor: "bg-[rgba(210,153,34,0.12)] text-[var(--color-warning)]",
-    text: (
+    accentColor: "#fbbf24",
+    iconBg: "rgba(251,191,36,0.1)",
+    icon: "\u23F1",
+    typeLabel: "Credit expiring",
+    typeColor: "#fbbf24",
+    body: (
       <>
-        Your{" "}
-        <span className="font-data text-[var(--color-warning)]">
-          $25 DoorDash credit
-        </span>{" "}
-        resets in 3 days. You&apos;ve only used the $5 restaurant promo this
-        month.
+        Your <strong className="font-semibold text-white">$25 DoorDash credit</strong> resets
+        in <span className="ins-hl-yellow font-bold" style={{ color: "#fbbf24" }}>3 days</span>.
+        You&apos;ve only used the $5 restaurant promo &mdash; you still
+        have <span className="ins-hl-yellow font-bold" style={{ color: "#fbbf24" }}>$20</span> in
+        non-restaurant credits this month.
       </>
     ),
-    meta: "Chase Sapphire Reserve \u00b7 Monthly credit expiring",
+    meta: "Chase Sapphire Reserve \u00b7 Monthly credit",
+    enterDelay: "1.2s",
+    glowClass: "ins-hl-yellow",
+    glowDelay: "2.0s",
+    borderAnim: "ins-border-yellow",
   },
   {
-    tag: "C2",
-    tagColor: "bg-[rgba(63,185,80,0.12)] text-[var(--color-success)]",
-    text: (
+    accentColor: "#34d399",
+    iconBg: "rgba(52,211,153,0.1)",
+    icon: "\u2726",
+    typeLabel: "ROI milestone",
+    typeColor: "#34d399",
+    body: (
       <>
-        You&apos;ve captured{" "}
-        <span className="font-data text-[var(--color-success)]">$970</span> of
-        $1,690 in Chase Sapphire Reserve benefits. Your net cost is{" "}
-        <span className="font-data text-[var(--color-success)]">
-          &minus;$175
-        </span>
-        . The card is paying for itself.
+        You&apos;ve captured <strong className="font-semibold text-white">$970</strong> of
+        $2,700 in benefits this year. Your net value
+        is <span className="ins-hl-green font-bold" style={{ color: "#34d399" }}>+$175</span> after
+        the annual fee &mdash; your card is paying for itself.
       </>
     ),
-    meta: "Chase Sapphire Reserve \u00b7 ROI check",
-  },
-  {
-    tag: "A1",
-    tagColor: "bg-[rgba(88,166,255,0.12)] text-[var(--color-info)]",
-    text: (
-      <>
-        You booked a hotel on Expedia for{" "}
-        <span className="font-semibold">$340</span>. Booking through{" "}
-        <span className="font-semibold">
-          Chase Travel&apos;s Edit collection
-        </span>{" "}
-        could have earned you a{" "}
-        <span className="font-data text-[var(--color-success)]">
-          $250 statement credit
-        </span>
-        .
-      </>
-    ),
-    meta: "Chase Sapphire Reserve \u00b7 Competitor redirect",
+    meta: "Chase Sapphire Reserve \u00b7 Annual value",
+    enterDelay: "2.4s",
+    glowClass: "ins-hl-green",
+    glowDelay: "3.2s",
+    borderAnim: "ins-border-green",
   },
 ];
 
@@ -242,12 +238,6 @@ export default function Home() {
           {/* Desktop nav */}
           <div className="hidden items-center gap-8 md:flex">
             <a
-              href="#how"
-              className="text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
-            >
-              How it works
-            </a>
-            <a
               href="#track"
               className="text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
             >
@@ -258,6 +248,12 @@ export default function Home() {
               className="text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
             >
               Compare
+            </a>
+            <a
+              href="#how"
+              className="text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
+            >
+              How it works
             </a>
             <a
               href="#insights"
@@ -323,13 +319,437 @@ export default function Home() {
         <div className="pointer-events-none absolute top-0 bottom-0 left-0 z-[2] w-20 bg-gradient-to-r from-[var(--bg-primary)] to-transparent" />
         <div className="pointer-events-none absolute top-0 bottom-0 right-0 z-[2] w-20 bg-gradient-to-l from-[var(--bg-primary)] to-transparent" />
 
-        <div className="marquee-track flex w-max items-center gap-6">
-          {/* Render cards twice for seamless loop */}
+        <div className="marquee-track flex w-max items-center">
+          {/* Render cards twice for seamless loop — use per-item margin instead of gap so each half is exactly 50% */}
           {[...MARQUEE_CARDS, ...MARQUEE_CARDS].map((cardId, i) => (
-            <CardChip key={i} cardId={cardId} />
+            <div key={i} className="mr-6">
+              <CardChip cardId={cardId} />
+            </div>
           ))}
         </div>
       </div>
+
+      {/* ════════ TRACK SECTION ════════ */}
+      <section className="py-24" id="track">
+        <div className="mx-auto max-w-[1080px] px-6">
+          <ScrollReveal>
+            <p className="label-caps mb-4 text-center">Track</p>
+          </ScrollReveal>
+          <ScrollReveal>
+            <h2
+              className="mb-4 text-center text-[clamp(28px,4vw,42px)] font-bold leading-[1.15]"
+              style={{ letterSpacing: "-0.02em" }}
+            >
+              See every dollar you&apos;re
+              <br className="hidden sm:block" />
+              leaving on the table.
+            </h2>
+          </ScrollReveal>
+          <ScrollReveal>
+            <p
+              className="mx-auto mb-12 max-w-[540px] text-center leading-relaxed"
+              style={{ fontSize: 17, color: "#8b95a8" }}
+            >
+              Zurp maps your transactions against your card&apos;s full benefit
+              catalog &mdash; credits, promos, multipliers &mdash; and shows
+              exactly what you&apos;ve captured and what you&apos;re missing.
+            </p>
+          </ScrollReveal>
+
+          <AnimatedMockup className="mx-auto max-w-[680px] overflow-hidden rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[#111827]">
+            {/* Header */}
+            <div
+              className="mock-fade flex items-start justify-between border-b border-[rgba(255,255,255,0.06)] px-7 py-6"
+              style={{ "--delay": "0.2s" } as React.CSSProperties}
+            >
+              <div>
+                <div
+                  className="text-[13px] font-semibold uppercase tracking-[0.06em]"
+                  style={{ color: "#c5cbe8" }}
+                >
+                  Chase Sapphire Reserve
+                </div>
+                <div
+                  className="mt-1 text-[12px]"
+                  style={{ color: "#6b7280" }}
+                >
+                  $795/yr annual fee
+                </div>
+              </div>
+              <div className="text-right">
+                <CountUp
+                  target={175}
+                  prefix="+$"
+                  delay={3800}
+                  duration={1800}
+                  className="font-data text-[28px] font-bold"
+                  style={{ color: "#34d399", letterSpacing: "-0.02em" }}
+                />
+                <div
+                  className="mt-0.5 text-[11px]"
+                  style={{ color: "#6b7280" }}
+                >
+                  net value this year
+                </div>
+              </div>
+            </div>
+
+            {/* Progress */}
+            <div
+              className="mock-fade border-b border-[rgba(255,255,255,0.06)] px-7 py-5"
+              style={{ "--delay": "0.5s" } as React.CSSProperties}
+            >
+              <div className="mb-2.5 flex items-baseline justify-between">
+                <div className="text-[15px] font-medium text-[#e5e7eb]">
+                  <CountUp
+                    target={970}
+                    prefix="$"
+                    delay={3800}
+                    duration={1800}
+                    className="font-bold text-[#34d399]"
+                  />{" "}
+                  captured
+                </div>
+                <div className="text-[13px]" style={{ color: "#6b7280" }}>
+                  of $2,700 available
+                </div>
+              </div>
+              <div className="h-2 overflow-hidden rounded bg-[rgba(255,255,255,0.06)]">
+                <div
+                  className="mock-bar h-full rounded"
+                  style={{
+                    background: "linear-gradient(90deg, #34d399, #5eead4)",
+                    "--fill": "36%",
+                    "--dur": "1.8s",
+                    "--delay": "3.8s",
+                  } as React.CSSProperties}
+                />
+              </div>
+            </div>
+
+            {/* Benefit rows */}
+            <div className="py-2">
+              {trackerRows.map((row, i) => {
+                const isUnused = row.status === "unused";
+                const rowDelay = 0.8 + i * 0.4;
+                const barDelay = rowDelay + 0.4;
+                return (
+                  <div
+                    key={row.name}
+                    className={`${isUnused ? "mock-row-unused" : "mock-row"} flex items-center gap-3.5 px-7 py-3.5 transition-colors hover:bg-[rgba(255,255,255,0.02)]`}
+                    style={{
+                      "--delay": `${rowDelay}s`,
+                      ...(isUnused ? { "--delay2": `${rowDelay + 0.8}s` } : {}),
+                    } as React.CSSProperties}
+                  >
+                    <div
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[13px] font-bold ${row.iconStyle}`}
+                    >
+                      {row.icon}
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-[14px] font-medium text-[#e5e7eb]">
+                        {row.name}
+                      </div>
+                      <div
+                        className="mt-0.5 text-[11px]"
+                        style={{ color: "#6b7280" }}
+                      >
+                        {row.period}
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <div
+                        className="font-data text-[14px] font-semibold"
+                        style={{
+                          color:
+                            row.status === "full"
+                              ? "#34d399"
+                              : row.status === "partial"
+                              ? "#fbbf24"
+                              : "#6b7280",
+                          fontVariantNumeric: "tabular-nums",
+                        }}
+                      >
+                        {row.used} / {row.total}
+                      </div>
+                      <div className="mt-1 ml-auto h-1 w-[60px] overflow-hidden rounded-sm bg-[rgba(255,255,255,0.06)]">
+                        <div
+                          className="mock-bar h-full rounded-sm"
+                          style={{
+                            background:
+                              row.status === "full"
+                                ? "#34d399"
+                                : row.status === "partial"
+                                ? "#fbbf24"
+                                : "#4b5563",
+                            "--fill": `${row.pct}%`,
+                            "--delay": `${barDelay}s`,
+                          } as React.CSSProperties}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Footer */}
+            <div
+              className="mock-fade border-t border-[rgba(255,255,255,0.06)] px-7 py-4 text-[11px]"
+              style={{ color: "#4b5563", "--delay": "3.6s", "--dur": "0.5s" } as React.CSSProperties}
+            >
+              6 of 12 benefits tracked &middot; Updated today
+            </div>
+          </AnimatedMockup>
+        </div>
+      </section>
+
+      {/* ════════ COMPARE SECTION ════════ */}
+      <section className="py-24" id="compare">
+        <div className="mx-auto max-w-[1080px] px-6">
+          <ScrollReveal>
+            <p className="label-caps mb-4 text-center">Compare</p>
+          </ScrollReveal>
+          <ScrollReveal>
+            <h2
+              className="mb-4 text-center text-[clamp(28px,4vw,42px)] font-bold leading-[1.15]"
+              style={{ letterSpacing: "-0.02em" }}
+            >
+              See what you&apos;d gain &mdash; or lose &mdash;
+              <br className="hidden sm:block" />
+              on another card.
+            </h2>
+          </ScrollReveal>
+          <ScrollReveal>
+            <p
+              className="mx-auto mb-12 max-w-[540px] text-center leading-relaxed"
+              style={{ fontSize: 17, color: "#8b95a8" }}
+            >
+              Based on your real spending, Zurp calculates the exact dollar
+              difference if you switched cards. No guesswork, no affiliate bias.
+            </p>
+          </ScrollReveal>
+
+          <AnimatedMockup className="mx-auto max-w-[780px] overflow-hidden rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[#111827]">
+            {/* Headline */}
+            <div
+              className="border-b border-[rgba(255,255,255,0.06)] px-7 py-6"
+              style={{
+                opacity: 0,
+                animation: "mock-fade-in 0.6s ease forwards",
+                animationDelay: "0.2s",
+                animationPlayState: "var(--play)",
+              }}
+            >
+              <div className="text-[20px] font-bold text-white mb-1">
+                The{" "}
+                <span style={{ color: "#34d399" }}>Sapphire Preferred</span>{" "}
+                would save you{" "}
+                <CountUp
+                  target={755}
+                  prefix="$"
+                  delay={2800}
+                  duration={1400}
+                  className="text-[#34d399]"
+                />
+                /yr
+              </div>
+              <div className="text-[13px]" style={{ color: "#6b7280" }}>
+                Based on your $47,411 in spending over the last 12 months
+              </div>
+            </div>
+
+            {/* Card rows */}
+            <div className="py-2">
+              {compareCards.map((card, i) => {
+                const rowDelay = 0.6 + i * 0.5;
+                const barBase = 1.0 + i * 0.5;
+                const labelsDelay = barBase + 1.0;
+                const netDelay = barBase + 1.0;
+                const badgeDelay = card.badge === "best" ? 2.4 : 2.6;
+                const dl = ("detailedLabels" in card && card.detailedLabels) as
+                  | { points: string; benefits: string; fee: string }
+                  | false;
+
+                return (
+                  <div
+                    key={card.rank}
+                    className="relative flex items-center gap-5 px-7 py-5 border-b border-[rgba(255,255,255,0.04)] last:border-b-0"
+                    style={{
+                      background: card.rowBg,
+                      opacity: 0,
+                      animation: "mock-row-enter 0.5s ease forwards",
+                      animationDelay: `${rowDelay}s`,
+                      animationPlayState: "var(--play)",
+                    } as React.CSSProperties}
+                  >
+                    {/* Rank */}
+                    <div
+                      className="text-[14px] font-bold shrink-0 w-5"
+                      style={{ color: "#4b5563" }}
+                    >
+                      {card.rank}
+                    </div>
+
+                    {/* Card info */}
+                    <div className="shrink-0 min-w-[180px]">
+                      <div className="flex items-center gap-2 text-[15px] font-semibold text-[#e5e7eb]">
+                        {card.name}
+                        {card.badge === "best" && (
+                          <span
+                            className="inline-flex items-center rounded px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.06em] bg-[rgba(52,211,153,0.15)] text-[#34d399]"
+                            style={{
+                              opacity: 0,
+                              transform: "scale(0.7)",
+                              animation: "mock-badge-pop 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards",
+                              animationDelay: `${badgeDelay}s`,
+                              animationPlayState: "var(--play)",
+                            }}
+                          >
+                            Best value
+                          </span>
+                        )}
+                        {card.badge === "current" && (
+                          <span
+                            className="inline-flex items-center rounded px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.06em] bg-[rgba(88,166,255,0.15)] text-[#58A6FF]"
+                            style={{
+                              opacity: 0,
+                              transform: "scale(0.7)",
+                              animation: "mock-badge-pop 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards",
+                              animationDelay: `${badgeDelay}s`,
+                              animationPlayState: "var(--play)",
+                            }}
+                          >
+                            Your card
+                          </span>
+                        )}
+                      </div>
+                      <div
+                        className="mt-1 text-[12px]"
+                        style={{ color: "#6b7280" }}
+                      >
+                        {card.fee}
+                      </div>
+                    </div>
+
+                    {/* Stacked bar */}
+                    <div className="flex-1 min-w-0 hidden sm:block">
+                      <div className="flex h-7 overflow-hidden rounded-md bg-[rgba(255,255,255,0.04)]">
+                        <div
+                          className="flex items-center justify-center text-[11px] font-semibold text-white/90 whitespace-nowrap overflow-hidden"
+                          style={{
+                            width: 0,
+                            background: "linear-gradient(90deg, #3b82f6, #2563eb)",
+                            animation: "mock-fill-bar 1s cubic-bezier(0.25,0.46,0.45,0.94) forwards",
+                            animationDelay: `${barBase}s`,
+                            animationPlayState: "var(--play)",
+                            "--fill": `${card.pointsPct}%`,
+                          } as React.CSSProperties}
+                        >
+                          {card.pointsPct > 15 ? card.pointsLabel : ""}
+                        </div>
+                        <div
+                          className="flex items-center justify-center text-[11px] font-semibold text-white/90 whitespace-nowrap overflow-hidden"
+                          style={{
+                            width: 0,
+                            background: "rgba(52,211,153,0.5)",
+                            animation: "mock-fill-bar 0.6s cubic-bezier(0.25,0.46,0.45,0.94) forwards",
+                            animationDelay: `${barBase + 0.4}s`,
+                            animationPlayState: "var(--play)",
+                            "--fill": `${card.benefitsPct}%`,
+                          } as React.CSSProperties}
+                        >
+                          {card.benefitsPct > 10 ? card.benefitsLabel : ""}
+                        </div>
+                        <div
+                          className="flex items-center justify-center text-[11px] font-semibold text-white/70 whitespace-nowrap overflow-hidden"
+                          style={{
+                            width: 0,
+                            background: "rgba(239,68,68,0.25)",
+                            animation: "mock-fill-bar 0.4s cubic-bezier(0.25,0.46,0.45,0.94) forwards",
+                            animationDelay: `${barBase + 0.7}s`,
+                            animationPlayState: "var(--play)",
+                            "--fill": `${card.feePct}%`,
+                          } as React.CSSProperties}
+                        >
+                          {card.feePct > 6 ? card.feeLabel : ""}
+                        </div>
+                      </div>
+                      {/* Legend dots */}
+                      <div
+                        className="mt-1.5 flex gap-3 text-[11px]"
+                        style={{
+                          color: "#6b7280",
+                          fontVariantNumeric: "tabular-nums",
+                          opacity: 0,
+                          animation: "mock-fade-in 0.4s ease forwards",
+                          animationDelay: `${labelsDelay}s`,
+                          animationPlayState: "var(--play)",
+                        }}
+                      >
+                        <span className="flex items-center gap-1">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#3b82f6]" />
+                          {dl ? dl.points : "Points"}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#34d399]" />
+                          {dl ? dl.benefits : "Benefits"}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#ef4444]" />
+                          {dl ? dl.fee : "Fee"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Net value */}
+                    <div className="text-right shrink-0 min-w-[80px]">
+                      <div
+                        className="font-data text-[22px] font-bold"
+                        style={{
+                          color: card.netColor,
+                          letterSpacing: "-0.02em",
+                          fontVariantNumeric: "tabular-nums",
+                          opacity: 0,
+                          animation: "mock-net-reveal 0.5s ease forwards",
+                          animationDelay: `${netDelay}s`,
+                          animationPlayState: "var(--play)",
+                        }}
+                      >
+                        {card.net}
+                      </div>
+                      <div
+                        className="mt-0.5 text-[11px]"
+                        style={{ color: "#6b7280" }}
+                      >
+                        net / year
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Footer */}
+            <div
+              className="border-t border-[rgba(255,255,255,0.06)] px-7 py-4 text-[11px] leading-relaxed"
+              style={{
+                color: "#4b5563",
+                opacity: 0,
+                animation: "mock-fade-in 0.5s ease forwards",
+                animationDelay: "3.2s",
+                animationPlayState: "var(--play)",
+              }}
+            >
+              Points valued conservatively (Chase UR: 1.25&cent;, Amex MR:
+              1.0&cent;). Transfer partner redemptions can yield higher value.
+              Your card shows benefits actually captured; other cards show
+              total available benefits.
+            </div>
+          </AnimatedMockup>
+        </div>
+      </section>
 
       {/* ════════ HOW IT WORKS ════════ */}
       <section className="py-24" id="how">
@@ -573,326 +993,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ════════ TRACK SECTION ════════ */}
-      <section className="py-24" id="track">
-        <div className="mx-auto max-w-[1080px] px-6">
-          <ScrollReveal>
-            <p className="label-caps mb-4 text-center">Track</p>
-          </ScrollReveal>
-          <ScrollReveal>
-            <h2
-              className="mb-4 text-center text-[clamp(28px,4vw,42px)] font-bold leading-[1.15]"
-              style={{ letterSpacing: "-0.02em" }}
-            >
-              See every dollar you&apos;re
-              <br className="hidden sm:block" />
-              leaving on the table
-            </h2>
-          </ScrollReveal>
-          <ScrollReveal>
-            <p className="mx-auto mb-12 max-w-[540px] text-center text-[17px] leading-relaxed text-[var(--text-secondary)]">
-              Zurp maps your transactions against your card&apos;s full benefit
-              catalog &mdash; credits, promos, multipliers &mdash; and shows
-              exactly what you&apos;ve captured and what you&apos;re missing.
-            </p>
-          </ScrollReveal>
-
-          <ScrollReveal>
-            <div className="mx-auto max-w-[680px] overflow-hidden rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[#111827]">
-              {/* Header */}
-              <div className="flex items-start justify-between border-b border-[rgba(255,255,255,0.06)] px-7 py-6">
-                <div>
-                  <div
-                    className="text-[13px] font-semibold uppercase tracking-[0.06em]"
-                    style={{ color: "#c5cbe8" }}
-                  >
-                    Chase Sapphire Reserve
-                  </div>
-                  <div
-                    className="mt-1 text-[12px]"
-                    style={{ color: "#6b7280" }}
-                  >
-                    $795/yr annual fee
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div
-                    className="font-data text-[28px] font-bold"
-                    style={{ color: "#34d399", letterSpacing: "-0.02em" }}
-                  >
-                    +$175
-                  </div>
-                  <div
-                    className="mt-0.5 text-[11px]"
-                    style={{ color: "#6b7280" }}
-                  >
-                    net value this year
-                  </div>
-                </div>
-              </div>
-
-              {/* Progress */}
-              <div className="border-b border-[rgba(255,255,255,0.06)] px-7 py-5">
-                <div className="mb-2.5 flex items-baseline justify-between">
-                  <div className="text-[15px] font-medium text-[#e5e7eb]">
-                    <span className="font-bold text-[#34d399]">$970</span>{" "}
-                    captured
-                  </div>
-                  <div className="text-[13px]" style={{ color: "#6b7280" }}>
-                    of $1,690 available
-                  </div>
-                </div>
-                <div className="h-2 overflow-hidden rounded bg-[rgba(255,255,255,0.06)]">
-                  <div
-                    className="h-full rounded"
-                    style={{
-                      width: "57%",
-                      background: "linear-gradient(90deg, #34d399, #22d3ee)",
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Benefit rows */}
-              <div className="py-2">
-                {trackerRows.map((row) => (
-                  <div
-                    key={row.name}
-                    className="flex items-center gap-3.5 px-7 py-3.5 transition-colors hover:bg-[rgba(255,255,255,0.02)]"
-                  >
-                    <div
-                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[13px] font-bold ${row.iconStyle}`}
-                    >
-                      {row.icon}
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-[14px] font-medium text-[#e5e7eb]">
-                        {row.name}
-                      </div>
-                      <div
-                        className="mt-0.5 text-[11px]"
-                        style={{ color: "#6b7280" }}
-                      >
-                        {row.period}
-                      </div>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <div
-                        className="font-data text-[14px] font-semibold"
-                        style={{
-                          color:
-                            row.status === "full"
-                              ? "#34d399"
-                              : row.status === "partial"
-                              ? "#fbbf24"
-                              : "#6b7280",
-                          fontVariantNumeric: "tabular-nums",
-                        }}
-                      >
-                        {row.used} / {row.total}
-                      </div>
-                      <div className="mt-1 ml-auto h-1 w-[60px] overflow-hidden rounded-sm bg-[rgba(255,255,255,0.06)]">
-                        <div
-                          className="h-full rounded-sm"
-                          style={{
-                            width: `${row.pct}%`,
-                            background:
-                              row.status === "full"
-                                ? "#34d399"
-                                : row.status === "partial"
-                                ? "#fbbf24"
-                                : "#4b5563",
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Footer */}
-              <div
-                className="border-t border-[rgba(255,255,255,0.06)] px-7 py-4 text-[11px]"
-                style={{ color: "#4b5563" }}
-              >
-                6 of 12 benefits tracked &middot; Updated today
-              </div>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* Divider */}
-      <div className="mx-auto max-w-[1080px] px-6">
-        <hr className="border-t border-[rgba(255,255,255,0.06)]" />
-      </div>
-
-      {/* ════════ COMPARE SECTION ════════ */}
-      <section className="py-24" id="compare">
-        <div className="mx-auto max-w-[1080px] px-6">
-          <ScrollReveal>
-            <p className="label-caps mb-4 text-center">Compare</p>
-          </ScrollReveal>
-          <ScrollReveal>
-            <h2
-              className="mb-4 text-center text-[clamp(28px,4vw,42px)] font-bold leading-[1.15]"
-              style={{ letterSpacing: "-0.02em" }}
-            >
-              See what you&apos;d gain &mdash; or lose
-            </h2>
-          </ScrollReveal>
-          <ScrollReveal>
-            <p className="mx-auto mb-12 max-w-[540px] text-center text-[17px] leading-relaxed text-[var(--text-secondary)]">
-              Based on your real spending, Zurp calculates the exact dollar
-              difference if you switched cards. No guesswork, no affiliate bias.
-            </p>
-          </ScrollReveal>
-
-          <ScrollReveal>
-            <div className="mx-auto max-w-[780px] overflow-hidden rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[#111827]">
-              {/* Headline */}
-              <div className="border-b border-[rgba(255,255,255,0.06)] px-7 py-6">
-                <div className="text-[20px] font-bold text-white mb-1">
-                  The{" "}
-                  <span style={{ color: "#34d399" }}>Sapphire Preferred</span>{" "}
-                  would save you $755/yr
-                </div>
-                <div className="text-[13px]" style={{ color: "#6b7280" }}>
-                  Based on your $47,411 in spending over the last 12 months
-                </div>
-              </div>
-
-              {/* Card rows */}
-              <div className="py-2">
-                {compareCards.map((card) => (
-                  <div
-                    key={card.rank}
-                    className="flex items-center gap-5 px-7 py-5 border-b border-[rgba(255,255,255,0.04)] last:border-b-0"
-                    style={{ background: card.rowBg }}
-                  >
-                    {/* Rank */}
-                    <div
-                      className="text-[14px] font-bold shrink-0 w-5"
-                      style={{ color: "#4b5563" }}
-                    >
-                      {card.rank}
-                    </div>
-
-                    {/* Card info */}
-                    <div className="shrink-0 min-w-[160px]">
-                      <div className="flex items-center gap-2 text-[15px] font-semibold text-[#e5e7eb]">
-                        {card.name}
-                        {card.badge === "best" && (
-                          <span className="inline-flex items-center rounded px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.06em] bg-[rgba(52,211,153,0.15)] text-[#34d399]">
-                            Best value
-                          </span>
-                        )}
-                        {card.badge === "current" && (
-                          <span className="inline-flex items-center rounded px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.06em] bg-[rgba(59,130,246,0.15)] text-[#60a5fa]">
-                            Your card
-                          </span>
-                        )}
-                      </div>
-                      <div
-                        className="mt-0.5 text-[12px]"
-                        style={{ color: "#6b7280" }}
-                      >
-                        {card.fee}
-                      </div>
-                    </div>
-
-                    {/* Stacked bar */}
-                    <div className="flex-1 min-w-0 hidden sm:block">
-                      <div className="flex h-7 overflow-hidden rounded-md bg-[rgba(255,255,255,0.04)]">
-                        <div
-                          className="flex items-center justify-center text-[11px] font-semibold text-white/90 whitespace-nowrap"
-                          style={{
-                            width: `${card.pointsPct}%`,
-                            background: card.pointsColor,
-                          }}
-                        >
-                          {card.pointsPct > 15 ? card.pointsLabel : ""}
-                        </div>
-                        <div
-                          className="flex items-center justify-center text-[11px] font-semibold text-white/90 whitespace-nowrap"
-                          style={{
-                            width: `${card.benefitsPct}%`,
-                            background: "rgba(52,211,153,0.5)",
-                          }}
-                        >
-                          {card.benefitsPct > 10 ? card.benefitsLabel : ""}
-                        </div>
-                        <div
-                          className="flex items-center justify-center text-[11px] font-semibold text-white/70 whitespace-nowrap"
-                          style={{
-                            width: `${card.feePct}%`,
-                            background: "rgba(239,68,68,0.25)",
-                          }}
-                        >
-                          {card.feePct > 6 ? card.feeLabel : ""}
-                        </div>
-                      </div>
-                      {/* Legend dots */}
-                      <div
-                        className="mt-1.5 flex gap-1 text-[11px]"
-                        style={{
-                          color: "#6b7280",
-                          fontVariantNumeric: "tabular-nums",
-                        }}
-                      >
-                        <span className="flex items-center gap-1">
-                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#3b82f6]" />
-                          Points
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#34d399]" />
-                          Benefits
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#ef4444]" />
-                          Fee
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Net value */}
-                    <div className="text-right shrink-0 min-w-[70px]">
-                      <div
-                        className="font-data text-[22px] font-bold"
-                        style={{
-                          color: card.netColor,
-                          letterSpacing: "-0.02em",
-                          fontVariantNumeric: "tabular-nums",
-                        }}
-                      >
-                        {card.net}
-                      </div>
-                      <div
-                        className="mt-0.5 text-[11px]"
-                        style={{ color: "#6b7280" }}
-                      >
-                        net / year
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Footer */}
-              <div
-                className="border-t border-[rgba(255,255,255,0.06)] px-7 py-4 text-[11px] leading-relaxed"
-                style={{ color: "#4b5563" }}
-              >
-                Points valued conservatively (Chase UR: 1.25&cent;, Amex MR:
-                1.0&cent;). Transfer partner redemptions can yield higher value.
-                Your card shows benefits actually captured; other cards show
-                total available benefits.
-              </div>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
       {/* ════════ INSIGHT EXAMPLES ════════ */}
       <section className="py-24" id="insights">
         <div className="mx-auto max-w-[1080px] px-6">
@@ -903,32 +1003,82 @@ export default function Home() {
           </ScrollReveal>
           <ScrollReveal>
             <h2
-              className="mb-16 text-center text-[clamp(28px,4vw,40px)] font-bold leading-tight"
-              style={{ letterSpacing: "-1px" }}
+              className="mb-4 text-center text-[clamp(28px,4vw,42px)] font-bold leading-[1.15]"
+              style={{ letterSpacing: "-0.02em" }}
             >
-              Insights that actually save you money
+              Insights that actually save you money.
             </h2>
           </ScrollReveal>
+          <ScrollReveal>
+            <p
+              className="mx-auto mb-14 max-w-[540px] text-center leading-relaxed"
+              style={{ fontSize: 17, color: "#8b95a8" }}
+            >
+              Every insight is based on your transactions, your card, your
+              benefit periods. No generic tips.
+            </p>
+          </ScrollReveal>
 
-          <div className="mx-auto flex max-w-[600px] flex-col gap-3">
-            {insights.map((insight, i) => (
-              <ScrollReveal key={i}>
-                <div className="flex gap-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-secondary)] px-6 py-5 transition-all hover:border-[var(--border-strong)] hover:translate-x-1">
-                  <span
-                    className={`mt-0.5 shrink-0 rounded px-2 py-1 text-[10px] font-bold tracking-wide ${insight.tagColor}`}
+          <div className="mx-auto flex max-w-[640px] flex-col items-center gap-4">
+            {insightCards.map((card, i) => (
+              <div
+                key={i}
+                className="relative w-full overflow-hidden rounded-[14px] border border-[rgba(255,255,255,0.06)]"
+                style={{
+                  background: "#111827",
+                  opacity: 0,
+                  animation: `ins-card-enter 9s ease-in-out infinite`,
+                  animationDelay: card.enterDelay,
+                }}
+              >
+                {/* Border flash overlay */}
+                <div
+                  className="pointer-events-none absolute inset-0 rounded-[14px]"
+                  style={{
+                    border: "1px solid rgba(255,255,255,0.06)",
+                    animation: `${card.borderAnim} 9s ease-in-out infinite`,
+                    animationDelay: card.enterDelay,
+                  }}
+                />
+
+                <div className="flex items-start gap-4 px-6 py-[22px]">
+                  {/* Accent bar */}
+                  <div
+                    className="shrink-0 self-stretch rounded-sm"
+                    style={{ width: 4, minHeight: 48, background: card.accentColor }}
+                  />
+
+                  {/* Icon */}
+                  <div
+                    className="flex shrink-0 items-center justify-center rounded-[10px]"
+                    style={{ width: 36, height: 36, background: card.iconBg, fontSize: 16 }}
                   >
-                    {insight.tag}
-                  </span>
-                  <div className="flex-1">
-                    <p className="text-sm leading-relaxed text-[var(--text-primary)]">
-                      {insight.text}
-                    </p>
-                    <p className="mt-1.5 text-[11px] text-[var(--text-secondary)]">
-                      {insight.meta}
-                    </p>
+                    {card.icon}
+                  </div>
+
+                  {/* Content */}
+                  <div className="min-w-0 flex-1">
+                    <div
+                      className="mb-1.5 text-[11px] font-semibold uppercase"
+                      style={{ letterSpacing: "0.06em", color: card.typeColor }}
+                    >
+                      {card.typeLabel}
+                    </div>
+                    <div
+                      className="text-[15px] leading-[1.55]"
+                      style={{ color: "#c9d1d9" }}
+                    >
+                      {card.body}
+                    </div>
+                    <div
+                      className="mt-2 text-[12px]"
+                      style={{ color: "#4b5563" }}
+                    >
+                      {card.meta}
+                    </div>
                   </div>
                 </div>
-              </ScrollReveal>
+              </div>
             ))}
           </div>
         </div>

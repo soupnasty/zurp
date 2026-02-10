@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zurp — Insights Section</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0e17;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 100px 40px;
+  }
+
+  .section-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #4a5568;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  .section-heading {
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  .section-sub {
+    font-size: 17px;
+    line-height: 1.6;
+    color: #8b95a8;
+    text-align: center;
+    max-width: 540px;
+    margin: 0 auto 56px;
+  }
+
+  /* ===== INSIGHT CARDS ===== */
+  .insights-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .insight-card {
+    width: 100%;
+    background: #111827;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+    position: relative;
+  }
+
+  .insight-card:nth-child(1) { animation: card-enter 9s ease-in-out infinite; animation-delay: 0s; }
+  .insight-card:nth-child(2) { animation: card-enter 9s ease-in-out infinite; animation-delay: 1.2s; }
+  .insight-card:nth-child(3) { animation: card-enter 9s ease-in-out infinite; animation-delay: 2.4s; }
+
+  @keyframes card-enter {
+    0%, 2% { opacity: 0; transform: translateY(20px); }
+    8%, 80% { opacity: 1; transform: translateY(0); }
+    92%, 100% { opacity: 0; transform: translateY(-8px); }
+  }
+
+  .insight-inner {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 22px 24px;
+  }
+
+  /* Left accent bar */
+  .insight-accent {
+    width: 4px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    align-self: stretch;
+    min-height: 48px;
+  }
+
+  .accent-redirect { background: #58A6FF; }
+  .accent-expiring { background: #fbbf24; }
+  .accent-milestone { background: #34d399; }
+
+  /* Icon */
+  .insight-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 16px;
+  }
+
+  .icon-redirect { background: rgba(88,166,255,0.1); }
+  .icon-expiring { background: rgba(251,191,36,0.1); }
+  .icon-milestone { background: rgba(52,211,153,0.1); }
+
+  /* Content */
+  .insight-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .insight-type {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .type-redirect { color: #58A6FF; }
+  .type-expiring { color: #fbbf24; }
+  .type-milestone { color: #34d399; }
+
+  .insight-body {
+    font-size: 15px;
+    line-height: 1.55;
+    color: #c9d1d9;
+  }
+
+  .insight-body strong {
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .insight-body .hl-blue {
+    color: #58A6FF;
+    font-weight: 700;
+  }
+
+  .insight-body .hl-yellow {
+    color: #fbbf24;
+    font-weight: 700;
+  }
+
+  .insight-body .hl-green {
+    color: #34d399;
+    font-weight: 700;
+  }
+
+  .insight-meta {
+    font-size: 12px;
+    color: #4b5563;
+    margin-top: 8px;
+  }
+
+  /* Amount highlight animation */
+  .hl-blue {
+    display: inline;
+    position: relative;
+  }
+
+  .insight-card:nth-child(1) .hl-blue { animation: amount-glow-blue 9s ease-in-out infinite; animation-delay: 0.8s; }
+  .insight-card:nth-child(2) .hl-yellow { animation: amount-glow-yellow 9s ease-in-out infinite; animation-delay: 2.0s; }
+  .insight-card:nth-child(3) .hl-green { animation: amount-glow-green 9s ease-in-out infinite; animation-delay: 3.2s; }
+
+  @keyframes amount-glow-blue {
+    0%, 8% { text-shadow: none; }
+    12% { text-shadow: 0 0 12px rgba(88,166,255,0.6); }
+    20%, 100% { text-shadow: none; }
+  }
+
+  @keyframes amount-glow-yellow {
+    0%, 8% { text-shadow: none; }
+    12% { text-shadow: 0 0 12px rgba(251,191,36,0.6); }
+    20%, 100% { text-shadow: none; }
+  }
+
+  @keyframes amount-glow-green {
+    0%, 8% { text-shadow: none; }
+    12% { text-shadow: 0 0 12px rgba(52,211,153,0.6); }
+    20%, 100% { text-shadow: none; }
+  }
+
+  /* Notification-style entrance pulse */
+  .insight-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    border: 1px solid transparent;
+    pointer-events: none;
+  }
+
+  .insight-card:nth-child(1)::before { animation: border-flash-blue 9s ease-in-out infinite; animation-delay: 0s; }
+  .insight-card:nth-child(2)::before { animation: border-flash-yellow 9s ease-in-out infinite; animation-delay: 1.2s; }
+  .insight-card:nth-child(3)::before { animation: border-flash-green 9s ease-in-out infinite; animation-delay: 2.4s; }
+
+  @keyframes border-flash-blue {
+    0%, 5% { border-color: transparent; }
+    8% { border-color: rgba(88,166,255,0.4); }
+    16% { border-color: transparent; }
+    100% { border-color: transparent; }
+  }
+
+  @keyframes border-flash-yellow {
+    0%, 5% { border-color: transparent; }
+    8% { border-color: rgba(251,191,36,0.4); }
+    16% { border-color: transparent; }
+    100% { border-color: transparent; }
+  }
+
+  @keyframes border-flash-green {
+    0%, 5% { border-color: transparent; }
+    8% { border-color: rgba(52,211,153,0.4); }
+    16% { border-color: transparent; }
+    100% { border-color: transparent; }
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    section { padding: 64px 20px; }
+    .section-heading { font-size: 30px; }
+    .insight-inner { padding: 18px 18px; gap: 12px; }
+    .insight-body { font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<section>
+  <div class="section-label">Powered by your real data</div>
+  <h2 class="section-heading">Insights that actually save you money.</h2>
+  <p class="section-sub">Every insight is based on your transactions, your card, your benefit periods. No generic tips.</p>
+
+  <div class="insights-stack">
+
+    <!-- INSIGHT 1: Redirect (A1) — Uber → Lyft -->
+    <div class="insight-card">
+      <div class="insight-inner">
+        <div class="insight-accent accent-redirect"></div>
+        <div class="insight-icon icon-redirect">↗</div>
+        <div class="insight-content">
+          <div class="insight-type type-redirect">Redirect spending</div>
+          <div class="insight-body">
+            You spent <strong>$87 on Uber</strong> last month but only used <span class="hl-blue">$10</span> of your monthly Lyft credit. Switch your rides to Lyft to capture the full <span class="hl-blue">$120/yr</span>.
+          </div>
+          <div class="insight-meta">Chase Sapphire Reserve · Lyft credit</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INSIGHT 2: Expiring (B2) — DoorDash -->
+    <div class="insight-card">
+      <div class="insight-inner">
+        <div class="insight-accent accent-expiring"></div>
+        <div class="insight-icon icon-expiring">⏱</div>
+        <div class="insight-content">
+          <div class="insight-type type-expiring">Credit expiring</div>
+          <div class="insight-body">
+            Your <strong>$25 DoorDash credit</strong> resets in <span class="hl-yellow">3 days</span>. You've only used the $5 restaurant promo — you still have <span class="hl-yellow">$20</span> in non-restaurant credits this month.
+          </div>
+          <div class="insight-meta">Chase Sapphire Reserve · Monthly credit</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INSIGHT 3: Milestone (C2) — ROI -->
+    <div class="insight-card">
+      <div class="insight-inner">
+        <div class="insight-accent accent-milestone"></div>
+        <div class="insight-icon icon-milestone">✦</div>
+        <div class="insight-content">
+          <div class="insight-type type-milestone">ROI milestone</div>
+          <div class="insight-body">
+            You've captured <strong>$970</strong> of $1,690 in benefits this year. Your net value is <span class="hl-green">+$175</span> after the annual fee — your card is paying for itself.
+          </div>
+          <div class="insight-meta">Chase Sapphire Reserve · Annual value</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</body>
+</html>

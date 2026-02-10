@@ -259,3 +259,113 @@ summary {
   40%, 72% { opacity: 1; }
   88%, 100% { opacity: 0; }
 }
+
+/* ── Insights section animations ── */
+
+@keyframes ins-card-enter {
+  0%, 2% { opacity: 0; transform: translateY(20px); }
+  8%, 80% { opacity: 1; transform: translateY(0); }
+  92%, 100% { opacity: 0; transform: translateY(-8px); }
+}
+
+@keyframes ins-glow-blue {
+  0%, 8% { text-shadow: none; }
+  12% { text-shadow: 0 0 12px rgba(88,166,255,0.6); }
+  20%, 100% { text-shadow: none; }
+}
+
+@keyframes ins-glow-yellow {
+  0%, 8% { text-shadow: none; }
+  12% { text-shadow: 0 0 12px rgba(251,191,36,0.6); }
+  20%, 100% { text-shadow: none; }
+}
+
+@keyframes ins-glow-green {
+  0%, 8% { text-shadow: none; }
+  12% { text-shadow: 0 0 12px rgba(52,211,153,0.6); }
+  20%, 100% { text-shadow: none; }
+}
+
+@keyframes ins-border-blue {
+  0%, 5% { border-color: rgba(255,255,255,0.06); }
+  8% { border-color: rgba(88,166,255,0.4); }
+  16%, 100% { border-color: rgba(255,255,255,0.06); }
+}
+
+@keyframes ins-border-yellow {
+  0%, 5% { border-color: rgba(255,255,255,0.06); }
+  8% { border-color: rgba(251,191,36,0.4); }
+  16%, 100% { border-color: rgba(255,255,255,0.06); }
+}
+
+@keyframes ins-border-green {
+  0%, 5% { border-color: rgba(255,255,255,0.06); }
+  8% { border-color: rgba(52,211,153,0.4); }
+  16%, 100% { border-color: rgba(255,255,255,0.06); }
+}
+
+.ins-hl-blue { animation: ins-glow-blue 9s ease-in-out infinite; animation-delay: 0.8s; }
+.ins-hl-yellow { animation: ins-glow-yellow 9s ease-in-out infinite; animation-delay: 2.0s; }
+.ins-hl-green { animation: ins-glow-green 9s ease-in-out infinite; animation-delay: 3.2s; }
+
+/* ── Track & Compare mockup animations ── */
+
+@keyframes mock-fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes mock-row-enter {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes mock-fill-bar {
+  0% { width: 0%; }
+  100% { width: var(--fill); }
+}
+
+@keyframes mock-unused-pulse {
+  0%, 100% { background: transparent; }
+  50% { background: rgba(239,68,68,0.04); }
+}
+
+@keyframes mock-badge-pop {
+  0% { opacity: 0; transform: scale(0.7); }
+  60% { transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes mock-net-reveal {
+  0% { opacity: 0; transform: translateX(8px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+/* Initial hidden states — visible only after .mock-active */
+.mock-fade,
+.mock-net { opacity: 0; }
+.mock-row { opacity: 0; transform: translateY(10px); }
+.mock-row-unused { opacity: 0; transform: translateY(10px); }
+.mock-badge { opacity: 0; transform: scale(0.7); }
+.mock-bar { width: 0%; }
+
+/* Animations trigger when parent gets .mock-active */
+.mock-active .mock-fade {
+  animation: mock-fade-in var(--dur, 0.6s) ease var(--delay, 0s) forwards;
+}
+.mock-active .mock-row {
+  animation: mock-row-enter 0.5s ease var(--delay, 0s) forwards;
+}
+.mock-active .mock-row-unused {
+  animation: mock-row-enter 0.5s ease var(--delay, 0s) forwards,
+             mock-unused-pulse 2s ease-in-out var(--delay2, 0s) 1;
+}
+.mock-active .mock-bar {
+  animation: mock-fill-bar var(--dur, 0.8s) cubic-bezier(0.25,0.46,0.45,0.94) var(--delay, 0s) forwards;
+}
+.mock-active .mock-badge {
+  animation: mock-badge-pop 0.4s cubic-bezier(0.34,1.56,0.64,1) var(--delay, 0s) forwards;
+}
+.mock-active .mock-net {
+  animation: mock-net-reveal 0.5s ease var(--delay, 0s) forwards;
+}
