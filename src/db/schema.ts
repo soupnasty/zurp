@@ -420,43 +420,6 @@ export const benefitOverrides = pgTable(
   ]
 );
 
-// ── Comparison Results (stub for future Compare page) ──
-
-export const comparisonResults = pgTable(
-  "comparison_results",
-  {
-    id: text("id")
-      .primaryKey()
-      .$defaultFn(() => crypto.randomUUID()),
-    userId: text("user_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    plaidConnectionId: text("plaid_connection_id")
-      .notNull()
-      .references(() => plaidConnections.id, { onDelete: "cascade" }),
-    cardType: text("card_type").notNull(),
-    totalEstimatedValue: real("total_estimated_value").notNull(),
-    creditValue: real("credit_value").notNull(),
-    pointsValue: real("points_value").notNull(),
-    annualFee: integer("annual_fee").notNull(),
-    capturePct: real("capture_pct").notNull(),
-    benefitBreakdown: jsonb("benefit_breakdown").notNull(),
-    analysisPeriodStart: timestamp("analysis_period_start", { mode: "date" }).notNull(),
-    analysisPeriodEnd: timestamp("analysis_period_end", { mode: "date" }).notNull(),
-    transactionCount: integer("transaction_count").notNull(),
-    generatedAt: timestamp("generated_at", { mode: "date" })
-      .notNull()
-      .$defaultFn(() => new Date()),
-  },
-  (table) => [
-    unique("comparison_results_unique").on(
-      table.userId,
-      table.plaidConnectionId,
-      table.cardType
-    ),
-  ]
-);
-
 // ── Relations ──
 
 export const usersRelations = relations(users, ({ many }) => ({

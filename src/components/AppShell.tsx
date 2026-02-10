@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   CircleDollarSign,
+  Scale,
   Wallet,
   Settings,
   ChevronLeft,
@@ -20,6 +21,7 @@ interface AppShellProps {
 const navItems = [
   { href: "/benefits", label: "Benefits", icon: CircleDollarSign },
   { href: "/spending", label: "Spending", icon: Wallet },
+  { href: "/compare", label: "Compare", icon: Scale },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 

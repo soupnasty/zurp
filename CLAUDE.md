@@ -21,7 +21,7 @@ A credit card benefits tracker that syncs transactions via Plaid, matches them a
 ```bash
 npm run dev          # Start dev server
 npm run build        # Production build
-npm run test:run     # Run all tests (134 tests across 9 files)
+npm run test:run     # Run all tests (178 tests across 12 files)
 npm run db:push      # Push schema to Neon
 npm run db:seed      # Seed cards + benefits + competitor map from registry
 npm run db:studio    # Open Drizzle Studio
@@ -107,6 +107,21 @@ src/lib/insights/
 - `getInsightsForDisplay(userId, surface, max)` called in benefits page
 - `expireStaleInsights(userId)` called in cron job
 
+### Points Earn Model (`src/lib/points/`)
+
+On-demand simulation engine that answers "which card earns the most for your actual spending?"
+
+- **Category mapper** (`categories.ts`): 3-tier classification — merchant name match → Plaid category fallback → `other`. Uses 19-category taxonomy separate from the 8-category spending system.
+- **Merchant map** (`merchant-map.ts`): ~200 static merchant→category entries with priority-based matching.
+- **Earn configs** (`earn-configs/`): Per-card earn rate definitions (bonus categories, caps, conditions, point valuations). Files: `chase-sapphire-reserve.ts`, `chase-sapphire-preferred.ts`, `amex-gold.ts`.
+- **Calculator** (`calculator.ts`): Per-transaction points calculation with cap tracking.
+- **Simulator** (`simulator.ts`): Full pipeline — classify → calculate per card → aggregate → compute net value (points + benefits - fee).
+- **Perk matrix** (`perk-matrix.ts`): Static benefit comparison data for the Benefits & Perks tab.
+- **Queries** (`queries.ts`): Server-only DB queries for transaction data.
+- **Orchestrator** (`index.ts`): `computeComparison(userId)` — main entry point called from the compare page.
+
+No new DB tables — computed on-demand from existing transaction data.
+
 ### Card Registry
 
 Card definitions live in `src/lib/cards/`. Each card file exports a `CardDefinition` with all benefits. The registry at `src/lib/cards/index.ts` aggregates them. `detect.ts` auto-detects card type from Plaid account metadata. To add a new card, create a new file in `src/lib/cards/` and register it in `index.ts`.
@@ -123,6 +138,7 @@ src/
 │   ├── onboarding/         # Multi-step wizard (card select, Plaid, anniversary)
 │   ├── benefits/           # Benefits dashboard (insights, benefit cards, sync)
 │   ├── spending/           # Spending analysis (categories, monthly breakdown)
+│   ├── compare/            # Card comparison (points earn simulation, perk matrix)
 │   ├── settings/           # User settings (card type, anniversary, connections)
 │   ├── sandbox/            # Plaid test page (gated by NEXT_PUBLIC_ENABLE_SANDBOX)
 │   ├── error.tsx           # Global error boundary
@@ -139,6 +155,7 @@ src/
 │   ├── insights/           # Insights Engine v2 (generators, scoring, orchestrator)
 │   ├── spending/           # Spending analysis (categories, queries)
 │   ├── cards/              # Card definitions registry + auto-detection
+│   ├── points/             # Points earn model (category mapper, earn configs, simulator)
 │   ├── auth.ts             # NextAuth config (lazy)
 │   ├── auth-helpers.ts     # getAuthUser(), requireAuth()
 │   ├── actions.ts          # Server actions (updateCardType, removeCardProfile)
@@ -163,6 +180,7 @@ src/
 - [x] Phase 5: Dashboard UI
 - [x] Phase 6: Polish, webhooks, cron, deployment
 - [x] Phase 7: Insights Engine v2 — 8 categories, DB persistence, 5-factor scoring, lifecycle, competitor map
+- [x] Phase 8: Compare Page + Points Earn Model — 19-category mapper, 3 card earn configs, simulator, perk matrix, tabbed UI
 
 ### Sync Architecture
 
@@ -187,4 +205,6 @@ Connection health alerts (`src/lib/notifications.ts`) surface stale/reauth/disco
 - `docs/styling/style-guide.md` — Brand colors, typography, spacing, motion
 - `docs/catalogs/` — Card benefit catalogs (CSR, CSP, Amex Gold)
 - `docs/zurp-dashboard-spec.md` — Dashboard UI spec
+- `docs/zurp-compare-page-spec.md` — Compare page UI spec
+- `docs/zurp-points-earn-model.md` — Points earn model spec (category taxonomy, earn rates, caps)
 - `public/zurp-logo.svg` — Logo
