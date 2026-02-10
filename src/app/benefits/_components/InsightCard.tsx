@@ -33,7 +33,7 @@ export function InsightCard({ insight }: InsightCardProps) {
             </p>
             {insight.dollarImpactScore >= 60 && (
               <span className="shrink-0 font-data text-[var(--text-caption)] text-[var(--accent)]">
-                ${insight.templateVars.amount || insight.templateVars.remaining || insight.templateVars.total || insight.templateVars.value || ""}
+                ${insight.templateVars.amount || insight.templateVars.remaining || insight.templateVars.total || insight.templateVars.value || insight.templateVars.annual || ""}
               </span>
             )}
           </div>
