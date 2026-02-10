@@ -242,6 +242,12 @@ export default function Home() {
           {/* Desktop nav */}
           <div className="hidden items-center gap-8 md:flex">
             <a
+              href="#how"
+              className="text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
+            >
+              How it works
+            </a>
+            <a
               href="#track"
               className="text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
             >
@@ -258,12 +264,6 @@ export default function Home() {
               className="text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
             >
               Insights
-            </a>
-            <a
-              href="#how"
-              className="text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
-            >
-              How it works
             </a>
             <Link
               href="/login"
@@ -330,6 +330,248 @@ export default function Home() {
           ))}
         </div>
       </div>
+
+      {/* ════════ HOW IT WORKS ════════ */}
+      <section className="py-24" id="how">
+        <div className="mx-auto max-w-[1080px] px-6">
+          <ScrollReveal>
+            <p className="label-caps mb-4 text-center">How it works</p>
+          </ScrollReveal>
+          <ScrollReveal>
+            <h2
+              className="mb-16 text-center text-[clamp(28px,4vw,42px)] font-bold leading-[1.15]"
+              style={{ letterSpacing: "-0.02em" }}
+            >
+              Two minutes to stop wasting money
+            </h2>
+          </ScrollReveal>
+
+          <div className="grid gap-6 md:grid-cols-3 items-stretch">
+            {/* Step 1: Connect */}
+            <ScrollReveal className="flex">
+              <div className="flex-1 flex flex-col rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[#111827] p-7 pt-8">
+                <div className="text-[13px] font-semibold mb-5" style={{ color: "#4b5563" }}>
+                  01
+                </div>
+
+                {/* Animation: Card → Shield */}
+                <div className="relative mb-6 h-[180px] w-full overflow-hidden rounded-xl border border-[rgba(255,255,255,0.04)] bg-[rgba(255,255,255,0.02)]">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="relative" style={{ width: 160, height: 120 }}>
+                      {/* Card */}
+                      <div
+                        className="absolute rounded-md"
+                        style={{
+                          width: 72,
+                          height: 46,
+                          background: "linear-gradient(145deg, #1a1f3a, #0d1129)",
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.06)",
+                          left: 0,
+                          top: "50%",
+                          animation: "hiw-card-slide 3.5s ease-in-out infinite",
+                        }}
+                      >
+                        <div
+                          className="absolute rounded-sm"
+                          style={{
+                            top: 10,
+                            left: 10,
+                            width: 14,
+                            height: 10,
+                            background: "rgba(255,255,255,0.15)",
+                            border: "0.5px solid rgba(255,255,255,0.1)",
+                          }}
+                        />
+                        <div className="absolute" style={{ bottom: 8, left: 10, right: 10 }}>
+                          <div className="mb-[3px] h-[2px] rounded-sm bg-[rgba(255,255,255,0.08)]" />
+                          <div className="mb-[3px] h-[2px] rounded-sm bg-[rgba(255,255,255,0.08)]" />
+                          <div className="h-[2px] w-[60%] rounded-sm bg-[rgba(255,255,255,0.08)]" />
+                        </div>
+                      </div>
+
+                      {/* Connection line */}
+                      <div
+                        className="absolute"
+                        style={{ top: "50%", left: 72, right: 66, height: 2, transform: "translateY(-50%)" }}
+                      >
+                        <div className="relative h-full w-full overflow-hidden rounded-sm bg-[rgba(255,255,255,0.06)]">
+                          <div
+                            className="absolute top-0 h-full rounded-sm"
+                            style={{
+                              width: "30%",
+                              background: "linear-gradient(90deg, transparent, #58A6FF, transparent)",
+                              animation: "hiw-pulse-slide 3.5s ease-in-out infinite",
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Shield */}
+                      <div
+                        className="absolute flex items-center justify-center"
+                        style={{ right: 10, top: "50%", transform: "translateY(-50%)", width: 56, height: 64 }}
+                      >
+                        <div className="relative" style={{ width: 48, height: 56 }}>
+                          <svg viewBox="0 0 48 56" fill="none" className="h-full w-full">
+                            <path
+                              d="M24 2L4 12V28C4 40 14 50 24 54C34 50 44 40 44 28V12L24 2Z"
+                              fill="rgba(88,166,255,0.08)"
+                              stroke="rgba(88,166,255,0.3)"
+                              strokeWidth="1.5"
+                            />
+                          </svg>
+                          <div
+                            className="absolute"
+                            style={{
+                              top: "50%",
+                              left: "50%",
+                              animation: "hiw-check-pop 3.5s ease-in-out infinite",
+                            }}
+                          >
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                              <path d="M5 10L9 14L15 6" stroke="#58A6FF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <h3 className="mb-2 text-[20px] font-bold">Connect via Plaid</h3>
+                <p className="text-[14px] leading-relaxed" style={{ color: "#8b95a8" }}>
+                  Read-only access to your transactions. We never see your card
+                  number, login, or balance.
+                </p>
+              </div>
+            </ScrollReveal>
+
+            {/* Step 2: Scan */}
+            <ScrollReveal className="flex">
+              <div className="flex-1 flex flex-col rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[#111827] p-7 pt-8">
+                <div className="text-[13px] font-semibold mb-5" style={{ color: "#4b5563" }}>
+                  02
+                </div>
+
+                {/* Animation: Transaction scanning */}
+                <div className="relative mb-6 h-[180px] w-full overflow-hidden rounded-xl border border-[rgba(255,255,255,0.04)] bg-[rgba(255,255,255,0.02)] flex flex-col justify-center px-5 py-4 gap-0">
+                  {[
+                    { merchant: "Uber", amount: "$32.40", match: true, delay: "0s" },
+                    { merchant: "DoorDash", amount: "$24.80", match: true, delay: "0.4s" },
+                    { merchant: "Whole Foods", amount: "$67.32", match: false, delay: "0.8s" },
+                    { merchant: "StubHub", amount: "$95.00", match: true, delay: "1.2s" },
+                  ].map((row) => (
+                    <div
+                      key={row.merchant}
+                      className="flex items-center gap-2.5 rounded-md px-2 h-9"
+                      style={{
+                        opacity: 0,
+                        animation: `${row.match ? "hiw-scan-row-match" : "hiw-scan-row-in"} 4s ease-in-out infinite`,
+                        animationDelay: row.delay,
+                      }}
+                    >
+                      <span className="flex-1 text-[12px] whitespace-nowrap" style={{ color: "#8b95a8" }}>
+                        {row.merchant}
+                      </span>
+                      <span
+                        className="shrink-0 w-[50px] text-right text-[12px]"
+                        style={{ color: "#6b7280", fontVariantNumeric: "tabular-nums" }}
+                      >
+                        {row.amount}
+                      </span>
+                      <span
+                        className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px]"
+                        style={{
+                          background: row.match ? "rgba(88,166,255,0.15)" : "rgba(255,255,255,0.04)",
+                          color: row.match ? "#58A6FF" : "#4b5563",
+                          opacity: 0,
+                          animation: `${row.match ? "hiw-match-pop" : "hiw-nomatch-pop"} 4s ease-in-out infinite`,
+                          animationDelay: `${parseFloat(row.delay) + 0.6}s`,
+                        }}
+                      >
+                        {row.match ? "\u2713" : "\u2014"}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <h3 className="mb-2 text-[20px] font-bold">We scan your spending</h3>
+                <p className="text-[14px] leading-relaxed" style={{ color: "#8b95a8" }}>
+                  Every transaction is matched against your card&apos;s full benefit
+                  catalog &mdash; credits, multipliers, promos, partner perks.
+                </p>
+              </div>
+            </ScrollReveal>
+
+            {/* Step 3: Insights */}
+            <ScrollReveal className="flex">
+              <div className="flex-1 flex flex-col rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[#111827] p-7 pt-8">
+                <div className="text-[13px] font-semibold mb-5" style={{ color: "#4b5563" }}>
+                  03
+                </div>
+
+                {/* Animation: Insight card */}
+                <div className="relative mb-6 h-[180px] w-full overflow-hidden rounded-xl border border-[rgba(255,255,255,0.04)] bg-[rgba(255,255,255,0.02)] flex items-center justify-center p-5">
+                  <div
+                    className="w-full max-w-[260px] rounded-[10px] border border-[rgba(255,255,255,0.08)] p-4"
+                    style={{
+                      background: "#1a2332",
+                      opacity: 0,
+                      animation: "hiw-insight-slide 4.5s ease-in-out infinite",
+                    }}
+                  >
+                    <div
+                      className="mb-2.5 inline-flex items-center gap-1 rounded px-2 py-[3px] text-[9px] font-bold uppercase tracking-[0.06em]"
+                      style={{ color: "#fbbf24", background: "rgba(251,191,36,0.1)" }}
+                    >
+                      &uarr; Redirect spending
+                    </div>
+                    <div className="mb-3 text-[13px] leading-relaxed" style={{ color: "#c9d1d9" }}>
+                      You spent <strong className="font-semibold text-white">$87 on Uber</strong> last
+                      month. Your{" "}
+                      <span className="font-bold" style={{ color: "#58A6FF" }}>
+                        $10/mo Lyft credit
+                      </span>{" "}
+                      is sitting unused.
+                    </div>
+                    <div className="flex items-baseline gap-1.5">
+                      <span
+                        className="font-data font-bold"
+                        style={{
+                          fontSize: 28,
+                          color: "#58A6FF",
+                          letterSpacing: "-0.02em",
+                          fontVariantNumeric: "tabular-nums",
+                          opacity: 0,
+                          animation: "hiw-amount-count 4.5s ease-in-out infinite",
+                        }}
+                      >
+                        $120
+                      </span>
+                      <span
+                        className="text-[12px]"
+                        style={{
+                          color: "#6b7280",
+                          opacity: 0,
+                          animation: "hiw-label-fade 4.5s ease-in-out infinite",
+                        }}
+                      >
+                        per year in unused credit
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <h3 className="mb-2 text-[20px] font-bold">Get personalized insights</h3>
+                <p className="text-[14px] leading-relaxed" style={{ color: "#8b95a8" }}>
+                  Missed credits, better merchants, expiring benefits, and what
+                  you&apos;d save by switching cards. Tailored to your actual spending.
+                </p>
+              </div>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
 
       {/* ════════ TRACK SECTION ════════ */}
       <section className="py-24" id="track">
@@ -685,60 +927,6 @@ export default function Home() {
                       {insight.meta}
                     </p>
                   </div>
-                </div>
-              </ScrollReveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ════════ HOW IT WORKS ════════ */}
-      <section className="py-24" id="how">
-        <div className="mx-auto max-w-[1080px] px-6">
-          <ScrollReveal>
-            <p className="label-caps mb-4 text-center">How it works</p>
-          </ScrollReveal>
-          <ScrollReveal>
-            <h2
-              className="mb-16 text-center text-[clamp(28px,4vw,40px)] font-bold leading-tight"
-              style={{ letterSpacing: "-1px" }}
-            >
-              Two minutes to stop wasting money
-            </h2>
-          </ScrollReveal>
-
-          <div className="grid gap-6 md:grid-cols-3 items-stretch">
-            {[
-              {
-                num: "01",
-                title: "Connect via Plaid",
-                desc: "Read-only access to your transactions. We never see your card number, login, or balance.",
-              },
-              {
-                num: "02",
-                title: "We scan your spending",
-                desc: "Zurp maps every transaction against your card\u2019s full benefit catalog \u2014 credits, multipliers, promos, partner perks.",
-              },
-              {
-                num: "03",
-                title: "Get insights weekly",
-                desc: "Missed credits, better merchants, expiring benefits, and what you\u2019d save by switching cards. Personalized to your actual spending.",
-              },
-            ].map((step) => (
-              <ScrollReveal key={step.num} className="flex">
-                <div className="flex-1 rounded-2xl border border-[var(--border-default)] bg-[var(--bg-secondary)] p-8 transition-colors hover:border-[var(--border-strong)]">
-                  <div className="font-data mb-5 text-xs text-[var(--text-secondary)]">
-                    {step.num}
-                  </div>
-                  <h3
-                    className="mb-2 text-lg font-semibold"
-                    style={{ letterSpacing: "-0.3px" }}
-                  >
-                    {step.title}
-                  </h3>
-                  <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
-                    {step.desc}
-                  </p>
                 </div>
               </ScrollReveal>
             ))}
