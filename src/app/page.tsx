@@ -1,40 +1,7 @@
 import Link from "next/link";
 import { MobileNav } from "./_components/MobileNav";
 import { ScrollReveal } from "./_components/ScrollReveal";
-
-/* ── Card marquee data ── */
-const cards = [
-  {
-    name: "Chase Sapphire Reserve",
-    swatch:
-      "bg-gradient-to-br from-[#1a1a2e] to-[#2d3561] border border-[#3d4571]",
-  },
-  {
-    name: "Chase Sapphire Preferred",
-    swatch:
-      "bg-gradient-to-br from-[#1a2744] to-[#2c4a7c] border border-[#3c5a8c]",
-  },
-  {
-    name: "Amex Gold",
-    swatch:
-      "bg-gradient-to-br from-[#8b6914] to-[#c9a227] border border-[#d4b03a]",
-  },
-  {
-    name: "Amex Platinum",
-    swatch:
-      "bg-gradient-to-br from-[#6b6b6b] to-[#a8a8a8] border border-[#b8b8b8]",
-  },
-  {
-    name: "Capital One Venture X",
-    swatch:
-      "bg-gradient-to-br from-[#1a1a1a] to-[#333333] border border-[#4a4a4a]",
-  },
-  {
-    name: "Citi Strata Elite",
-    swatch:
-      "bg-gradient-to-br from-[#0a2e5c] to-[#1a5276] border border-[#2a6286]",
-  },
-];
+import { CardChip, MARQUEE_CARDS } from "./_components/CardChip";
 
 /* ── Tracker mockup rows ── */
 const trackerRows = [
@@ -284,21 +251,15 @@ export default function Home() {
       </section>
 
       {/* ════════ CARD MARQUEE STRIP ════════ */}
-      <div className="relative overflow-hidden border-y border-[var(--border-default)] py-10">
+      <div className="relative overflow-hidden py-10">
         {/* Fade edges */}
         <div className="pointer-events-none absolute top-0 bottom-0 left-0 z-[2] w-20 bg-gradient-to-r from-[var(--bg-primary)] to-transparent" />
         <div className="pointer-events-none absolute top-0 bottom-0 right-0 z-[2] w-20 bg-gradient-to-l from-[var(--bg-primary)] to-transparent" />
 
-        <div className="marquee-track flex w-max items-center gap-12">
+        <div className="marquee-track flex w-max items-center gap-6">
           {/* Render cards twice for seamless loop */}
-          {[...cards, ...cards].map((card, i) => (
-            <div
-              key={i}
-              className="flex shrink-0 items-center gap-2.5 text-sm font-medium text-[var(--text-secondary)] whitespace-nowrap"
-            >
-              <div className={`h-6 w-9 shrink-0 rounded ${card.swatch}`} />
-              {card.name}
-            </div>
+          {[...MARQUEE_CARDS, ...MARQUEE_CARDS].map((cardId, i) => (
+            <CardChip key={i} cardId={cardId} />
           ))}
         </div>
       </div>
