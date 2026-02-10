@@ -6,7 +6,6 @@ import { getAllCardDefinitions } from "@/lib/cards";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { SignOutButton } from "./_components/SignOutButton";
-import { ThemeToggle } from "./_components/ThemeToggle";
 import { UnlinkButton } from "./_components/UnlinkButton";
 import { RemoveCardButton } from "@/components/RemoveCardButton";
 import { AnniversaryEditor } from "./_components/AnniversaryEditor";
@@ -160,24 +159,6 @@ export default async function SettingsPage() {
               ))}
             </div>
           )}
-        </section>
-
-        {/* Appearance */}
-        <section>
-          <h2 className="label-caps mb-[var(--space-md)]">Appearance</h2>
-          <Card>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[var(--text-body)] font-semibold text-[var(--text-primary)]">
-                  Theme
-                </p>
-                <p className="text-[var(--text-caption)] text-[var(--text-secondary)]">
-                  Switch between dark and light mode
-                </p>
-              </div>
-              <ThemeToggle />
-            </div>
-          </Card>
         </section>
 
         {/* Sign Out */}

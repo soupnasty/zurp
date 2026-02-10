@@ -196,11 +196,13 @@ export default function Home() {
       <nav className="fixed top-0 left-0 right-0 z-[100] bg-[var(--bg-primary)]/80 backdrop-blur-[20px] border-b border-[var(--border-default)]/50">
         <div className="mx-auto flex max-w-[1080px] items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-2.5 no-underline">
-            <div className="flex h-[22px] w-8 items-center justify-center gap-[3px] rounded border-[2.5px] border-[var(--accent)]">
-              <span className="h-1 w-1 rounded-full bg-[var(--accent)]" />
-              <span className="h-1 w-1 rounded-full bg-[var(--accent)]" />
-              <span className="h-1 w-1 rounded-full bg-[var(--accent)]" />
-            </div>
+            <svg width="32" height="22" viewBox="0 0 50 34" fill="none">
+              <rect x="0" y="0" width="50" height="34" rx="5" stroke="var(--accent)" strokeWidth="2.5" opacity="0.4" />
+              <line x1="0" y1="12" x2="50" y2="12" stroke="var(--accent)" strokeWidth="1.2" opacity="0.2" />
+              <circle cx="12" cy="24" r="2.5" fill="var(--accent)" />
+              <circle cx="21" cy="24" r="2.5" fill="var(--accent)" opacity="0.55" />
+              <circle cx="30" cy="24" r="2.5" fill="var(--accent)" opacity="0.2" />
+            </svg>
             <span
               className="text-xl font-bold tracking-tight text-[var(--text-primary)]"
               style={{ letterSpacing: "-0.5px" }}

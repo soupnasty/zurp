@@ -1,9 +1,4 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <rect width="32" height="32" rx="6" fill="#0D1117"/>
-  
-  <!-- Z letterform, larger and centered -->
-  <text x="16" y="21" font-family="'SF Pro Display', 'Helvetica Neue', Helvetica, sans-serif" font-weight="600" font-size="26" fill="#E6EDF3" text-anchor="middle" letter-spacing="-1">z</text>
-  
-  <!-- Signal blue accent bar (mirrors the divider from the logo) -->
-  <line x1="10" y1="24" x2="22" y2="24" stroke="#58A6FF" stroke-width="2" stroke-linecap="round"/>
+  <rect width="32" height="32" rx="6" fill="#58A6FF"/>
+  <text x="16" y="23" font-family="'SF Pro Display', 'Helvetica Neue', Helvetica, sans-serif" font-weight="700" font-size="24" fill="#0D1117" text-anchor="middle" letter-spacing="-1">z</text>
 </svg>

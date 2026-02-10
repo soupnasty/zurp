@@ -18,13 +18,6 @@
   --color-danger: #F85149;
   --color-info: #58A6FF;
 
-  /* Light mode colors */
-  --color-light-bg: #F6F8FA;
-  --color-light-surface: #FFFFFF;
-  --color-light-text: #1F2328;
-  --color-light-text-secondary: #656D76;
-  --color-light-signal: #0969DA;
-
   /* Typography */
   --font-display: "Inter", "Helvetica Neue", Helvetica, sans-serif;
   --font-body: "Inter", "Helvetica Neue", Helvetica, sans-serif;
@@ -83,35 +76,11 @@
   --benefit-icon-invert: none;
 }
 
-.light {
-  --bg-primary: #F0F3F6;
-  --bg-secondary: var(--color-light-surface);
-  --bg-tertiary: #E2E8F0;
-  --text-primary: var(--color-light-text);
-  --text-secondary: var(--color-light-text-secondary);
-  --text-tertiary: #8B949E;
-  --border-default: #C5CED8;
-  --border-strong: #A3B1BF;
-  --accent: var(--color-light-signal);
-  --accent-ghost: rgba(9, 105, 218, 0.15);
-  --benefit-icon-color: black;
-  --benefit-icon-invert: invert(1);
-
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.10), 0 1px 3px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.14), 0 2px 6px rgba(0, 0, 0, 0.06);
-  --shadow-glow: none;
-}
-
 /* ── Base styles ── */
 
 html {
   color-scheme: dark;
   scroll-behavior: smooth;
-}
-
-html.light {
-  color-scheme: light;
 }
 
 body {
@@ -168,10 +137,6 @@ summary {
 ::-webkit-scrollbar-thumb {
   background: var(--color-border);
   border-radius: 3px;
-}
-
-.light ::-webkit-scrollbar-thumb {
-  background: #C1C8D1;
 }
 
 /* ── Utility: monospace dollar amounts ── */

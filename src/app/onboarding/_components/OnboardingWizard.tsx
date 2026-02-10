@@ -181,7 +181,7 @@ export function OnboardingWizard({ userId, cards }: OnboardingWizardProps) {
         )}
 
         {error && (
-          <p className="mt-4 text-sm text-error-600 dark:text-error-500">
+          <p className="mt-4 text-sm text-[var(--color-danger)]">
             {error}
           </p>
         )}
