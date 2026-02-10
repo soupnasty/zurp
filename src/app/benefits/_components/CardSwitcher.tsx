@@ -1,52 +1,58 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { ChevronDown } from "lucide-react";
+import { useTransition } from "react";
+import { ChevronDown, Loader2 } from "lucide-react";
+import { updateCardType } from "@/lib/actions";
 
 interface CardOption {
   id: string;
   name: string;
   issuer: string;
-  isActive: boolean;
-  accountMask?: string | null;
+  annualFee: number;
 }
 
 interface CardSwitcherProps {
-  cards: CardOption[];
-  activeCardId: string;
-  basePath?: string;
+  allCards: CardOption[];
+  activeCardProfileId: string;
+  activeCardType: string;
 }
 
-export function CardSwitcher({ cards, activeCardId, basePath = "/benefits" }: CardSwitcherProps) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  if (cards.length <= 1) return null;
+export function CardSwitcher({ allCards, activeCardProfileId, activeCardType }: CardSwitcherProps) {
+  const [isPending, startTransition] = useTransition();
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("cardId", e.target.value);
-    router.replace(`${basePath}?${params.toString()}`);
+    const newCardType = e.target.value;
+    if (newCardType === activeCardType) return;
+    startTransition(async () => {
+      await updateCardType(activeCardProfileId, newCardType);
+    });
   };
 
   return (
     <div className="relative inline-flex items-center">
       <select
-        value={activeCardId}
+        value={activeCardType}
         onChange={handleChange}
-        className="appearance-none bg-transparent pr-6 text-[var(--text-secondary)] text-[var(--text-caption)] font-medium cursor-pointer focus:outline-none hover:text-[var(--text-primary)] transition-colors"
+        disabled={isPending}
+        className="appearance-none bg-transparent pr-6 text-[var(--text-secondary)] text-[var(--text-caption)] font-medium cursor-pointer focus:outline-none hover:text-[var(--text-primary)] transition-colors disabled:opacity-50"
       >
-        {cards.map((card) => (
+        {allCards.map((card) => (
           <option key={card.id} value={card.id}>
             {card.name}
-            {card.accountMask ? ` ····${card.accountMask}` : ""}
           </option>
         ))}
       </select>
-      <ChevronDown
-        size={14}
-        className="pointer-events-none absolute right-0 text-[var(--text-muted)]"
-      />
+      {isPending ? (
+        <Loader2
+          size={14}
+          className="pointer-events-none absolute right-0 text-[var(--text-muted)] animate-spin"
+        />
+      ) : (
+        <ChevronDown
+          size={14}
+          className="pointer-events-none absolute right-0 text-[var(--text-muted)]"
+        />
+      )}
     </div>
   );
 }

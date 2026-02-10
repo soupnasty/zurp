@@ -68,19 +68,9 @@ export function CardSelector({ cards, activeCardId, collapsed }: CardSelectorPro
     });
   };
 
-  // Strip issuer prefix from card type names since the card dropdown already shows it
-  const stripIssuer = (name: string) => {
-    const issuer = activeCard.issuer.toLowerCase();
-    const lower = name.replace(/[®™©]/g, "").toLowerCase().trim();
-    return lower.startsWith(issuer)
-      ? name.replace(new RegExp(`^${activeCard.issuer}\\s*`, "i"), "").trim()
-      : name;
-  };
-
-  const activeTypeName = stripIssuer(
+  const activeTypeName =
     activeCard.issuerCards.find((c) => c.id === activeCard.cardType)?.name ??
-    activeCard.cardName
-  );
+    activeCard.cardName;
 
   if (collapsed) {
     return (
@@ -205,7 +195,7 @@ export function CardSelector({ cards, activeCardId, collapsed }: CardSelectorPro
                       : "text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)]"
                   } disabled:opacity-50`}
                 >
-                  <span className="flex-1 truncate">{stripIssuer(type.name)}</span>
+                  <span className="flex-1 truncate">{type.name}</span>
                   {isCurrentType && <Check size={14} strokeWidth={2.5} className="shrink-0" />}
                 </button>
               );

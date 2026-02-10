@@ -10,7 +10,7 @@ Implementation-ready data for the Zurp insight engine. Format matches CSR and CS
 
 ```
 benefit_key:          gold_dining_credit
-card_type:            gold
+card_type:            amex_gold
 benefit_name:         Monthly Dining Credit
 benefit_partner:      Grubhub, The Cheesecake Factory, Goldbelly, Wine.com, Five Guys
 benefit_type:         statement_credit
@@ -33,7 +33,7 @@ notes:                Credit applies to purchases at ANY of the 5 eligible merch
 
 ```
 benefit_key:          gold_uber_cash
-card_type:            gold
+card_type:            amex_gold
 benefit_name:         Monthly Uber Cash
 benefit_partner:      Uber
 benefit_type:         uber_cash (in-app balance, NOT statement credit)
@@ -58,7 +58,7 @@ notes:                $10 deposited into Uber Wallet on 1st of each month.
 
 ```
 benefit_key:          gold_resy_credit
-card_type:            gold
+card_type:            amex_gold
 benefit_name:         Semi-Annual Resy Dining Credit
 benefit_partner:      Resy
 benefit_type:         statement_credit
@@ -76,12 +76,12 @@ notes:                Credit triggers at U.S. restaurants partnered with Resy, O
                       Reservation through Resy is NOT required — just dine at a Resy-affiliated restaurant and pay with Gold.
                       Statement credit posts to account; visible in Plaid.
                       Challenge: identifying Resy-affiliated restaurants requires a Resy restaurant database or detecting Amex credit postings.
-                      NEW CADENCE: semi-annual tracking is new for the insight engine (CSR/CSP use monthly or annual only).
+                      Semi-annual tracking uses same biannual_h1/biannual_h2 period type as CSR (Exclusive Tables, StubHub).
 ```
 
 ```
 benefit_key:          gold_dunkin_credit
-card_type:            gold
+card_type:            amex_gold
 benefit_name:         Monthly Dunkin' Credit
 benefit_partner:      Dunkin'
 benefit_type:         statement_credit
@@ -103,7 +103,7 @@ notes:                U.S. Dunkin' locations only (in-store or via Dunkin' app w
 
 ```
 benefit_key:          gold_hotel_collection
-card_type:            gold
+card_type:            amex_gold
 benefit_name:         The Hotel Collection Credit
 benefit_partner:      AmexTravel.com (Hotel Collection properties)
 benefit_type:         property_credit (on-site, not statement credit)
@@ -129,7 +129,7 @@ notes:                Must book through AmexTravel.com at a Hotel Collection pro
 
 ```
 benefit_key:          gold_4x_restaurants
-card_type:            gold
+card_type:            amex_gold
 benefit_name:         4x Membership Rewards at Restaurants Worldwide
 benefit_partner:      null (category-wide)
 benefit_type:         points_multiplier
@@ -153,7 +153,7 @@ notes:                "Restaurants worldwide" — includes sit-down, fast food, 
 
 ```
 benefit_key:          gold_4x_supermarkets
-card_type:            gold
+card_type:            amex_gold
 benefit_name:         4x Membership Rewards at U.S. Supermarkets
 benefit_partner:      null (category-wide)
 benefit_type:         points_multiplier
@@ -179,7 +179,7 @@ notes:                "U.S. supermarkets" — includes grocery chains (Kroger, S
 
 ```
 benefit_key:          gold_3x_flights
-card_type:            gold
+card_type:            amex_gold
 benefit_name:         3x Membership Rewards on Flights
 benefit_partner:      null (airlines + AmexTravel.com)
 benefit_type:         points_multiplier
@@ -200,7 +200,7 @@ notes:                Flights booked directly with airlines OR through AmexTrave
 
 ```
 benefit_key:          gold_2x_amex_travel
-card_type:            gold
+card_type:            amex_gold
 benefit_name:         2x Membership Rewards on AmexTravel.com (Non-Flight)
 benefit_partner:      AmexTravel.com
 benefit_type:         points_multiplier
@@ -220,7 +220,7 @@ notes:                Hotels, car rentals, and other travel booked through AmexT
 
 ```
 benefit_key:          gold_1x_other
-card_type:            gold
+card_type:            amex_gold
 benefit_name:         1x Membership Rewards on Everything Else
 benefit_partner:      null
 benefit_type:         points_multiplier
@@ -242,7 +242,7 @@ notes:                Base earn rate. All purchases not captured by 4x/3x/2x cat
 
 ```
 benefit_key:          gold_trip_delay
-card_type:            gold
+card_type:            amex_gold
 benefit_name:         Trip Delay Insurance
 benefit_partner:      null
 benefit_type:         insurance
@@ -264,7 +264,7 @@ notes:                Covers reasonable expenses (meals, lodging, toiletries) wh
 
 ```
 benefit_key:          gold_baggage_insurance
-card_type:            gold
+card_type:            amex_gold
 benefit_name:         Baggage Insurance
 benefit_partner:      null
 benefit_type:         insurance
@@ -285,7 +285,7 @@ notes:                Carry-on: up to $1,250. Checked: up to $500.
 
 ```
 benefit_key:          gold_car_rental
-card_type:            gold
+card_type:            amex_gold
 benefit_name:         Car Rental Loss and Damage Insurance
 benefit_partner:      null
 benefit_type:         insurance
@@ -308,7 +308,7 @@ notes:                Up to $50,000 coverage for theft or damage.
 
 ```
 benefit_key:          gold_travel_accident
-card_type:            gold
+card_type:            amex_gold
 benefit_name:         Travel Accident Insurance
 benefit_partner:      null
 benefit_type:         insurance
@@ -328,7 +328,7 @@ notes:                Accidental death or dismemberment coverage up to $100,000 
 
 ```
 benefit_key:          gold_purchase_protection
-card_type:            gold
+card_type:            amex_gold
 benefit_name:         Purchase Protection
 benefit_partner:      null
 benefit_type:         insurance
@@ -350,7 +350,7 @@ notes:                Covers eligible purchases against accidental damage or the
 
 ```
 benefit_key:          gold_extended_warranty
-card_type:            gold
+card_type:            amex_gold
 benefit_name:         Extended Warranty
 benefit_partner:      null
 benefit_type:         insurance
@@ -371,7 +371,7 @@ notes:                Extends manufacturer's warranty by 1 additional year on wa
 
 ```
 benefit_key:          gold_return_protection
-card_type:            gold
+card_type:            amex_gold
 benefit_name:         Return Protection
 benefit_partner:      null
 benefit_type:         insurance
@@ -395,7 +395,7 @@ notes:                Refund for eligible purchases that the merchant won't take
 
 ```
 benefit_key:          gold_no_ftf
-card_type:            gold
+card_type:            amex_gold
 benefit_name:         No Foreign Transaction Fees
 benefit_partner:      null
 benefit_type:         fee_waiver
@@ -416,7 +416,7 @@ notes:                Saves ~3% foreign transaction fee on purchases abroad or i
 
 ```
 benefit_key:          gold_global_assist
-card_type:            gold
+card_type:            amex_gold
 benefit_name:         Global Assist Hotline
 benefit_partner:      null
 benefit_type:         access
@@ -438,7 +438,7 @@ notes:                24/7 emergency assistance hotline when traveling 100+ mile
 
 ```
 benefit_key:          gold_transfer_partners
-card_type:            gold
+card_type:            amex_gold
 benefit_name:         Membership Rewards Transfer Partners
 benefit_partner:      17 airlines + 3 hotels
 benefit_type:         access
@@ -493,6 +493,10 @@ notes:                Airlines (17): Delta, ANA, Air Canada Aeroplan, Air France
 
 **Benefits requiring enrollment: 3** (Dining, Dunkin', Resy) + 1 setup (Uber — add card to Uber account)
 
+**Card definition entries: 3** — Only gold_dining_credit, gold_resy_credit, and gold_dunkin_credit are trackable statement credits that map to the current CardDefinition benefit type system. gold_uber_cash is non-trackable (in-app credit), gold_hotel_collection is a property credit (not statement credit). Same pattern as CSP (3 implementable benefits).
+
+**Network: amex** — First non-Visa card in Zurp. CardDefinition.network already supports `"amex"` in the type union.
+
 ---
 
 ## Competitor Map
@@ -505,10 +509,12 @@ Each entry follows the `competitor_map` table schema from the insight engine spe
 card_type | benefit_key | benefit_partner | competitor_merchant | plaid_merchant_pattern | category | insight_type | notes
 ```
 
+> **Implementation note — pipe-delimited patterns**: Several entries below use `|` syntax for multiple merchant name variants (e.g., `DOORDASH|DOOR DASH`). The current `plaidMerchantPattern` field in the competitor_map schema is a single string matched via ILIKE. To implement multiple patterns, create **separate rows per pattern** (one for `DOORDASH`, one for `DOOR DASH`), following the same approach CSR uses for `UBER EATS` / `UBEREATS`. The pipe syntax in this catalog is shorthand for "these all need rows."
+
 ### Entry 1: DoorDash → Grubhub (Dual-Benefit Redirect)
 
 ```
-card_type:              gold
+card_type:              amex_gold
 benefit_key:            gold_dining_credit
 benefit_partner:        Grubhub
 competitor_merchant:    DoorDash
@@ -525,7 +531,7 @@ notes:                  DUAL-BENEFIT template. User gets dining credit ($10) AND
 ### Entry 2: DoorDash → Uber Eats (Dual-Benefit Redirect)
 
 ```
-card_type:              gold
+card_type:              amex_gold
 benefit_key:            gold_uber_cash
 benefit_partner:        Uber Eats
 competitor_merchant:    DoorDash
@@ -543,7 +549,7 @@ notes:                  DUAL-BENEFIT template. User gets Uber Cash ($10) AND 4x 
 ### Entry 3: Postmates → Grubhub (Dual-Benefit Redirect)
 
 ```
-card_type:              gold
+card_type:              amex_gold
 benefit_key:            gold_dining_credit
 benefit_partner:        Grubhub
 competitor_merchant:    Postmates
@@ -559,7 +565,7 @@ notes:                  Same logic as Entry 1 but triggered by Postmates instead
 ### Entry 4: Postmates → Uber Eats (Dual-Benefit Redirect)
 
 ```
-card_type:              gold
+card_type:              amex_gold
 benefit_key:            gold_uber_cash
 benefit_partner:        Uber Eats
 competitor_merchant:    Postmates
@@ -574,7 +580,7 @@ notes:                  Same logic as Entry 2 but triggered by Postmates.
 ### Entry 5: Starbucks → Dunkin' (Credit Redirect)
 
 ```
-card_type:              gold
+card_type:              amex_gold
 benefit_key:            gold_dunkin_credit
 benefit_partner:        Dunkin'
 competitor_merchant:    Starbucks
@@ -591,7 +597,7 @@ notes:                  Copy: "You spent $5.75 at Starbucks. At Dunkin', you'd g
 ### Entry 6: Peet's Coffee → Dunkin' (Credit Redirect)
 
 ```
-card_type:              gold
+card_type:              amex_gold
 benefit_key:            gold_dunkin_credit
 benefit_partner:        Dunkin'
 competitor_merchant:    Peet's Coffee
@@ -606,7 +612,7 @@ notes:                  Same logic as Entry 5 with Peet's as competitor.
 ### Entry 7: Walmart → Local Supermarket (Earning Rate Redirect)
 
 ```
-card_type:              gold
+card_type:              amex_gold
 benefit_key:            gold_4x_supermarkets
 benefit_partner:        null (any qualifying U.S. supermarket)
 competitor_merchant:    Walmart
@@ -623,7 +629,7 @@ notes:                  Copy: "You spent $125 at Walmart this month. Walmart ear
 ### Entry 8: Target → Local Supermarket (Earning Rate Redirect)
 
 ```
-card_type:              gold
+card_type:              amex_gold
 benefit_key:            gold_4x_supermarkets
 benefit_partner:        null (any qualifying U.S. supermarket)
 competitor_merchant:    Target
@@ -640,7 +646,7 @@ notes:                  Same logic as Entry 7. Target is excluded from 4x.
 ### Entry 9: Costco → Local Supermarket (Earning Rate Redirect)
 
 ```
-card_type:              gold
+card_type:              amex_gold
 benefit_key:            gold_4x_supermarkets
 benefit_partner:        null (any qualifying U.S. supermarket)
 competitor_merchant:    Costco
@@ -658,7 +664,7 @@ notes:                  Same logic as Entry 7. Costco/warehouse clubs excluded f
 ### Entry 10: Sam's Club → Local Supermarket (Earning Rate Redirect)
 
 ```
-card_type:              gold
+card_type:              amex_gold
 benefit_key:            gold_4x_supermarkets
 benefit_partner:        null (any qualifying U.S. supermarket)
 competitor_merchant:    Sam's Club
@@ -674,7 +680,7 @@ notes:                  Same logic as Entry 9. Sam's Club accepts Amex but is ex
 ### Entry 11: HelloFresh/Blue Apron → Supermarket (Earning Rate Redirect)
 
 ```
-card_type:              gold
+card_type:              amex_gold
 benefit_key:            gold_4x_supermarkets
 benefit_partner:        null (any qualifying U.S. supermarket)
 competitor_merchant:    HelloFresh / Blue Apron / meal kit services
@@ -690,8 +696,10 @@ notes:                  Meal kit services code as subscription/merchandise, NOT 
 
 ### Entry 12: Uber (No Uber Cash) → Uber (With Uber Cash) (Activation Reminder)
 
+> **Implementation note**: This entry is reference data for the C0 (enrollment/activation) insight generator, NOT a competitor_map DB row. It should be implemented as a B1 unactivated-benefit insight or a C0 enrollment insight, not an A1 competitor redirect. The A1 generator should skip this entry.
+
 ```
-card_type:              gold
+card_type:              amex_gold
 benefit_key:            gold_uber_cash
 benefit_partner:        Uber
 competitor_merchant:    Uber (self — user hasn't set up Uber Cash)
@@ -708,7 +716,7 @@ notes:                  NOT a traditional competitor redirect — this detects U
 ### Entry 13: Expedia/Kayak → Direct Airline (Earning Rate Redirect)
 
 ```
-card_type:              gold
+card_type:              amex_gold
 benefit_key:            gold_3x_flights
 benefit_partner:        null (direct airline booking)
 competitor_merchant:    Expedia / Kayak / Orbitz / Priceline / Google Flights (purchase)
@@ -725,7 +733,7 @@ notes:                  OTA flight purchases may code as travel agency (1x) rath
 ### Entry 14: Third-Party Hotel → AmexTravel.com (Multi-Benefit Redirect)
 
 ```
-card_type:              gold
+card_type:              amex_gold
 benefit_key:            gold_hotel_collection
 benefit_partner:        AmexTravel.com
 competitor_merchant:    Hotels.com / Booking.com / third-party hotel OTAs
@@ -743,7 +751,7 @@ notes:                  MULTI-BENEFIT redirect: user gets Hotel Collection $100 
 ### Entry 15: OpenTable → Resy (Credit Redirect)
 
 ```
-card_type:              gold
+card_type:              amex_gold
 benefit_key:            gold_resy_credit
 benefit_partner:        Resy
 competitor_merchant:    OpenTable
@@ -773,12 +781,12 @@ notes:                  Copy: "You made a reservation through OpenTable. Your Go
 | 9 | Costco | Supermarket | grocery | A1 | 4.8cpp/$ (4x vs 1x) | No |
 | 10 | Sam's Club | Supermarket | grocery | A1 | 4.8cpp/$ (4x vs 1x) | No |
 | 11 | HelloFresh etc. | Supermarket | grocery | A1 | 4.8cpp/$ (4x vs 1x) | No |
-| 12 | Uber (no setup) | Uber (with Uber Cash) | rideshare | C0 | $10/mo ($120/yr) | No |
+| 12 | Uber (no setup) | Uber (with Uber Cash) | rideshare | C0 | $10/mo ($120/yr) | No | ← Not a competitor_map row; C0 reference data |
 | 13 | Expedia/Kayak etc. | Direct airline | flights | A1 | 3.2cpp/$ (3x vs 1x) | No |
 | 14 | Hotels.com etc. | AmexTravel.com | hotels | A1+C1 | $100 credit + 2x pts | Yes |
 | 15 | OpenTable | Resy | dining_reservation | A1/C1 | Up to $50/half | No |
 
-**Total: 15 entries** (1 more than the 14 projected in research — Entry 12 added as an activation reminder, which is technically C0 not A1)
+**Total: 15 entries in catalog, 14 competitor_map DB rows** (Entry 12 is C0 reference data for the enrollment insight generator, not an A1 competitor redirect)
 
 ### Tie-Breaking Rules
 
@@ -801,7 +809,7 @@ New capabilities needed to support the Gold Card competitor map:
 | Dual-benefit redirect template | NEW | Copy formula: "[credit value] + [points value] = [total missed value]" |
 | C0 enrollment/activation insight | NEW | One-time or rare-fire insights for setup actions (add card to Uber, enroll in Dining/Dunkin'/Resy) |
 | Spending cap tracking | NEW | Accumulate restaurant ($50K) and supermarket ($25K) spend per calendar year. Fire B3 at 80% and 100%. |
-| Semi-annual period tracking | NEW | H1 (Jan-Jun) and H2 (Jul-Dec) for Resy credit. New reset cadence. |
+| Semi-annual period tracking | EXISTING | H1 (Jan-Jun) and H2 (Jul-Dec) for Resy credit. Already implemented for CSR (Exclusive Tables, StubHub). Resy maps directly to biannual_h1/biannual_h2. |
 | Calendar year reset toggle | NEW | Gold uses calendar year for all resets. CSR/CSP use anniversary year. Engine needs per-card reset_basis. |
 | Tie-breaking logic | NEW | When multiple competitor map entries match a single transaction, select one based on priority rules. |
 | Throttle/suppression rules | ENHANCED | Per-category throttle settings (coffee: 1x/week, grocery: 1x/week, etc.) |
@@ -810,10 +818,10 @@ New capabilities needed to support the Gold Card competitor map:
 
 ## Cross-Card Comparison: Competitor Map Size
 
-| Card | A1 Entries | A2 Entries | C0 Entries | Total | Notes |
+| Card | A1 Entries | A2 Entries | C0 (ref) | DB Rows | Notes |
 |---|---|---|---|---|---|
-| CSR | 14+ | 4+ | 0 | ~18+ | Broadest map — StubHub, DoorDash, Apple subs, Lyft, Peloton |
-| CSP | 3 | 0 | 0 | 4 (v1) | Smallest — DoorDash redirects + Lyft only |
-| Gold | 14 | 0 | 1 | 15 | Multi-category — food delivery, coffee, grocery, flights, hotels, dining reservations |
+| CSR | 24 (catalog) / 51 (code seed) | 7 | 0 | 24–51 | Broadest map — StubHub, DoorDash, Apple subs, Lyft, Peloton, hotels |
+| CSP | 3 | 0 | 0 | 4 | Smallest — DoorDash redirects + Lyft only |
+| Gold | 14 | 0 | 1 | 14 | Multi-category — food delivery, coffee, grocery, flights, hotels, dining reservations. C0 entry is reference data, not a DB row. |
 
 The Gold Card's competitor map is comparable in size to CSR but built differently — CSR's map is concentrated in entertainment and travel, while Gold's spans dining, grocery, and everyday spending categories. This means Gold users should receive a diverse, frequent stream of insights.

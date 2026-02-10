@@ -11,6 +11,7 @@ import {
   buildCategoryBreakdown,
   getTransactionDateRange,
 } from "@/lib/spending";
+import { getAllCardDefinitions } from "@/lib/cards";
 import { CardSwitcher } from "@/app/benefits/_components/CardSwitcher";
 import { MonthSelector } from "./_components/MonthSelector";
 import { SpendingHeadline } from "./_components/SpendingHeadline";
@@ -20,7 +21,7 @@ import { TransactionFeed } from "@/app/benefits/_components/TransactionFeed";
 export default async function SpendingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ year?: string; month?: string; cardId?: string }>;
+  searchParams: Promise<{ year?: string; month?: string }>;
 }) {
   const user = await requireAuth();
   const params = await searchParams;
@@ -30,10 +31,8 @@ export default async function SpendingPage({
     redirect("/onboarding");
   }
 
-  // Resolve active card: use searchParam if valid, else first active, else first
-  const requestedCardId = params.cardId;
+  // Resolve active card: first active, else first
   const activeCard =
-    (requestedCardId && cardProfilesList.find((c) => c.id === requestedCardId)) ||
     cardProfilesList.find((c) => c.isActive) ||
     cardProfilesList[0];
 
@@ -78,19 +77,15 @@ export default async function SpendingPage({
         <h1 className="text-h1 font-semibold tracking-tight">Spending</h1>
         <div className="mt-1">
           <CardSwitcher
-            cards={cardProfilesList.map((c) => ({
+            allCards={getAllCardDefinitions().map((c) => ({
               id: c.id,
               name: c.name,
               issuer: c.issuer,
-              isActive: c.isActive,
-              accountMask: c.accountMask,
+              annualFee: c.annualFee,
             }))}
-            activeCardId={activeCard.id}
-            basePath="/spending"
+            activeCardProfileId={activeCard.id}
+            activeCardType={activeCard.cardType}
           />
-          {cardProfilesList.length <= 1 && (
-            <p className="text-[var(--text-secondary)]">{activeCard.name}</p>
-          )}
         </div>
       </div>
 

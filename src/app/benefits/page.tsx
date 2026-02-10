@@ -14,6 +14,7 @@ import {
 import type { BenefitTransaction } from "@/lib/queries";
 import { getConnectionAlerts } from "@/lib/notifications";
 import { getInsightsForDisplay } from "@/lib/insights/orchestrator";
+import { getAllCardDefinitions } from "@/lib/cards";
 import { SummaryBar } from "./_components/SummaryBar";
 import { BenefitCard } from "./_components/BenefitCard";
 import { CountdownTimer } from "./_components/CountdownTimer";
@@ -30,24 +31,17 @@ import { LinkIcon } from "lucide-react";
 
 const isDev = process.env.NODE_ENV === "development";
 
-export default async function DashboardPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ cardId?: string }>;
-}) {
+export default async function DashboardPage() {
   const user = await requireAuth();
-  const params = await searchParams;
 
-  // Fetch all card profiles to power the switcher
+  // Fetch all card profiles
   const cardProfilesList = await getCardProfiles(user.id!);
   if (cardProfilesList.length === 0) {
     redirect("/onboarding");
   }
 
-  // Resolve active card: use searchParam if valid, else first active, else first
-  const requestedCardId = params.cardId;
+  // Resolve active card: first active, else first
   const activeCard =
-    (requestedCardId && cardProfilesList.find((c) => c.id === requestedCardId)) ||
     cardProfilesList.find((c) => c.isActive) ||
     cardProfilesList[0];
 
@@ -100,18 +94,15 @@ export default async function DashboardPage({
           <h1 className="text-h1 font-semibold tracking-tight">Benefits</h1>
           <div className="mt-1">
             <CardSwitcher
-              cards={cardProfilesList.map((c) => ({
+              allCards={getAllCardDefinitions().map((c) => ({
                 id: c.id,
                 name: c.name,
                 issuer: c.issuer,
-                isActive: c.isActive,
-                accountMask: c.accountMask,
+                annualFee: c.annualFee,
               }))}
-              activeCardId={activeCardId}
+              activeCardProfileId={activeCard.id}
+              activeCardType={activeCard.cardType}
             />
-            {cardProfilesList.length <= 1 && (
-              <p className="text-[var(--text-secondary)]">{summary.cardName}</p>
-            )}
           </div>
         </div>
         <div className="shrink-0">

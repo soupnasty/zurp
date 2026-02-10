@@ -18,25 +18,21 @@ const cards = [
     name: "Amex Gold",
     swatch:
       "bg-gradient-to-br from-[#8b6914] to-[#c9a227] border border-[#d4b03a]",
-    soon: true,
   },
   {
     name: "Amex Platinum",
     swatch:
       "bg-gradient-to-br from-[#6b6b6b] to-[#a8a8a8] border border-[#b8b8b8]",
-    soon: true,
   },
   {
     name: "Capital One Venture X",
     swatch:
       "bg-gradient-to-br from-[#1a1a1a] to-[#333333] border border-[#4a4a4a]",
-    soon: true,
   },
   {
     name: "Citi Strata Elite",
     swatch:
       "bg-gradient-to-br from-[#0a2e5c] to-[#1a5276] border border-[#2a6286]",
-    soon: true,
   },
 ];
 
@@ -300,11 +296,6 @@ export default function Home() {
             >
               <div className={`h-6 w-9 shrink-0 rounded ${card.swatch}`} />
               {card.name}
-              {card.soon && (
-                <span className="rounded bg-[rgba(210,153,34,0.1)] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-warning)]">
-                  Coming soon
-                </span>
-              )}
             </div>
           ))}
         </div>
@@ -500,18 +491,18 @@ export default function Home() {
       <section className="py-24" id="how">
         <div className="mx-auto max-w-[1080px] px-6">
           <ScrollReveal>
-            <p className="label-caps mb-4">How it works</p>
+            <p className="label-caps mb-4 text-center">How it works</p>
           </ScrollReveal>
           <ScrollReveal>
             <h2
-              className="mb-16 text-[clamp(28px,4vw,40px)] font-bold leading-tight"
+              className="mb-16 text-center text-[clamp(28px,4vw,40px)] font-bold leading-tight"
               style={{ letterSpacing: "-1px" }}
             >
-              Three minutes to stop wasting money.
+              Two minutes to stop wasting money.
             </h2>
           </ScrollReveal>
 
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-3 items-stretch">
             {[
               {
                 num: "01",
@@ -529,8 +520,8 @@ export default function Home() {
                 desc: "Missed credits, better merchants, expiring benefits, and what you\u2019d save by switching cards. Personalized to your actual spending.",
               },
             ].map((step) => (
-              <ScrollReveal key={step.num}>
-                <div className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-secondary)] p-8 transition-colors hover:border-[var(--border-strong)]">
+              <ScrollReveal key={step.num} className="flex">
+                <div className="flex-1 rounded-2xl border border-[var(--border-default)] bg-[var(--bg-secondary)] p-8 transition-colors hover:border-[var(--border-strong)]">
                   <div className="font-data mb-5 text-xs text-[var(--text-secondary)]">
                     {step.num}
                   </div>
@@ -554,18 +545,20 @@ export default function Home() {
       <section className="py-24" id="insights">
         <div className="mx-auto max-w-[1080px] px-6">
           <ScrollReveal>
-            <p className="label-caps mb-4">Powered by your real data</p>
+            <p className="label-caps mb-4 text-center">
+              Powered by your real data
+            </p>
           </ScrollReveal>
           <ScrollReveal>
             <h2
-              className="mb-16 text-[clamp(28px,4vw,40px)] font-bold leading-tight"
+              className="mb-16 text-center text-[clamp(28px,4vw,40px)] font-bold leading-tight"
               style={{ letterSpacing: "-1px" }}
             >
               Insights that actually save you money.
             </h2>
           </ScrollReveal>
 
-          <div className="flex max-w-[600px] flex-col gap-3">
+          <div className="mx-auto flex max-w-[600px] flex-col gap-3">
             {insights.map((insight, i) => (
               <ScrollReveal key={i}>
                 <div className="flex gap-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-secondary)] px-6 py-5 transition-all hover:border-[var(--border-strong)] hover:translate-x-1">

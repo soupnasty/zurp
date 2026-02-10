@@ -1,7 +1,7 @@
 import { requireAuth } from "@/lib/auth-helpers";
 import { AppShell } from "@/components/AppShell";
 import { getCardProfiles } from "@/lib/queries";
-import { getCardsByIssuer } from "@/lib/cards/index";
+import { getAllCardDefinitions } from "@/lib/cards/index";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +20,7 @@ export default async function DashboardLayout({
     cardName: cp.name,
     issuer: cp.issuer,
     accountMask: cp.accountMask,
-    issuerCards: getCardsByIssuer(cp.issuer).map((c) => ({
+    issuerCards: getAllCardDefinitions().map((c) => ({
       id: c.id,
       name: c.name,
     })),

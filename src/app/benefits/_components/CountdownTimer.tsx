@@ -15,16 +15,12 @@ export function CountdownTimer({
   const color =
     daysRemaining <= 7
       ? "var(--color-danger)"
-      : daysRemaining <= 14
-        ? "var(--color-warning)"
-        : "var(--color-success)";
+      : "var(--color-warning)";
 
   const urgencyClass =
     daysRemaining <= 7
       ? "border-[var(--color-danger)]/30 bg-[var(--color-danger)]/5"
-      : daysRemaining <= 14
-        ? "border-[var(--color-warning)]/30 bg-[var(--color-warning)]/5"
-        : "";
+      : "border-[var(--color-warning)]/30 bg-[var(--color-warning)]/5";
 
   return (
     <Card className={urgencyClass}>
