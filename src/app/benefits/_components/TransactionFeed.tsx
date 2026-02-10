@@ -347,7 +347,7 @@ export function TransactionFeed({ transactions, benefits, connectionId }: Transa
               setOpenRemoveId(openRemoveId === tx.id ? null : tx.id);
               setOpenAddId(null);
             }}
-            className="rounded p-1 text-[var(--text-secondary)] opacity-0 transition-all hover:bg-[var(--color-danger)]/10 hover:text-[var(--color-danger)] group-hover:opacity-100 md:group-hover:opacity-100"
+            className="rounded p-1 bg-[var(--color-danger)]/10 text-[var(--color-danger)] transition-all hover:bg-[var(--color-danger)]/20"
             title="Remove this match"
           >
             <X size={14} />
@@ -385,7 +385,7 @@ export function TransactionFeed({ transactions, benefits, connectionId }: Transa
               setOpenAddId(openAddId === tx.id ? null : tx.id);
               setOpenRemoveId(null);
             }}
-            className="rounded p-1 text-[var(--text-secondary)] opacity-0 transition-all hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] group-hover:opacity-100 md:group-hover:opacity-100"
+            className="rounded p-1 bg-[var(--accent)]/10 text-[var(--accent)] transition-all hover:bg-[var(--accent)]/20"
             title="Add to a benefit"
           >
             <Plus size={14} />

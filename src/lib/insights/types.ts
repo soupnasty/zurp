@@ -2,7 +2,7 @@
 
 export type InsightCategory = "A1" | "A2" | "B1" | "B2" | "B3" | "C0" | "C1" | "C2";
 
-export type InsightState = "pending" | "shown" | "expired" | "superseded";
+export type InsightState = "pending" | "shown" | "expired" | "superseded" | "dismissed";
 
 export type InsightGroup = "A" | "B" | "C";
 

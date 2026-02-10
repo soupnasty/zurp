@@ -2,26 +2,40 @@ import type { BenefitDetails, CardDefinition } from "@/lib/types";
 
 const doordashDetails: BenefitDetails = {
   description:
-    "Complimentary DashPass membership ($0 delivery fee, lower service fees) plus up to $25/month in DoorDash promos: one $5 promo on a restaurant order and two $10 promos on non-restaurant orders (grocery, convenience, retail). If the full promo value isn't used on a single order, the remaining value is forfeited for that promo.",
+    "Up to $25/month in DoorDash promos: one $5 promo on a restaurant order and two $10 promos on non-restaurant orders (grocery, convenience, retail). If the full promo value isn't used on a single order, the remaining value is forfeited for that promo. Requires DashPass membership (included separately with your Sapphire Reserve).",
   howToUse: [
     "Download or open the DoorDash app",
     "Add your Sapphire Reserve as the default payment method",
-    "Follow the prompts to activate your complimentary DashPass membership",
     "Each month, select the promo from your promotion wallet at checkout",
     "For non-restaurant promos: filter by \"Pickup\" → \"Grocery\" or \"Convenience\" for best value",
     "Make sure the \"Chase monthly benefit\" toggle is ON at checkout",
   ],
   links: [
-    { label: "Activate DashPass", url: "https://www.doordash.com/dashpass/partner/chase/sapphire-reserve" },
     { label: "DoorDash App", url: "https://www.doordash.com" },
     { label: "Terms", url: "https://help.doordash.com/consumers/s/article/offer-terms-conditions?language=en_US" },
     { label: "Learn More", url: "https://www.doordash.com/dashpass/partner/chase/sapphire-reserve" },
   ],
 };
 
+const dashPassDetails: BenefitDetails = {
+  description:
+    "Complimentary DashPass membership ($0 delivery fees, reduced service fees on eligible orders) through DoorDash. DashPass normally costs $9.99/month — this benefit waives the fee entirely. Covers the primary cardmember only.",
+  howToUse: [
+    "Download or open the DoorDash app",
+    "Add your Sapphire Reserve as the default payment method",
+    "Follow the prompts to activate your complimentary DashPass membership",
+    "Once activated, DashPass benefits apply automatically to eligible orders",
+  ],
+  links: [
+    { label: "Activate DashPass", url: "https://www.doordash.com/dashpass/partner/chase/sapphire-reserve" },
+    { label: "DoorDash App", url: "https://www.doordash.com" },
+    { label: "Learn More", url: "https://www.doordash.com/dashpass/partner/chase/sapphire-reserve" },
+  ],
+};
+
 const editHotelDetails: BenefitDetails = {
   description:
-    "Up to $500 in annual statement credits for prepaid hotel stays booked through The Edit by Chase Travel — a curated collection of 1,100+ hand-picked luxury hotels and resorts. Starting January 1, 2026, cardmembers receive up to $250 per transaction (previously split biannually). Two-night minimum stay required.",
+    "Up to $250 per credit ($500 annual total, delivered as two separate $250 statement credits) for prepaid hotel stays booked through The Edit by Chase Travel — Chase's curated luxury hotel collection of 1,100+ hand-picked properties. Two-night minimum stay required. Book through the Chase travel portal, pay with your Sapphire Reserve, and the credit posts as a statement credit afterward.",
   howToUse: [
     "Go to Chase Travel (chase.com/travel or the Chase app)",
     "Search for hotels and look for properties marked with \"The Edit\" badge",
@@ -37,7 +51,7 @@ const editHotelDetails: BenefitDetails = {
 
 const exclusiveTablesDetails: BenefitDetails = {
   description:
-    "Up to $300 in annual statement credits when dining at restaurants participating in the Sapphire Reserve Exclusive Tables program. The program provides primetime reservations at 275+ curated restaurants in major U.S. cities through the Visa Dining Collection on OpenTable.",
+    "Up to $150 per half-year ($300 annual total) in statement credits when dining at restaurants participating in the Sapphire Reserve Exclusive Tables program. The credit is split into two semi-annual periods: up to $150 from January through June, and up to $150 from July through December. The program provides primetime reservations at 275+ curated restaurants in major U.S. cities through the Visa Dining Collection on OpenTable.",
   howToUse: [
     "Visit the OpenTable Chase Dining page and add your Sapphire Reserve card to your OpenTable account",
     "Browse participating restaurants by city",
@@ -53,7 +67,7 @@ const exclusiveTablesDetails: BenefitDetails = {
 
 const stubhubDetails: BenefitDetails = {
   description:
-    "Up to $300 in annual statement credits for concert, event, and sports tickets purchased on StubHub.com and viagogo.com. Purchases made before activation are NOT eligible.",
+    "Up to $150 per half-year ($300 annual total) in statement credits for concert, event, and sports tickets purchased on StubHub.com and viagogo.com. The credit is split into two semi-annual periods: up to $150 from January through June, and up to $150 from July through December. Purchases made before activation are NOT eligible.",
   howToUse: [
     "Log in to chase.com or the Chase Mobile app",
     "Go to Benefits (or Offers) and find the StubHub credit",
@@ -68,19 +82,33 @@ const stubhubDetails: BenefitDetails = {
   ],
 };
 
-const appleSubscriptionDetails: BenefitDetails = {
+const appleTvDetails: BenefitDetails = {
   description:
-    "Complimentary individual subscriptions to Apple TV+ and Apple Music through June 22, 2027. These are direct subscription waivers (not statement credits) — once activated, Apple won't charge you. If you have an existing paid subscription, it will be automatically suspended. Note: only covers individual Apple Music plan, not family or Apple One bundles.",
+    "Complimentary individual Apple TV+ subscription through June 22, 2027. This is a direct subscription waiver (not a statement credit) — once activated, Apple won't charge you. If you have an existing paid subscription, it will be automatically suspended. Does not cover Apple One bundles.",
   howToUse: [
     "Open the Chase Mobile app or log in to chase.com",
     "Go to Benefits & Travel → Card Benefits",
     "Find the Apple TV+ offer and tap \"Activate Now\" — this links your Apple ID",
-    "Repeat for Apple Music (activated separately)",
     "You'll be redirected to Apple to connect your subscription",
     "On Apple devices, the benefit auto-links to the Apple ID signed in on your device",
   ],
   links: [
     { label: "Apple TV+", url: "https://tv.apple.com" },
+    { label: "Learn More", url: "https://account.chase.com/sapphire/reserve/benefits" },
+  ],
+};
+
+const appleMusicDetails: BenefitDetails = {
+  description:
+    "Complimentary individual Apple Music subscription through June 22, 2027. This is a direct subscription waiver (not a statement credit) — once activated, Apple won't charge you. If you have an existing paid subscription, it will be automatically suspended. Only covers the individual plan, not family or Apple One bundles.",
+  howToUse: [
+    "Open the Chase Mobile app or log in to chase.com",
+    "Go to Benefits & Travel → Card Benefits",
+    "Find the Apple Music offer and tap \"Activate Now\" — this links your Apple ID",
+    "You'll be redirected to Apple to connect your subscription",
+    "On Apple devices, the benefit auto-links to the Apple ID signed in on your device",
+  ],
+  links: [
     { label: "Apple Music", url: "https://music.apple.com" },
     { label: "Learn More", url: "https://account.chase.com/sapphire/reserve/benefits" },
   ],
@@ -618,7 +646,7 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroup: null,
       displayGroupName: null,
       displayGroupIcon: null,
-      details: appleSubscriptionDetails,
+      details: appleTvDetails,
     },
 
     // ── Apple Music (subscription) ──
@@ -646,7 +674,7 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroup: null,
       displayGroupName: null,
       displayGroupIcon: null,
-      details: appleSubscriptionDetails,
+      details: appleMusicDetails,
     },
 
     // ── DashPass (subscription) ──
@@ -675,7 +703,7 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroup: null,
       displayGroupName: null,
       displayGroupIcon: null,
-      details: doordashDetails,
+      details: dashPassDetails,
     },
   ],
 };

@@ -1,9 +1,14 @@
+"use client";
+
+import { useTransition } from "react";
+import { useRouter } from "next/navigation";
 import {
   ArrowRightLeft,
   Lightbulb,
   AlertTriangle,
   CheckCircle2,
   Sparkles,
+  X,
 } from "lucide-react";
 import type { ScoredInsight } from "@/lib/insights/types";
 import { insightGroup } from "@/lib/insights/types";
@@ -13,30 +18,45 @@ interface InsightCardProps {
 }
 
 export function InsightCard({ insight }: InsightCardProps) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const group = insightGroup(insight.category);
   const isC0 = insight.category === "C0";
 
-  const { icon, color, bgClass } = getIconConfig(group, insight.category, isC0);
+  const { icon, bgClass } = getIconConfig(group, insight.category, isC0);
+
+  async function handleDismiss() {
+    startTransition(async () => {
+      await fetch("/api/insights/dismiss", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ insightId: insight.id }),
+      });
+      router.refresh();
+    });
+  }
 
   return (
     <div
-      className={`rounded-[var(--radius-lg)] border border-[var(--border-default)] p-[var(--space-md)] ${bgClass}`}
+      className={`relative rounded-[var(--radius-lg)] border border-[var(--border-default)] p-[var(--space-md)] transition-opacity ${bgClass} ${isPending ? "opacity-40" : ""}`}
     >
-      <div className="flex gap-[var(--space-sm)]">
+      <button
+        onClick={handleDismiss}
+        disabled={isPending}
+        className="absolute top-2 right-2 rounded-[var(--radius-sm)] p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-elevated)] hover:text-[var(--text-secondary)]"
+        aria-label="Dismiss insight"
+      >
+        <X size={14} />
+      </button>
+
+      <div className="flex gap-[var(--space-sm)] pr-5">
         <div className="shrink-0 mt-0.5">
           {icon}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-2">
-            <p className="text-[var(--text-body)] font-medium text-[var(--text-primary)]">
-              {insight.renderedTitle}
-            </p>
-            {insight.dollarImpactScore >= 60 && (
-              <span className="shrink-0 font-data text-[var(--text-caption)] text-[var(--accent)]">
-                ${insight.templateVars.amount || insight.templateVars.remaining || insight.templateVars.total || insight.templateVars.value || insight.templateVars.annual || ""}
-              </span>
-            )}
-          </div>
+          <p className="text-[var(--text-body)] font-medium text-[var(--text-primary)]">
+            {insight.renderedTitle}
+          </p>
           <p className="mt-0.5 text-[var(--text-caption)] text-[var(--text-secondary)]">
             {insight.renderedBody}
           </p>
