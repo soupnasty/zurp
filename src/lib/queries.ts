@@ -53,8 +53,64 @@ export async function getCardSummary(
     }
   }
 
-  // Per-current-cycle metrics: available, expired, value at risk
   let creditsAvailable = 0;
+
+  // Fetch activation overrides for subscription benefits
+  const activationOverrides = await db.query.benefitOverrides.findMany({
+    where: and(
+      eq(schema.benefitOverrides.userId, userId),
+      eq(schema.benefitOverrides.overrideType, "activated")
+    ),
+  });
+
+  // Add activated subscription value to creditsUsed and creditsAvailable
+  for (const benefit of cardDef.benefits) {
+    if (benefit.type !== "subscription" || benefit.creditAmount <= 0) continue;
+
+    const activation = activationOverrides.find(
+      (o) => o.benefitId === benefit.id
+    );
+    if (!activation) continue;
+
+    // Parse activation date from periodKey "ACTIVATED:MM-YYYY"
+    const match = activation.periodKey.match(/^ACTIVATED:(\d{2})-(\d{4})$/);
+    if (!match) continue;
+
+    const activationDate = new Date(
+      Date.UTC(parseInt(match[2], 10), parseInt(match[1], 10) - 1, 1)
+    );
+
+    // Determine sunset date
+    const sunsetDate = benefit.sunsetDate
+      ? new Date(benefit.sunsetDate + "T00:00:00Z")
+      : null;
+
+    // Elapsed months: from max(activationDate, cardYearStart) to min(now, sunsetDate, cardYearEnd)
+    const rangeStart = activationDate > cardYearBounds.cycleStart
+      ? activationDate
+      : cardYearBounds.cycleStart;
+    const rangeEndCandidates = [now, cardYearBounds.cycleEnd];
+    if (sunsetDate) rangeEndCandidates.push(sunsetDate);
+    const rangeEnd = new Date(Math.min(...rangeEndCandidates.map((d) => d.getTime())));
+
+    if (rangeEnd < rangeStart) continue;
+
+    // +1 because the activation month itself counts (subscription is active that month)
+    const monthsElapsed = countFullMonths(rangeStart, rangeEnd) + 1;
+    creditsUsed += benefit.creditAmount * monthsElapsed;
+
+    // Total months for creditsAvailable: from max(activationDate, cardYearStart) to min(sunsetDate, cardYearEnd)
+    const totalEndCandidates = [cardYearBounds.cycleEnd];
+    if (sunsetDate) totalEndCandidates.push(sunsetDate);
+    const totalEnd = new Date(Math.min(...totalEndCandidates.map((d) => d.getTime())));
+
+    if (totalEnd > rangeStart) {
+      const totalMonths = countFullMonths(rangeStart, totalEnd);
+      creditsAvailable += benefit.creditAmount * totalMonths;
+    }
+  }
+
+  // Per-current-cycle metrics: available, expired, value at risk
   let creditsExpired = 0;
   let nearestExpiry: number | null = null;
   let valueAtRisk = 0;
@@ -241,6 +297,14 @@ export async function getBenefitUsageSummaries(
     cardProfile.anniversaryDate
   );
 
+  // Fetch activation overrides for subscription benefits
+  const activationOverrides = await db.query.benefitOverrides.findMany({
+    where: and(
+      eq(schema.benefitOverrides.userId, userId),
+      eq(schema.benefitOverrides.overrideType, "activated")
+    ),
+  });
+
   for (const benefit of cardDef.benefits) {
     const bounds = getCurrentCycleBounds(
       benefit.cycle as BenefitCycle,
@@ -259,8 +323,9 @@ export async function getBenefitUsageSummaries(
     );
 
     // YTD: sum all usage for this benefit within the card year
-    let ytdUsed = 0;
+    let ytdUsed: number | undefined;
     if (benefit.cycle === "monthly") {
+      ytdUsed = 0;
       for (const u of usageRecords) {
         if (
           u.benefitId === benefit.id &&
@@ -269,6 +334,41 @@ export async function getBenefitUsageSummaries(
         ) {
           ytdUsed += u.amountUsed;
         }
+      }
+    }
+
+    // Resolve activation state for subscription benefits
+    let isActivated: boolean | undefined;
+    let activatedAt: string | null | undefined;
+
+    if (benefit.type === "subscription") {
+      const activation = activationOverrides.find(
+        (o) => o.benefitId === benefit.id
+      );
+      isActivated = !!activation;
+      if (activation) {
+        const match = activation.periodKey.match(/^ACTIVATED:(\d{2})-(\d{4})$/);
+        if (match) {
+          const activationDate = new Date(
+            Date.UTC(parseInt(match[2], 10), parseInt(match[1], 10) - 1, 1)
+          );
+          activatedAt = activationDate.toISOString();
+
+          // Compute YTD for activated subscriptions using card year bounds
+          // +1 because the activation month itself counts
+          const rangeStart = activationDate > cardYearBounds.cycleStart
+            ? activationDate
+            : cardYearBounds.cycleStart;
+          if (now >= rangeStart) {
+            ytdUsed = benefit.creditAmount * (countFullMonths(rangeStart, now) + 1);
+          } else {
+            ytdUsed = 0;
+          }
+        } else {
+          activatedAt = null;
+        }
+      } else {
+        activatedAt = null;
       }
     }
 
@@ -295,7 +395,9 @@ export async function getBenefitUsageSummaries(
       periodKey: bounds.periodKey,
       cycleStart: bounds.cycleStart,
       cycleEnd: bounds.cycleEnd,
-      ytdUsed: benefit.cycle === "monthly" ? ytdUsed : undefined,
+      ytdUsed,
+      isActivated,
+      activatedAt,
     });
   }
 
@@ -490,6 +592,8 @@ export async function getCardProfiles(userId: string) {
       institutionName: cp.plaidConnection.institutionName,
       accountMask: cp.plaidConnection.accountMask,
       createdAt: cp.createdAt,
+      anniversaryDate: cp.anniversaryDate,
+      anniversarySource: cp.anniversarySource,
     };
   });
 }
@@ -509,4 +613,16 @@ export async function getUserAnniversaryStatus(userId: string, cardProfileId?: s
     anniversaryDate: cardProfile.anniversaryDate,
     anniversarySource: cardProfile.anniversarySource,
   };
+}
+
+/**
+ * Count full elapsed months between two UTC dates.
+ * e.g. Jan 1 → Mar 1 = 2 months, Jan 1 → Mar 15 = 2 months.
+ */
+function countFullMonths(start: Date, end: Date): number {
+  const startYear = start.getUTCFullYear();
+  const startMonth = start.getUTCMonth();
+  const endYear = end.getUTCFullYear();
+  const endMonth = end.getUTCMonth();
+  return (endYear - startYear) * 12 + (endMonth - startMonth);
 }

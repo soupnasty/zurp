@@ -8,6 +8,35 @@ import { decrypt } from "@/lib/encryption";
 import { plaidClient } from "@/lib/plaid";
 import { revalidatePath } from "next/cache";
 
+export async function updateAnniversaryDate(
+  cardProfileId: string,
+  month: number,
+  year: number
+) {
+  const user = await requireAuth();
+
+  const cardProfile = await db.query.cardProfiles.findFirst({
+    where: eq(schema.cardProfiles.id, cardProfileId),
+  });
+
+  if (!cardProfile || cardProfile.userId !== user.id!) {
+    throw new Error("Unauthorized");
+  }
+
+  const date = new Date(Date.UTC(year, month - 1, 1));
+
+  await db
+    .update(schema.cardProfiles)
+    .set({
+      anniversaryDate: date,
+      anniversarySource: "user_provided",
+    })
+    .where(eq(schema.cardProfiles.id, cardProfileId));
+
+  revalidatePath("/settings");
+  revalidatePath("/benefits");
+}
+
 export async function unlinkConnection(connectionId: string) {
   const user = await requireAuth();
 

@@ -7,7 +7,7 @@ import { BenefitDetailModal } from "./BenefitDetailModal";
 import { BenefitIcon } from "@/components/ui/BenefitIcon";
 import type { BenefitGroup } from "../page";
 
-export function BenefitCard({ group }: { group: BenefitGroup }) {
+export function BenefitCard({ group, capturedLabel = "this year" }: { group: BenefitGroup; capturedLabel?: string }) {
   const [modalOpen, setModalOpen] = useState(false);
 
   const used = group.totalUsed;
@@ -104,10 +104,44 @@ export function BenefitCard({ group }: { group: BenefitGroup }) {
                   <span className={`font-data ${group.ytdUsed > 0 ? "text-[var(--color-success)]" : "text-[var(--text-secondary)]"}`}>
                     ${group.ytdUsed.toFixed(0)}
                   </span>{" "}
-                  captured this year
+                  captured {capturedLabel}
                 </div>
               )}
             </>
+          )}
+
+          {group.type === "subscription" && (
+            <div className="mt-4">
+              {group.isActivated ? (
+                <>
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center rounded-full bg-[var(--color-success)]/15 px-2 py-0.5 text-[var(--text-caption)] font-medium text-[var(--color-success)]">
+                      Activated
+                    </span>
+                    <span className="font-data text-[var(--text-caption)] text-[var(--text-secondary)]">
+                      ${group.totalCredit.toFixed(2)}/mo
+                    </span>
+                  </div>
+                  {group.ytdUsed != null && (
+                    <div className="mt-2 text-[var(--text-caption)] text-[var(--text-secondary)]">
+                      <span className={`font-data ${group.ytdUsed > 0 ? "text-[var(--color-success)]" : "text-[var(--text-secondary)]"}`}>
+                        ${group.ytdUsed.toFixed(0)}
+                      </span>{" "}
+                      captured {capturedLabel}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center rounded-full bg-[var(--text-muted)]/15 px-2 py-0.5 text-[var(--text-caption)] font-medium text-[var(--text-muted)]">
+                    Not activated
+                  </span>
+                  <span className="font-data text-[var(--text-caption)] text-[var(--text-secondary)]">
+                    ${group.totalCredit.toFixed(2)}/mo available
+                  </span>
+                </div>
+              )}
+            </div>
           )}
 
           {cycleExpiry ? (

@@ -43,6 +43,10 @@ const TEMPLATES: Record<string, Template> = {
     title: "Last chance: $${remaining} in ${benefit} credit",
     body: "Expires ${date}. Act now or lose it.",
   },
+  b1_unactivated_subscription: {
+    title: "Activate your free ${benefit}",
+    body: "Worth $${monthly}/mo ($${annual}/yr). Activate through Chase benefits portal.",
+  },
 
   // ── B2: Nearly Maxed Credit ──
   b2_standard: {

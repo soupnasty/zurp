@@ -78,5 +78,34 @@ export function generateB1(ctx: GeneratorContext): InsightCandidate[] {
     });
   }
 
+  // B1 variant: unactivated subscription benefits with real value
+  for (const usage of benefitUsages) {
+    if (usage.type !== "subscription") continue;
+    if (usage.creditAmount <= 0) continue;
+    if (usage.isActivated) continue;
+
+    const monthly = usage.creditAmount;
+    const annual = Math.round(monthly * 12);
+
+    insights.push({
+      category: "B1",
+      benefitId: usage.benefitId,
+      templateKey: "b1_unactivated_subscription",
+      templateVars: {
+        benefit: usage.benefitName,
+        monthly: monthly.toFixed(2),
+        annual,
+      },
+      dedupKey: `b1:unsub:${usage.benefitId}`,
+      triggeredByTransactionId: null,
+      periodStart: usage.cycleStart,
+      periodEnd: usage.cycleEnd,
+      dollarAmount: annual,
+      daysRemaining: 365,
+      actionability: "one_click",
+      confidence: "exact_confirmed",
+    });
+  }
+
   return insights;
 }

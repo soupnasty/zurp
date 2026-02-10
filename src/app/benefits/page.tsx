@@ -76,9 +76,15 @@ export default async function DashboardPage() {
   // Group benefits by displayGroup for DoorDash
   const groupedBenefits = groupBenefits(benefits, benefitTxs);
 
-  // Find nearest expiring benefit
+  // Label for YTD captured: "this cycle" if anniversary date is set, "this year" otherwise
+  const capturedLabel =
+    anniversary && anniversary.anniversarySource !== "pending"
+      ? "this cycle"
+      : "this year";
+
+  // Find nearest expiring benefit (within 14-day window, matching "Expiring Soon" threshold)
   const creditBenefits = benefits.filter(
-    (b) => b.type === "credit" && !b.isFullyUsed
+    (b) => b.type === "credit" && !b.isFullyUsed && b.daysRemaining <= 14
   );
   const nearestExpiring = creditBenefits.length
     ? creditBenefits.reduce((nearest, b) =>
@@ -171,11 +177,11 @@ export default async function DashboardPage() {
               </div>
               <div className="grid grid-cols-1 gap-[var(--space-md)] sm:grid-cols-2 lg:grid-cols-3">
                 {activeBenefits.map((group) => (
-                  <BenefitCard key={group.id} group={group} />
+                  <BenefitCard key={group.id} group={group} capturedLabel={capturedLabel} />
                 ))}
               </div>
             </div>
-            <UpcomingBenefits benefits={upcomingBenefits} />
+            <UpcomingBenefits benefits={upcomingBenefits} capturedLabel={capturedLabel} />
           </>
         );
       })()}
@@ -207,6 +213,8 @@ export interface BenefitGroup {
   benefits: BenefitUsageSummary[];
   ytdUsed?: number;
   benefitTransactions: BenefitTransaction[];
+  isActivated?: boolean;
+  activatedAt?: string | null;
 }
 
 function groupBenefits(
@@ -267,6 +275,8 @@ function groupBenefits(
           benefits: [b],
           ytdUsed: b.ytdUsed,
           benefitTransactions: [...bTxs],
+          isActivated: b.isActivated,
+          activatedAt: b.activatedAt,
         });
       }
     } else {
@@ -291,6 +301,8 @@ function groupBenefits(
         benefits: [b],
         ytdUsed: b.ytdUsed,
         benefitTransactions: bTxs,
+        isActivated: b.isActivated,
+        activatedAt: b.activatedAt,
       });
     }
   }

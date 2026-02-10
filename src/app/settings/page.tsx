@@ -8,6 +8,7 @@ import { SignOutButton } from "./_components/SignOutButton";
 import { ThemeToggle } from "./_components/ThemeToggle";
 import { UnlinkButton } from "./_components/UnlinkButton";
 import { RemoveCardButton } from "@/components/RemoveCardButton";
+import { AnniversaryEditor } from "./_components/AnniversaryEditor";
 import { Link2, CreditCard, Plus } from "lucide-react";
 import Link from "next/link";
 
@@ -73,6 +74,11 @@ export default async function SettingsPage() {
                   </div>
                   <RemoveCardButton cardProfileId={cp.id} cardName={cp.name} />
                 </div>
+                <AnniversaryEditor
+                  cardProfileId={cp.id}
+                  currentDate={cp.anniversaryDate?.toISOString() ?? null}
+                  source={cp.anniversarySource}
+                />
               </Card>
             ))}
             <Link

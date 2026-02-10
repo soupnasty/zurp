@@ -17,7 +17,7 @@ const variantStyles: Record<BadgeVariant, string> = {
     "bg-[var(--color-danger)]/15 text-[var(--color-danger)] border-[var(--color-danger)]/25",
   info: "bg-[var(--accent)]/15 text-[var(--accent)] border-[var(--accent)]/25",
   neutral:
-    "bg-[var(--bg-tertiary)] text-[var(--text-secondary)] border-[var(--border-default)]",
+    "bg-[var(--bg-tertiary)] text-[var(--text-primary)] border-[var(--border-default)]",
 };
 
 export function Badge({

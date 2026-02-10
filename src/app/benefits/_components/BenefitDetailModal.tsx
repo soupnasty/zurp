@@ -1,14 +1,38 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Modal } from "@/components/ui/Modal";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Badge } from "@/components/ui/Badge";
-import { ExternalLink, Check, Undo2, RotateCcw } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { BenefitIcon } from "@/components/ui/BenefitIcon";
-import { useToast } from "@/components/ui/ToastProvider";
 import type { BenefitGroup } from "../page";
+
+function formatCycleEnd(endIso: string): string {
+  const end = new Date(endIso);
+  const month = end.toLocaleString("en-US", { month: "short", timeZone: "UTC" });
+  return `${month} ${end.getUTCDate()}, ${end.getUTCFullYear()}`;
+}
+
+function formatSunsetDate(dateStr: string): string {
+  const d = new Date(dateStr + "T00:00:00Z");
+  const month = d.toLocaleString("en-US", { month: "short", timeZone: "UTC" });
+  return `${month} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
+}
+
+function getMonthOptions(): { value: string; label: string }[] {
+  const options: { value: string; label: string }[] = [];
+  const now = new Date();
+  for (let i = 0; i < 12; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const yyyy = d.getFullYear();
+    const label = d.toLocaleString("en-US", { month: "long", year: "numeric" });
+    options.push({ value: `${mm}-${yyyy}`, label });
+  }
+  return options;
+}
 
 interface BenefitDetailModalProps {
   open: boolean;
@@ -21,16 +45,45 @@ export function BenefitDetailModal({
   onClose,
   group,
 }: BenefitDetailModalProps) {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  const { addToast } = useToast();
-
   const details = group.details;
   const matchedTransactions = group.benefitTransactions;
   const isCredit = group.type === "credit";
+  const isSubscription = group.type === "subscription";
   const used = group.totalUsed;
   const remaining = Math.max(0, group.totalRemaining);
   const isGrouped = group.benefits.length > 1;
+
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [selectedMonth, setSelectedMonth] = useState(() => {
+    const now = new Date();
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
+    return `${mm}-${now.getFullYear()}`;
+  });
+
+  const benefitId = group.benefits[0]?.benefitId ?? group.id;
+
+  async function handleActivate() {
+    const res = await fetch("/api/benefits/activate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ benefitId, activatedMonth: selectedMonth }),
+    });
+    if (res.ok) {
+      startTransition(() => router.refresh());
+    }
+  }
+
+  async function handleDeactivate() {
+    const res = await fetch("/api/benefits/activate", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ benefitId }),
+    });
+    if (res.ok) {
+      startTransition(() => router.refresh());
+    }
+  }
 
   const iconElement = (
     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent)]/10">
@@ -38,110 +91,35 @@ export function BenefitDetailModal({
     </div>
   );
 
-  const handleRedeem = async () => {
-    // For grouped benefits, redeem each sub-benefit
-    const benefitIds = group.benefits.map((b) => b.benefitId);
-
-    try {
-      for (const id of benefitIds) {
-        const res = await fetch("/api/benefits/redeem", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ benefitId: id }),
-        });
-        if (!res.ok) {
-          const data = await res.json();
-          throw new Error(data.error);
-        }
-      }
-
-      addToast(`${group.name} marked as redeemed`, async () => {
-        // Undo all
-        for (const id of benefitIds) {
-          await fetch("/api/benefits/redeem", {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ benefitId: id }),
-          });
-        }
-        startTransition(() => router.refresh());
-      });
-
-      startTransition(() => router.refresh());
-    } catch (err: any) {
-      console.error("Failed to redeem benefit:", err);
-      addToast(err.message || "Failed to mark as redeemed");
-    }
-  };
-
-  const handleUndoRedeem = async () => {
-    // Only undo sub-credits that were manually redeemed
-    const manualBenefitIds = group.benefits
-      .filter((b) => b.manualOverride)
-      .map((b) => b.benefitId);
-
-    try {
-      for (const id of manualBenefitIds) {
-        const res = await fetch("/api/benefits/redeem", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ benefitId: id }),
-        });
-        if (!res.ok) {
-          const data = await res.json();
-          throw new Error(data.error);
-        }
-      }
-
-      addToast(`${group.name} redemption undone`);
-      startTransition(() => router.refresh());
-    } catch (err: any) {
-      console.error("Failed to undo redemption:", err);
-      addToast(err.message || "Failed to undo redemption");
-    }
-  };
-
-  const handleReset = async () => {
-    // Reset sub-credits that are fully used but have no linked transactions
-    const stuckBenefitIds = group.benefits
-      .filter((b) => b.isFullyUsed && !b.manualOverride)
-      .map((b) => b.benefitId);
-
-    try {
-      for (const id of stuckBenefitIds) {
-        const res = await fetch("/api/benefits/redeem", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ benefitId: id, reset: true }),
-        });
-        if (!res.ok) {
-          const data = await res.json();
-          throw new Error(data.error);
-        }
-      }
-
-      addToast(`${group.name} usage reset`);
-      startTransition(() => router.refresh());
-    } catch (err: any) {
-      console.error("Failed to reset benefit:", err);
-      addToast(err.message || "Failed to reset usage");
-    }
-  };
-
   return (
     <Modal open={open} onClose={onClose} title={group.name} icon={iconElement}>
       {/* Status badges */}
       <div className="mb-[var(--space-md)] flex flex-wrap gap-2">
         {group.isFullyUsed && <Badge variant="success">Used</Badge>}
-        {group.requiresActivation && (
+        {isSubscription && group.isActivated && (
+          <Badge variant="success">Activated</Badge>
+        )}
+        {isSubscription && !group.isActivated && (
+          <Badge variant="neutral">Not Activated</Badge>
+        )}
+        {!isSubscription && group.requiresActivation && (
           <Badge variant="info">Activation Required</Badge>
         )}
-        {group.type === "subscription" && (
+        {isSubscription && (
           <Badge variant="neutral">Subscription</Badge>
         )}
-        {group.sunsetDate && (
-          <Badge variant="warning">Expires {group.sunsetDate}</Badge>
+        {group.cycle === "monthly" && (
+          <Badge variant="neutral">Monthly</Badge>
         )}
+        {isCredit && group.cycle === "monthly" ? (
+          <Badge variant="info">
+            Resets {formatCycleEnd(group.cycleEnd)}
+          </Badge>
+        ) : group.sunsetDate ? (
+          <Badge variant="warning">
+            Expires {formatSunsetDate(group.sunsetDate)}
+          </Badge>
+        ) : null}
       </div>
 
       {/* Usage stats for credit-type benefits */}
@@ -192,36 +170,64 @@ export function BenefitDetailModal({
         </div>
       )}
 
-      {/* Redeem / Undo / Reset buttons */}
-      {isCredit && !group.isFullyUsed && (
-        <button
-          onClick={handleRedeem}
-          disabled={isPending}
-          className="mb-[var(--space-md)] flex w-full items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--accent)]/30 px-4 py-2.5 text-[var(--text-body)] font-medium text-[var(--accent)] transition-colors hover:bg-[var(--accent)]/10 disabled:opacity-50"
-        >
-          <Check size={16} />
-          Mark as Redeemed
-        </button>
-      )}
-      {isCredit && group.isFullyUsed && group.manualOverride && (
-        <button
-          onClick={handleUndoRedeem}
-          disabled={isPending}
-          className="mb-[var(--space-md)] flex w-full items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--border-default)] px-4 py-2.5 text-[var(--text-body)] font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-primary)] disabled:opacity-50"
-        >
-          <Undo2 size={16} />
-          Undo Redemption
-        </button>
-      )}
-      {isCredit && group.isFullyUsed && !group.manualOverride && matchedTransactions.length === 0 && (
-        <button
-          onClick={handleReset}
-          disabled={isPending}
-          className="mb-[var(--space-md)] flex w-full items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--border-default)] px-4 py-2.5 text-[var(--text-body)] font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-primary)] disabled:opacity-50"
-        >
-          <RotateCcw size={16} />
-          Reset Usage
-        </button>
+      {/* Subscription activation panel */}
+      {isSubscription && (
+        <div className="mb-[var(--space-lg)] rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-primary)] p-[var(--space-md)]">
+          <div className="flex items-baseline justify-between">
+            <span className="font-data text-h3 font-semibold text-[var(--accent)]">
+              ${group.totalCredit.toFixed(2)}
+            </span>
+            <span className="text-[var(--text-caption)] text-[var(--text-secondary)]">
+              per month
+            </span>
+          </div>
+
+          {group.isActivated && group.activatedAt ? (
+            <div className="mt-3">
+              <p className="text-[var(--text-body)] text-[var(--text-secondary)]">
+                Activated since{" "}
+                {new Date(group.activatedAt).toLocaleDateString("en-US", {
+                  month: "long",
+                  year: "numeric",
+                  timeZone: "UTC",
+                })}
+              </p>
+              <button
+                onClick={handleDeactivate}
+                disabled={isPending}
+                className="mt-2 text-[var(--text-caption)] text-[var(--text-muted)] underline decoration-dotted underline-offset-2 transition-colors hover:text-[var(--text-secondary)] disabled:opacity-50"
+              >
+                {isPending ? "Updating..." : "Deactivate"}
+              </button>
+            </div>
+          ) : (
+            <div className="mt-3">
+              <p className="mb-2 text-[var(--text-body)] text-[var(--text-secondary)]">
+                When did you activate through Chase?
+              </p>
+              <div className="flex items-center gap-2">
+                <select
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(e.target.value)}
+                  className="rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-primary)] px-3 py-1.5 text-[var(--text-body)] text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none"
+                >
+                  {getMonthOptions().map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  onClick={handleActivate}
+                  disabled={isPending}
+                  className="rounded-[var(--radius-md)] bg-[var(--accent)] px-3 py-1.5 text-[var(--text-body)] font-medium text-[var(--color-void)] transition-opacity hover:opacity-90 disabled:opacity-50"
+                >
+                  {isPending ? "Saving..." : "Mark as Activated"}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       )}
 
       {/* Description */}

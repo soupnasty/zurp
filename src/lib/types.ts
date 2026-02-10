@@ -127,6 +127,8 @@ export interface BenefitUsageSummary {
   cycleStart: Date;
   cycleEnd: Date;
   ytdUsed?: number;
+  isActivated?: boolean;
+  activatedAt?: string | null;
 }
 
 export interface TransactionWithMatch {

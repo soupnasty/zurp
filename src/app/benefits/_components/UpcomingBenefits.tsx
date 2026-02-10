@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/Badge";
 import { BenefitCard } from "./BenefitCard";
 import type { BenefitGroup } from "../page";
 
-export function UpcomingBenefits({ benefits }: { benefits: BenefitGroup[] }) {
+export function UpcomingBenefits({ benefits, capturedLabel }: { benefits: BenefitGroup[]; capturedLabel?: string }) {
   if (benefits.length === 0) return null;
 
   return (
@@ -13,7 +13,7 @@ export function UpcomingBenefits({ benefits }: { benefits: BenefitGroup[] }) {
       </div>
       <div className="grid grid-cols-1 gap-[var(--space-md)] sm:grid-cols-2 lg:grid-cols-3">
         {benefits.map((group) => (
-          <BenefitCard key={group.id} group={group} />
+          <BenefitCard key={group.id} group={group} capturedLabel={capturedLabel} />
         ))}
       </div>
     </div>
