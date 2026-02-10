@@ -8,82 +8,114 @@ const trackerRows = [
   {
     icon: "\u2708",
     name: "Travel Credit",
+    period: "Resets on anniversary",
     used: "$300",
     total: "$300",
-    cycle: "/yr",
     pct: 100,
-    color: "bg-[var(--color-success)]",
-    iconBg: "bg-[rgba(88,166,255,0.1)] text-[var(--color-info)]",
-    full: true,
-  },
-  {
-    icon: "\u2715",
-    name: "Exclusive Tables",
-    used: "$150",
-    total: "$300",
-    cycle: "/yr",
-    pct: 50,
-    color: "bg-[var(--color-info)]",
-    iconBg: "bg-[rgba(210,153,34,0.1)] text-[var(--color-warning)]",
-    full: false,
+    status: "full" as const,
+    iconStyle: "bg-[rgba(59,130,246,0.15)] text-[#60a5fa]",
   },
   {
     icon: "S",
     name: "StubHub",
+    period: "$60 remaining \u00b7 resets Jul 1",
     used: "$90",
+    total: "$150",
+    pct: 60,
+    status: "partial" as const,
+    iconStyle: "bg-[rgba(244,63,94,0.15)] text-[#fb7185]",
+  },
+  {
+    icon: "E",
+    name: "Exclusive Tables",
+    period: "$0 remaining \u00b7 resets Jul 1",
+    used: "$150",
     total: "$300",
-    cycle: "/yr",
-    pct: 30,
-    color: "bg-[var(--color-warning)]",
-    iconBg: "bg-[rgba(248,81,73,0.1)] text-[var(--color-danger)]",
-    full: false,
+    pct: 50,
+    status: "partial" as const,
+    iconStyle: "bg-[rgba(251,146,60,0.15)] text-[#fb923c]",
   },
   {
     icon: "D",
     name: "DoorDash",
+    period: "$25/mo \u00b7 resets in 8 days",
     used: "$25",
     total: "$25",
-    cycle: "/mo",
     pct: 100,
-    color: "bg-[var(--color-success)]",
-    iconBg: "bg-[rgba(63,185,80,0.1)] text-[var(--color-success)]",
-    full: true,
+    status: "full" as const,
+    iconStyle: "bg-[rgba(251,191,36,0.15)] text-[#fbbf24]",
   },
   {
     icon: "L",
     name: "Lyft",
+    period: "$10/mo \u00b7 resets in 8 days",
     used: "$10",
     total: "$10",
-    cycle: "/mo",
     pct: 100,
-    color: "bg-[rgba(167,139,250,1)]",
-    iconBg: "bg-[rgba(167,139,250,0.1)] text-[#a78bfa]",
-    full: true,
+    status: "full" as const,
+    iconStyle: "bg-[rgba(168,85,247,0.15)] text-[#c084fc]",
+  },
+  {
+    icon: "P",
+    name: "Peloton",
+    period: "$10/mo \u00b7 never used",
+    used: "$0",
+    total: "$10",
+    pct: 0,
+    status: "unused" as const,
+    iconStyle: "bg-[rgba(52,211,153,0.15)] text-[#34d399]",
   },
 ];
 
-/* ── Compare diff rows ── */
-const diffRows = [
-  { name: "Lower annual fee", delta: "+$700", type: "gain" as const },
+/* ── Compare card rows ── */
+const compareCards = [
   {
-    name: "Travel credit lost ($300/yr)",
-    delta: "\u2212$300",
-    type: "lose" as const,
+    rank: 1,
+    name: "Sapphire Preferred",
+    fee: "$95/yr fee",
+    badge: "best" as const,
+    pointsPct: 72,
+    pointsLabel: "Points $798",
+    pointsColor: "linear-gradient(90deg, #3b82f6, #2563eb)",
+    benefitsPct: 15,
+    benefitsLabel: "$170",
+    feePct: 8,
+    feeLabel: "\u2212$95",
+    net: "+$873",
+    netColor: "#34d399",
+    rowBg: "rgba(52,211,153,0.03)",
   },
   {
-    name: "DoorDash credits lost ($25/mo)",
-    delta: "\u2212$300",
-    type: "lose" as const,
+    rank: 2,
+    name: "Amex Gold",
+    fee: "$325/yr fee",
+    badge: null,
+    pointsPct: 57,
+    pointsLabel: "Points $656",
+    pointsColor: "linear-gradient(90deg, #b8860b, #996515)",
+    benefitsPct: 26,
+    benefitsLabel: "$304",
+    feePct: 12,
+    feeLabel: "\u2212$325",
+    net: "+$635",
+    netColor: "#fbbf24",
+    rowBg: undefined,
   },
   {
-    name: "Edit Hotel credits lost ($500/yr)",
-    delta: "\u2212$420",
-    type: "lose" as const,
-  },
-  {
-    name: "Lyft/Peloton credits lost",
-    delta: "\u2212$240",
-    type: "lose" as const,
+    rank: 3,
+    name: "Sapphire Reserve",
+    fee: "$795/yr fee",
+    badge: "current" as const,
+    pointsPct: 69,
+    pointsLabel: "Points $838",
+    pointsColor: "linear-gradient(90deg, #1e3a5f, #162d4a)",
+    benefitsPct: 6,
+    benefitsLabel: "",
+    feePct: 20,
+    feeLabel: "\u2212$795",
+    net: "+$118",
+    netColor: "#6b7280",
+    rowBg: "rgba(59,130,246,0.03)",
   },
 ];
 
@@ -164,11 +196,40 @@ export default function Home() {
         <div className="mx-auto flex max-w-[1080px] items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-2.5 no-underline">
             <svg width="32" height="22" viewBox="0 0 50 34" fill="none">
-              <rect x="0" y="0" width="50" height="34" rx="5" stroke="var(--accent)" strokeWidth="2.5" opacity="0.4" />
-              <line x1="0" y1="12" x2="50" y2="12" stroke="var(--accent)" strokeWidth="1.2" opacity="0.2" />
+              <rect
+                x="0"
+                y="0"
+                width="50"
+                height="34"
+                rx="5"
+                stroke="var(--accent)"
+                strokeWidth="2.5"
+                opacity="0.4"
+              />
+              <line
+                x1="0"
+                y1="12"
+                x2="50"
+                y2="12"
+                stroke="var(--accent)"
+                strokeWidth="1.2"
+                opacity="0.2"
+              />
               <circle cx="12" cy="24" r="2.5" fill="var(--accent)" />
-              <circle cx="21" cy="24" r="2.5" fill="var(--accent)" opacity="0.55" />
-              <circle cx="30" cy="24" r="2.5" fill="var(--accent)" opacity="0.2" />
+              <circle
+                cx="21"
+                cy="24"
+                r="2.5"
+                fill="var(--accent)"
+                opacity="0.55"
+              />
+              <circle
+                cx="30"
+                cy="24"
+                r="2.5"
+                fill="var(--accent)"
+                opacity="0.2"
+              />
             </svg>
             <span
               className="text-xl font-bold tracking-tight text-[var(--text-primary)]"
@@ -181,22 +242,28 @@ export default function Home() {
           {/* Desktop nav */}
           <div className="hidden items-center gap-8 md:flex">
             <a
-              href="#track-compare"
+              href="#track"
               className="text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
             >
-              Track & Compare
+              Track
             </a>
             <a
-              href="#how"
+              href="#compare"
               className="text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
             >
-              How it works
+              Compare
             </a>
             <a
               href="#insights"
               className="text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
             >
               Insights
+            </a>
+            <a
+              href="#how"
+              className="text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
+            >
+              How it works
             </a>
             <Link
               href="/login"
@@ -227,7 +294,7 @@ export default function Home() {
             <span className="bg-gradient-to-r from-[#58A6FF] to-[#3FB950] bg-clip-text text-transparent">
               actually
             </span>{" "}
-            worth.
+            worth
           </h1>
 
           <p className="mx-auto mb-10 max-w-[520px] text-lg leading-relaxed text-[var(--text-secondary)] animate-[fadeUp_0.6s_ease_0.2s_both]">
@@ -264,188 +331,363 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ════════ DUAL VALUE PROPS ════════ */}
-      <section className="py-24" id="track-compare">
+      {/* ════════ TRACK SECTION ════════ */}
+      <section className="py-24" id="track">
         <div className="mx-auto max-w-[1080px] px-6">
-          <div className="grid gap-6 md:grid-cols-2">
-            {/* VP1: Track */}
-            <ScrollReveal>
-              <div className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-secondary)] p-10 transition-colors hover:border-[var(--border-strong)]">
-                <p className="label-caps mb-4">Track</p>
-                <h2
-                  className="mb-3 text-2xl font-bold leading-tight"
-                  style={{ letterSpacing: "-0.5px" }}
-                >
-                  See every dollar you&apos;re leaving on the table.
-                </h2>
-                <p className="mb-8 text-[15px] leading-relaxed text-[var(--text-secondary)]">
-                  Zurp monitors your transactions and maps them against your
-                  card&apos;s full benefit catalog. Credits, promos, multipliers
-                  &mdash; tracked automatically.
-                </p>
+          <ScrollReveal>
+            <p className="label-caps mb-4 text-center">Track</p>
+          </ScrollReveal>
+          <ScrollReveal>
+            <h2
+              className="mb-4 text-center text-[clamp(28px,4vw,42px)] font-bold leading-[1.15]"
+              style={{ letterSpacing: "-0.02em" }}
+            >
+              See every dollar you&apos;re
+              <br className="hidden sm:block" />
+              leaving on the table
+            </h2>
+          </ScrollReveal>
+          <ScrollReveal>
+            <p className="mx-auto mb-12 max-w-[540px] text-center text-[17px] leading-relaxed text-[var(--text-secondary)]">
+              Zurp maps your transactions against your card&apos;s full benefit
+              catalog &mdash; credits, promos, multipliers &mdash; and shows
+              exactly what you&apos;ve captured and what you&apos;re missing.
+            </p>
+          </ScrollReveal>
 
-                {/* Tracker mockup */}
-                <div className="overflow-hidden rounded-xl border border-[var(--border-default)] bg-[#111820]">
-                  {/* Header */}
-                  <div className="flex items-center justify-between border-b border-[var(--border-default)] px-5 py-4">
-                    <span className="label-caps">Chase Sapphire Reserve</span>
-                    <span className="text-xs text-[var(--text-secondary)]">
-                      Net cost{" "}
-                      <span className="font-data text-[var(--color-success)]">
-                        &minus;$175
-                      </span>
-                    </span>
+          <ScrollReveal>
+            <div className="mx-auto max-w-[680px] overflow-hidden rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[#111827]">
+              {/* Header */}
+              <div className="flex items-start justify-between border-b border-[rgba(255,255,255,0.06)] px-7 py-6">
+                <div>
+                  <div
+                    className="text-[13px] font-semibold uppercase tracking-[0.06em]"
+                    style={{ color: "#c5cbe8" }}
+                  >
+                    Chase Sapphire Reserve
                   </div>
-                  {/* Total */}
-                  <div className="border-b border-[var(--border-default)] px-5 py-4">
-                    <div className="font-data text-[22px] font-semibold text-[var(--color-info)]">
-                      $970.00
-                    </div>
-                    <div className="text-xs text-[var(--text-secondary)]">
-                      of $1,690 available this year
-                    </div>
-                    <div className="mt-2 h-[3px] overflow-hidden rounded-sm bg-[var(--border-default)]">
-                      <div className="h-full w-[57%] rounded-sm bg-[var(--color-info)]" />
-                    </div>
+                  <div
+                    className="mt-1 text-[12px]"
+                    style={{ color: "#6b7280" }}
+                  >
+                    $795/yr annual fee
                   </div>
-                  {/* Rows */}
-                  <div className="py-1">
-                    {trackerRows.map((row) => (
+                </div>
+                <div className="text-right">
+                  <div
+                    className="font-data text-[28px] font-bold"
+                    style={{ color: "#34d399", letterSpacing: "-0.02em" }}
+                  >
+                    +$175
+                  </div>
+                  <div
+                    className="mt-0.5 text-[11px]"
+                    style={{ color: "#6b7280" }}
+                  >
+                    net value this year
+                  </div>
+                </div>
+              </div>
+
+              {/* Progress */}
+              <div className="border-b border-[rgba(255,255,255,0.06)] px-7 py-5">
+                <div className="mb-2.5 flex items-baseline justify-between">
+                  <div className="text-[15px] font-medium text-[#e5e7eb]">
+                    <span className="font-bold text-[#34d399]">$970</span>{" "}
+                    captured
+                  </div>
+                  <div className="text-[13px]" style={{ color: "#6b7280" }}>
+                    of $1,690 available
+                  </div>
+                </div>
+                <div className="h-2 overflow-hidden rounded bg-[rgba(255,255,255,0.06)]">
+                  <div
+                    className="h-full rounded"
+                    style={{
+                      width: "57%",
+                      background: "linear-gradient(90deg, #34d399, #22d3ee)",
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Benefit rows */}
+              <div className="py-2">
+                {trackerRows.map((row) => (
+                  <div
+                    key={row.name}
+                    className="flex items-center gap-3.5 px-7 py-3.5 transition-colors hover:bg-[rgba(255,255,255,0.02)]"
+                  >
+                    <div
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[13px] font-bold ${row.iconStyle}`}
+                    >
+                      {row.icon}
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-[14px] font-medium text-[#e5e7eb]">
+                        {row.name}
+                      </div>
                       <div
-                        key={row.name}
-                        className="flex items-center gap-3 px-5 py-3"
+                        className="mt-0.5 text-[11px]"
+                        style={{ color: "#6b7280" }}
                       >
+                        {row.period}
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <div
+                        className="font-data text-[14px] font-semibold"
+                        style={{
+                          color:
+                            row.status === "full"
+                              ? "#34d399"
+                              : row.status === "partial"
+                              ? "#fbbf24"
+                              : "#6b7280",
+                          fontVariantNumeric: "tabular-nums",
+                        }}
+                      >
+                        {row.used} / {row.total}
+                      </div>
+                      <div className="mt-1 ml-auto h-1 w-[60px] overflow-hidden rounded-sm bg-[rgba(255,255,255,0.06)]">
                         <div
-                          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm ${row.iconBg}`}
-                        >
-                          {row.icon}
-                        </div>
-                        <div className="flex-1">
-                          <div className="text-[13px] font-medium text-[var(--text-primary)]">
-                            {row.name}
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-data text-xs text-[var(--text-secondary)]">
-                            <span
-                              className={
-                                row.full ? "text-[var(--color-success)]" : ""
-                              }
-                            >
-                              {row.used}
-                            </span>{" "}
-                            / {row.total}
-                            <span className="text-[var(--text-secondary)]">
-                              {row.cycle}
-                            </span>
-                          </div>
-                          <div className="mt-1 h-[2px] w-full overflow-hidden rounded-sm bg-[var(--border-default)]">
-                            <div
-                              className={`h-full rounded-sm ${row.color}`}
-                              style={{ width: `${row.pct}%` }}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </ScrollReveal>
-
-            {/* VP2: Compare */}
-            <ScrollReveal>
-              <div className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-secondary)] p-10 transition-colors hover:border-[var(--border-strong)]">
-                <p className="label-caps mb-4">Compare</p>
-                <h2
-                  className="mb-3 text-2xl font-bold leading-tight"
-                  style={{ letterSpacing: "-0.5px" }}
-                >
-                  See what you&apos;d gain &mdash; or lose &mdash; on another
-                  card.
-                </h2>
-                <p className="mb-8 text-[15px] leading-relaxed text-[var(--text-secondary)]">
-                  Based on your real spending, Zurp calculates the exact dollar
-                  difference if you switched cards. No guesswork, no affiliate
-                  bias.
-                </p>
-
-                {/* Compare mockup */}
-                <div className="overflow-hidden rounded-xl border border-[var(--border-default)] bg-[#111820]">
-                  <div className="border-b border-[var(--border-default)] px-5 py-4">
-                    <span className="label-caps">
-                      Based on your last 12 months
-                    </span>
-                  </div>
-                  {/* Card comparison row */}
-                  <div className="grid grid-cols-2 border-b border-[var(--border-default)]">
-                    <div className="border-r border-[var(--border-default)] px-5 py-4 text-center">
-                      <div
-                        className="label-caps !text-[var(--color-info)] mb-1"
-                        style={{ fontSize: "10px" }}
-                      >
-                        Your card
-                      </div>
-                      <div className="font-data text-xl font-semibold text-[var(--color-info)]">
-                        Sapphire Reserve
-                      </div>
-                      <div className="mt-0.5 text-[11px] text-[var(--text-secondary)]">
-                        $795/yr fee
-                      </div>
-                    </div>
-                    <div className="px-5 py-4 text-center">
-                      <div
-                        className="label-caps mb-1"
-                        style={{ fontSize: "10px" }}
-                      >
-                        Comparing
-                      </div>
-                      <div className="font-data text-xl font-semibold text-[var(--color-warning)]">
-                        Sapphire Preferred
-                      </div>
-                      <div className="mt-0.5 text-[11px] text-[var(--text-secondary)]">
-                        $95/yr fee
+                          className="h-full rounded-sm"
+                          style={{
+                            width: `${row.pct}%`,
+                            background:
+                              row.status === "full"
+                                ? "#34d399"
+                                : row.status === "partial"
+                                ? "#fbbf24"
+                                : "#4b5563",
+                          }}
+                        />
                       </div>
                     </div>
                   </div>
-                  {/* Diff rows */}
-                  <div className="py-1">
-                    {diffRows.map((row) => (
-                      <div
-                        key={row.name}
-                        className="flex items-center justify-between px-5 py-2.5"
-                      >
-                        <span className="text-[13px] text-[var(--text-secondary)]">
-                          {row.name}
-                        </span>
-                        <span
-                          className={`font-data rounded px-2 py-0.5 text-xs font-medium ${
-                            row.type === "gain"
-                              ? "bg-[rgba(63,185,80,0.08)] text-[var(--color-success)]"
-                              : "bg-[rgba(248,81,73,0.08)] text-[var(--color-danger)]"
-                          }`}
-                        >
-                          {row.delta}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                  {/* Bottom verdict */}
-                  <div className="flex items-center justify-between border-t border-[var(--border-default)] px-5 py-3.5">
-                    <span className="text-[13px] font-semibold">
-                      Net:{" "}
-                      <span className="font-data text-[var(--color-danger)]">
-                        &minus;$560/yr
-                      </span>{" "}
-                      on Preferred
-                    </span>
-                    <span className="text-[11px] text-[var(--text-secondary)]">
-                      Keep your Sapphire Reserve
-                    </span>
-                  </div>
+                ))}
+              </div>
+
+              {/* Footer */}
+              <div
+                className="border-t border-[rgba(255,255,255,0.06)] px-7 py-4 text-[11px]"
+                style={{ color: "#4b5563" }}
+              >
+                6 of 12 benefits tracked &middot; Updated today
+              </div>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* Divider */}
+      <div className="mx-auto max-w-[1080px] px-6">
+        <hr className="border-t border-[rgba(255,255,255,0.06)]" />
+      </div>
+
+      {/* ════════ COMPARE SECTION ════════ */}
+      <section className="py-24" id="compare">
+        <div className="mx-auto max-w-[1080px] px-6">
+          <ScrollReveal>
+            <p className="label-caps mb-4 text-center">Compare</p>
+          </ScrollReveal>
+          <ScrollReveal>
+            <h2
+              className="mb-4 text-center text-[clamp(28px,4vw,42px)] font-bold leading-[1.15]"
+              style={{ letterSpacing: "-0.02em" }}
+            >
+              See what you&apos;d gain &mdash; or lose
+            </h2>
+          </ScrollReveal>
+          <ScrollReveal>
+            <p className="mx-auto mb-12 max-w-[540px] text-center text-[17px] leading-relaxed text-[var(--text-secondary)]">
+              Based on your real spending, Zurp calculates the exact dollar
+              difference if you switched cards. No guesswork, no affiliate bias.
+            </p>
+          </ScrollReveal>
+
+          <ScrollReveal>
+            <div className="mx-auto max-w-[780px] overflow-hidden rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[#111827]">
+              {/* Headline */}
+              <div className="border-b border-[rgba(255,255,255,0.06)] px-7 py-6">
+                <div className="text-[20px] font-bold text-white mb-1">
+                  The{" "}
+                  <span style={{ color: "#34d399" }}>Sapphire Preferred</span>{" "}
+                  would save you $755/yr
+                </div>
+                <div className="text-[13px]" style={{ color: "#6b7280" }}>
+                  Based on your $47,411 in spending over the last 12 months
                 </div>
               </div>
-            </ScrollReveal>
+
+              {/* Card rows */}
+              <div className="py-2">
+                {compareCards.map((card) => (
+                  <div
+                    key={card.rank}
+                    className="flex items-center gap-5 px-7 py-5 border-b border-[rgba(255,255,255,0.04)] last:border-b-0"
+                    style={{ background: card.rowBg }}
+                  >
+                    {/* Rank */}
+                    <div
+                      className="text-[14px] font-bold shrink-0 w-5"
+                      style={{ color: "#4b5563" }}
+                    >
+                      {card.rank}
+                    </div>
+
+                    {/* Card info */}
+                    <div className="shrink-0 min-w-[160px]">
+                      <div className="flex items-center gap-2 text-[15px] font-semibold text-[#e5e7eb]">
+                        {card.name}
+                        {card.badge === "best" && (
+                          <span className="inline-flex items-center rounded px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.06em] bg-[rgba(52,211,153,0.15)] text-[#34d399]">
+                            Best value
+                          </span>
+                        )}
+                        {card.badge === "current" && (
+                          <span className="inline-flex items-center rounded px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.06em] bg-[rgba(59,130,246,0.15)] text-[#60a5fa]">
+                            Your card
+                          </span>
+                        )}
+                      </div>
+                      <div
+                        className="mt-0.5 text-[12px]"
+                        style={{ color: "#6b7280" }}
+                      >
+                        {card.fee}
+                      </div>
+                    </div>
+
+                    {/* Stacked bar */}
+                    <div className="flex-1 min-w-0 hidden sm:block">
+                      <div className="flex h-7 overflow-hidden rounded-md bg-[rgba(255,255,255,0.04)]">
+                        <div
+                          className="flex items-center justify-center text-[11px] font-semibold text-white/90 whitespace-nowrap"
+                          style={{
+                            width: `${card.pointsPct}%`,
+                            background: card.pointsColor,
+                          }}
+                        >
+                          {card.pointsPct > 15 ? card.pointsLabel : ""}
+                        </div>
+                        <div
+                          className="flex items-center justify-center text-[11px] font-semibold text-white/90 whitespace-nowrap"
+                          style={{
+                            width: `${card.benefitsPct}%`,
+                            background: "rgba(52,211,153,0.5)",
+                          }}
+                        >
+                          {card.benefitsPct > 10 ? card.benefitsLabel : ""}
+                        </div>
+                        <div
+                          className="flex items-center justify-center text-[11px] font-semibold text-white/70 whitespace-nowrap"
+                          style={{
+                            width: `${card.feePct}%`,
+                            background: "rgba(239,68,68,0.25)",
+                          }}
+                        >
+                          {card.feePct > 6 ? card.feeLabel : ""}
+                        </div>
+                      </div>
+                      {/* Legend dots */}
+                      <div
+                        className="mt-1.5 flex gap-1 text-[11px]"
+                        style={{
+                          color: "#6b7280",
+                          fontVariantNumeric: "tabular-nums",
+                        }}
+                      >
+                        <span className="flex items-center gap-1">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#3b82f6]" />
+                          Points
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#34d399]" />
+                          Benefits
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#ef4444]" />
+                          Fee
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Net value */}
+                    <div className="text-right shrink-0 min-w-[70px]">
+                      <div
+                        className="font-data text-[22px] font-bold"
+                        style={{
+                          color: card.netColor,
+                          letterSpacing: "-0.02em",
+                          fontVariantNumeric: "tabular-nums",
+                        }}
+                      >
+                        {card.net}
+                      </div>
+                      <div
+                        className="mt-0.5 text-[11px]"
+                        style={{ color: "#6b7280" }}
+                      >
+                        net / year
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Footer */}
+              <div
+                className="border-t border-[rgba(255,255,255,0.06)] px-7 py-4 text-[11px] leading-relaxed"
+                style={{ color: "#4b5563" }}
+              >
+                Points valued conservatively (Chase UR: 1.25&cent;, Amex MR:
+                1.0&cent;). Transfer partner redemptions can yield higher value.
+                Your card shows benefits actually captured; other cards show
+                total available benefits.
+              </div>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* ════════ INSIGHT EXAMPLES ════════ */}
+      <section className="py-24" id="insights">
+        <div className="mx-auto max-w-[1080px] px-6">
+          <ScrollReveal>
+            <p className="label-caps mb-4 text-center">
+              Powered by your real data
+            </p>
+          </ScrollReveal>
+          <ScrollReveal>
+            <h2
+              className="mb-16 text-center text-[clamp(28px,4vw,40px)] font-bold leading-tight"
+              style={{ letterSpacing: "-1px" }}
+            >
+              Insights that actually save you money
+            </h2>
+          </ScrollReveal>
+
+          <div className="mx-auto flex max-w-[600px] flex-col gap-3">
+            {insights.map((insight, i) => (
+              <ScrollReveal key={i}>
+                <div className="flex gap-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-secondary)] px-6 py-5 transition-all hover:border-[var(--border-strong)] hover:translate-x-1">
+                  <span
+                    className={`mt-0.5 shrink-0 rounded px-2 py-1 text-[10px] font-bold tracking-wide ${insight.tagColor}`}
+                  >
+                    {insight.tag}
+                  </span>
+                  <div className="flex-1">
+                    <p className="text-sm leading-relaxed text-[var(--text-primary)]">
+                      {insight.text}
+                    </p>
+                    <p className="mt-1.5 text-[11px] text-[var(--text-secondary)]">
+                      {insight.meta}
+                    </p>
+                  </div>
+                </div>
+              </ScrollReveal>
+            ))}
           </div>
         </div>
       </section>
@@ -461,7 +703,7 @@ export default function Home() {
               className="mb-16 text-center text-[clamp(28px,4vw,40px)] font-bold leading-tight"
               style={{ letterSpacing: "-1px" }}
             >
-              Two minutes to stop wasting money.
+              Two minutes to stop wasting money
             </h2>
           </ScrollReveal>
 
@@ -497,47 +739,6 @@ export default function Home() {
                   <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
                     {step.desc}
                   </p>
-                </div>
-              </ScrollReveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ════════ INSIGHT EXAMPLES ════════ */}
-      <section className="py-24" id="insights">
-        <div className="mx-auto max-w-[1080px] px-6">
-          <ScrollReveal>
-            <p className="label-caps mb-4 text-center">
-              Powered by your real data
-            </p>
-          </ScrollReveal>
-          <ScrollReveal>
-            <h2
-              className="mb-16 text-center text-[clamp(28px,4vw,40px)] font-bold leading-tight"
-              style={{ letterSpacing: "-1px" }}
-            >
-              Insights that actually save you money.
-            </h2>
-          </ScrollReveal>
-
-          <div className="mx-auto flex max-w-[600px] flex-col gap-3">
-            {insights.map((insight, i) => (
-              <ScrollReveal key={i}>
-                <div className="flex gap-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-secondary)] px-6 py-5 transition-all hover:border-[var(--border-strong)] hover:translate-x-1">
-                  <span
-                    className={`mt-0.5 shrink-0 rounded px-2 py-1 text-[10px] font-bold tracking-wide ${insight.tagColor}`}
-                  >
-                    {insight.tag}
-                  </span>
-                  <div className="flex-1">
-                    <p className="text-sm leading-relaxed text-[var(--text-primary)]">
-                      {insight.text}
-                    </p>
-                    <p className="mt-1.5 text-[11px] text-[var(--text-secondary)]">
-                      {insight.meta}
-                    </p>
-                  </div>
                 </div>
               </ScrollReveal>
             ))}
