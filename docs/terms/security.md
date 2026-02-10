@@ -42,9 +42,8 @@ Zurp's integration with Plaid uses only read-only API products:
 |---|---|---|
 | Transactions | Retrieves transaction history (up to 24 months) | Insight engine: benefit tracking, competitor detection, spending analysis |
 | Accounts | Retrieves account metadata (name, type, institution, last four digits) | Card identification and display |
-| Balance | Retrieves current balance and available credit | Contextual display only; not used for credit decisions |
 
-**Products we do NOT use:** Auth (account/routing numbers), Transfer (money movement), Payment Initiation, Identity, Income, Liabilities, Investments, or any product that enables write access to your financial accounts. Zurp cannot move money, initiate payments, change account settings, or take any action on your behalf.
+**Products we do NOT use:** Auth (account/routing numbers), Balance, Transfer (money movement), Payment Initiation, Identity, Income, Liabilities, Investments, or any product that enables write access to your financial accounts. Zurp cannot move money, initiate payments, change account settings, or take any action on your behalf.
 
 ---
 
@@ -70,7 +69,7 @@ All stored data is encrypted using AES-256 (Advanced Encryption Standard with 25
 
 | Data Store | Encryption Method | Key Management |
 |---|---|---|
-| Primary database | AES-256 at rest | Cloud provider-managed keys (AWS KMS or equivalent) |
+| Primary database | AES-256 at rest | Cloud provider-managed keys (Neon-managed encryption) |
 | Backups | AES-256 at rest | Separate encryption keys, rotated quarterly |
 | Log storage | AES-256 at rest | Cloud provider-managed keys |
 | Plaid access tokens | AES-256 application-layer encryption | Application-managed keys, stored in a secrets manager separate from the database |
@@ -79,9 +78,9 @@ Plaid access tokens receive an additional layer of application-level encryption 
 
 ### 3.3 Key Management
 
-- Encryption keys are managed through a dedicated secrets management service (e.g., AWS Secrets Manager, HashiCorp Vault, or equivalent).
+- Encryption keys are managed through environment-based secrets management with access restricted to production services.
 - Database encryption keys are managed by the cloud provider's key management service and are never exposed to application code.
-- Application-level encryption keys (e.g., for Plaid tokens) are stored in a secrets manager, separate from the database, with access restricted to the specific services that require them.
+- Application-level encryption keys (e.g., for Plaid tokens) are stored as environment secrets, separate from the database, with access restricted to the specific services that require them.
 - Keys are rotated on a regular schedule (at minimum quarterly) and can be rotated immediately in the event of a suspected compromise.
 
 ---
@@ -132,24 +131,23 @@ All access to Zurp's systems — by personnel, services, and automated processes
 
 | System | Authentication Method |
 |---|---|
-| User accounts (Zurp app) | Email + password with bcrypt hashing (cost factor ≥ 12); optional MFA |
+| User accounts (Zurp app) | Email-based magic link authentication (passwordless); no credentials stored |
 | Internal admin systems | SSO with mandatory multi-factor authentication (MFA) |
 | Cloud infrastructure | IAM roles with MFA; no long-lived access keys |
 | CI/CD pipeline | Service accounts with minimal permissions; secrets injected at runtime, never stored in code |
 | Database | IAM-based authentication or short-lived credentials; no shared passwords |
 
-### 5.3 Password Security
+### 5.3 Magic Link Security
 
-User passwords are:
+Zurp uses passwordless authentication via email magic links:
 
-- Hashed using bcrypt with a cost factor of 12 or higher (never stored in plaintext or reversible encryption);
-- Subject to minimum length requirements (8+ characters);
-- Checked against known breach databases (e.g., Have I Been Pwned) at registration and password change to prevent use of compromised passwords;
-- Protected by rate limiting and account lockout on failed login attempts (see Section 7.2).
+- Magic links are single-use, time-limited tokens that expire after a short window;
+- Links are transmitted over encrypted email and validated server-side;
+- Rate limiting is enforced on magic link requests to prevent abuse (see Section 7.2);
+- No user passwords are stored, eliminating the risk of password database breaches.
 
 ### 5.4 Multi-Factor Authentication
 
-- **For users:** MFA is available and encouraged for all Zurp accounts. We support TOTP-based authenticator apps (e.g., Google Authenticator, Authy).
 - **For personnel:** MFA is mandatory for all internal systems, cloud infrastructure, and administrative tools. Hardware security keys are required for infrastructure access.
 
 ---
@@ -172,7 +170,7 @@ We implement controls against the OWASP Top 10 web application security risks:
 | Risk | Mitigation |
 |---|---|
 | Injection (SQL, NoSQL, command) | Parameterized queries; input validation; ORM usage; no raw query construction |
-| Broken authentication | Bcrypt password hashing; rate limiting; session management; MFA support |
+| Broken authentication | Passwordless magic link auth; rate limiting; session management; short-lived tokens |
 | Sensitive data exposure | AES-256 encryption at rest; TLS in transit; no storage of bank credentials |
 | XML External Entities (XXE) | Disabled XML external entity processing; JSON-only APIs |
 | Broken access control | Role-based access control; server-side authorization checks on every request |
@@ -211,8 +209,7 @@ We deploy a strict Content Security Policy (CSP) that:
 
 ### 7.2 Abuse Prevention
 
-- **Rate limiting:** Login attempts, API calls, and Plaid connection requests are rate-limited per user, per IP, and globally.
-- **Account lockout:** After a configurable number of failed login attempts (default: 10), the account is temporarily locked and the user is notified by email.
+- **Rate limiting:** Magic link requests, API calls, and Plaid connection requests are rate-limited per user, per IP, and globally.
 - **Bot detection:** Automated traffic analysis to identify and block bot-driven abuse, credential stuffing, and scraping.
 - **IP reputation:** Known malicious IPs and Tor exit nodes may be subject to additional verification or blocking when accessing sensitive endpoints.
 
@@ -220,7 +217,7 @@ We deploy a strict Content Security Policy (CSP) that:
 
 We maintain detailed audit logs for security-relevant events, including:
 
-- User authentication events (login, logout, failed attempts, password changes, MFA enrollment);
+- User authentication events (magic link requests, login, logout, session creation);
 - Plaid account connections and disconnections;
 - Data access events (transaction data retrieval, insight generation);
 - Administrative actions (configuration changes, deployment events, access grants/revocations);
@@ -266,7 +263,7 @@ Because Plaid is a critical component of Zurp's data pipeline, its security post
 | Encryption in transit | TLS 1.2+ for all connections |
 | Encryption at rest | AES-256 for all stored data |
 | Credential handling | Bank credentials processed in Plaid's secure environment; never exposed to Zurp |
-| Data minimization | Zurp receives only the data categories it requests (transactions, accounts, balances) |
+| Data minimization | Zurp receives only the data categories it requests (transactions, accounts) |
 | User control | Users can view and manage all Plaid connections at my.plaid.com |
 | Regulatory compliance | Compliant with applicable financial regulations; regulated by relevant authorities in operating jurisdictions |
 | Security audits | Regular independent third-party security audits and penetration testing |
@@ -283,7 +280,7 @@ If you disconnect your bank account from Zurp, we immediately invalidate the ass
 
 We collect and retain only the data necessary to provide the Service:
 
-- **We collect:** Transaction data (merchant, amount, date, category), account metadata (name, type, last four digits, institution), and balance information.
+- **We collect:** Transaction data (merchant, amount, date, category) and account metadata (name, type, last four digits, institution).
 - **We do NOT collect:** Full card numbers, CVVs, PINs, bank login credentials, Social Security numbers, tax identification numbers, or data from non-credit-card accounts unless explicitly connected by you.
 - **We do NOT store:** Raw Plaid API responses beyond the specific fields we need. Extraneous data returned by Plaid is discarded at the application layer before persistence.
 
@@ -369,13 +366,12 @@ That said, our security controls are informed by PCI DSS principles and exceed t
 
 To maximize the security of your Zurp account and connected financial data, we recommend:
 
-- **Use a unique, strong password** for your Zurp account that you do not reuse on other services. Consider using a password manager.
-- **Enable multi-factor authentication (MFA)** on your Zurp account when available.
-- **Enable MFA on your bank accounts** as well — this protects the Plaid connection at the source.
+- **Secure your email account** — Zurp uses magic link authentication, so the security of your Zurp account depends on the security of your email. Use a strong password and enable MFA on your email provider.
+- **Enable MFA on your bank accounts** — this protects the Plaid connection at the source.
 - **Review your Plaid connections** periodically at my.plaid.com. Disconnect any apps you no longer use.
 - **Keep your devices and browsers updated** with the latest security patches.
-- **Be cautious of phishing.** Zurp will never ask for your bank password by email, text, phone, or within the Zurp app. If you receive a suspicious communication claiming to be from Zurp, contact us at security@zurp.com.
-- **Report suspicious activity** on your Zurp account immediately to security@zurp.com.
+- **Be cautious of phishing.** Zurp will never ask for your bank credentials by email, text, phone, or within the Zurp app. If you receive a suspicious communication claiming to be from Zurp, contact us at support@zurp.com.
+- **Report suspicious activity** on your Zurp account immediately to support@zurp.com.
 
 ---
 
@@ -409,8 +405,7 @@ We welcome security researchers who help us keep the Service safe. If you discov
 For security-related questions, concerns, or reports:
 
 **Zurp, LLC**
-Security Team: security@zurp.com
-Privacy Team: privacy@zurp.com
+Security & Vulnerability Reports: security@zurp.com
 General Support: support@zurp.com
 
 ---

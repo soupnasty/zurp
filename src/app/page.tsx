@@ -631,12 +631,18 @@ export default function Home() {
             >
               Privacy
             </Link>
-            <span className="text-[13px] text-[var(--text-secondary)] transition-colors hover:text-[var(--text-secondary)]">
+            <Link
+              href="/terms"
+              className="text-[13px] text-[var(--text-secondary)] transition-colors hover:text-[var(--text-secondary)]"
+            >
               Terms
-            </span>
-            <span className="text-[13px] text-[var(--text-secondary)] transition-colors hover:text-[var(--text-secondary)]">
+            </Link>
+            <Link
+              href="/security"
+              className="text-[13px] text-[var(--text-secondary)] transition-colors hover:text-[var(--text-secondary)]"
+            >
               Security
-            </span>
+            </Link>
           </div>
         </div>
       </footer>

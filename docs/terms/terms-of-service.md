@@ -40,14 +40,14 @@ By using the Service, you represent and warrant that you meet all eligibility re
 
 ### 4.1 Account Creation
 
-To access most features of the Service, you must create an account by providing a valid email address and creating a password. You agree to provide accurate, current, and complete information during registration and to update that information as necessary.
+To access most features of the Service, you must create an account by providing a valid email address. We use email-based magic links for authentication — no password is required. You agree to provide accurate, current, and complete information during registration and to update that information as necessary.
 
 ### 4.2 Account Security
 
-You are responsible for maintaining the confidentiality of your account credentials. You agree to:
+You are responsible for maintaining the security of your account. You agree to:
 
-- Choose a strong, unique password that you do not use for other services;
-- Not share your account credentials with any third party;
+- Not share your account access or magic link emails with any third party;
+- Maintain sole access to the email address associated with your account;
 - Notify us immediately at support@zurp.com if you suspect unauthorized access to your account;
 - Accept responsibility for all activity that occurs under your account, except to the extent caused by our breach of these Terms or our negligence.
 
@@ -64,7 +64,7 @@ Each account is for a single individual. You may not create multiple accounts. Y
 The Service uses Plaid, Inc. (**"Plaid"**) to establish a secure, read-only connection to your credit card account(s). When you connect an account:
 
 - You authenticate directly with your financial institution through Plaid's interface. **Zurp never receives, sees, or stores your bank login credentials.**
-- You authorize Plaid to retrieve and transmit to Zurp: transaction history (up to 24 months), account metadata (account name, type, institution, last four digits), and balance information.
+- You authorize Plaid to retrieve and transmit to Zurp: transaction history (up to 24 months) and account metadata (account name, type, institution, last four digits).
 - You acknowledge that your use of Plaid is subject to Plaid's own End User Privacy Policy (available at plaid.com/legal), and you agree to that policy.
 
 ### 5.2 Read-Only Access
@@ -96,7 +96,7 @@ You agree not to:
 - Connect financial accounts that you do not own or are not legally authorized to manage;
 - Use the Service to commit or facilitate fraud, identity theft, money laundering, or any other financial crime;
 - Reverse engineer, decompile, disassemble, or attempt to derive the source code of the Service, except to the extent expressly permitted by applicable law;
-- Scrape, crawl, or use automated means to access the Service or extract data from it, except through our published API (if any) in accordance with its terms;
+- Scrape, crawl, or use automated means to access the Service or extract data from it;
 - Circumvent, disable, or interfere with any security features of the Service;
 - Use the Service to build a competing product or service;
 - Interfere with or disrupt the Service, servers, or networks connected to the Service;
@@ -133,7 +133,7 @@ If you provide suggestions, ideas, or feedback about the Service (**"Feedback"**
 
 ### 7.4 DMCA and Copyright Complaints
 
-If you believe that content on the Service infringes your copyright, please contact us at legal@zurp.com with a notice that includes: identification of the copyrighted work, identification of the allegedly infringing material, your contact information, and a statement under penalty of perjury that the information is accurate and you are authorized to act on behalf of the copyright owner.
+If you believe that content on the Service infringes your copyright, please contact us at support@zurp.com with a notice that includes: identification of the copyrighted work, identification of the allegedly infringing material, your contact information, and a statement under penalty of perjury that the information is accurate and you are authorized to act on behalf of the copyright owner.
 
 ## 8. Fees and Payment
 
@@ -260,7 +260,7 @@ Upon termination of your account for any reason:
 
 ### 13.1 Informal Resolution
 
-Before initiating any formal dispute resolution, you agree to first contact us at legal@zurp.com and attempt to resolve the dispute informally for at least 30 days. Most concerns can be resolved this way.
+Before initiating any formal dispute resolution, you agree to first contact us at support@zurp.com and attempt to resolve the dispute informally for at least 30 days. Most concerns can be resolved this way.
 
 ### 13.2 Binding Arbitration
 
@@ -281,7 +281,7 @@ Notwithstanding the above, either party may:
 
 ### 13.5 Opt-Out of Arbitration
 
-You may opt out of the arbitration and class action waiver provisions by sending written notice to legal@zurp.com within 30 days of first accepting these Terms. Your notice must include your full name, email address associated with your Zurp account, and a clear statement that you wish to opt out of arbitration. If you opt out, any disputes will be resolved in the courts specified in Section 14.
+You may opt out of the arbitration and class action waiver provisions by sending written notice to support@zurp.com within 30 days of first accepting these Terms. Your notice must include your full name, email address associated with your Zurp account, and a clear statement that you wish to opt out of arbitration. If you opt out, any disputes will be resolved in the courts specified in Section 14.
 
 ## 14. Governing Law and Jurisdiction
 
@@ -313,7 +313,7 @@ Zurp shall not be liable for any delay or failure in performance resulting from 
 
 ### 15.6 Notices
 
-Notices to you may be sent to the email address associated with your account. Notices to Zurp should be sent to legal@zurp.com. Notices are deemed received when sent by email (upon delivery confirmation) or, if sent by mail, three business days after deposit in the U.S. mail, postage prepaid, certified or registered, return receipt requested.
+Notices to you may be sent to the email address associated with your account. Notices to Zurp should be sent to support@zurp.com. Notices are deemed received when sent by email (upon delivery confirmation) or, if sent by mail, three business days after deposit in the U.S. mail, postage prepaid, certified or registered, return receipt requested.
 
 ### 15.7 No Third-Party Beneficiaries
 
@@ -332,9 +332,7 @@ Nothing in these Terms shall be construed to create a partnership, joint venture
 If you have questions about these Terms, please contact us:
 
 **Zurp, LLC**
-Email: legal@zurp.com
-Support: support@zurp.com
-Mailing Address: [Address to be added]
+Email: support@zurp.com
 
 ---
 

@@ -26,8 +26,7 @@ the Service.
 2.1 Information You Provide Directly
 
 -   **Account information:** When you create a Zurp account, we collect
-    your email address, name, and password. You may also provide a
-    display name or profile photo.
+    your email address. You may also provide a display name.
 
 -   **Card selection:** You tell us which credit card(s) you hold (e.g.,
     Chase Sapphire Reserve, Amex Gold). We use this to load the correct
@@ -62,14 +61,10 @@ Through Plaid, we receive:
     name, and last four digits of the account number. We use this to
     identify which card is connected and display it in the app.
 
--   **Balance information:** Current statement balance and available
-    credit. We do not use this for credit decisions or share it with any
-    third party.
-
 **We do NOT receive through Plaid:** your full card number, CVV, PIN,
-Social Security number, login credentials, or any information from
-non-credit-card accounts (checking, savings, investment, etc.) unless
-you explicitly connect them.
+Social Security number, login credentials, account balances, or any
+information from non-credit-card accounts (checking, savings,
+investment, etc.) unless you explicitly connect them.
 
 2.3 Information Collected Automatically
 
@@ -159,11 +154,8 @@ solely for the purposes described:
                                                     and balances to Zurp
 
   Cloud infrastructure Hosting, data storage, and   All Service data
-  (e.g., AWS, Vercel)  compute                      (encrypted at rest and in
+  (Vercel, Neon)       compute                      (encrypted at rest and in
                                                     transit)
-
-  Analytics providers  Aggregated usage analytics   Usage data, device info
-                       to improve the Service       (no financial data)
 
   Email/notification   Delivering alerts and        Email address,
   providers            communications               notification content
@@ -247,7 +239,8 @@ information:
 
 -   **Encryption at rest:** All stored data, including transaction
     records and account information, is encrypted using AES-256
-    encryption.
+    encryption. Plaid access tokens are encrypted using AES-256-GCM
+    before storage.
 
 -   **Access controls:** Access to user data is restricted to authorized
     personnel on a need-to-know basis, protected by multi-factor
@@ -434,13 +427,6 @@ Policy or our data practices, please contact us:
 
 **Zurp, LLC**
 
-Email: privacy@zurp.com
-
-Data Protection Inquiries: dpo@zurp.com
-
-Mailing Address: \[Address to be added\]
-
-For CCPA/CPRA requests, you may also call our toll-free number:
-**\[Number to be added\]**.
+Email: support@zurp.com
 
 *--- End of Privacy Policy ---*

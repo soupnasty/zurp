@@ -15,9 +15,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "zurp — your card benefits",
+  title: "zurp",
   description:
-    "Track your credit card benefits, see which credits you've used, and stop leaving money on the table.",
+    "Zurp tracks your credit card benefits automatically — and shows you what you'd gain or lose on every other card.",
 };
 
 export default function RootLayout({

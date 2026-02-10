@@ -20,254 +20,667 @@ export default function PrivacyPage() {
             Privacy Policy
           </h1>
           <p className="mt-2">
-            <strong className="text-[var(--text-primary)]">Zurp LLC</strong>
+            <strong className="text-[var(--text-primary)]">Zurp, LLC</strong>
             <br />
-            Effective Date: February 6, 2026
+            Effective Date: February 9, 2026
             <br />
-            Last Updated: February 6, 2026
+            Last Updated: February 9, 2026
           </p>
         </header>
 
+        {/* 1. Introduction */}
         <section>
           <h2 className="text-h3 font-semibold text-[var(--text-primary)]">
-            Overview
+            1. Introduction
           </h2>
           <p>
-            Zurp (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;)
-            operates the zurp.io website and Zurp application (the
-            &ldquo;Service&rdquo;). This Privacy Policy explains how we collect,
-            use, disclose, and safeguard your information when you use our
-            Service.
+            Zurp, LLC (&ldquo;Zurp,&rdquo; &ldquo;we,&rdquo;
+            &ldquo;our,&rdquo; or &ldquo;us&rdquo;) operates the Zurp web
+            application and related services (collectively, the
+            &ldquo;Service&rdquo;). Zurp is a credit card benefit optimization
+            platform that helps you understand, track, and maximize the value of
+            your credit card rewards, credits, and perks.
           </p>
           <p>
-            By using Zurp, you agree to the collection and use of information in
-            accordance with this policy.
+            This Privacy Policy explains what information we collect, how we use
+            it, who we share it with, and what choices you have. It applies to
+            all users of the Service, including visitors to zurp.com and users
+            who connect their credit card accounts.
+          </p>
+          <p>
+            <strong className="text-[var(--text-primary)]">
+              By using Zurp, you agree to the collection and use of information
+              in accordance with this policy.
+            </strong>{" "}
+            If you do not agree, please do not use the Service.
           </p>
         </section>
 
+        {/* 2. Information We Collect */}
         <section>
           <h2 className="text-h3 font-semibold text-[var(--text-primary)]">
-            Information We Collect
+            2. Information We Collect
           </h2>
 
           <h3 className="mt-[var(--space-md)] font-semibold text-[var(--text-primary)]">
-            Account Information
+            2.1 Information You Provide Directly
+          </h3>
+          <ul className="ml-[var(--space-lg)] list-disc space-y-2">
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Account information:
+              </strong>{" "}
+              When you create a Zurp account, we collect your email address. You
+              may also provide a display name.
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Card selection:
+              </strong>{" "}
+              You tell us which credit card(s) you hold (e.g., Chase Sapphire
+              Reserve, Amex Gold). We use this to load the correct benefit
+              catalog and generate personalized insights. We do not collect your
+              card number, CVV, expiration date, or any payment credentials.
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Preferences and settings:
+              </strong>{" "}
+              Your notification preferences, benefit tracking settings, and any
+              manual inputs such as self-reported benefit usage (e.g., marking a
+              hotel credit as redeemed).
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Communications:
+              </strong>{" "}
+              If you contact us for support or provide feedback, we collect the
+              content of those communications.
+            </li>
+          </ul>
+
+          <h3 className="mt-[var(--space-md)] font-semibold text-[var(--text-primary)]">
+            2.2 Information Collected Through Plaid
           </h3>
           <p>
-            When you create a Zurp account, we collect your email address for
-            authentication purposes. We use email-based magic links to verify
-            your identity — we do not collect or store passwords.
+            When you connect your credit card account to Zurp, we use Plaid,
+            Inc. (&ldquo;Plaid&rdquo;) as a secure intermediary to access your
+            financial data. You authenticate directly with your financial
+            institution through Plaid&apos;s interface &mdash; Zurp never sees,
+            handles, or stores your bank login credentials.
+          </p>
+          <p>Through Plaid, we receive:</p>
+          <ul className="ml-[var(--space-lg)] list-disc space-y-2">
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Transaction history:
+              </strong>{" "}
+              Up to 24 months of transaction data from your connected credit
+              card account, including merchant name, transaction amount, date,
+              and Plaid&apos;s categorization (e.g., &ldquo;FOOD_AND_DRINK&rdquo;).
+              This is the primary data source for our insight engine.
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Account metadata:
+              </strong>{" "}
+              Account name, type (credit card), institution name, and last four
+              digits of the account number. We use this to identify which card
+              is connected and display it in the app.
+            </li>
+          </ul>
+          <p>
+            We do{" "}
+            <strong className="text-[var(--text-primary)]">NOT</strong> receive
+            through Plaid: your full card number, CVV, PIN, Social Security
+            number, login credentials, account balances, or any information from
+            non-credit-card accounts (checking, savings, investment, etc.)
+            unless you explicitly connect them.
           </p>
 
           <h3 className="mt-[var(--space-md)] font-semibold text-[var(--text-primary)]">
-            Financial Data via Plaid
+            2.3 Information Collected Automatically
+          </h3>
+          <ul className="ml-[var(--space-lg)] list-disc space-y-2">
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Usage data:
+              </strong>{" "}
+              Pages viewed, features used, insights dismissed or acted upon,
+              session duration, and interaction patterns within the app.
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Device information:
+              </strong>{" "}
+              Browser type and version, operating system, screen resolution, and
+              device identifiers.
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">Log data:</strong>{" "}
+              IP address, access timestamps, referring URLs, and error logs.
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Cookies and similar technologies:
+              </strong>{" "}
+              We use essential cookies for authentication and session management.
+              See Section 8 (Cookies) for details.
+            </li>
+          </ul>
+        </section>
+
+        {/* 3. How We Use Your Information */}
+        <section>
+          <h2 className="text-h3 font-semibold text-[var(--text-primary)]">
+            3. How We Use Your Information
+          </h2>
+          <p>We use the information we collect for the following purposes:</p>
+          <ul className="ml-[var(--space-lg)] list-disc space-y-2">
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Generate personalized benefit insights
+              </strong>{" "}
+              &mdash; competitor redirects, unused credit alerts, ROI
+              calculations (using transaction history, card selection, and
+              benefit catalog)
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Track benefit usage
+              </strong>{" "}
+              &mdash; credit utilization across monthly, semi-annual, and annual
+              periods (using transaction history and benefit period rules)
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Power the Compare feature
+              </strong>{" "}
+              &mdash; show what you&apos;d gain or lose by switching cards
+              (using transaction history and card benefit catalogs)
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Detect spending patterns
+              </strong>{" "}
+              &mdash; identify recurring subscriptions to surface optimization
+              opportunities (using merchant names, amounts, and dates)
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Send alerts
+              </strong>{" "}
+              &mdash; expiring credits, enrollment reminders, and spending cap
+              warnings (using benefit period data and user preferences)
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Improve the Service
+              </strong>{" "}
+              &mdash; fix bugs and develop new features (using usage data,
+              device info, and aggregated transaction patterns)
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Respond to support requests
+              </strong>{" "}
+              &mdash; communicate with you (using account info and
+              communications content)
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Prevent fraud and comply with legal obligations
+              </strong>{" "}
+              &mdash; enforce our Terms of Service (using account info, device
+              info, and log data)
+            </li>
+          </ul>
+          <p>
+            We do{" "}
+            <strong className="text-[var(--text-primary)]">NOT</strong> use your
+            data to: make credit decisions, report to credit bureaus, sell to
+            advertisers, build advertising profiles, underwrite insurance, or
+            evaluate your creditworthiness. Zurp is a benefit optimization tool,
+            not a financial product.
+          </p>
+        </section>
+
+        {/* 4. How We Share Your Information */}
+        <section>
+          <h2 className="text-h3 font-semibold text-[var(--text-primary)]">
+            4. How We Share Your Information
+          </h2>
+          <p>
+            <strong className="text-[var(--text-primary)]">
+              We do not sell your personal information.
+            </strong>{" "}
+            We do not share your personal information for cross-context
+            behavioral advertising. We do not rent, trade, or otherwise monetize
+            your data.
+          </p>
+          <p>
+            We may share information with the following categories of recipients,
+            solely for the purposes described:
+          </p>
+
+          <h3 className="mt-[var(--space-md)] font-semibold text-[var(--text-primary)]">
+            4.1 Service Providers
+          </h3>
+          <ul className="ml-[var(--space-lg)] list-disc space-y-2">
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Plaid, Inc.
+              </strong>{" "}
+              &mdash; financial data aggregation; secure connection between your
+              bank and Zurp. Plaid returns transaction data and account metadata
+              to Zurp.
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Cloud infrastructure (Vercel, Neon)
+              </strong>{" "}
+              &mdash; hosting, data storage, and compute. All Service data is
+              encrypted at rest and in transit.
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Email/notification providers
+              </strong>{" "}
+              &mdash; delivering alerts and communications. Only email address
+              and notification content are shared.
+            </li>
+          </ul>
+          <p>
+            All service providers are bound by data processing agreements that
+            restrict their use of your data to the specific services they
+            provide to us.
+          </p>
+
+          <h3 className="mt-[var(--space-md)] font-semibold text-[var(--text-primary)]">
+            4.2 Legal and Safety Disclosures
           </h3>
           <p>
-            Zurp uses Plaid Inc. (&ldquo;Plaid&rdquo;) to connect to your
-            financial accounts. When you link a credit card through Plaid, we
-            access the following data:
+            We may disclose your information if we believe in good faith that
+            disclosure is necessary to:
           </p>
           <ul className="ml-[var(--space-lg)] list-disc space-y-1">
             <li>
+              Comply with applicable law, regulation, legal process, or
+              governmental request
+            </li>
+            <li>Enforce our Terms of Service or other agreements</li>
+            <li>
+              Protect the rights, property, or safety of Zurp, our users, or
+              the public
+            </li>
+            <li>
+              Detect, prevent, or address fraud, security, or technical issues
+            </li>
+          </ul>
+
+          <h3 className="mt-[var(--space-md)] font-semibold text-[var(--text-primary)]">
+            4.3 Business Transfers
+          </h3>
+          <p>
+            If Zurp is involved in a merger, acquisition, reorganization, or
+            sale of assets, your information may be transferred as part of that
+            transaction. We will notify you via email and/or a prominent notice
+            on the Service before your information becomes subject to a
+            different privacy policy.
+          </p>
+
+          <h3 className="mt-[var(--space-md)] font-semibold text-[var(--text-primary)]">
+            4.4 With Your Consent
+          </h3>
+          <p>
+            We may share your information for other purposes with your explicit
+            consent.
+          </p>
+        </section>
+
+        {/* 5. Data Retention */}
+        <section>
+          <h2 className="text-h3 font-semibold text-[var(--text-primary)]">
+            5. Data Retention
+          </h2>
+          <p>
+            We retain your information for as long as your account is active or
+            as needed to provide the Service. Specific retention periods:
+          </p>
+          <ul className="ml-[var(--space-lg)] list-disc space-y-2">
+            <li>
               <strong className="text-[var(--text-primary)]">
-                Transaction history
+                Account information:
               </strong>{" "}
-              — merchant name, date, amount, and category for transactions on
-              your linked credit cards (up to 24 months)
+              Duration of account + 30 days after deletion (grace period for
+              account recovery)
             </li>
             <li>
               <strong className="text-[var(--text-primary)]">
-                Account metadata
+                Transaction data (from Plaid):
               </strong>{" "}
-              — card name, institution name, and last four digits of the account
-              number
+              Duration of account + 30 days after deletion, or up to 24 months
+              of history, whichever is shorter
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Derived insights and benefit tracking:
+              </strong>{" "}
+              Duration of account + 30 days
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Usage and analytics data:
+              </strong>{" "}
+              Up to 24 months
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">Log data:</strong>{" "}
+              Up to 12 months
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Support communications:
+              </strong>{" "}
+              Up to 36 months
             </li>
           </ul>
           <p>
-            We use this data solely to match your transactions against your
-            credit card benefits and track benefit usage.
+            When you delete your account, we initiate deletion of your personal
+            data within 30 days. Some data may persist in encrypted backups for
+            up to 90 days before being permanently purged. We may retain
+            anonymized, aggregated data that cannot be used to identify you
+            indefinitely for statistical and product improvement purposes.
           </p>
+        </section>
+
+        {/* 6. Data Security */}
+        <section>
+          <h2 className="text-h3 font-semibold text-[var(--text-primary)]">
+            6. Data Security
+          </h2>
           <p>
-            We do <strong className="text-[var(--text-primary)]">not</strong>{" "}
-            access or collect:
+            We implement industry-standard security measures to protect your
+            information:
           </p>
-          <ul className="ml-[var(--space-lg)] list-disc space-y-1">
-            <li>Your bank login credentials (handled entirely by Plaid)</li>
-            <li>Your full account numbers</li>
-            <li>Your balance information</li>
+          <ul className="ml-[var(--space-lg)] list-disc space-y-2">
             <li>
-              Your identity or personal information from your financial
-              institution
+              <strong className="text-[var(--text-primary)]">
+                Encryption in transit:
+              </strong>{" "}
+              All data transmitted between your browser, Zurp&apos;s servers,
+              and Plaid is encrypted using TLS 1.2 or higher.
             </li>
             <li>
-              Investment, loan, or other non-credit-card account data
+              <strong className="text-[var(--text-primary)]">
+                Encryption at rest:
+              </strong>{" "}
+              All stored data, including transaction records and account
+              information, is encrypted using AES-256 encryption. Plaid access
+              tokens are encrypted using AES-256-GCM before storage.
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Access controls:
+              </strong>{" "}
+              Access to user data is restricted to authorized personnel on a
+              need-to-know basis, protected by multi-factor authentication and
+              role-based access controls.
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Plaid security:
+              </strong>{" "}
+              Your bank credentials are handled exclusively by Plaid, which
+              maintains SOC 2 Type II certification, uses AES-256 encryption,
+              and is regularly audited by independent security firms. Zurp never
+              receives or stores your bank login credentials.
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Infrastructure:
+              </strong>{" "}
+              Our infrastructure is hosted on SOC 2-certified cloud providers
+              with built-in DDoS protection, automated patching, and continuous
+              monitoring.
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Incident response:
+              </strong>{" "}
+              We maintain a security incident response plan. In the event of a
+              data breach affecting your personal information, we will notify
+              you and relevant authorities in accordance with applicable law.
+            </li>
+          </ul>
+          <p className="italic">
+            No method of electronic transmission or storage is 100% secure.
+            While we strive to protect your data, we cannot guarantee absolute
+            security.
+          </p>
+        </section>
+
+        {/* 7. Your Rights and Choices */}
+        <section>
+          <h2 className="text-h3 font-semibold text-[var(--text-primary)]">
+            7. Your Rights and Choices
+          </h2>
+
+          <h3 className="mt-[var(--space-md)] font-semibold text-[var(--text-primary)]">
+            7.1 All Users
+          </h3>
+          <ul className="ml-[var(--space-lg)] list-disc space-y-2">
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Access and portability:
+              </strong>{" "}
+              You can request a copy of the personal information we hold about
+              you in a structured, machine-readable format.
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Correction:
+              </strong>{" "}
+              You can update your account information at any time through the
+              app settings, or request that we correct inaccurate data.
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">Deletion:</strong>{" "}
+              You can delete your account at any time. This will trigger
+              deletion of your personal data as described in Section 5.
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Disconnect Plaid:
+              </strong>{" "}
+              You can disconnect your financial institution at any time through
+              the app or through Plaid&apos;s portal (my.plaid.com).
+              Disconnecting stops new data from flowing to Zurp. You can also
+              request deletion of data Plaid holds about you directly through
+              Plaid.
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Opt out of communications:
+              </strong>{" "}
+              You can unsubscribe from marketing emails at any time.
+              Transactional emails (e.g., security alerts, account changes)
+              cannot be opted out of while your account is active.
+            </li>
+          </ul>
+
+          <h3 className="mt-[var(--space-md)] font-semibold text-[var(--text-primary)]">
+            7.2 California Residents (CCPA/CPRA)
+          </h3>
+          <p>
+            If you are a California resident, you have additional rights under
+            the California Consumer Privacy Act, as amended by the California
+            Privacy Rights Act:
+          </p>
+          <ul className="ml-[var(--space-lg)] list-disc space-y-2">
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Right to know:
+              </strong>{" "}
+              You may request the categories and specific pieces of personal
+              information we have collected, the sources, the business purposes,
+              and the categories of third parties with whom we share it.
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Right to delete:
+              </strong>{" "}
+              You may request deletion of your personal information, subject to
+              certain exceptions.
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Right to correct:
+              </strong>{" "}
+              You may request correction of inaccurate personal information.
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Right to opt out of sale/sharing:
+              </strong>{" "}
+              Zurp does not sell your personal information and does not share it
+              for cross-context behavioral advertising. Therefore, there is no
+              sale or sharing to opt out of.
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Right to limit use of sensitive personal information:
+              </strong>{" "}
+              We collect financial account information (transaction data) which
+              may be considered sensitive personal information under CPRA. We
+              use this data only as necessary to provide the Service as
+              described in this policy.
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Right to non-discrimination:
+              </strong>{" "}
+              We will not discriminate against you for exercising any of your
+              CCPA/CPRA rights.
             </li>
           </ul>
           <p>
-            By using Plaid&apos;s services, you also agree to Plaid&apos;s End
-            User Privacy Policy, available at{" "}
+            To exercise these rights, contact us at{" "}
             <a
-              href="https://plaid.com/legal/#end-user-privacy-policy"
+              href="mailto:support@zurp.com"
+              className="text-[var(--accent)] hover:opacity-80"
+            >
+              support@zurp.com
+            </a>{" "}
+            or use the in-app privacy controls. We will verify your identity
+            before processing your request. You may also designate an authorized
+            agent to make a request on your behalf.
+          </p>
+          <p>
+            <strong className="text-[var(--text-primary)]">
+              Categories of personal information collected in the preceding 12
+              months:
+            </strong>{" "}
+            Identifiers (email, IP address); financial information (transaction
+            data, account metadata via Plaid); internet activity (usage data,
+            device info); inferences (derived insights, benefit tracking
+            calculations).
+          </p>
+
+          <h3 className="mt-[var(--space-md)] font-semibold text-[var(--text-primary)]">
+            7.3 European Economic Area, UK, and Swiss Residents
+          </h3>
+          <p>
+            If you are located in the EEA, UK, or Switzerland, you have rights
+            under the General Data Protection Regulation (GDPR) or equivalent
+            legislation, including the rights to access, rectify, erase,
+            restrict processing, data portability, and object to processing. You
+            also have the right to lodge a complaint with your local supervisory
+            authority.
+          </p>
+          <p>
+            Our legal bases for processing are: performance of our contract with
+            you (providing the Service), your consent (where applicable), our
+            legitimate interests (improving the Service, preventing fraud), and
+            compliance with legal obligations.
+          </p>
+
+          <h3 className="mt-[var(--space-md)] font-semibold text-[var(--text-primary)]">
+            7.4 Other U.S. State Privacy Rights
+          </h3>
+          <p>
+            Residents of Colorado, Connecticut, Virginia, Utah, Texas, Oregon,
+            Montana, and other states with comprehensive privacy laws may have
+            similar rights to access, correct, delete, and opt out of certain
+            processing. Contact{" "}
+            <a
+              href="mailto:support@zurp.com"
+              className="text-[var(--accent)] hover:opacity-80"
+            >
+              support@zurp.com
+            </a>{" "}
+            to exercise these rights.
+          </p>
+        </section>
+
+        {/* 8. Cookies */}
+        <section>
+          <h2 className="text-h3 font-semibold text-[var(--text-primary)]">
+            8. Cookies and Tracking Technologies
+          </h2>
+          <ul className="ml-[var(--space-lg)] list-disc space-y-2">
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Essential/Session cookies:
+              </strong>{" "}
+              Authentication, session management, CSRF protection. Duration:
+              session / 30 days. Cannot be disabled (required for the Service to
+              function).
+            </li>
+            <li>
+              <strong className="text-[var(--text-primary)]">
+                Preference cookies:
+              </strong>{" "}
+              Remembering your settings and display preferences. Duration: 1
+              year. Can be disabled via browser settings.
+            </li>
+          </ul>
+          <p>
+            <strong className="text-[var(--text-primary)]">
+              We do not use advertising cookies or tracking pixels.
+            </strong>{" "}
+            We do not engage in cross-site tracking. We honor Global Privacy
+            Control (GPC) signals and Do Not Track (DNT) browser signals.
+          </p>
+        </section>
+
+        {/* 9. Third-Party Services */}
+        <section>
+          <h2 className="text-h3 font-semibold text-[var(--text-primary)]">
+            9. Third-Party Services and Links
+          </h2>
+          <p>
+            The Service may contain links to third-party websites or services,
+            including credit card issuer websites (Chase, American Express,
+            etc.), Plaid&apos;s portal, and benefit partner merchants. We are
+            not responsible for the privacy practices of these third parties. We
+            encourage you to review their privacy policies before providing them
+            with your information.
+          </p>
+          <p>
+            <strong className="text-[var(--text-primary)]">Plaid:</strong> When
+            you connect your financial account through Plaid, Plaid&apos;s own
+            privacy policy (available at{" "}
+            <a
+              href="https://plaid.com/legal"
               target="_blank"
               rel="noopener noreferrer"
               className="text-[var(--accent)] hover:opacity-80"
             >
               plaid.com/legal
             </a>
-            .
-          </p>
-
-          <h3 className="mt-[var(--space-md)] font-semibold text-[var(--text-primary)]">
-            Usage Data
-          </h3>
-          <p>
-            We may collect basic usage data such as pages visited, features
-            used, and error logs to improve the Service. This data is not linked
-            to your financial information.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-h3 font-semibold text-[var(--text-primary)]">
-            How We Use Your Information
-          </h2>
-          <p>
-            We use the information we collect for the following purposes:
-          </p>
-          <ul className="ml-[var(--space-lg)] list-disc space-y-1">
-            <li>
-              To provide and maintain the Service — specifically, to match your
-              credit card transactions against known card benefits and display
-              your benefit usage
-            </li>
-            <li>To authenticate your identity via email magic links</li>
-            <li>
-              To send you notifications about expiring benefits or unused
-              credits (if you opt in)
-            </li>
-            <li>To improve and optimize the Service</li>
-            <li>To respond to your support requests</li>
-          </ul>
-          <p>
-            We do <strong className="text-[var(--text-primary)]">not</strong>{" "}
-            use your data for:
-          </p>
-          <ul className="ml-[var(--space-lg)] list-disc space-y-1">
-            <li>Advertising or marketing by third parties</li>
-            <li>Selling or renting to any third party</li>
-            <li>Credit decisions or underwriting</li>
-            <li>
-              Building consumer profiles for purposes unrelated to the Service
-            </li>
-          </ul>
-        </section>
-
-        <section>
-          <h2 className="text-h3 font-semibold text-[var(--text-primary)]">
-            How We Share Your Information
-          </h2>
-          <p>
-            We do not sell, rent, or trade your personal or financial
-            information.
-          </p>
-          <p>
-            We may share your information only in the following circumstances:
-          </p>
-          <ul className="ml-[var(--space-lg)] list-disc space-y-1">
-            <li>
-              <strong className="text-[var(--text-primary)]">With Plaid</strong>{" "}
-              — to facilitate the connection to your financial accounts
-            </li>
-            <li>
-              <strong className="text-[var(--text-primary)]">
-                With infrastructure providers
-              </strong>{" "}
-              — we use third-party services to host and operate Zurp (such as
-              Vercel for hosting and Neon for database services). These providers
-              process data on our behalf and are contractually obligated to
-              protect it
-            </li>
-            <li>
-              <strong className="text-[var(--text-primary)]">
-                As required by law
-              </strong>{" "}
-              — if compelled by a valid legal process, court order, or
-              government request
-            </li>
-            <li>
-              <strong className="text-[var(--text-primary)]">
-                To protect rights and safety
-              </strong>{" "}
-              — if necessary to protect the rights, property, or safety of Zurp,
-              our users, or the public
-            </li>
-          </ul>
-        </section>
-
-        <section>
-          <h2 className="text-h3 font-semibold text-[var(--text-primary)]">
-            Data Storage and Security
-          </h2>
-          <p>
-            Your data is stored on servers located in the United States. We
-            implement industry-standard security measures to protect your
-            information, including:
-          </p>
-          <ul className="ml-[var(--space-lg)] list-disc space-y-1">
-            <li>AES-256 encryption for sensitive data at rest</li>
-            <li>TLS encryption for all data in transit (HTTPS only)</li>
-            <li>
-              Environment-based secret management for API keys and credentials
-            </li>
-            <li>Secure, HttpOnly session cookies</li>
-            <li>
-              Access tokens from Plaid are encrypted before storage and are never
-              exposed to the client
-            </li>
-          </ul>
-          <p>
-            While we strive to protect your information, no method of electronic
-            transmission or storage is 100% secure. We cannot guarantee absolute
-            security.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-h3 font-semibold text-[var(--text-primary)]">
-            Data Retention
-          </h2>
-          <p>
-            We retain your financial data only for as long as your account is
-            active and as needed to provide the Service. Specifically:
-          </p>
-          <ul className="ml-[var(--space-lg)] list-disc space-y-1">
-            <li>
-              <strong className="text-[var(--text-primary)]">
-                Transaction data
-              </strong>{" "}
-              is retained for the duration of your account to enable benefit
-              tracking across billing cycles
-            </li>
-            <li>
-              <strong className="text-[var(--text-primary)]">
-                Account information
-              </strong>{" "}
-              (email address) is retained for the duration of your account
-            </li>
-            <li>
-              <strong className="text-[var(--text-primary)]">
-                Plaid access tokens
-              </strong>{" "}
-              are retained for the duration of your account to maintain the
-              connection to your financial institution
-            </li>
-          </ul>
-          <p>
-            When you delete your account, we will delete your personal data and
-            financial data within 30 days. We will also revoke the Plaid access
-            token, which disconnects Zurp from your financial accounts. You may
-            also disconnect Zurp from your financial accounts at any time
-            through Plaid Portal at{" "}
+            ) governs Plaid&apos;s collection and use of your data. You can
+            manage your Plaid connections at{" "}
             <a
               href="https://my.plaid.com"
               target="_blank"
@@ -280,131 +693,82 @@ export default function PrivacyPage() {
           </p>
         </section>
 
+        {/* 10. Children's Privacy */}
         <section>
           <h2 className="text-h3 font-semibold text-[var(--text-primary)]">
-            Your Rights
+            10. Children&apos;s Privacy
           </h2>
           <p>
-            Depending on your location, you may have the following rights
-            regarding your personal data:
-          </p>
-          <ul className="ml-[var(--space-lg)] list-disc space-y-1">
-            <li>
-              <strong className="text-[var(--text-primary)]">Access</strong> —
-              request a copy of the data we hold about you
-            </li>
-            <li>
-              <strong className="text-[var(--text-primary)]">Deletion</strong> —
-              request that we delete your data
-            </li>
-            <li>
-              <strong className="text-[var(--text-primary)]">Correction</strong>{" "}
-              — request that we correct inaccurate data
-            </li>
-            <li>
-              <strong className="text-[var(--text-primary)]">
-                Portability
-              </strong>{" "}
-              — request your data in a portable format
-            </li>
-            <li>
-              <strong className="text-[var(--text-primary)]">Opt out</strong> —
-              opt out of non-essential communications
-            </li>
-            <li>
-              <strong className="text-[var(--text-primary)]">Disconnect</strong>{" "}
-              — disconnect your financial accounts at any time via your Zurp
-              settings or through Plaid Portal
-            </li>
-          </ul>
-          <p>
-            To exercise any of these rights, contact us at{" "}
+            The Service is not directed to individuals under the age of 18. We
+            do not knowingly collect personal information from children. If we
+            learn that we have collected personal information from a child under
+            18, we will take steps to delete that information promptly. If you
+            believe a child has provided us with personal information, please
+            contact us at{" "}
             <a
-              href="mailto:privacy@zurp.io"
+              href="mailto:support@zurp.com"
               className="text-[var(--accent)] hover:opacity-80"
             >
-              privacy@zurp.io
+              support@zurp.com
             </a>
             .
           </p>
+        </section>
 
-          <h3 className="mt-[var(--space-md)] font-semibold text-[var(--text-primary)]">
-            California Residents
-          </h3>
+        {/* 11. International Data Transfers */}
+        <section>
+          <h2 className="text-h3 font-semibold text-[var(--text-primary)]">
+            11. International Data Transfers
+          </h2>
           <p>
-            If you are a California resident, you have additional rights under
-            the California Consumer Privacy Act (CCPA), including the right to
-            know what personal information we collect, the right to request
-            deletion, and the right to opt out of the sale of personal
-            information. We do not sell personal information.
-          </p>
-
-          <h3 className="mt-[var(--space-md)] font-semibold text-[var(--text-primary)]">
-            Virginia Residents
-          </h3>
-          <p>
-            If you are a Virginia resident, you have rights under the Virginia
-            Consumer Data Protection Act (VCDPA), including the right to access,
-            correct, delete, and obtain a copy of your personal data, and the
-            right to opt out of targeted advertising, sale of personal data, and
-            profiling. We do not engage in any of these activities.
+            Zurp is based in the United States. If you access the Service from
+            outside the United States, your information will be transferred to
+            and processed in the United States, where data protection laws may
+            differ from those in your jurisdiction. Where required, we rely on
+            standard contractual clauses, adequacy decisions, or other approved
+            transfer mechanisms to ensure appropriate safeguards for
+            international transfers.
           </p>
         </section>
 
+        {/* 12. Changes */}
         <section>
           <h2 className="text-h3 font-semibold text-[var(--text-primary)]">
-            Children&apos;s Privacy
+            12. Changes to This Privacy Policy
           </h2>
           <p>
-            Zurp is not intended for use by anyone under the age of 18. We do
-            not knowingly collect personal information from children. If we
-            become aware that we have collected data from a child under 18, we
-            will take steps to delete that information promptly.
+            We may update this Privacy Policy from time to time. When we make
+            material changes, we will notify you by email (sent to the address
+            associated with your account) and/or by posting a prominent notice
+            on the Service at least 30 days before the changes take effect. Your
+            continued use of the Service after the effective date constitutes
+            acceptance of the updated policy.
+          </p>
+          <p>
+            We encourage you to review this policy periodically. The
+            &ldquo;Last Updated&rdquo; date at the top of this document
+            indicates when the policy was most recently revised.
           </p>
         </section>
 
+        {/* 13. Contact Us */}
         <section>
           <h2 className="text-h3 font-semibold text-[var(--text-primary)]">
-            Third-Party Links
+            13. Contact Us
           </h2>
           <p>
-            The Service may contain links to third-party websites or services
-            (such as Plaid Portal). We are not responsible for the privacy
-            practices of these third parties. We encourage you to review their
-            privacy policies.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-h3 font-semibold text-[var(--text-primary)]">
-            Changes to This Privacy Policy
-          </h2>
-          <p>
-            We may update this Privacy Policy from time to time. We will notify
-            you of any changes by posting the new Privacy Policy on this page
-            and updating the &ldquo;Last Updated&rdquo; date. For material
-            changes, we will notify you via email.
+            If you have questions, concerns, or requests regarding this Privacy
+            Policy or our data practices, please contact us:
           </p>
           <p>
-            Your continued use of the Service after any changes constitutes your
-            acceptance of the updated Privacy Policy.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-h3 font-semibold text-[var(--text-primary)]">
-            Contact Us
-          </h2>
-          <p>
-            If you have any questions about this Privacy Policy, please contact
-            us:
-          </p>
-          <p>
+            <strong className="text-[var(--text-primary)]">Zurp, LLC</strong>
+            <br />
+            Email:{" "}
             <a
-              href="mailto:support@zurp.io"
+              href="mailto:support@zurp.com"
               className="text-[var(--accent)] hover:opacity-80"
             >
-              support@zurp.io
+              support@zurp.com
             </a>
           </p>
         </section>
@@ -412,7 +776,7 @@ export default function PrivacyPage() {
         <hr className="border-[var(--border-default)]" />
 
         <p className="text-[var(--text-caption)]">
-          This privacy policy was last updated on February 6, 2026.
+          This privacy policy was last updated on February 9, 2026.
         </p>
       </article>
     </div>
