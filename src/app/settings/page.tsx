@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { requireAuth } from "@/lib/auth-helpers";
 import { getPlaidConnectionStatus, getCardProfiles } from "@/lib/queries";
+import { getAllCardDefinitions } from "@/lib/cards";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { SignOutButton } from "./_components/SignOutButton";
@@ -9,6 +10,7 @@ import { ThemeToggle } from "./_components/ThemeToggle";
 import { UnlinkButton } from "./_components/UnlinkButton";
 import { RemoveCardButton } from "@/components/RemoveCardButton";
 import { AnniversaryEditor } from "./_components/AnniversaryEditor";
+import { CardTypeEditor } from "./_components/CardTypeEditor";
 import { Link2, CreditCard, Plus } from "lucide-react";
 import Link from "next/link";
 
@@ -19,6 +21,11 @@ export default async function SettingsPage() {
     getPlaidConnectionStatus(user.id!),
     getCardProfiles(user.id!),
   ]);
+
+  const allCardTypes = getAllCardDefinitions().map((c) => ({
+    id: c.id,
+    name: c.name,
+  }));
 
   return (
     <div className="p-[var(--space-lg)]">
@@ -74,6 +81,12 @@ export default async function SettingsPage() {
                   </div>
                   <RemoveCardButton cardProfileId={cp.id} cardName={cp.name} />
                 </div>
+                <CardTypeEditor
+                  cardProfileId={cp.id}
+                  currentCardType={cp.cardType}
+                  currentCardName={cp.name}
+                  allCardTypes={allCardTypes}
+                />
                 <AnniversaryEditor
                   cardProfileId={cp.id}
                   currentDate={cp.anniversaryDate?.toISOString() ?? null}

@@ -1,20 +1,34 @@
 import type { BenefitDetails, CardDefinition } from "@/lib/types";
 
-const doordashDetails: BenefitDetails = {
+const doordashPromoDetails: BenefitDetails = {
   description:
-    "Complimentary DashPass membership ($0 delivery fee, lower service fees) plus a $10/month DoorDash promo on non-restaurant orders (grocery, convenience, retail). If the full promo value isn't used on a single order, the remaining value is forfeited for that promo.",
+    "$10/month DoorDash promo on non-restaurant orders (grocery, convenience, retail). If the full promo value isn't used on a single order, the remaining value is forfeited for that promo.",
+  howToUse: [
+    "Download or open the DoorDash app",
+    "Add your Sapphire Preferred as the default payment method",
+    "Activate your DashPass membership first (required for promos)",
+    "Each month, select the promo from your promotion wallet at checkout",
+    "Filter by \"Pickup\" → \"Grocery\" or \"Convenience\" for best value",
+    "Make sure the \"Chase monthly benefit\" toggle is ON at checkout",
+  ],
+  links: [
+    { label: "DoorDash App", url: "https://www.doordash.com" },
+    { label: "Terms", url: "https://help.doordash.com/consumers/s/article/offer-terms-conditions?language=en_US" },
+  ],
+};
+
+const dashpassDetails: BenefitDetails = {
+  description:
+    "Complimentary DashPass membership with $0 delivery fees and lower service fees on eligible DoorDash orders. Must be activated through DoorDash using your Sapphire Preferred card.",
   howToUse: [
     "Download or open the DoorDash app",
     "Add your Sapphire Preferred as the default payment method",
     "Follow the prompts to activate your complimentary DashPass membership",
-    "Each month, select the promo from your promotion wallet at checkout",
-    "For non-restaurant promos: filter by \"Pickup\" → \"Grocery\" or \"Convenience\" for best value",
-    "Make sure the \"Chase monthly benefit\" toggle is ON at checkout",
+    "DashPass benefits apply automatically to eligible orders",
   ],
   links: [
     { label: "Activate DashPass", url: "https://www.doordash.com/dashpass/partner/chase/sapphire-preferred" },
     { label: "DoorDash App", url: "https://www.doordash.com" },
-    { label: "Terms", url: "https://help.doordash.com/consumers/s/article/offer-terms-conditions?language=en_US" },
     { label: "Learn More", url: "https://www.doordash.com/dashpass/partner/chase/sapphire-preferred" },
   ],
 };
@@ -100,7 +114,7 @@ export const chaseSapphirePreferred: CardDefinition = {
       displayGroup: null,
       displayGroupName: null,
       displayGroupIcon: null,
-      details: doordashDetails,
+      details: doordashPromoDetails,
     },
 
     // ── DashPass (subscription) ──
@@ -129,7 +143,7 @@ export const chaseSapphirePreferred: CardDefinition = {
       displayGroup: null,
       displayGroupName: null,
       displayGroupIcon: null,
-      details: doordashDetails,
+      details: dashpassDetails,
     },
   ],
 };

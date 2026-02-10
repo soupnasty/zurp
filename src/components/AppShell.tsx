@@ -15,14 +15,10 @@ import {
   LogOut,
 } from "lucide-react";
 import type { ReactNode } from "react";
-import { CardSelector } from "./CardSelector";
-import type { CardProfileData } from "./CardSelector";
 
 interface AppShellProps {
   children: ReactNode;
   userEmail?: string;
-  cards?: CardProfileData[];
-  activeCardId?: string;
 }
 
 const navItems = [
@@ -31,7 +27,7 @@ const navItems = [
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 
-export function AppShell({ children, userEmail, cards, activeCardId }: AppShellProps) {
+export function AppShell({ children, userEmail }: AppShellProps) {
   const pathname = usePathname();
   const { resolvedTheme, setTheme } = useTheme();
   const [collapsed, setCollapsed] = useState(false);
@@ -110,11 +106,6 @@ export function AppShell({ children, userEmail, cards, activeCardId }: AppShellP
             </svg>
           )}
         </div>
-
-        {/* Card selector */}
-        {cards && cards.length > 0 && activeCardId && (
-          <CardSelector cards={cards} activeCardId={activeCardId} collapsed={collapsed} />
-        )}
 
         {/* Nav */}
         <nav className="flex-1 px-2 py-3">

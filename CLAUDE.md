@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-A credit card benefits tracker that syncs transactions via Plaid, matches them against card-specific benefit rulesets, and shows users which credits they've used, which are expiring, and whether each card is paying for itself. Chase Sapphire Reserve is the first (and currently only) supported card.
+A credit card benefits tracker that syncs transactions via Plaid, matches them against card-specific benefit rulesets, and shows users which credits they've used, which are expiring, and whether each card is paying for itself. Supports Chase Sapphire Reserve, Chase Sapphire Preferred, and Amex Gold.
 
 ## Tech Stack
 
@@ -41,7 +41,7 @@ Brand palette is dark-first:
 - Uppercase labels: `.label-caps` utility class
 - 4px base spacing unit, glow shadows, `ease-out-expo` easing
 
-See `docs/zurp-style-guide.md` for full brand reference.
+See `docs/styling/style-guide.md` for full brand reference.
 
 ### Lazy Initialization Patterns
 
@@ -104,12 +104,12 @@ src/lib/insights/
 
 **Integration points**:
 - `generateAndPersistInsights(userId)` called after `processTransactionsForConnection()` in engine orchestrator
-- `getInsightsForDisplay(userId, surface, max)` called in benefits + spending pages
+- `getInsightsForDisplay(userId, surface, max)` called in benefits page
 - `expireStaleInsights(userId)` called in cron job
 
 ### Card Registry
 
-Card definitions live in `src/lib/cards/`. Each card file exports a `CardDefinition` with all benefits. The registry at `src/lib/cards/index.ts` aggregates them. CSR has 16 benefits. To add a new card, create a new file in `src/lib/cards/` and register it in `index.ts`.
+Card definitions live in `src/lib/cards/`. Each card file exports a `CardDefinition` with all benefits. The registry at `src/lib/cards/index.ts` aggregates them. `detect.ts` auto-detects card type from Plaid account metadata. To add a new card, create a new file in `src/lib/cards/` and register it in `index.ts`.
 
 ## Project Structure
 
@@ -123,24 +123,25 @@ src/
 │   ├── onboarding/         # Multi-step wizard (card select, Plaid, anniversary)
 │   ├── benefits/           # Benefits dashboard (insights, benefit cards, sync)
 │   ├── spending/           # Spending analysis (categories, monthly breakdown)
-│   ├── cards/[cardId]/     # Card detail view
-│   ├── settings/           # User settings
+│   ├── settings/           # User settings (card type, anniversary, connections)
 │   ├── sandbox/            # Plaid test page (gated by NEXT_PUBLIC_ENABLE_SANDBOX)
 │   ├── error.tsx           # Global error boundary
 │   ├── not-found.tsx       # 404 page
-│   └── api/                # API routes (auth, plaid, benefits, cron)
+│   └── api/                # API routes (auth, plaid, benefits, transactions, cron, insights)
 ├── components/
-│   ├── ui/                 # 8 primitives (Button, Card, Badge, ProgressBar, etc.)
+│   ├── ui/                 # 11 primitives (Button, Card, Badge, ProgressBar, Table, etc.)
 │   ├── AppShell.tsx        # Sidebar layout
+│   ├── RemoveCardButton.tsx # Card removal with confirmation
 │   ├── PlaidLink.tsx       # Plaid Link wrapper
 │   └── ThemeProvider.tsx   # Dark mode provider
 ├── lib/
 │   ├── engine/             # Pure matching engine + tests
 │   ├── insights/           # Insights Engine v2 (generators, scoring, orchestrator)
 │   ├── spending/           # Spending analysis (categories, queries)
-│   ├── cards/              # Card definitions registry
+│   ├── cards/              # Card definitions registry + auto-detection
 │   ├── auth.ts             # NextAuth config (lazy)
 │   ├── auth-helpers.ts     # getAuthUser(), requireAuth()
+│   ├── actions.ts          # Server actions (updateCardType, removeCardProfile)
 │   ├── queries.ts          # Server-only data fetching
 │   ├── plaid.ts            # Plaid API client
 │   ├── plaid-sync.ts       # Shared sync logic (API, webhook, cron)
@@ -148,7 +149,7 @@ src/
 │   ├── encryption.ts       # AES-256-GCM for Plaid tokens
 │   └── types.ts            # All TypeScript types
 └── db/
-    ├── schema.ts           # Drizzle schema (all tables + relations)
+    ├── schema.ts           # Drizzle schema (17 tables + relations)
     ├── seed.ts             # Seed script
     └── index.ts            # DB client (lazy Proxy)
 ```
@@ -180,8 +181,10 @@ Connection health alerts (`src/lib/notifications.ts`) surface stale/reauth/disco
 
 ## Spec Documents
 
-- `docs/zurp.md` — Full app spec (data model, matching engine, benefits)
-- `docs/zurp-insights-engine-v2.md` — Insights Engine v2 spec (categories, scoring, templates, display rules)
-- `docs/design-principles.md` — S-tier SaaS dashboard design checklist
-- `docs/zurp-style-guide.md` — Brand colors, typography, spacing, motion
-- `docs/zurp-logo-5c.svg` — Logo source (also at `public/zurp-logo.svg`)
+- `docs/architecture/zurp.md` — Full app spec (data model, matching engine, benefits)
+- `docs/architecture/design-principles.md` — S-tier SaaS dashboard design checklist
+- `docs/insight-engine/insights-engine.md` — Insights Engine v2 spec (categories, scoring, templates, display rules)
+- `docs/styling/style-guide.md` — Brand colors, typography, spacing, motion
+- `docs/catalogs/` — Card benefit catalogs (CSR, CSP, Amex Gold)
+- `docs/zurp-dashboard-spec.md` — Dashboard UI spec
+- `public/zurp-logo.svg` — Logo

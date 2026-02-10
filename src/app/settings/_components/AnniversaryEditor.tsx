@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { Pencil } from "lucide-react";
 import { updateAnniversaryDate } from "../actions";
 
 interface AnniversaryEditorProps {
@@ -76,9 +77,10 @@ export function AnniversaryEditor({
         </p>
         <button
           onClick={() => setEditing(true)}
-          className="text-[var(--text-caption)] font-medium text-[var(--accent)] hover:underline"
+          className="rounded-[var(--radius-md)] p-1.5 text-[var(--text-secondary)] transition-colors hover:bg-[var(--accent)]/10 hover:text-[var(--accent)]"
+          title={displayDate ? "Edit anniversary" : "Set anniversary"}
         >
-          {displayDate ? "Edit" : "Set"}
+          <Pencil size={14} strokeWidth={1.75} />
         </button>
       </div>
     );

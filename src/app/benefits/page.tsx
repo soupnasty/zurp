@@ -14,7 +14,7 @@ import {
 import type { BenefitTransaction } from "@/lib/queries";
 import { getConnectionAlerts } from "@/lib/notifications";
 import { getInsightsForDisplay } from "@/lib/insights/orchestrator";
-import { getAllCardDefinitions } from "@/lib/cards";
+import { getCardDefinition } from "@/lib/cards";
 import { SummaryBar } from "./_components/SummaryBar";
 import { BenefitCard } from "./_components/BenefitCard";
 import { CountdownTimer } from "./_components/CountdownTimer";
@@ -27,7 +27,7 @@ import { InsightsSection } from "./_components/InsightsSection";
 import { DebugCreditsTable } from "./_components/DebugCreditsTable";
 import { Badge } from "@/components/ui/Badge";
 import Link from "next/link";
-import { LinkIcon } from "lucide-react";
+import { LinkIcon, Plus } from "lucide-react";
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -98,17 +98,28 @@ export default async function DashboardPage() {
       <div className="mb-[var(--space-lg)] flex items-start justify-between gap-3">
         <div>
           <h1 className="text-h1 font-semibold tracking-tight">Benefits</h1>
-          <div className="mt-1">
-            <CardSwitcher
-              allCards={getAllCardDefinitions().map((c) => ({
-                id: c.id,
-                name: c.name,
-                issuer: c.issuer,
-                annualFee: c.annualFee,
-              }))}
-              activeCardProfileId={activeCard.id}
-              activeCardType={activeCard.cardType}
-            />
+          <div className="mt-1 flex items-center gap-2">
+            {cardProfilesList.length > 1 ? (
+              <CardSwitcher
+                allCards={[...new Map(cardProfilesList.map((profile) => {
+                  const def = getCardDefinition(profile.cardType)!;
+                  return [def.id, { id: def.id, name: def.name, issuer: def.issuer, annualFee: def.annualFee }] as const;
+                })).values()]}
+                activeCardProfileId={activeCard.id}
+                activeCardType={activeCard.cardType}
+              />
+            ) : (
+              <span className="text-[var(--text-secondary)] text-[var(--text-caption)] font-medium">
+                {getCardDefinition(activeCard.cardType)?.name ?? activeCard.cardType}
+              </span>
+            )}
+            <Link
+              href="/onboarding"
+              className="inline-flex items-center justify-center rounded-md border border-[var(--border-default)] p-1 text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]"
+              title="Add card"
+            >
+              <Plus size={14} strokeWidth={2} />
+            </Link>
           </div>
         </div>
         <div className="shrink-0">

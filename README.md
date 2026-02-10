@@ -2,7 +2,7 @@
 
 A credit card benefits tracker that syncs transactions via Plaid, matches them against card-specific benefit rulesets, and shows users which credits they've used, which are expiring, and whether each card is paying for itself.
 
-Chase Sapphire Reserve is the first supported card (16 benefits tracked).
+Supports Chase Sapphire Reserve, Chase Sapphire Preferred, and Amex Gold.
 
 ## Tech Stack
 
@@ -60,7 +60,7 @@ cp .env.example .env.local
 # Push schema to Neon (creates all tables)
 npm run db:push
 
-# Seed the Chase Sapphire Reserve card + 16 benefits
+# Seed all card definitions + benefits + competitor map
 npm run db:seed
 ```
 
@@ -98,15 +98,18 @@ All tables are defined in `src/db/schema.ts` using Drizzle ORM.
 users
  ├── accounts            (NextAuth OAuth accounts)
  ├── sessions            (NextAuth sessions)
- ├── user_cards ─────┐   (user's card memberships)
+ ├── card_profiles ──┐   (user's card memberships)
  │   └── plaid_connections ──┐  (linked bank accounts)
  │       └── transactions    │  (synced from Plaid)
  │           └── matched_tx ─┤  (transaction ↔ benefit match)
- └── benefit_usage ──────────┘  (credit usage per period)
+ ├── benefit_usage ──────────┘  (credit usage per period)
+ ├── insights                   (generated insights)
+ └── insight_impressions        (insight display tracking)
 
 cards
  └── benefits            (card benefit definitions)
 
+competitor_map           (merchant → benefit mapping for insights)
 verification_tokens      (NextAuth magic link tokens)
 ```
 
@@ -124,7 +127,7 @@ verification_tokens      (NextAuth magic link tokens)
 - `autoMatchable` — whether the engine can auto-match or requires manual confirmation
 - `displayGroup` / `displayGroupName` / `displayGroupIcon` — for grouping sub-credits (e.g., DoorDash's 3 sub-credits appear as one $25/month card in the UI)
 
-**`user_cards`** — Links a user to a card with an optional `anniversaryDate` (auto-detected from fee transactions or user-provided).
+**`card_profiles`** — Links a user to a card with an optional `anniversaryDate` (auto-detected from fee transactions or user-provided).
 
 **`plaid_connections`** — Encrypted Plaid access tokens, sync cursors, and connection health status (`active`, `needs_reauth`, `disconnected`).
 
@@ -169,8 +172,8 @@ Transaction syncing uses a shared `triggerSync()` function (`src/lib/plaid-sync.
 
 1. User enters email on `/login`
 2. NextAuth sends a magic link via Resend
-3. User clicks link, lands on `/login/verify`, gets redirected to `/dashboard`
-4. Middleware protects `/dashboard`, `/cards`, `/settings`, `/onboarding`, and all API routes
+3. User clicks link, lands on `/login/verify`, gets redirected to `/benefits`
+4. Protected routes use `requireAuth()` helper to enforce authentication
 5. First-time users are redirected to `/onboarding` (select card → link Plaid → set anniversary)
 
 ### Card Registry
@@ -216,15 +219,22 @@ src/
 │   │   ├── page.tsx              #   Entry point
 │   │   ├── actions.ts            #   Server actions
 │   │   └── _components/          #   Wizard steps (CardSelection, AnniversarySetup)
-│   ├── dashboard/                # Main dashboard
+│   ├── benefits/                 # Benefits dashboard
 │   │   ├── page.tsx              #   Server component (data fetching, grouping)
 │   │   ├── layout.tsx            #   AppShell wrapper
-│   │   ├── loading.tsx           #   Skeleton loading state
 │   │   └── _components/          #   SummaryBar, BenefitCard, CountdownTimer,
 │   │                             #   TransactionFeed, AnniversaryPrompt,
-│   │                             #   SyncButton, CardSelector, ConnectionAlerts
-│   ├── cards/[cardId]/           # Card detail view
-│   ├── settings/                 # User settings (connections, anniversary, sign out)
+│   │                             #   SyncButton, CardSwitcher, ConnectionAlerts,
+│   │                             #   InsightsSection, InsightCard
+│   ├── spending/                 # Spending analysis
+│   │   ├── page.tsx              #   Monthly spending breakdown
+│   │   ├── layout.tsx            #   AppShell wrapper
+│   │   └── _components/          #   MonthSelector, SpendingHeadline, CategoryBreakdown
+│   ├── settings/                 # User settings
+│   │   ├── page.tsx              #   Card types, anniversary, connections, theme
+│   │   ├── actions.ts            #   Server actions (anniversary, unlink)
+│   │   └── _components/          #   CardTypeEditor, AnniversaryEditor, ThemeToggle,
+│   │                             #   SignOutButton, UnlinkButton
 │   ├── sandbox/                  # Plaid test page (gated by env var)
 │   └── api/
 │       ├── auth/[...nextauth]/   # NextAuth route handler
@@ -235,7 +245,13 @@ src/
 │       │   └── webhook/            # Plaid webhook receiver
 │       ├── benefits/
 │       │   ├── confirm/            # Manual benefit match confirmation
+│       │   ├── flag/               # Add/remove transaction ↔ benefit matches
+│       │   ├── redeem/             # Mark benefit as redeemed
+│       │   ├── activate/           # Activate subscription benefits
 │       │   └── usage/              # Benefit usage data
+│       ├── transactions/           # Transaction list with pagination
+│       ├── insights/
+│       │   └── dismiss/            # Dismiss an insight
 │       └── cron/
 │           └── sync/               # Scheduled sync (Vercel cron)
 ├── components/
@@ -247,8 +263,12 @@ src/
 │   │   ├── Tooltip.tsx           #   Contextual help
 │   │   ├── Skeleton.tsx          #   Pulse-animated loading placeholders
 │   │   ├── Table.tsx             #   Data table (left-align text, right-align numbers)
-│   │   └── Input.tsx             #   Form inputs with labels and error states
+│   │   ├── Input.tsx             #   Form inputs with labels and error states
+│   │   ├── Modal.tsx             #   Dialog overlay
+│   │   ├── ToastProvider.tsx     #   Toast notifications with undo
+│   │   └── BenefitIcon.tsx       #   Benefit type icons
 │   ├── AppShell.tsx              # Persistent sidebar + top bar layout
+│   ├── RemoveCardButton.tsx      # Card removal with confirmation
 │   ├── PlaidLink.tsx             # Plaid Link modal wrapper
 │   └── ThemeProvider.tsx         # Dark mode provider (next-themes)
 ├── lib/
@@ -258,12 +278,27 @@ src/
 │   │   ├── matcher.ts            #   Priority-based transaction matching
 │   │   ├── anniversary-detector.ts  # Annual fee detection
 │   │   ├── orchestrator.ts       #   DB integration layer
-│   │   └── __tests__/            #   57 unit tests
+│   │   └── __tests__/            #   Unit tests
+│   ├── insights/                 # Insights Engine v2
+│   │   ├── generators/           #   8 insight generators (pure functions)
+│   │   ├── scoring.ts            #   5-factor weighted scoring
+│   │   ├── templates.ts          #   Copy templates + interpolation
+│   │   ├── orchestrator.ts       #   DB bridge: persist, display, expire
+│   │   ├── queries.ts            #   Server-only DB queries
+│   │   └── __tests__/            #   Unit tests
+│   ├── spending/                 # Spending analysis
+│   │   ├── categories.ts         #   Transaction categorization
+│   │   ├── queries.ts            #   Monthly transaction queries
+│   │   └── __tests__/            #   Unit tests
 │   ├── cards/                    # Card definitions registry
 │   │   ├── index.ts              #   Registry exports
-│   │   └── chase-sapphire-reserve.ts  # CSR: 16 benefits
+│   │   ├── detect.ts             #   Auto-detect card type from Plaid metadata
+│   │   ├── chase-sapphire-reserve.ts
+│   │   ├── chase-sapphire-preferred.ts
+│   │   └── amex-gold.ts
 │   ├── auth.ts                   # NextAuth v5 config (lazy init)
-│   ├── auth-helpers.ts           # getAuthUser(), requireAuth(), requireAuthApi()
+│   ├── auth-helpers.ts           # getAuthUser(), requireAuth()
+│   ├── actions.ts                # Server actions (updateCardType, removeCardProfile)
 │   ├── queries.ts                # Server-only data fetching
 │   ├── plaid.ts                  # Plaid API client
 │   ├── plaid-sync.ts             # Shared triggerSync() for API/webhook/cron
@@ -271,14 +306,14 @@ src/
 │   ├── encryption.ts             # AES-256-GCM for Plaid access tokens
 │   └── types.ts                  # All TypeScript types
 └── db/
-    ├── schema.ts                 # Drizzle schema (10 tables + relations)
-    ├── seed.ts                   # Seed script (cards + benefits from registry)
+    ├── schema.ts                 # Drizzle schema (17 tables + relations)
+    ├── seed.ts                   # Seed script (cards + benefits + competitor map)
     └── index.ts                  # DB client (lazy Proxy for build safety)
 ```
 
 ## Testing
 
-Tests are in `src/lib/engine/__tests__/` and cover the pure matching engine:
+Tests cover the matching engine, insights engine, and spending module (134 tests across 9 files):
 
 ```bash
 # Run once
@@ -287,13 +322,6 @@ npm run test:run
 # Watch mode
 npm test
 ```
-
-| Test file | Tests | Covers |
-|---|---|---|
-| `cycle-utils.test.ts` | 21 | Period bounds for all 7 cycle types, edge cases, period keys |
-| `normalize.test.ts` | 14 | Lowercasing, order number stripping, trailing ID removal, pattern matching |
-| `matcher.test.ts` | 15 | Priority ordering, depletion, negative matching, DoorDash grouping, confidence |
-| `anniversary-detector.test.ts` | 7 | Fee detection, amount tolerance, most-recent-wins, no-match case |
 
 ## Deployment
 
@@ -339,30 +367,27 @@ The handler processes `SYNC_UPDATES_AVAILABLE` (triggers a sync) and `ITEM.ERROR
 | `POST` | `/api/plaid/sync` | Required | Triggers manual transaction sync |
 | `POST` | `/api/plaid/webhook` | Plaid | Receives Plaid webhook events |
 | `POST` | `/api/benefits/confirm` | Required | Manually confirms a benefit match |
+| `POST/DELETE` | `/api/benefits/flag` | Required | Add/remove transaction ↔ benefit matches |
+| `POST` | `/api/benefits/redeem` | Required | Mark a benefit as redeemed |
+| `POST` | `/api/benefits/activate` | Required | Activate a subscription benefit |
 | `GET` | `/api/benefits/usage` | Required | Returns benefit usage data |
+| `GET` | `/api/transactions` | Required | Paginated transaction list |
+| `POST` | `/api/insights/dismiss` | Required | Dismiss an insight |
 | `GET` | `/api/cron/sync` | CRON_SECRET | Scheduled sync of stale connections |
 
-## Supported Card: Chase Sapphire Reserve
+## Supported Cards
 
-16 benefits tracked across 7 billing cycle types:
+- **Chase Sapphire Reserve** — 16 benefits across 7 billing cycle types
+- **Chase Sapphire Preferred** — Core travel and dining benefits
+- **Amex Gold** — Dining and travel credits
 
-| Benefit | Amount | Cycle | Auto-match |
-|---|---|---|---|
-| Travel Credit | $300 | Annual (anniversary) | Yes |
-| Edit Hotel (H1/H2) | $250 ea | Biannual | No |
-| Exclusive Tables (H1/H2) | $150 ea | Biannual | No |
-| StubHub (H1/H2) | $150 ea | Biannual | Yes |
-| DoorDash (3 sub-credits) | $25 combined | Monthly | Yes |
-| Lyft | $10 | Monthly | Yes |
-| Peloton | $10 | Monthly | Yes |
-| Global Entry/TSA PreCheck | $120 | Quadrennial | Yes |
-| Apple TV+ | $0 (subscription) | Subscription | Yes |
-| Apple Music | $0 (subscription) | Subscription | Yes |
-| DashPass | $0 (subscription) | Subscription | Yes |
+Card definitions live in `src/lib/cards/`. See `docs/catalogs/` for full benefit catalogs.
 
 ## Spec Documents
 
-- `docs/zurp.md` — Full app spec (data model, matching engine, benefits)
-- `docs/design-principles.md` — Dashboard design checklist
-- `docs/zurp-style-guide.md` — Brand colors, typography, spacing, motion
-- `docs/zurp-logo-5c.svg` — Logo source SVG
+- `docs/architecture/zurp.md` — Full app spec (data model, matching engine, benefits)
+- `docs/architecture/design-principles.md` — Dashboard design checklist
+- `docs/insight-engine/insights-engine.md` — Insights Engine v2 spec
+- `docs/styling/style-guide.md` — Brand colors, typography, spacing, motion
+- `docs/catalogs/` — Card benefit catalogs (CSR, CSP, Amex Gold)
+- `docs/zurp-dashboard-spec.md` — Dashboard UI spec

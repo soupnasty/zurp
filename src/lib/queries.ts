@@ -409,7 +409,8 @@ export async function getRecentTransactions(
   limit = 50,
   connectionId?: string,
   offset = 0,
-  dateFilter?: { year: number; month: number }
+  dateFilter?: { year: number; month: number },
+  options?: { excludeCategories?: string[] }
 ): Promise<TransactionWithMatch[]> {
   const conditions = [eq(schema.transactions.userId, userId)];
   if (connectionId) {
@@ -438,7 +439,14 @@ export async function getRecentTransactions(
     },
   });
 
-  return txs.map((tx) => {
+  const excluded = options?.excludeCategories?.length
+    ? new Set(options.excludeCategories)
+    : null;
+
+  return txs.filter((tx) => {
+    if (excluded && tx.plaidCategoryPrimary && excluded.has(tx.plaidCategoryPrimary)) return false;
+    return true;
+  }).map((tx) => {
     const match = tx.matches[0];
     return {
       id: tx.id,
@@ -577,6 +585,7 @@ export async function getCardProfiles(userId: string) {
   const profiles = await db.query.cardProfiles.findMany({
     where: eq(schema.cardProfiles.userId, userId),
     with: { plaidConnection: true },
+    orderBy: (cp, { asc }) => [asc(cp.createdAt)],
   });
 
   return profiles.map((cp) => {
