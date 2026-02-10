@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zurp — Track & Compare Sections</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0e17;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== SHARED ===== */
+  section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 100px 40px;
+  }
+
+  .section-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #4a5568;
+    margin-bottom: 16px;
+  }
+
+  .section-heading {
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+
+  .section-sub {
+    font-size: 17px;
+    line-height: 1.6;
+    color: #8b95a8;
+    max-width: 540px;
+    margin-bottom: 48px;
+  }
+
+  /* ===== DIVIDER ===== */
+  .divider {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+  .divider hr {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  /* ===== TRACK SECTION ===== */
+  .track-mock {
+    background: #111827;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    overflow: hidden;
+    max-width: 680px;
+  }
+
+  .track-header {
+    padding: 24px 28px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .track-card-name {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #c5cbe8;
+  }
+
+  .track-card-fee {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 4px;
+  }
+
+  .track-net {
+    text-align: right;
+  }
+
+  .track-net-amount {
+    font-size: 28px;
+    font-weight: 700;
+    color: #34d399;
+    letter-spacing: -0.02em;
+  }
+
+  .track-net-label {
+    font-size: 11px;
+    color: #6b7280;
+    margin-top: 2px;
+  }
+
+  /* Progress summary */
+  .track-progress {
+    padding: 20px 28px 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .track-progress-text {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+  }
+
+  .track-captured {
+    font-size: 15px;
+    font-weight: 500;
+    color: #e5e7eb;
+  }
+
+  .track-captured span {
+    color: #34d399;
+    font-weight: 700;
+  }
+
+  .track-available {
+    font-size: 13px;
+    color: #6b7280;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #34d399, #22d3ee);
+    transition: width 0.6s ease;
+  }
+
+  /* Benefit rows */
+  .track-benefits {
+    padding: 8px 0;
+  }
+
+  .benefit-row {
+    display: flex;
+    align-items: center;
+    padding: 14px 28px;
+    gap: 14px;
+    transition: background 0.15s;
+  }
+
+  .benefit-row:hover {
+    background: rgba(255,255,255,0.02);
+  }
+
+  .benefit-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .benefit-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #e5e7eb;
+    flex: 1;
+  }
+
+  .benefit-period {
+    font-size: 11px;
+    color: #6b7280;
+    margin-top: 2px;
+  }
+
+  .benefit-amounts {
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .benefit-used {
+    font-size: 14px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .benefit-total {
+    font-size: 11px;
+    color: #6b7280;
+    margin-top: 1px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .benefit-mini-bar {
+    width: 60px;
+    height: 4px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 4px;
+    margin-left: auto;
+  }
+
+  .benefit-mini-fill {
+    height: 100%;
+    border-radius: 2px;
+  }
+
+  /* Status colors */
+  .status-full .benefit-used { color: #34d399; }
+  .status-full .benefit-mini-fill { background: #34d399; }
+
+  .status-partial .benefit-used { color: #fbbf24; }
+  .status-partial .benefit-mini-fill { background: #fbbf24; }
+
+  .status-unused .benefit-used { color: #6b7280; }
+  .status-unused .benefit-mini-fill { background: #4b5563; }
+
+  /* Icon colors */
+  .icon-travel { background: rgba(59,130,246,0.15); color: #60a5fa; }
+  .icon-dining { background: rgba(251,146,60,0.15); color: #fb923c; }
+  .icon-events { background: rgba(244,63,94,0.15); color: #fb7185; }
+  .icon-delivery { background: rgba(251,191,36,0.15); color: #fbbf24; }
+  .icon-ride { background: rgba(168,85,247,0.15); color: #c084fc; }
+  .icon-fitness { background: rgba(52,211,153,0.15); color: #34d399; }
+
+  .track-footer {
+    padding: 16px 28px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    font-size: 11px;
+    color: #4b5563;
+  }
+
+  /* ===== COMPARE SECTION ===== */
+  .compare-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .compare-mock {
+    background: #111827;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    overflow: hidden;
+    max-width: 780px;
+  }
+
+  .compare-header {
+    padding: 24px 28px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .compare-headline {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+
+  .compare-headline .green { color: #34d399; }
+
+  .compare-subline {
+    font-size: 13px;
+    color: #6b7280;
+  }
+
+  /* Card comparison rows */
+  .compare-cards {
+    padding: 8px 0;
+  }
+
+  .compare-card-row {
+    display: flex;
+    align-items: center;
+    padding: 20px 28px;
+    gap: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .compare-card-row:last-child {
+    border-bottom: none;
+  }
+
+  .compare-rank {
+    font-size: 14px;
+    font-weight: 700;
+    color: #4b5563;
+    width: 20px;
+    flex-shrink: 0;
+  }
+
+  .compare-card-info {
+    min-width: 180px;
+    flex-shrink: 0;
+  }
+
+  .compare-card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #e5e7eb;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .badge {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  .badge-current {
+    background: rgba(59,130,246,0.15);
+    color: #60a5fa;
+  }
+
+  .badge-best {
+    background: rgba(52,211,153,0.15);
+    color: #34d399;
+  }
+
+  .compare-card-fee {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 3px;
+  }
+
+  .compare-bar-area {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .compare-bar-container {
+    display: flex;
+    height: 28px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.04);
+  }
+
+  .bar-points {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.9);
+    white-space: nowrap;
+    min-width: 0;
+  }
+
+  .bar-benefits {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.9);
+    white-space: nowrap;
+    min-width: 0;
+  }
+
+  .bar-fee {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.7);
+    white-space: nowrap;
+    background: rgba(239,68,68,0.25);
+  }
+
+  .compare-bar-labels {
+    display: flex;
+    gap: 4px;
+    margin-top: 6px;
+    font-size: 11px;
+    color: #6b7280;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .compare-bar-labels span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .compare-bar-labels .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .compare-net {
+    text-align: right;
+    flex-shrink: 0;
+    min-width: 80px;
+  }
+
+  .compare-net-amount {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .compare-net-amount.positive { color: #34d399; }
+  .compare-net-amount.neutral { color: #fbbf24; }
+  .compare-net-amount.negative { color: #6b7280; }
+
+  .compare-net-label {
+    font-size: 11px;
+    color: #6b7280;
+    margin-top: 2px;
+  }
+
+  .compare-footer {
+    padding: 16px 28px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    font-size: 11px;
+    color: #4b5563;
+    line-height: 1.5;
+  }
+
+  /* Row highlight for best value */
+  .compare-card-row.best-row {
+    background: rgba(52,211,153,0.03);
+  }
+
+  .compare-card-row.current-row {
+    background: rgba(59,130,246,0.03);
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    section { padding: 64px 20px; }
+    .section-heading { font-size: 30px; }
+    .compare-card-row { flex-wrap: wrap; gap: 12px; }
+    .compare-card-info { min-width: unset; width: 100%; }
+    .compare-bar-area { width: 100%; }
+    .compare-net { 
+      position: absolute; 
+      top: 20px; 
+      right: 28px; 
+    }
+    .compare-card-row { position: relative; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== TRACK SECTION ==================== -->
+<section>
+  <div class="section-label">Track</div>
+  <h2 class="section-heading">See every dollar you're<br>leaving on the table.</h2>
+  <p class="section-sub">Zurp maps your transactions against your card's full benefit catalog — credits, promos, multipliers — and shows exactly what you've captured and what you're missing.</p>
+
+  <div class="track-mock">
+    <div class="track-header">
+      <div>
+        <div class="track-card-name">Chase Sapphire Reserve</div>
+        <div class="track-card-fee">$795/yr annual fee</div>
+      </div>
+      <div class="track-net">
+        <div class="track-net-amount">+$175</div>
+        <div class="track-net-label">net value this year</div>
+      </div>
+    </div>
+
+    <div class="track-progress">
+      <div class="track-progress-text">
+        <div class="track-captured"><span>$970</span> captured</div>
+        <div class="track-available">of $1,690 available</div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: 57%"></div>
+      </div>
+    </div>
+
+    <div class="track-benefits">
+      <div class="benefit-row status-full">
+        <div class="benefit-icon icon-travel">✈</div>
+        <div>
+          <div class="benefit-name">Travel Credit</div>
+          <div class="benefit-period">Resets on anniversary</div>
+        </div>
+        <div class="benefit-amounts">
+          <div class="benefit-used">$300 / $300</div>
+          <div class="benefit-mini-bar"><div class="benefit-mini-fill" style="width:100%"></div></div>
+        </div>
+      </div>
+
+      <div class="benefit-row status-partial">
+        <div class="benefit-icon icon-events">S</div>
+        <div>
+          <div class="benefit-name">StubHub</div>
+          <div class="benefit-period">$60 remaining · resets Jul 1</div>
+        </div>
+        <div class="benefit-amounts">
+          <div class="benefit-used">$90 / $150</div>
+          <div class="benefit-mini-bar"><div class="benefit-mini-fill" style="width:60%"></div></div>
+        </div>
+      </div>
+
+      <div class="benefit-row status-partial">
+        <div class="benefit-icon icon-dining">E</div>
+        <div>
+          <div class="benefit-name">Exclusive Tables</div>
+          <div class="benefit-period">$0 remaining · resets Jul 1</div>
+        </div>
+        <div class="benefit-amounts">
+          <div class="benefit-used">$150 / $300</div>
+          <div class="benefit-mini-bar"><div class="benefit-mini-fill" style="width:50%"></div></div>
+        </div>
+      </div>
+
+      <div class="benefit-row status-full">
+        <div class="benefit-icon icon-delivery">D</div>
+        <div>
+          <div class="benefit-name">DoorDash</div>
+          <div class="benefit-period">$25/mo · resets in 8 days</div>
+        </div>
+        <div class="benefit-amounts">
+          <div class="benefit-used">$25 / $25</div>
+          <div class="benefit-mini-bar"><div class="benefit-mini-fill" style="width:100%"></div></div>
+        </div>
+      </div>
+
+      <div class="benefit-row status-partial">
+        <div class="benefit-icon icon-ride">L</div>
+        <div>
+          <div class="benefit-name">Lyft</div>
+          <div class="benefit-period">$10/mo · resets in 8 days</div>
+        </div>
+        <div class="benefit-amounts">
+          <div class="benefit-used">$10 / $10</div>
+          <div class="benefit-mini-bar"><div class="benefit-mini-fill" style="width:100%"></div></div>
+        </div>
+      </div>
+
+      <div class="benefit-row status-unused">
+        <div class="benefit-icon icon-fitness">P</div>
+        <div>
+          <div class="benefit-name">Peloton</div>
+          <div class="benefit-period">$10/mo · never used</div>
+        </div>
+        <div class="benefit-amounts">
+          <div class="benefit-used">$0 / $10</div>
+          <div class="benefit-mini-bar"><div class="benefit-mini-fill" style="width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="track-footer">
+      6 of 12 benefits tracked · Updated today
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- ==================== COMPARE SECTION ==================== -->
+<section>
+  <div class="section-label">Compare</div>
+  <h2 class="section-heading">See what you'd gain — or lose —<br>on another card.</h2>
+  <p class="section-sub">Based on your real spending, Zurp calculates the exact dollar difference if you switched cards. No guesswork, no affiliate bias.</p>
+
+  <div class="compare-mock">
+    <div class="compare-header">
+      <div class="compare-headline">The <span class="green">Sapphire Preferred</span> would save you $755/yr</div>
+      <div class="compare-subline">Based on your $47,411 in spending over the last 12 months</div>
+    </div>
+
+    <div class="compare-cards">
+      <!-- Best value: CSP -->
+      <div class="compare-card-row best-row">
+        <div class="compare-rank">1</div>
+        <div class="compare-card-info">
+          <div class="compare-card-title">
+            Sapphire Preferred
+            <span class="badge badge-best">Best value</span>
+          </div>
+          <div class="compare-card-fee">$95/yr fee</div>
+        </div>
+        <div class="compare-bar-area">
+          <div class="compare-bar-container">
+            <div class="bar-points" style="width:72%; background: linear-gradient(90deg, #3b82f6, #2563eb);">Points $798</div>
+            <div class="bar-benefits" style="width:15%; background: rgba(52,211,153,0.5);">$170</div>
+            <div class="bar-fee" style="width:8%;">-$95</div>
+          </div>
+          <div class="compare-bar-labels">
+            <span><span class="dot" style="background:#3b82f6"></span>Points</span>
+            <span><span class="dot" style="background:#34d399"></span>Benefits</span>
+            <span><span class="dot" style="background:#ef4444"></span>Fee</span>
+          </div>
+        </div>
+        <div class="compare-net">
+          <div class="compare-net-amount positive">+$873</div>
+          <div class="compare-net-label">net / year</div>
+        </div>
+      </div>
+
+      <!-- Amex Gold -->
+      <div class="compare-card-row">
+        <div class="compare-rank">2</div>
+        <div class="compare-card-info">
+          <div class="compare-card-title">
+            Amex Gold
+          </div>
+          <div class="compare-card-fee">$325/yr fee</div>
+        </div>
+        <div class="compare-bar-area">
+          <div class="compare-bar-container">
+            <div class="bar-points" style="width:57%; background: linear-gradient(90deg, #b8860b, #996515);">Points $656</div>
+            <div class="bar-benefits" style="width:26%; background: rgba(52,211,153,0.5);">$304</div>
+            <div class="bar-fee" style="width:12%;">-$325</div>
+          </div>
+          <div class="compare-bar-labels">
+            <span><span class="dot" style="background:#b8860b"></span>Points</span>
+            <span><span class="dot" style="background:#34d399"></span>Benefits</span>
+            <span><span class="dot" style="background:#ef4444"></span>Fee</span>
+          </div>
+        </div>
+        <div class="compare-net">
+          <div class="compare-net-amount neutral">+$635</div>
+          <div class="compare-net-label">net / year</div>
+        </div>
+      </div>
+
+      <!-- Current card: CSR -->
+      <div class="compare-card-row current-row">
+        <div class="compare-rank">3</div>
+        <div class="compare-card-info">
+          <div class="compare-card-title">
+            Sapphire Reserve
+            <span class="badge badge-current">Your card</span>
+          </div>
+          <div class="compare-card-fee">$795/yr fee</div>
+        </div>
+        <div class="compare-bar-area">
+          <div class="compare-bar-container">
+            <div class="bar-points" style="width:69%; background: linear-gradient(90deg, #1e3a5f, #162d4a);">Points $838</div>
+            <div class="bar-benefits" style="width:6%; background: rgba(52,211,153,0.5);"></div>
+            <div class="bar-fee" style="width:20%;">-$795</div>
+          </div>
+          <div class="compare-bar-labels">
+            <span><span class="dot" style="background:#1e3a5f"></span>Points $838</span>
+            <span><span class="dot" style="background:#34d399"></span>Benefits $75</span>
+            <span><span class="dot" style="background:#ef4444"></span>Fee -$795</span>
+          </div>
+        </div>
+        <div class="compare-net">
+          <div class="compare-net-amount negative">+$118</div>
+          <div class="compare-net-label">net / year</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="compare-footer">
+      Points valued conservatively (Chase UR: 1.25¢, Amex MR: 1.0¢). Transfer partner redemptions can yield higher value. Your card shows benefits actually captured; other cards show total available benefits.
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

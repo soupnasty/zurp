@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zurp Card Chips — Asset Preview</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0e17;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    padding: 60px 40px;
+  }
+
+  h1 {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin-bottom: 40px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 32px;
+    margin-bottom: 80px;
+  }
+
+  .card-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .card-item label {
+    font-size: 12px;
+    color: #6b7280;
+    letter-spacing: 0.05em;
+  }
+
+  /* ===== CARD CHIP STYLES ===== */
+  .card-chip {
+    width: 160px;
+    height: 100px;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 12px 14px;
+    font-family: 'DM Sans', sans-serif;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.06);
+  }
+
+  .card-chip .card-issuer {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-bottom: 2px;
+  }
+
+  .card-chip .card-name {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+  }
+
+  .card-chip .chip-icon {
+    position: absolute;
+    top: 12px;
+    left: 14px;
+    width: 26px;
+    height: 20px;
+  }
+
+  /* — Chase Sapphire Reserve — */
+  .chip-csr {
+    background: linear-gradient(145deg, #1a1f3a 0%, #0d1129 40%, #1e2651 100%);
+    color: #c5cbe8;
+  }
+  .chip-csr .card-name { color: #e0e4f5; }
+  .chip-csr::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, rgba(90,100,200,0.15) 0%, transparent 70%);
+  }
+
+  /* — Chase Sapphire Preferred — */
+  .chip-csp {
+    background: linear-gradient(145deg, #0f2a4a 0%, #0a1c33 40%, #143d5e 100%);
+    color: #a0c4e0;
+  }
+  .chip-csp .card-name { color: #c8dff0; }
+  .chip-csp::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, rgba(40,120,200,0.12) 0%, transparent 70%);
+  }
+
+  /* — Amex Gold — */
+  .chip-gold {
+    background: linear-gradient(145deg, #3d3520 0%, #2a2415 40%, #4a4028 100%);
+    color: #c4b07a;
+  }
+  .chip-gold .card-name { color: #e0d0a0; }
+  .chip-gold::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, rgba(200,170,80,0.12) 0%, transparent 70%);
+  }
+
+  /* — Amex Platinum — */
+  .chip-plat {
+    background: linear-gradient(145deg, #2e2e34 0%, #1c1c22 40%, #3a3a42 100%);
+    color: #b0b0b8;
+  }
+  .chip-plat .card-name { color: #d4d4dc; }
+  .chip-plat::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, rgba(180,180,200,0.1) 0%, transparent 70%);
+  }
+
+  /* — Capital One Venture X — */
+  .chip-ventx {
+    background: linear-gradient(145deg, #1a1a1a 0%, #0d0d0d 40%, #262626 100%);
+    color: #a0a0a0;
+  }
+  .chip-ventx .card-name { color: #d0d0d0; }
+  .chip-ventx::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+  }
+
+  /* — Citi Strata Elite — */
+  .chip-strata {
+    background: linear-gradient(145deg, #0a2a3d 0%, #061c2a 40%, #103850 100%);
+    color: #7ab8d8;
+  }
+  .chip-strata .card-name { color: #a0d4ee; }
+  .chip-strata::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, rgba(60,160,220,0.1) 0%, transparent 70%);
+  }
+
+  /* ===== TICKER PREVIEW ===== */
+  h2 {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin-bottom: 32px;
+  }
+
+  .ticker-demo {
+    background: #0d1119;
+    border-radius: 16px;
+    padding: 40px 0;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 80px;
+  }
+
+  .ticker-demo::before,
+  .ticker-demo::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 80px;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .ticker-demo::before {
+    left: 0;
+    background: linear-gradient(to right, #0d1119, transparent);
+  }
+  .ticker-demo::after {
+    right: 0;
+    background: linear-gradient(to left, #0d1119, transparent);
+  }
+
+  .ticker-track {
+    display: flex;
+    gap: 24px;
+    animation: scroll 30s linear infinite;
+    width: max-content;
+  }
+
+  .ticker-track .card-chip {
+    flex-shrink: 0;
+    width: 140px;
+    height: 88px;
+    padding: 10px 12px;
+  }
+
+  .ticker-track .card-chip .chip-icon {
+    width: 20px;
+    height: 15px;
+    top: 10px;
+    left: 12px;
+  }
+
+  .ticker-track .card-chip .card-issuer {
+    font-size: 8px;
+  }
+
+  .ticker-track .card-chip .card-name {
+    font-size: 11px;
+  }
+
+  @keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* ===== INLINE TICKER (as it would appear in hero) ===== */
+  h3 {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin-bottom: 32px;
+  }
+
+  .inline-demo {
+    background: #0d1119;
+    border-radius: 16px;
+    padding: 32px 0;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .inline-demo::before,
+  .inline-demo::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 60px;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .inline-demo::before {
+    left: 0;
+    background: linear-gradient(to right, #0d1119, transparent);
+  }
+  .inline-demo::after {
+    right: 0;
+    background: linear-gradient(to left, #0d1119, transparent);
+  }
+
+  .inline-track {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    animation: scroll-inline 25s linear infinite;
+    width: max-content;
+  }
+
+  .inline-chip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .inline-chip .mini-card {
+    width: 36px;
+    height: 24px;
+    border-radius: 4px;
+    position: relative;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.06);
+  }
+
+  .inline-chip .mini-card .mini-chip-icon {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 10px;
+    height: 7px;
+    border-radius: 1.5px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%);
+    border: 0.5px solid rgba(255,255,255,0.2);
+  }
+
+  .inline-chip .chip-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #8b95a8;
+    white-space: nowrap;
+  }
+
+  /* Mini card colors */
+  .mini-csr { background: linear-gradient(135deg, #1a1f3a, #0d1129); }
+  .mini-csp { background: linear-gradient(135deg, #0f2a4a, #0a1c33); }
+  .mini-gold { background: linear-gradient(135deg, #3d3520, #2a2415); }
+  .mini-plat { background: linear-gradient(135deg, #2e2e34, #1c1c22); }
+  .mini-ventx { background: linear-gradient(135deg, #1a1a1a, #0d0d0d); }
+  .mini-strata { background: linear-gradient(135deg, #0a2a3d, #061c2a); }
+
+  @keyframes scroll-inline {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+</style>
+</head>
+<body>
+
+<h1>Individual Card Chips (Full Size)</h1>
+<div class="grid">
+  <div class="card-item">
+    <label>Chase Sapphire Reserve</label>
+    <div class="card-chip chip-csr">
+      <svg class="chip-icon" viewBox="0 0 26 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="25" height="19" rx="3" fill="url(#emv-fill)" stroke="rgba(255,255,255,0.12)"/><rect x="8" y="0.5" width="10" height="19" fill="none" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="7" x2="0.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="13" x2="0.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="7" x2="25.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="13" x2="25.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="13" y1="0.5" x2="13" y2="7" stroke="rgba(255,255,255,0.08)"/><line x1="13" y1="13" x2="13" y2="19.5" stroke="rgba(255,255,255,0.08)"/><defs><linearGradient id="emv-fill" x1="0" y1="0" x2="26" y2="20"><stop offset="0%" stop-color="rgba(255,255,255,0.18)"/><stop offset="100%" stop-color="rgba(255,255,255,0.08)"/></linearGradient></defs></svg>
+      <div class="card-issuer">Chase</div>
+      <div class="card-name">Sapphire Reserve</div>
+    </div>
+  </div>
+
+  <div class="card-item">
+    <label>Chase Sapphire Preferred</label>
+    <div class="card-chip chip-csp">
+      <svg class="chip-icon" viewBox="0 0 26 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="25" height="19" rx="3" fill="url(#emv-fill)" stroke="rgba(255,255,255,0.12)"/><rect x="8" y="0.5" width="10" height="19" fill="none" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="7" x2="0.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="13" x2="0.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="7" x2="25.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="13" x2="25.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="13" y1="0.5" x2="13" y2="7" stroke="rgba(255,255,255,0.08)"/><line x1="13" y1="13" x2="13" y2="19.5" stroke="rgba(255,255,255,0.08)"/><defs><linearGradient id="emv-fill" x1="0" y1="0" x2="26" y2="20"><stop offset="0%" stop-color="rgba(255,255,255,0.18)"/><stop offset="100%" stop-color="rgba(255,255,255,0.08)"/></linearGradient></defs></svg>
+      <div class="card-issuer">Chase</div>
+      <div class="card-name">Sapphire Preferred</div>
+    </div>
+  </div>
+
+  <div class="card-item">
+    <label>Amex Gold</label>
+    <div class="card-chip chip-gold">
+      <svg class="chip-icon" viewBox="0 0 26 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="25" height="19" rx="3" fill="url(#emv-fill)" stroke="rgba(255,255,255,0.12)"/><rect x="8" y="0.5" width="10" height="19" fill="none" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="7" x2="0.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="13" x2="0.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="7" x2="25.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="13" x2="25.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="13" y1="0.5" x2="13" y2="7" stroke="rgba(255,255,255,0.08)"/><line x1="13" y1="13" x2="13" y2="19.5" stroke="rgba(255,255,255,0.08)"/><defs><linearGradient id="emv-fill" x1="0" y1="0" x2="26" y2="20"><stop offset="0%" stop-color="rgba(255,255,255,0.18)"/><stop offset="100%" stop-color="rgba(255,255,255,0.08)"/></linearGradient></defs></svg>
+      <div class="card-issuer">American Express</div>
+      <div class="card-name">Gold Card</div>
+    </div>
+  </div>
+
+  <div class="card-item">
+    <label>Amex Platinum</label>
+    <div class="card-chip chip-plat">
+      <svg class="chip-icon" viewBox="0 0 26 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="25" height="19" rx="3" fill="url(#emv-fill)" stroke="rgba(255,255,255,0.12)"/><rect x="8" y="0.5" width="10" height="19" fill="none" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="7" x2="0.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="13" x2="0.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="7" x2="25.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="13" x2="25.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="13" y1="0.5" x2="13" y2="7" stroke="rgba(255,255,255,0.08)"/><line x1="13" y1="13" x2="13" y2="19.5" stroke="rgba(255,255,255,0.08)"/><defs><linearGradient id="emv-fill" x1="0" y1="0" x2="26" y2="20"><stop offset="0%" stop-color="rgba(255,255,255,0.18)"/><stop offset="100%" stop-color="rgba(255,255,255,0.08)"/></linearGradient></defs></svg>
+      <div class="card-issuer">American Express</div>
+      <div class="card-name">Platinum Card</div>
+    </div>
+  </div>
+
+  <div class="card-item">
+    <label>Capital One Venture X</label>
+    <div class="card-chip chip-ventx">
+      <svg class="chip-icon" viewBox="0 0 26 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="25" height="19" rx="3" fill="url(#emv-fill)" stroke="rgba(255,255,255,0.12)"/><rect x="8" y="0.5" width="10" height="19" fill="none" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="7" x2="0.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="13" x2="0.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="7" x2="25.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="13" x2="25.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="13" y1="0.5" x2="13" y2="7" stroke="rgba(255,255,255,0.08)"/><line x1="13" y1="13" x2="13" y2="19.5" stroke="rgba(255,255,255,0.08)"/><defs><linearGradient id="emv-fill" x1="0" y1="0" x2="26" y2="20"><stop offset="0%" stop-color="rgba(255,255,255,0.18)"/><stop offset="100%" stop-color="rgba(255,255,255,0.08)"/></linearGradient></defs></svg>
+      <div class="card-issuer">Capital One</div>
+      <div class="card-name">Venture X</div>
+    </div>
+  </div>
+
+  <div class="card-item">
+    <label>Citi Strata Elite</label>
+    <div class="card-chip chip-strata">
+      <svg class="chip-icon" viewBox="0 0 26 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="25" height="19" rx="3" fill="url(#emv-fill)" stroke="rgba(255,255,255,0.12)"/><rect x="8" y="0.5" width="10" height="19" fill="none" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="7" x2="0.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="13" x2="0.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="7" x2="25.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="13" x2="25.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="13" y1="0.5" x2="13" y2="7" stroke="rgba(255,255,255,0.08)"/><line x1="13" y1="13" x2="13" y2="19.5" stroke="rgba(255,255,255,0.08)"/><defs><linearGradient id="emv-fill" x1="0" y1="0" x2="26" y2="20"><stop offset="0%" stop-color="rgba(255,255,255,0.18)"/><stop offset="100%" stop-color="rgba(255,255,255,0.08)"/></linearGradient></defs></svg>
+      <div class="card-issuer">Citi</div>
+      <div class="card-name">Strata Elite</div>
+    </div>
+  </div>
+</div>
+
+<h2>Scrolling Ticker — Card Chips</h2>
+<div class="ticker-demo">
+  <div class="ticker-track">
+    <!-- First set -->
+    <div class="card-chip chip-csr"><svg class="chip-icon" viewBox="0 0 26 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="25" height="19" rx="3" fill="url(#emv-fill)" stroke="rgba(255,255,255,0.12)"/><rect x="8" y="0.5" width="10" height="19" fill="none" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="7" x2="0.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="13" x2="0.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="7" x2="25.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="13" x2="25.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="13" y1="0.5" x2="13" y2="7" stroke="rgba(255,255,255,0.08)"/><line x1="13" y1="13" x2="13" y2="19.5" stroke="rgba(255,255,255,0.08)"/><defs><linearGradient id="emv-fill" x1="0" y1="0" x2="26" y2="20"><stop offset="0%" stop-color="rgba(255,255,255,0.18)"/><stop offset="100%" stop-color="rgba(255,255,255,0.08)"/></linearGradient></defs></svg><div class="card-issuer">Chase</div><div class="card-name">Sapphire Reserve</div></div>
+    <div class="card-chip chip-csp"><svg class="chip-icon" viewBox="0 0 26 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="25" height="19" rx="3" fill="url(#emv-fill)" stroke="rgba(255,255,255,0.12)"/><rect x="8" y="0.5" width="10" height="19" fill="none" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="7" x2="0.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="13" x2="0.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="7" x2="25.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="13" x2="25.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="13" y1="0.5" x2="13" y2="7" stroke="rgba(255,255,255,0.08)"/><line x1="13" y1="13" x2="13" y2="19.5" stroke="rgba(255,255,255,0.08)"/><defs><linearGradient id="emv-fill" x1="0" y1="0" x2="26" y2="20"><stop offset="0%" stop-color="rgba(255,255,255,0.18)"/><stop offset="100%" stop-color="rgba(255,255,255,0.08)"/></linearGradient></defs></svg><div class="card-issuer">Chase</div><div class="card-name">Sapphire Preferred</div></div>
+    <div class="card-chip chip-gold"><svg class="chip-icon" viewBox="0 0 26 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="25" height="19" rx="3" fill="url(#emv-fill)" stroke="rgba(255,255,255,0.12)"/><rect x="8" y="0.5" width="10" height="19" fill="none" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="7" x2="0.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="13" x2="0.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="7" x2="25.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="13" x2="25.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="13" y1="0.5" x2="13" y2="7" stroke="rgba(255,255,255,0.08)"/><line x1="13" y1="13" x2="13" y2="19.5" stroke="rgba(255,255,255,0.08)"/><defs><linearGradient id="emv-fill" x1="0" y1="0" x2="26" y2="20"><stop offset="0%" stop-color="rgba(255,255,255,0.18)"/><stop offset="100%" stop-color="rgba(255,255,255,0.08)"/></linearGradient></defs></svg><div class="card-issuer">American Express</div><div class="card-name">Gold Card</div></div>
+    <div class="card-chip chip-plat"><svg class="chip-icon" viewBox="0 0 26 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="25" height="19" rx="3" fill="url(#emv-fill)" stroke="rgba(255,255,255,0.12)"/><rect x="8" y="0.5" width="10" height="19" fill="none" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="7" x2="0.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="13" x2="0.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="7" x2="25.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="13" x2="25.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="13" y1="0.5" x2="13" y2="7" stroke="rgba(255,255,255,0.08)"/><line x1="13" y1="13" x2="13" y2="19.5" stroke="rgba(255,255,255,0.08)"/><defs><linearGradient id="emv-fill" x1="0" y1="0" x2="26" y2="20"><stop offset="0%" stop-color="rgba(255,255,255,0.18)"/><stop offset="100%" stop-color="rgba(255,255,255,0.08)"/></linearGradient></defs></svg><div class="card-issuer">American Express</div><div class="card-name">Platinum Card</div></div>
+    <div class="card-chip chip-ventx"><svg class="chip-icon" viewBox="0 0 26 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="25" height="19" rx="3" fill="url(#emv-fill)" stroke="rgba(255,255,255,0.12)"/><rect x="8" y="0.5" width="10" height="19" fill="none" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="7" x2="0.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="13" x2="0.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="7" x2="25.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="13" x2="25.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="13" y1="0.5" x2="13" y2="7" stroke="rgba(255,255,255,0.08)"/><line x1="13" y1="13" x2="13" y2="19.5" stroke="rgba(255,255,255,0.08)"/><defs><linearGradient id="emv-fill" x1="0" y1="0" x2="26" y2="20"><stop offset="0%" stop-color="rgba(255,255,255,0.18)"/><stop offset="100%" stop-color="rgba(255,255,255,0.08)"/></linearGradient></defs></svg><div class="card-issuer">Capital One</div><div class="card-name">Venture X</div></div>
+    <div class="card-chip chip-strata"><svg class="chip-icon" viewBox="0 0 26 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="25" height="19" rx="3" fill="url(#emv-fill)" stroke="rgba(255,255,255,0.12)"/><rect x="8" y="0.5" width="10" height="19" fill="none" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="7" x2="0.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="13" x2="0.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="7" x2="25.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="13" x2="25.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="13" y1="0.5" x2="13" y2="7" stroke="rgba(255,255,255,0.08)"/><line x1="13" y1="13" x2="13" y2="19.5" stroke="rgba(255,255,255,0.08)"/><defs><linearGradient id="emv-fill" x1="0" y1="0" x2="26" y2="20"><stop offset="0%" stop-color="rgba(255,255,255,0.18)"/><stop offset="100%" stop-color="rgba(255,255,255,0.08)"/></linearGradient></defs></svg><div class="card-issuer">Citi</div><div class="card-name">Strata Elite</div></div>
+    <!-- Duplicate for seamless loop -->
+    <div class="card-chip chip-csr"><svg class="chip-icon" viewBox="0 0 26 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="25" height="19" rx="3" fill="url(#emv-fill)" stroke="rgba(255,255,255,0.12)"/><rect x="8" y="0.5" width="10" height="19" fill="none" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="7" x2="0.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="13" x2="0.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="7" x2="25.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="13" x2="25.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="13" y1="0.5" x2="13" y2="7" stroke="rgba(255,255,255,0.08)"/><line x1="13" y1="13" x2="13" y2="19.5" stroke="rgba(255,255,255,0.08)"/><defs><linearGradient id="emv-fill" x1="0" y1="0" x2="26" y2="20"><stop offset="0%" stop-color="rgba(255,255,255,0.18)"/><stop offset="100%" stop-color="rgba(255,255,255,0.08)"/></linearGradient></defs></svg><div class="card-issuer">Chase</div><div class="card-name">Sapphire Reserve</div></div>
+    <div class="card-chip chip-csp"><svg class="chip-icon" viewBox="0 0 26 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="25" height="19" rx="3" fill="url(#emv-fill)" stroke="rgba(255,255,255,0.12)"/><rect x="8" y="0.5" width="10" height="19" fill="none" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="7" x2="0.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="13" x2="0.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="7" x2="25.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="13" x2="25.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="13" y1="0.5" x2="13" y2="7" stroke="rgba(255,255,255,0.08)"/><line x1="13" y1="13" x2="13" y2="19.5" stroke="rgba(255,255,255,0.08)"/><defs><linearGradient id="emv-fill" x1="0" y1="0" x2="26" y2="20"><stop offset="0%" stop-color="rgba(255,255,255,0.18)"/><stop offset="100%" stop-color="rgba(255,255,255,0.08)"/></linearGradient></defs></svg><div class="card-issuer">Chase</div><div class="card-name">Sapphire Preferred</div></div>
+    <div class="card-chip chip-gold"><svg class="chip-icon" viewBox="0 0 26 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="25" height="19" rx="3" fill="url(#emv-fill)" stroke="rgba(255,255,255,0.12)"/><rect x="8" y="0.5" width="10" height="19" fill="none" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="7" x2="0.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="13" x2="0.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="7" x2="25.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="13" x2="25.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="13" y1="0.5" x2="13" y2="7" stroke="rgba(255,255,255,0.08)"/><line x1="13" y1="13" x2="13" y2="19.5" stroke="rgba(255,255,255,0.08)"/><defs><linearGradient id="emv-fill" x1="0" y1="0" x2="26" y2="20"><stop offset="0%" stop-color="rgba(255,255,255,0.18)"/><stop offset="100%" stop-color="rgba(255,255,255,0.08)"/></linearGradient></defs></svg><div class="card-issuer">American Express</div><div class="card-name">Gold Card</div></div>
+    <div class="card-chip chip-plat"><svg class="chip-icon" viewBox="0 0 26 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="25" height="19" rx="3" fill="url(#emv-fill)" stroke="rgba(255,255,255,0.12)"/><rect x="8" y="0.5" width="10" height="19" fill="none" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="7" x2="0.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="13" x2="0.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="7" x2="25.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="13" x2="25.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="13" y1="0.5" x2="13" y2="7" stroke="rgba(255,255,255,0.08)"/><line x1="13" y1="13" x2="13" y2="19.5" stroke="rgba(255,255,255,0.08)"/><defs><linearGradient id="emv-fill" x1="0" y1="0" x2="26" y2="20"><stop offset="0%" stop-color="rgba(255,255,255,0.18)"/><stop offset="100%" stop-color="rgba(255,255,255,0.08)"/></linearGradient></defs></svg><div class="card-issuer">American Express</div><div class="card-name">Platinum Card</div></div>
+    <div class="card-chip chip-ventx"><svg class="chip-icon" viewBox="0 0 26 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="25" height="19" rx="3" fill="url(#emv-fill)" stroke="rgba(255,255,255,0.12)"/><rect x="8" y="0.5" width="10" height="19" fill="none" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="7" x2="0.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="13" x2="0.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="7" x2="25.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="13" x2="25.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="13" y1="0.5" x2="13" y2="7" stroke="rgba(255,255,255,0.08)"/><line x1="13" y1="13" x2="13" y2="19.5" stroke="rgba(255,255,255,0.08)"/><defs><linearGradient id="emv-fill" x1="0" y1="0" x2="26" y2="20"><stop offset="0%" stop-color="rgba(255,255,255,0.18)"/><stop offset="100%" stop-color="rgba(255,255,255,0.08)"/></linearGradient></defs></svg><div class="card-issuer">Capital One</div><div class="card-name">Venture X</div></div>
+    <div class="card-chip chip-strata"><svg class="chip-icon" viewBox="0 0 26 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="25" height="19" rx="3" fill="url(#emv-fill)" stroke="rgba(255,255,255,0.12)"/><rect x="8" y="0.5" width="10" height="19" fill="none" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="7" x2="0.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="8" y1="13" x2="0.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="7" x2="25.5" y2="7" stroke="rgba(255,255,255,0.1)"/><line x1="18" y1="13" x2="25.5" y2="13" stroke="rgba(255,255,255,0.1)"/><line x1="13" y1="0.5" x2="13" y2="7" stroke="rgba(255,255,255,0.08)"/><line x1="13" y1="13" x2="13" y2="19.5" stroke="rgba(255,255,255,0.08)"/><defs><linearGradient id="emv-fill" x1="0" y1="0" x2="26" y2="20"><stop offset="0%" stop-color="rgba(255,255,255,0.18)"/><stop offset="100%" stop-color="rgba(255,255,255,0.08)"/></linearGradient></defs></svg><div class="card-issuer">Citi</div><div class="card-name">Strata Elite</div></div>
+  </div>
+</div>
+
+<h3>Inline Ticker — Mini Cards + Labels (Alternative)</h3>
+<div class="inline-demo">
+  <div class="inline-track">
+    <!-- First set -->
+    <div class="inline-chip"><div class="mini-card mini-csr"><div class="mini-chip-icon"></div></div><span class="chip-label">Chase Sapphire Reserve</span></div>
+    <div class="inline-chip"><div class="mini-card mini-gold"><div class="mini-chip-icon"></div></div><span class="chip-label">Amex Gold</span></div>
+    <div class="inline-chip"><div class="mini-card mini-plat"><div class="mini-chip-icon"></div></div><span class="chip-label">Amex Platinum</span></div>
+    <div class="inline-chip"><div class="mini-card mini-ventx"><div class="mini-chip-icon"></div></div><span class="chip-label">Capital One Venture X</span></div>
+    <div class="inline-chip"><div class="mini-card mini-strata"><div class="mini-chip-icon"></div></div><span class="chip-label">Citi Strata Elite</span></div>
+    <div class="inline-chip"><div class="mini-card mini-csp"><div class="mini-chip-icon"></div></div><span class="chip-label">Chase Sapphire Preferred</span></div>
+    <!-- Duplicate for seamless loop -->
+    <div class="inline-chip"><div class="mini-card mini-csr"><div class="mini-chip-icon"></div></div><span class="chip-label">Chase Sapphire Reserve</span></div>
+    <div class="inline-chip"><div class="mini-card mini-gold"><div class="mini-chip-icon"></div></div><span class="chip-label">Amex Gold</span></div>
+    <div class="inline-chip"><div class="mini-card mini-plat"><div class="mini-chip-icon"></div></div><span class="chip-label">Amex Platinum</span></div>
+    <div class="inline-chip"><div class="mini-card mini-ventx"><div class="mini-chip-icon"></div></div><span class="chip-label">Capital One Venture X</span></div>
+    <div class="inline-chip"><div class="mini-card mini-strata"><div class="mini-chip-icon"></div></div><span class="chip-label">Citi Strata Elite</span></div>
+    <div class="inline-chip"><div class="mini-card mini-csp"><div class="mini-chip-icon"></div></div><span class="chip-label">Chase Sapphire Preferred</span></div>
+  </div>
+</div>
+
+</body>
+</html>
