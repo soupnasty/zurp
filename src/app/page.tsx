@@ -534,7 +534,7 @@ export default function Home() {
           <AnimatedMockup className="mx-auto max-w-[780px] overflow-hidden rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[#111827]">
             {/* Headline */}
             <div
-              className="border-b border-[rgba(255,255,255,0.06)] px-7 py-6"
+              className="border-b border-[rgba(255,255,255,0.06)] px-4 py-6 sm:px-7"
               style={{
                 opacity: 0,
                 animation: "mock-fade-in 0.6s ease forwards",
@@ -575,7 +575,7 @@ export default function Home() {
                 return (
                   <div
                     key={card.rank}
-                    className="relative flex items-center gap-5 px-7 py-5 border-b border-[rgba(255,255,255,0.04)] last:border-b-0"
+                    className="relative px-4 py-5 border-b border-[rgba(255,255,255,0.04)] last:border-b-0 sm:px-7"
                     style={{
                       background: card.rowBg,
                       opacity: 0,
@@ -584,60 +584,157 @@ export default function Home() {
                       animationPlayState: "var(--play)",
                     } as React.CSSProperties}
                   >
-                    {/* Rank */}
-                    <div
-                      className="text-[14px] font-bold shrink-0 w-5"
-                      style={{ color: "#4b5563" }}
-                    >
-                      {card.rank}
-                    </div>
-
-                    {/* Card info */}
-                    <div className="shrink-0 min-w-[180px]">
-                      <div className="flex items-center gap-2 text-[15px] font-semibold text-[#e5e7eb]">
-                        {card.name}
-                        {card.badge === "best" && (
-                          <span
-                            className="inline-flex items-center rounded px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.06em] bg-[rgba(52,211,153,0.15)] text-[#34d399]"
-                            style={{
-                              opacity: 0,
-                              transform: "scale(0.7)",
-                              animation: "mock-badge-pop 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards",
-                              animationDelay: `${badgeDelay}s`,
-                              animationPlayState: "var(--play)",
-                            }}
-                          >
-                            Best value
-                          </span>
-                        )}
-                        {card.badge === "current" && (
-                          <span
-                            className="inline-flex items-center rounded px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.06em] bg-[rgba(88,166,255,0.15)] text-[#58A6FF]"
-                            style={{
-                              opacity: 0,
-                              transform: "scale(0.7)",
-                              animation: "mock-badge-pop 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards",
-                              animationDelay: `${badgeDelay}s`,
-                              animationPlayState: "var(--play)",
-                            }}
-                          >
-                            Your card
-                          </span>
-                        )}
-                      </div>
+                    {/* Top row: rank + card info + net value */}
+                    <div className="flex items-center gap-3 sm:gap-5">
+                      {/* Rank */}
                       <div
-                        className="mt-1 text-[12px]"
-                        style={{ color: "#6b7280" }}
+                        className="text-[14px] font-bold shrink-0 w-5"
+                        style={{ color: "#4b5563" }}
                       >
-                        {card.fee}
+                        {card.rank}
+                      </div>
+
+                      {/* Card info */}
+                      <div className="min-w-0 flex-1 sm:shrink-0 sm:flex-none sm:min-w-[180px]">
+                        <div className="flex items-center gap-2 text-[15px] font-semibold text-[#e5e7eb]">
+                          {card.name}
+                          {card.badge === "best" && (
+                            <span
+                              className="inline-flex items-center rounded px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.06em] bg-[rgba(52,211,153,0.15)] text-[#34d399]"
+                              style={{
+                                opacity: 0,
+                                transform: "scale(0.7)",
+                                animation: "mock-badge-pop 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards",
+                                animationDelay: `${badgeDelay}s`,
+                                animationPlayState: "var(--play)",
+                              }}
+                            >
+                              Best value
+                            </span>
+                          )}
+                          {card.badge === "current" && (
+                            <span
+                              className="inline-flex items-center rounded px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.06em] bg-[rgba(88,166,255,0.15)] text-[#58A6FF]"
+                              style={{
+                                opacity: 0,
+                                transform: "scale(0.7)",
+                                animation: "mock-badge-pop 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards",
+                                animationDelay: `${badgeDelay}s`,
+                                animationPlayState: "var(--play)",
+                              }}
+                            >
+                              Your card
+                            </span>
+                          )}
+                        </div>
+                        <div
+                          className="mt-1 text-[12px]"
+                          style={{ color: "#6b7280" }}
+                        >
+                          {card.fee}
+                        </div>
+                      </div>
+
+                      {/* Stacked bar — desktop only (inline) */}
+                      <div className="hidden sm:block flex-1 min-w-0">
+                        <div className="flex h-7 overflow-hidden rounded-md bg-[rgba(255,255,255,0.04)]">
+                          <div
+                            className="flex items-center justify-center text-[11px] font-semibold text-white/90 whitespace-nowrap overflow-hidden"
+                            style={{
+                              width: 0,
+                              background: "linear-gradient(90deg, #3b82f6, #2563eb)",
+                              animation: "mock-fill-bar 1s cubic-bezier(0.25,0.46,0.45,0.94) forwards",
+                              animationDelay: `${barBase}s`,
+                              animationPlayState: "var(--play)",
+                              "--fill": `${card.pointsPct}%`,
+                            } as React.CSSProperties}
+                          >
+                            {card.pointsPct > 15 ? card.pointsLabel : ""}
+                          </div>
+                          <div
+                            className="flex items-center justify-center text-[11px] font-semibold text-white/90 whitespace-nowrap overflow-hidden"
+                            style={{
+                              width: 0,
+                              background: "rgba(52,211,153,0.5)",
+                              animation: "mock-fill-bar 0.6s cubic-bezier(0.25,0.46,0.45,0.94) forwards",
+                              animationDelay: `${barBase + 0.4}s`,
+                              animationPlayState: "var(--play)",
+                              "--fill": `${card.benefitsPct}%`,
+                            } as React.CSSProperties}
+                          >
+                            {card.benefitsPct > 10 ? card.benefitsLabel : ""}
+                          </div>
+                          <div
+                            className="flex items-center justify-center text-[11px] font-semibold text-white/70 whitespace-nowrap overflow-hidden"
+                            style={{
+                              width: 0,
+                              background: "rgba(239,68,68,0.25)",
+                              animation: "mock-fill-bar 0.4s cubic-bezier(0.25,0.46,0.45,0.94) forwards",
+                              animationDelay: `${barBase + 0.7}s`,
+                              animationPlayState: "var(--play)",
+                              "--fill": `${card.feePct}%`,
+                            } as React.CSSProperties}
+                          >
+                            {card.feePct > 6 ? card.feeLabel : ""}
+                          </div>
+                        </div>
+                        {/* Legend dots */}
+                        <div
+                          className="mt-1.5 flex gap-3 text-[11px]"
+                          style={{
+                            color: "#6b7280",
+                            fontVariantNumeric: "tabular-nums",
+                            opacity: 0,
+                            animation: "mock-fade-in 0.4s ease forwards",
+                            animationDelay: `${labelsDelay}s`,
+                            animationPlayState: "var(--play)",
+                          }}
+                        >
+                          <span className="flex items-center gap-1">
+                            <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#3b82f6]" />
+                            {dl ? dl.points : "Points"}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#34d399]" />
+                            {dl ? dl.benefits : "Benefits"}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#ef4444]" />
+                            {dl ? dl.fee : "Fee"}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Net value */}
+                      <div className="text-right shrink-0 ml-auto">
+                        <div
+                          className="font-data text-[18px] font-bold sm:text-[22px]"
+                          style={{
+                            color: card.netColor,
+                            letterSpacing: "-0.02em",
+                            fontVariantNumeric: "tabular-nums",
+                            opacity: 0,
+                            animation: "mock-net-reveal 0.5s ease forwards",
+                            animationDelay: `${netDelay}s`,
+                            animationPlayState: "var(--play)",
+                          }}
+                        >
+                          {card.net}
+                        </div>
+                        <div
+                          className="mt-0.5 text-[11px]"
+                          style={{ color: "#6b7280" }}
+                        >
+                          net / year
+                        </div>
                       </div>
                     </div>
 
-                    {/* Stacked bar */}
-                    <div className="flex-1 min-w-0 hidden sm:block">
-                      <div className="flex h-7 overflow-hidden rounded-md bg-[rgba(255,255,255,0.04)]">
+                    {/* Stacked bar — mobile only (full width below) */}
+                    <div className="mt-3 pl-8 sm:hidden">
+                      <div className="flex h-6 overflow-hidden rounded-md bg-[rgba(255,255,255,0.04)]">
                         <div
-                          className="flex items-center justify-center text-[11px] font-semibold text-white/90 whitespace-nowrap overflow-hidden"
+                          className="flex items-center justify-center text-[10px] font-semibold text-white/90 whitespace-nowrap overflow-hidden"
                           style={{
                             width: 0,
                             background: "linear-gradient(90deg, #3b82f6, #2563eb)",
@@ -647,10 +744,10 @@ export default function Home() {
                             "--fill": `${card.pointsPct}%`,
                           } as React.CSSProperties}
                         >
-                          {card.pointsPct > 15 ? card.pointsLabel : ""}
+                          {card.pointsPct > 20 ? card.pointsLabel : ""}
                         </div>
                         <div
-                          className="flex items-center justify-center text-[11px] font-semibold text-white/90 whitespace-nowrap overflow-hidden"
+                          className="flex items-center justify-center text-[10px] font-semibold text-white/90 whitespace-nowrap overflow-hidden"
                           style={{
                             width: 0,
                             background: "rgba(52,211,153,0.5)",
@@ -660,10 +757,10 @@ export default function Home() {
                             "--fill": `${card.benefitsPct}%`,
                           } as React.CSSProperties}
                         >
-                          {card.benefitsPct > 10 ? card.benefitsLabel : ""}
+                          {card.benefitsPct > 15 ? card.benefitsLabel : ""}
                         </div>
                         <div
-                          className="flex items-center justify-center text-[11px] font-semibold text-white/70 whitespace-nowrap overflow-hidden"
+                          className="flex items-center justify-center text-[10px] font-semibold text-white/70 whitespace-nowrap overflow-hidden"
                           style={{
                             width: 0,
                             background: "rgba(239,68,68,0.25)",
@@ -673,12 +770,12 @@ export default function Home() {
                             "--fill": `${card.feePct}%`,
                           } as React.CSSProperties}
                         >
-                          {card.feePct > 6 ? card.feeLabel : ""}
+                          {card.feePct > 8 ? card.feeLabel : ""}
                         </div>
                       </div>
                       {/* Legend dots */}
                       <div
-                        className="mt-1.5 flex gap-3 text-[11px]"
+                        className="mt-1.5 flex gap-3 text-[10px]"
                         style={{
                           color: "#6b7280",
                           fontVariantNumeric: "tabular-nums",
@@ -702,30 +799,6 @@ export default function Home() {
                         </span>
                       </div>
                     </div>
-
-                    {/* Net value */}
-                    <div className="text-right shrink-0 min-w-[80px]">
-                      <div
-                        className="font-data text-[22px] font-bold"
-                        style={{
-                          color: card.netColor,
-                          letterSpacing: "-0.02em",
-                          fontVariantNumeric: "tabular-nums",
-                          opacity: 0,
-                          animation: "mock-net-reveal 0.5s ease forwards",
-                          animationDelay: `${netDelay}s`,
-                          animationPlayState: "var(--play)",
-                        }}
-                      >
-                        {card.net}
-                      </div>
-                      <div
-                        className="mt-0.5 text-[11px]"
-                        style={{ color: "#6b7280" }}
-                      >
-                        net / year
-                      </div>
-                    </div>
                   </div>
                 );
               })}
@@ -733,7 +806,7 @@ export default function Home() {
 
             {/* Footer */}
             <div
-              className="border-t border-[rgba(255,255,255,0.06)] px-7 py-4 text-[11px] leading-relaxed"
+              className="border-t border-[rgba(255,255,255,0.06)] px-4 py-4 text-[11px] leading-relaxed sm:px-7"
               style={{
                 color: "#4b5563",
                 opacity: 0,
