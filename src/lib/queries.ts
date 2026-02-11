@@ -1,6 +1,6 @@
 import "server-only";
 import { db } from "@/db";
-import { eq, desc, and, gte, lt } from "drizzle-orm";
+import { eq, desc, asc, and, gte, lt } from "drizzle-orm";
 import * as schema from "@/db/schema";
 import { getCardDefinition } from "@/lib/cards";
 import { getCurrentCycleBounds, daysRemainingInCycle } from "@/lib/engine/cycle-utils";
@@ -9,18 +9,14 @@ import type {
   BenefitUsageSummary,
   TransactionWithMatch,
   BenefitCycle,
+  CycleBounds,
 } from "@/lib/types";
 
 export async function getCardSummary(
   userId: string,
   cardProfileId?: string
 ): Promise<CardSummary | null> {
-  const cardProfile = await db.query.cardProfiles.findFirst({
-    where: cardProfileId
-      ? and(eq(schema.cardProfiles.userId, userId), eq(schema.cardProfiles.id, cardProfileId))
-      : and(eq(schema.cardProfiles.userId, userId), eq(schema.cardProfiles.isActive, true)),
-  });
-
+  const cardProfile = await getActiveCardProfile(userId, cardProfileId);
   if (!cardProfile) return null;
 
   const cardDef = getCardDefinition(cardProfile.cardType);
@@ -45,10 +41,7 @@ export async function getCardSummary(
   // Year-to-date: sum all usage within the card year
   let creditsUsed = 0;
   for (const usage of usageRecords) {
-    if (
-      usage.cycleStart >= cardYearBounds.cycleStart &&
-      usage.cycleEnd <= cardYearBounds.cycleEnd
-    ) {
+    if (isUsageInCardYear(usage, cardYearBounds)) {
       creditsUsed += usage.amountUsed;
     }
   }
@@ -72,13 +65,8 @@ export async function getCardSummary(
     );
     if (!activation) continue;
 
-    // Parse activation date from periodKey "ACTIVATED:MM-YYYY"
-    const match = activation.periodKey.match(/^ACTIVATED:(\d{2})-(\d{4})$/);
-    if (!match) continue;
-
-    const activationDate = new Date(
-      Date.UTC(parseInt(match[2], 10), parseInt(match[1], 10) - 1, 1)
-    );
+    const activationDate = parseActivationDate(activation.periodKey);
+    if (!activationDate) continue;
 
     // Determine sunset date
     const sunsetDate = benefit.sunsetDate
@@ -207,12 +195,7 @@ export async function getCreditsDebugBreakdown(
   userId: string,
   cardProfileId?: string
 ): Promise<CreditsDebugData | null> {
-  const cardProfile = await db.query.cardProfiles.findFirst({
-    where: cardProfileId
-      ? and(eq(schema.cardProfiles.userId, userId), eq(schema.cardProfiles.id, cardProfileId))
-      : and(eq(schema.cardProfiles.userId, userId), eq(schema.cardProfiles.isActive, true)),
-  });
-
+  const cardProfile = await getActiveCardProfile(userId, cardProfileId);
   if (!cardProfile) return null;
 
   const cardDef = getCardDefinition(cardProfile.cardType);
@@ -237,9 +220,7 @@ export async function getCreditsDebugBreakdown(
 
   for (const usage of usageRecords) {
     const benefit = cardDef.benefits.find((b) => b.id === usage.benefitId);
-    const inCardYear =
-      usage.cycleStart >= cardYearBounds.cycleStart &&
-      usage.cycleEnd <= cardYearBounds.cycleEnd;
+    const inCardYear = isUsageInCardYear(usage, cardYearBounds);
 
     if (inCardYear) {
       creditsUsedTotal += usage.amountUsed;
@@ -272,12 +253,7 @@ export async function getBenefitUsageSummaries(
   userId: string,
   cardProfileId?: string
 ): Promise<BenefitUsageSummary[]> {
-  const cardProfile = await db.query.cardProfiles.findFirst({
-    where: cardProfileId
-      ? and(eq(schema.cardProfiles.userId, userId), eq(schema.cardProfiles.id, cardProfileId))
-      : and(eq(schema.cardProfiles.userId, userId), eq(schema.cardProfiles.isActive, true)),
-  });
-
+  const cardProfile = await getActiveCardProfile(userId, cardProfileId);
   if (!cardProfile) return [];
 
   const cardDef = getCardDefinition(cardProfile.cardType);
@@ -337,8 +313,7 @@ export async function getBenefitUsageSummaries(
       for (const u of usageRecords) {
         if (
           u.benefitId === benefit.id &&
-          u.cycleStart >= cardYearBounds.cycleStart &&
-          u.cycleEnd <= cardYearBounds.cycleEnd
+          isUsageInCardYear(u, cardYearBounds)
         ) {
           ytdUsed += u.amountUsed;
         }
@@ -355,11 +330,8 @@ export async function getBenefitUsageSummaries(
       );
       isActivated = !!activation;
       if (activation) {
-        const match = activation.periodKey.match(/^ACTIVATED:(\d{2})-(\d{4})$/);
-        if (match) {
-          const activationDate = new Date(
-            Date.UTC(parseInt(match[2], 10), parseInt(match[1], 10) - 1, 1)
-          );
+        const activationDate = parseActivationDate(activation.periodKey);
+        if (activationDate) {
           activatedAt = activationDate.toISOString();
 
           // Compute YTD for activated subscriptions using card year bounds
@@ -395,6 +367,8 @@ export async function getBenefitUsageSummaries(
       daysRemaining: days,
       requiresActivation: benefit.requiresActivation,
       autoMatchable: benefit.autoMatchable,
+      merchantPatterns: benefit.merchantPatterns,
+      plaidCategories: benefit.plaidCategories,
       sunsetDate: benefit.sunsetDate,
       displayGroup: benefit.displayGroup,
       displayGroupName: benefit.displayGroupName,
@@ -470,6 +444,8 @@ export async function getRecentTransactions(
       creditApplied: match?.creditApplied ?? null,
       matchConfidence: (match?.matchConfidence as any) ?? null,
       matchMethod: (match?.matchMethod as any) ?? null,
+      plaidCategoryPrimary: tx.plaidCategoryPrimary ?? null,
+      plaidCategoryDetailed: tx.plaidCategoryDetailed ?? null,
     };
   });
 }
@@ -494,12 +470,7 @@ export async function getBenefitTransactions(
   benefitIds: string[],
   cardProfileId?: string
 ): Promise<BenefitTransaction[]> {
-  const cardProfile = await db.query.cardProfiles.findFirst({
-    where: cardProfileId
-      ? and(eq(schema.cardProfiles.userId, userId), eq(schema.cardProfiles.id, cardProfileId))
-      : and(eq(schema.cardProfiles.userId, userId), eq(schema.cardProfiles.isActive, true)),
-  });
-
+  const cardProfile = await getActiveCardProfile(userId, cardProfileId);
   if (!cardProfile) return [];
 
   const cardYearBounds = getCurrentCycleBounds(
@@ -527,10 +498,7 @@ export async function getBenefitTransactions(
 
   for (const usage of usageRecords) {
     if (!benefitIds.includes(usage.benefitId)) continue;
-    if (
-      usage.cycleStart < cardYearBounds.cycleStart ||
-      usage.cycleEnd > cardYearBounds.cycleEnd
-    ) continue;
+    if (!isUsageInCardYear(usage, cardYearBounds)) continue;
 
     for (const match of usage.matches) {
       if (!match.transaction) continue;
@@ -549,6 +517,67 @@ export async function getBenefitTransactions(
 
   results.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   return results;
+}
+
+export interface DebugTransactionRow {
+  id: string;
+  date: string;
+  merchantName: string | null;
+  amount: number;
+  matchedStatus: string;
+  matchedBenefitName: string | null;
+  creditApplied: number | null;
+  matchConfidence: string | null;
+  matchMethod: string | null;
+  plaidCategoryPrimary: string | null;
+}
+
+export async function getDebugTransactions(
+  userId: string,
+  cardProfileId?: string
+): Promise<DebugTransactionRow[] | null> {
+  const cardProfile = await getActiveCardProfile(userId, cardProfileId);
+  if (!cardProfile) return null;
+
+  const cardYearBounds = getCurrentCycleBounds(
+    "annual_anniversary",
+    new Date(),
+    cardProfile.anniversaryDate
+  );
+
+  const txs = await db.query.transactions.findMany({
+    where: and(
+      eq(schema.transactions.userId, userId),
+      eq(schema.transactions.plaidConnectionId, cardProfile.plaidConnectionId),
+      gte(schema.transactions.date, cardYearBounds.cycleStart)
+    ),
+    orderBy: asc(schema.transactions.date),
+    with: {
+      matches: {
+        with: {
+          benefitUsage: {
+            with: { benefit: true },
+          },
+        },
+      },
+    },
+  });
+
+  return txs.map((tx) => {
+    const match = tx.matches[0];
+    return {
+      id: tx.id,
+      date: tx.date.toISOString(),
+      merchantName: tx.merchantName,
+      amount: tx.amount,
+      matchedStatus: tx.matchedStatus,
+      matchedBenefitName: match?.benefitUsage?.benefit?.name ?? null,
+      creditApplied: match?.creditApplied ?? null,
+      matchConfidence: match?.matchConfidence ?? null,
+      matchMethod: match?.matchMethod ?? null,
+      plaidCategoryPrimary: tx.plaidCategoryPrimary,
+    };
+  });
 }
 
 export async function getPlaidConnectionStatus(userId: string, cardProfileId?: string) {
@@ -618,12 +647,7 @@ export async function getCardProfiles(userId: string) {
 }
 
 export async function getUserAnniversaryStatus(userId: string, cardProfileId?: string) {
-  const cardProfile = await db.query.cardProfiles.findFirst({
-    where: cardProfileId
-      ? and(eq(schema.cardProfiles.userId, userId), eq(schema.cardProfiles.id, cardProfileId))
-      : and(eq(schema.cardProfiles.userId, userId), eq(schema.cardProfiles.isActive, true)),
-  });
-
+  const cardProfile = await getActiveCardProfile(userId, cardProfileId);
   if (!cardProfile) return null;
 
   return {
@@ -632,6 +656,29 @@ export async function getUserAnniversaryStatus(userId: string, cardProfileId?: s
     anniversaryDate: cardProfile.anniversaryDate,
     anniversarySource: cardProfile.anniversarySource,
   };
+}
+
+// ── Internal helpers ────────────────────────────────────────────────
+
+async function getActiveCardProfile(userId: string, cardProfileId?: string) {
+  return db.query.cardProfiles.findFirst({
+    where: cardProfileId
+      ? and(eq(schema.cardProfiles.userId, userId), eq(schema.cardProfiles.id, cardProfileId))
+      : and(eq(schema.cardProfiles.userId, userId), eq(schema.cardProfiles.isActive, true)),
+  });
+}
+
+function parseActivationDate(periodKey: string): Date | null {
+  const match = periodKey.match(/^ACTIVATED:(\d{2})-(\d{4})$/);
+  if (!match) return null;
+  return new Date(Date.UTC(parseInt(match[2], 10), parseInt(match[1], 10) - 1, 1));
+}
+
+function isUsageInCardYear(
+  usage: { cycleStart: Date; cycleEnd: Date },
+  cardYearBounds: CycleBounds
+): boolean {
+  return usage.cycleStart >= cardYearBounds.cycleStart && usage.cycleEnd <= cardYearBounds.cycleEnd;
 }
 
 /**
