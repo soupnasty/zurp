@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import type { CardSimulation, CategoryWinner } from "@/lib/points/types";
 import type { PerkSection, CardReferenceLinks } from "@/lib/points/perk-matrix";
 import { TotalValueChart } from "./TotalValueChart";
@@ -14,6 +15,7 @@ interface CompareContentProps {
   monthCount: number;
   totalSpend: number;
   totalTransactions: number;
+  portalMode: boolean;
   perkSections: PerkSection[];
   cardLinks: CardReferenceLinks[];
 }
@@ -33,12 +35,15 @@ export function CompareContent({
   monthCount,
   totalSpend,
   totalTransactions,
+  portalMode,
   perkSections,
   cardLinks,
 }: CompareContentProps) {
   const [activeTab, setActiveTab] = useState<"value" | "categories" | "perks">(
     "value"
   );
+  const router = useRouter();
+  const pathname = usePathname();
 
   const usersCard = cards.find((c) => c.isUsersCard)!;
   const sorted = [...cards].sort((a, b) => b.netActual - a.netActual);
@@ -74,9 +79,15 @@ export function CompareContent({
     .map((id) => cardLinks.find((l) => l.cardId === id))
     .filter(Boolean) as typeof cardLinks;
 
+  function handlePortalToggle() {
+    const next = !portalMode;
+    const url = next ? `${pathname}?portal=true` : pathname;
+    router.push(url);
+  }
+
   const disclaimer = (
     <p className="mt-4 text-[12px] text-[var(--text-secondary)]/60 leading-relaxed">
-      Points valued at conservative rates (Chase UR: 1.25¢, Amex MR: 1.0¢).
+      Points valued at conservative rates (Chase UR: 1.25¢, Amex MR: 1.0¢, Citi TP: 1.0¢).
       Transfer partner redemptions can yield higher value.
       {" "}Your card shows benefits actually captured; other cards show benefits simulated from your spending history.
     </p>
@@ -113,22 +124,48 @@ export function CompareContent({
         </p>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="flex gap-1 py-4 border-b border-[var(--border-default)]">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 rounded-[var(--radius-md)] text-[14px] font-medium transition-colors duration-[var(--duration-fast)] ${
-              activeTab === tab.id
-                ? "bg-[var(--bg-tertiary)] text-[var(--text-primary)]"
-                : "text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]/50"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+      {/* Tab Navigation + Portal Toggle */}
+      <div className="flex items-center justify-between py-4 border-b border-[var(--border-default)]">
+        <div className="flex gap-1">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-4 py-2 rounded-[var(--radius-md)] text-[14px] font-medium transition-colors duration-[var(--duration-fast)] ${
+                activeTab === tab.id
+                  ? "bg-[var(--bg-tertiary)] text-[var(--text-primary)]"
+                  : "text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]/50"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Portal Mode Toggle */}
+        <button
+          onClick={handlePortalToggle}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-[var(--radius-md)] text-[13px] font-medium transition-colors duration-[var(--duration-fast)] border ${
+            portalMode
+              ? "border-[var(--color-signal)] text-[var(--color-signal)] bg-[var(--color-signal)]/10"
+              : "border-[var(--border-default)] text-[var(--text-secondary)] hover:border-[var(--text-secondary)]"
+          }`}
+        >
+          <span
+            className="inline-block w-2 h-2 rounded-full"
+            style={{ backgroundColor: portalMode ? "var(--color-signal)" : "var(--text-muted)" }}
+          />
+          Portal booking
+        </button>
       </div>
+
+      {/* Portal mode note */}
+      {portalMode && (
+        <div className="mt-3 px-3 py-2 rounded-[var(--radius-md)] bg-[var(--color-signal)]/5 border border-[var(--color-signal)]/20 text-[13px] text-[var(--text-secondary)] leading-relaxed">
+          Assumes all travel booked through each card's portal.
+          Flights, hotels, and other travel earn portal rates for all cards.
+        </div>
+      )}
 
       {/* Tab Content */}
       <div className="pt-6">
@@ -182,6 +219,7 @@ export function CompareContent({
         Based on {monthCount} month{monthCount !== 1 ? "s" : ""} of transaction
         data {" · "} {totalTransactions.toLocaleString()} transactions {" · "}{" "}
         {formatDollars(totalSpend)} total spend
+        {portalMode && " · Portal booking mode"}
         <br />
         zurp shows the math — you make the call. No affiliate links. No card
         recommendations.

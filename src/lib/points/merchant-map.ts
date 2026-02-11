@@ -124,6 +124,8 @@ const MERCHANT_MAP_UNSORTED: MerchantEntry[] = [
   // ── Travel Portal ──
   { pattern: "chase travel", matchType: "prefix", category: "travel_portal", priority: 10 },
   { pattern: "amex travel", matchType: "prefix", category: "travel_portal", priority: 10 },
+  { pattern: "citi travel", matchType: "prefix", category: "travel_portal", priority: 10 },
+  { pattern: "cititravel", matchType: "prefix", category: "travel_portal", priority: 10 },
   { pattern: "expedia", matchType: "prefix", category: "travel_portal", priority: 10 },
 
   // ── Car Rental / Travel Other ──

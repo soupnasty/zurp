@@ -13,15 +13,21 @@ import { Card } from "@/components/ui/Card";
 
 export const dynamic = "force-dynamic";
 
-export default async function ComparePage() {
+export default async function ComparePage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const user = await requireAuth();
+  const params = await searchParams;
 
   const cardProfiles = await getCardProfiles(user.id!);
   if (cardProfiles.length === 0) {
     redirect("/onboarding");
   }
 
-  const comparison = await computeComparison(user.id!);
+  const portalMode = params.portal === "true";
+  const comparison = await computeComparison(user.id!, { portalMode });
 
   // Empty state: no data or < 1 month
   if (!comparison) {
@@ -70,6 +76,7 @@ export default async function ComparePage() {
         monthCount={monthCount}
         totalSpend={totalSpend}
         totalTransactions={totalTransactions}
+        portalMode={portalMode}
         perkSections={PERK_SECTIONS}
         cardLinks={CARD_REFERENCE_LINKS}
       />

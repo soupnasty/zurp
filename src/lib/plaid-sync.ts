@@ -61,6 +61,11 @@ export async function triggerSync(connectionId: string): Promise<SyncResult> {
           plaidConnectionId: connection.id,
           userId: connection.userId,
           date: new Date(tx.date),
+          datetime: tx.authorized_datetime
+            ? new Date(tx.authorized_datetime)
+            : tx.datetime
+              ? new Date(tx.datetime)
+              : null,
           merchantName: tx.merchant_name || tx.name,
           merchantNameRaw: tx.name,
           amount: tx.amount,
@@ -83,6 +88,11 @@ export async function triggerSync(connectionId: string): Promise<SyncResult> {
           .update(schema.transactions)
           .set({
             date: new Date(tx.date),
+            datetime: tx.authorized_datetime
+              ? new Date(tx.authorized_datetime)
+              : tx.datetime
+                ? new Date(tx.datetime)
+                : null,
             merchantName: tx.merchant_name || tx.name,
             merchantNameRaw: tx.name,
             amount: tx.amount,

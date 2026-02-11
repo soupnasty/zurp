@@ -34,11 +34,19 @@ export interface CategoryAssignment {
 
 // ── Earn Config (per-card) ──
 
+export interface TimeWindow {
+  timezone: string;     // IANA timezone, e.g. "America/New_York"
+  days: number[];       // Days when window STARTS (0=Sun..6=Sat)
+  startHour: number;    // 0-23 inclusive
+  endHour: number;      // 0-23 exclusive; when < startHour, wraps overnight
+}
+
 export interface EarnCondition {
   merchant_match?: string[];
   merchant_exclude?: string[];
   amount_gte?: number;
   amount_lt?: number;
+  time_window?: TimeWindow;
 }
 
 export interface EarnCap {
@@ -162,6 +170,7 @@ export interface ComparisonOutput {
   monthCount: number;
   totalTransactions: number;
   totalSpend: number;
+  portalMode: boolean;
   cards: CardSimulation[];
   categoryBreakdown: CategoryWinner[];
   headline: HeadlineVerdict;

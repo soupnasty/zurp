@@ -19,6 +19,7 @@ import { getCardDefinition } from "@/lib/cards";
 interface SimulationTransaction {
   id: string;
   date: Date;
+  datetime: Date | null;
   merchantName: string | null;
   merchantNameRaw: string | null;
   amount: number;
@@ -34,7 +35,14 @@ interface SimulationInput {
   benefitsCaptured: number | null;
   period: { start: Date; end: Date };
   monthCount: number;
+  portalMode?: boolean;
 }
+
+const TRAVEL_CATEGORIES: EarnCategory[] = [
+  "travel_flights",
+  "travel_hotels",
+  "travel_other",
+];
 
 /**
  * Run a full comparison simulation across all card configs.
@@ -47,10 +55,27 @@ export function runSimulation(input: SimulationInput): ComparisonOutput {
     benefitsCaptured,
     period,
     monthCount,
+    portalMode = false,
   } = input;
 
+  // If portal mode, reclassify travel categories as travel_portal
+  const effectiveTxns = portalMode
+    ? transactions.map((tx) => {
+        if (TRAVEL_CATEGORIES.includes(tx.assignment.category)) {
+          return {
+            ...tx,
+            assignment: {
+              ...tx.assignment,
+              category: "travel_portal" as EarnCategory,
+            },
+          };
+        }
+        return tx;
+      })
+    : transactions;
+
   // Sort transactions by date ascending for cap tracking
-  const sortedTxns = [...transactions].sort(
+  const sortedTxns = [...effectiveTxns].sort(
     (a, b) => a.date.getTime() - b.date.getTime()
   );
 
@@ -108,6 +133,7 @@ export function runSimulation(input: SimulationInput): ComparisonOutput {
     monthCount,
     totalTransactions: transactions.length,
     totalSpend: Math.round(totalSpend * 100) / 100,
+    portalMode,
     cards: orderedCards,
     categoryBreakdown,
     headline,
@@ -127,7 +153,7 @@ function simulateCard(
       spend: number;
       points: number;
       txCount: number;
-      earnRates: Map<number, number>; // rate → spend amount
+      earnRates: Map<number, number>; // rate -> spend amount
       capNote: string | null;
     }
   >();
@@ -142,6 +168,8 @@ function simulateCard(
         amount: Math.abs(tx.amount),
         category: tx.assignment.category,
         confidence: tx.assignment.confidence,
+        date: tx.date,
+        datetime: tx.datetime,
       },
       config,
       capState

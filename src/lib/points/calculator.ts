@@ -6,6 +6,7 @@ import type {
   CapState,
   TransactionEarnResult,
   CategoryConfidence,
+  TimeWindow,
 } from "./types";
 
 interface CalculatorTransaction {
@@ -14,6 +15,61 @@ interface CalculatorTransaction {
   amount: number;
   category: EarnCategory;
   confidence: CategoryConfidence;
+  date?: Date;
+  datetime?: Date | null;
+}
+
+/**
+ * Extract day-of-week (0=Sun..6=Sat) and hour (0-23) in a given IANA timezone.
+ */
+export function getDatePartsInTimezone(
+  date: Date,
+  timezone: string
+): { dayOfWeek: number; hour: number } {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: timezone,
+    weekday: "short",
+    hour: "numeric",
+    hour12: false,
+  }).formatToParts(date);
+
+  const weekdayStr = parts.find((p) => p.type === "weekday")?.value ?? "";
+  const hourStr = parts.find((p) => p.type === "hour")?.value ?? "0";
+
+  const dayMap: Record<string, number> = {
+    Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6,
+  };
+
+  return {
+    dayOfWeek: dayMap[weekdayStr] ?? 0,
+    hour: parseInt(hourStr, 10) % 24, // "24" can appear for midnight in some locales
+  };
+}
+
+/**
+ * Check if a given day+hour falls within a time window.
+ * Handles overnight windows where startHour >= endHour.
+ */
+export function matchesTimeWindow(
+  day: number,
+  hour: number,
+  tw: TimeWindow
+): boolean {
+  const isOvernight = tw.startHour >= tw.endHour;
+
+  for (const startDay of tw.days) {
+    if (isOvernight) {
+      // Window spans: startDay@startHour -> (startDay+1)@endHour
+      const nextDay = (startDay + 1) % 7;
+      if (day === startDay && hour >= tw.startHour) return true;
+      if (day === nextDay && hour < tw.endHour) return true;
+    } else {
+      // Same-day window: startDay@startHour -> startDay@endHour
+      if (day === startDay && hour >= tw.startHour && hour < tw.endHour) return true;
+    }
+  }
+
+  return false;
 }
 
 /**
@@ -22,7 +78,9 @@ interface CalculatorTransaction {
 function matchesConditions(
   bonus: BonusCategory,
   normalizedMerchant: string,
-  amount: number
+  amount: number,
+  date?: Date,
+  datetime?: Date | null
 ): boolean {
   const cond = bonus.conditions;
   if (!cond) return true;
@@ -44,6 +102,29 @@ function matchesConditions(
   if (cond.amount_gte !== undefined && amount < cond.amount_gte) return false;
   if (cond.amount_lt !== undefined && amount >= cond.amount_lt) return false;
 
+  if (cond.time_window) {
+    const tw = cond.time_window;
+    if (datetime) {
+      // Exact check: convert to target timezone, check day + hour
+      const { dayOfWeek, hour } = getDatePartsInTimezone(datetime, tw.timezone);
+      if (!matchesTimeWindow(dayOfWeek, hour, tw)) return false;
+    } else if (date) {
+      // Fallback: day-of-week only from date (can't check hour).
+      // Use UTC day since transaction dates are calendar dates (no time component).
+      const dayOfWeek = date.getUTCDay();
+      // Check if this day is a start day for the window
+      if (tw.days.includes(dayOfWeek)) return true;
+      // For overnight windows, also match the NEXT day (the endHour portion)
+      if (tw.startHour >= tw.endHour) {
+        const prevDay = (dayOfWeek + 6) % 7;
+        if (tw.days.includes(prevDay)) return true;
+      }
+      // Day doesn't match any window
+      return false;
+    }
+    // If neither date nor datetime available, skip check (backward compat)
+  }
+
   return true;
 }
 
@@ -55,11 +136,13 @@ function findEarnRate(
   config: EarnConfig,
   category: EarnCategory,
   normalizedMerchant: string,
-  amount: number
+  amount: number,
+  date?: Date,
+  datetime?: Date | null
 ): { earnRate: number; bonusLabel: string | null } {
   for (const bonus of config.bonusCategories) {
     if (!bonus.categories.includes(category)) continue;
-    if (!matchesConditions(bonus, normalizedMerchant, amount)) continue;
+    if (!matchesConditions(bonus, normalizedMerchant, amount, date, datetime)) continue;
     return { earnRate: bonus.earnRate, bonusLabel: bonus.label };
   }
   return { earnRate: config.baseRate, bonusLabel: null };
@@ -89,12 +172,14 @@ export function calculatePointsForTransaction(
     config,
     tx.category,
     normalizedMerchant,
-    absAmount
+    absAmount,
+    tx.date,
+    tx.datetime
   );
 
   const cap = findCap(config, tx.category);
 
-  // No cap applicable — straightforward calculation
+  // No cap applicable -- straightforward calculation
   if (!cap || bonusRate === config.baseRate) {
     const points = isRefund
       ? -Math.round(absAmount * bonusRate)
@@ -134,7 +219,7 @@ export function calculatePointsForTransaction(
   }
 
   if (state.spendToDate >= state.maxSpend) {
-    // Cap already hit — earn at base rate
+    // Cap already hit -- earn at base rate
     const points = Math.round(absAmount * config.baseRate);
     return {
       transactionId: tx.id,

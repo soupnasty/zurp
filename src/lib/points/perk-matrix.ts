@@ -33,6 +33,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "$200", detail: "airline fee credit per calendar year" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: "$50", detail: "hotel credit per anniversary year" },
+          citi_strata_elite: { value: null },
         },
       },
       {
@@ -43,6 +44,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "$400", detail: "Resy ($100/quarter)", isBest: true },
           amex_gold: { value: "$220", detail: "$10/mo at select merchants + $50/semi Resy", footnote: true },
           chase_sapphire_preferred: { value: null },
+          citi_strata_elite: { value: null },
         },
       },
       {
@@ -53,6 +55,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: null },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: "$120", detail: "$10/mo non-restaurant" },
+          citi_strata_elite: { value: null },
         },
       },
       {
@@ -63,6 +66,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "$320", detail: "$200/yr Uber Cash + $120 Uber One", isBest: true },
           amex_gold: { value: "$120", detail: "Uber Cash ($10/mo)", footnote: true },
           chase_sapphire_preferred: { value: null },
+          citi_strata_elite: { value: null },
         },
       },
       {
@@ -73,6 +77,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: null },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: null },
+          citi_strata_elite: { value: null },
         },
       },
       {
@@ -83,6 +88,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "$300", detail: "Digital entertainment ($25/mo)", isBest: true },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: null },
+          citi_strata_elite: { value: null },
         },
       },
       {
@@ -93,6 +99,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "$300", detail: "Equinox credit", isBest: true },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: null },
+          citi_strata_elite: { value: null },
         },
       },
       {
@@ -103,6 +110,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "$600", detail: "FHR/THC ($300/half)" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: null },
+          citi_strata_elite: { value: "$100", detail: "Citi hotel collection credit" },
         },
       },
       {
@@ -113,6 +121,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "$400", detail: "lululemon ($75/qtr) + Saks ($50/half)", isBest: true },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: null },
+          citi_strata_elite: { value: null },
         },
       },
       {
@@ -123,6 +132,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: null },
           amex_gold: { value: "$84", detail: "Dunkin' ($7/mo)" },
           chase_sapphire_preferred: { value: null },
+          citi_strata_elite: { value: null },
         },
       },
       {
@@ -134,6 +144,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "$2,850", isBest: true },
           amex_gold: { value: "$424" },
           chase_sapphire_preferred: { value: "$290" },
+          citi_strata_elite: { value: "$100" },
         },
       },
     ],
@@ -151,6 +162,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "1x" },
           amex_gold: { value: "4x", isBest: true },
           chase_sapphire_preferred: { value: "3x" },
+          citi_strata_elite: { value: "3x", detail: "6x Fri/Sat nights" },
         },
       },
       {
@@ -161,6 +173,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "1x" },
           amex_gold: { value: "4x", isBest: true, detail: "cap $25K/yr" },
           chase_sapphire_preferred: { value: "1x" },
+          citi_strata_elite: { value: "1.5x" },
         },
       },
       {
@@ -171,16 +184,18 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "5x", isBest: true, detail: "flights only" },
           amex_gold: { value: "3x", detail: "flights only" },
           chase_sapphire_preferred: { value: "2x" },
+          citi_strata_elite: { value: "1.5x" },
         },
       },
       {
         label: "Travel (portal)",
         tracked: true,
         cards: {
-          chase_sapphire_reserve: { value: "8x", isBest: true },
+          chase_sapphire_reserve: { value: "8x" },
           amex_platinum: { value: "5x", detail: "hotels via AmexTravel" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: "5x" },
+          citi_strata_elite: { value: "12x", isBest: true, detail: "hotels; 6x flights" },
         },
       },
       {
@@ -191,6 +206,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "1x" },
           amex_gold: { value: "1x" },
           chase_sapphire_preferred: { value: "3x", isBest: true },
+          citi_strata_elite: { value: "1.5x" },
         },
       },
       {
@@ -201,6 +217,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "1x" },
           amex_gold: { value: "1x" },
           chase_sapphire_preferred: { value: "5x", isBest: true },
+          citi_strata_elite: { value: "1.5x" },
         },
       },
       {
@@ -211,6 +228,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "1x" },
           amex_gold: { value: "1x" },
           chase_sapphire_preferred: { value: "1x" },
+          citi_strata_elite: { value: "1.5x", isBest: true },
         },
       },
       {
@@ -221,6 +239,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "1.0\u00A2" },
           amex_gold: { value: "1.0\u00A2" },
           chase_sapphire_preferred: { value: "1.25\u00A2", isBest: true },
+          citi_strata_elite: { value: "1.0\u00A2", detail: "up to 1.9\u00A2 via partners" },
         },
       },
     ],
@@ -238,6 +257,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "Centurion + Priority Pass + Delta Sky Club", detail: "1,550+ lounges" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: null },
+          citi_strata_elite: { value: "Priority Pass + Centurion (via AA)" },
         },
       },
       {
@@ -248,6 +268,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "Hilton Gold + Marriott Gold" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: null },
+          citi_strata_elite: { value: null },
         },
       },
       {
@@ -258,6 +279,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "$120/4yr" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: null },
+          citi_strata_elite: { value: "$120/4yr" },
         },
       },
       {
@@ -268,6 +290,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: null },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: "Included" },
+          citi_strata_elite: { value: null },
         },
       },
       {
@@ -278,6 +301,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "Included" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: null },
+          citi_strata_elite: { value: null },
         },
       },
       {
@@ -288,6 +312,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "Included" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: null },
+          citi_strata_elite: { value: null },
         },
       },
       {
@@ -298,6 +323,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "$209/yr credit" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: null },
+          citi_strata_elite: { value: null },
         },
       },
       {
@@ -308,6 +334,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "Platinum Concierge" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: null },
+          citi_strata_elite: { value: "Citi Concierge" },
         },
       },
       {
@@ -318,6 +345,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "Yes", detail: "FHR + THC" },
           amex_gold: { value: "Yes" },
           chase_sapphire_preferred: { value: null },
+          citi_strata_elite: { value: null },
         },
       },
     ],
@@ -335,6 +363,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "Secondary" },
           amex_gold: { value: "Secondary" },
           chase_sapphire_preferred: { value: "Primary" },
+          citi_strata_elite: { value: "Primary" },
         },
       },
       {
@@ -345,6 +374,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "Yes" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: "Yes" },
+          citi_strata_elite: { value: "Yes" },
         },
       },
       {
@@ -355,6 +385,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "Yes" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: "Yes" },
+          citi_strata_elite: { value: "Yes" },
         },
       },
       {
@@ -365,6 +396,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "Yes" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: "Yes" },
+          citi_strata_elite: { value: "Yes" },
         },
       },
       {
@@ -375,6 +407,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "Yes" },
           amex_gold: { value: "Yes" },
           chase_sapphire_preferred: { value: "Yes" },
+          citi_strata_elite: { value: "Yes" },
         },
       },
       {
@@ -385,6 +418,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "Yes" },
           amex_gold: { value: "Yes" },
           chase_sapphire_preferred: { value: "Yes" },
+          citi_strata_elite: { value: "Yes" },
         },
       },
       {
@@ -395,6 +429,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "Yes" },
           amex_gold: { value: "Yes" },
           chase_sapphire_preferred: { value: null },
+          citi_strata_elite: { value: null },
         },
       },
       {
@@ -405,6 +440,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "Yes" },
           amex_gold: { value: "Yes" },
           chase_sapphire_preferred: { value: "Yes" },
+          citi_strata_elite: { value: "Yes" },
         },
       },
     ],
@@ -422,6 +458,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "Hilton, Marriott, Choice" },
           amex_gold: { value: "Hilton, Choice" },
           chase_sapphire_preferred: { value: "Hyatt, IHG, Marriott" },
+          citi_strata_elite: { value: "Choice (1:2), Wyndham" },
         },
       },
       {
@@ -432,6 +469,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           amex_platinum: { value: "Delta, JetBlue, ANA, Singapore, Virgin Atlantic" },
           amex_gold: { value: "Delta, JetBlue, ANA, Singapore" },
           chase_sapphire_preferred: { value: "United, SW, BA, Air France" },
+          citi_strata_elite: { value: "AA, JetBlue, Singapore, Turkish, Qatar" },
         },
       },
     ],
@@ -488,6 +526,14 @@ export const CARD_REFERENCE_LINKS: CardReferenceLinks[] = [
       { label: "Rewards & earn rates", url: "https://www.chase.com/personal/credit-cards/sapphire/preferred/earn-rewards" },
       { label: "Transfer partners", url: "https://ultimaterewardspoints.chase.com/transfer-partners" },
       { label: "Insurance & protections", url: "https://www.chase.com/personal/credit-cards/sapphire/preferred/card-benefits" },
+    ],
+  },
+  {
+    cardId: "citi_strata_elite",
+    cardName: "Citi Strata Elite",
+    links: [
+      { label: "Card benefits overview", url: "https://www.citi.com/credit-cards/citi-strata-premier-credit-card" },
+      { label: "Transfer partners", url: "https://www.thankyou.com/cms/thankyou/program/transfer.page" },
     ],
   },
 ];

@@ -3,12 +3,14 @@ import { csrEarnConfig } from "./chase-sapphire-reserve";
 import { cspEarnConfig } from "./chase-sapphire-preferred";
 import { amexGoldEarnConfig } from "./amex-gold";
 import { amexPlatinumEarnConfig } from "./amex-platinum";
+import { citiStrataEliteEarnConfig } from "./citi-strata-elite";
 
 const allConfigs: EarnConfig[] = [
   csrEarnConfig,
   cspEarnConfig,
   amexGoldEarnConfig,
   amexPlatinumEarnConfig,
+  citiStrataEliteEarnConfig,
 ];
 
 export function getAllEarnConfigs(): EarnConfig[] {

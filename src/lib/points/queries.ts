@@ -13,6 +13,7 @@ const EXCLUDED_CATEGORIES = [
 export interface CompareTransaction {
   id: string;
   date: Date;
+  datetime: Date | null;
   merchantName: string | null;
   merchantNameRaw: string | null;
   amount: number;
@@ -39,6 +40,7 @@ export async function getCompareTransactions(
     columns: {
       id: true,
       date: true,
+      datetime: true,
       merchantName: true,
       merchantNameRaw: true,
       amount: true,

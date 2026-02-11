@@ -15,8 +15,11 @@ export type { PerkSection, CardReferenceLinks } from "./perk-matrix";
  * Returns null if insufficient data (< 1 month).
  */
 export async function computeComparison(
-  userId: string
+  userId: string,
+  options?: { portalMode?: boolean }
 ): Promise<ComparisonOutput | null> {
+  const portalMode = options?.portalMode ?? false;
+
   // 1. Get transaction period
   const period = await getTransactionPeriod(userId);
   if (!period || period.monthCount < 1) return null;
@@ -35,6 +38,7 @@ export async function computeComparison(
     return {
       id: tx.id,
       date: tx.date,
+      datetime: tx.datetime,
       merchantName: tx.merchantName,
       merchantNameRaw: tx.merchantNameRaw,
       amount: tx.amount,
@@ -66,6 +70,7 @@ export async function computeComparison(
     benefitsCaptured,
     period: { start: period.start, end: period.end },
     monthCount: period.monthCount,
+    portalMode,
   });
 
   return result;

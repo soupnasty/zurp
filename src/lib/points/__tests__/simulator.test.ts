@@ -3,6 +3,7 @@ import { runSimulation } from "../simulator";
 import { csrEarnConfig } from "../earn-configs/chase-sapphire-reserve";
 import { cspEarnConfig } from "../earn-configs/chase-sapphire-preferred";
 import { amexGoldEarnConfig } from "../earn-configs/amex-gold";
+import { citiStrataEliteEarnConfig } from "../earn-configs/citi-strata-elite";
 import type { CategoryAssignment } from "../types";
 
 function makeTx(
@@ -11,11 +12,13 @@ function makeTx(
   merchant: string,
   amount: number,
   category: string,
-  confidence: "high" | "medium" | "low" = "high"
+  confidence: "high" | "medium" | "low" = "high",
+  datetime: Date | null = null
 ) {
   return {
     id,
     date: new Date(date),
+    datetime,
     merchantName: merchant,
     merchantNameRaw: merchant,
     amount,
@@ -212,5 +215,151 @@ describe("runSimulation", () => {
     // Headline should compare using floor values, not netValue with mixed benefits
     expect(result.headline.type).toBe("lose");
     expect(result.headline.bestAlternativeName).toBe("Chase Sapphire Preferred");
+  });
+
+  describe("portal mode", () => {
+    it("reclassifies travel categories as travel_portal", () => {
+      const transactions = [
+        makeTx("t1", "2025-03-01", "MARRIOTT", 500, "travel_hotels"),
+        makeTx("t2", "2025-03-15", "UNITED AIR", 300, "travel_flights"),
+      ];
+
+      const resultDirect = runSimulation({
+        transactions,
+        configs: [csrEarnConfig],
+        usersCardId: "chase_sapphire_reserve",
+        benefitsCaptured: 0,
+        period,
+        monthCount: 12,
+        portalMode: false,
+      });
+
+      const resultPortal = runSimulation({
+        transactions,
+        configs: [csrEarnConfig],
+        usersCardId: "chase_sapphire_reserve",
+        benefitsCaptured: 0,
+        period,
+        monthCount: 12,
+        portalMode: true,
+      });
+
+      // CSR: 4x direct travel vs 8x portal
+      const csrDirect = resultDirect.cards[0];
+      const csrPortal = resultPortal.cards[0];
+      expect(csrPortal.totalPoints).toBeGreaterThan(csrDirect.totalPoints);
+
+      // Portal: (500+300) * 8 = 6400 vs Direct: (500+300) * 4 = 3200
+      expect(csrDirect.totalPoints).toBe(3200);
+      expect(csrPortal.totalPoints).toBe(6400);
+    });
+
+    it("sets portalMode flag in output", () => {
+      const transactions = [makeTx("t1", "2025-01-01", "RANDOM", 100, "other")];
+
+      const result = runSimulation({
+        transactions,
+        configs: [csrEarnConfig],
+        usersCardId: "chase_sapphire_reserve",
+        benefitsCaptured: 0,
+        period,
+        monthCount: 12,
+        portalMode: true,
+      });
+
+      expect(result.portalMode).toBe(true);
+    });
+
+    it("Citi earns 12x portal hotels vs 1.5x direct", () => {
+      const transactions = [
+        makeTx("t1", "2025-03-01", "MARRIOTT", 1000, "travel_hotels"),
+      ];
+
+      const direct = runSimulation({
+        transactions,
+        configs: [citiStrataEliteEarnConfig],
+        usersCardId: "citi_strata_elite",
+        benefitsCaptured: null,
+        period,
+        monthCount: 12,
+        portalMode: false,
+      });
+
+      const portal = runSimulation({
+        transactions,
+        configs: [citiStrataEliteEarnConfig],
+        usersCardId: "citi_strata_elite",
+        benefitsCaptured: null,
+        period,
+        monthCount: 12,
+        portalMode: true,
+      });
+
+      // Direct: 1000 * 1.5 = 1500 (base rate, no travel bonus)
+      expect(direct.cards[0].totalPoints).toBe(1500);
+      // Portal: 1000 * 12 = 12000 (MARRIOTT isn't an airline, so matches hotel catch-all)
+      expect(portal.cards[0].totalPoints).toBe(12000);
+    });
+
+    it("Citi earns 6x portal flights via merchant match", () => {
+      const transactions = [
+        makeTx("t1", "2025-03-01", "UNITED AIRLINES", 1000, "travel_flights"),
+      ];
+
+      const portal = runSimulation({
+        transactions,
+        configs: [citiStrataEliteEarnConfig],
+        usersCardId: "citi_strata_elite",
+        benefitsCaptured: null,
+        period,
+        monthCount: 12,
+        portalMode: true,
+      });
+
+      // Portal flight: "united" matches merchant_match -> 6x
+      expect(portal.cards[0].totalPoints).toBe(6000);
+    });
+  });
+
+  describe("Citi Nights time-window", () => {
+    it("earns 6x dining on Friday 8PM ET with datetime", () => {
+      // Friday Jan 3, 2025 at 8PM ET = 2025-01-04 01:00:00 UTC
+      const fridayNight = new Date("2025-01-04T01:00:00Z");
+      const transactions = [
+        makeTx("t1", "2025-01-03", "CHIPOTLE", 50, "dining", "high", fridayNight),
+      ];
+
+      const result = runSimulation({
+        transactions,
+        configs: [citiStrataEliteEarnConfig],
+        usersCardId: "citi_strata_elite",
+        benefitsCaptured: null,
+        period,
+        monthCount: 12,
+      });
+
+      // 50 * 6 = 300 (Citi Nights)
+      expect(result.cards[0].totalPoints).toBe(300);
+    });
+
+    it("earns 3x dining on Wednesday with datetime", () => {
+      // Wednesday Jan 1, 2025 at 8PM ET = 2025-01-02 01:00:00 UTC
+      const wedNight = new Date("2025-01-02T01:00:00Z");
+      const transactions = [
+        makeTx("t1", "2025-01-01", "CHIPOTLE", 50, "dining", "high", wedNight),
+      ];
+
+      const result = runSimulation({
+        transactions,
+        configs: [citiStrataEliteEarnConfig],
+        usersCardId: "citi_strata_elite",
+        benefitsCaptured: null,
+        period,
+        monthCount: 12,
+      });
+
+      // 50 * 3 = 150 (regular dining, not Citi Nights)
+      expect(result.cards[0].totalPoints).toBe(150);
+    });
   });
 });

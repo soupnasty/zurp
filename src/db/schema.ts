@@ -184,6 +184,7 @@ export const transactions = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     date: timestamp("date", { mode: "date" }).notNull(),
+    datetime: timestamp("datetime", { mode: "date" }),
     merchantName: text("merchant_name"),
     merchantNameRaw: text("merchant_name_raw"),
     amount: real("amount").notNull(),
