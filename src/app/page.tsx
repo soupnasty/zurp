@@ -115,7 +115,11 @@ const compareCards = [
     net: "+$118",
     netColor: "#6b7280",
     rowBg: "rgba(88,166,255,0.03)",
-    detailedLabels: { points: "Points $838", benefits: "Benefits $75", fee: "Fee -$795" },
+    detailedLabels: {
+      points: "Points $838",
+      benefits: "Benefits $75",
+      fee: "Fee -$795",
+    },
   },
 ];
 
@@ -129,10 +133,18 @@ const insightCards = [
     typeColor: "#58A6FF",
     body: (
       <>
-        You spent <strong className="font-semibold text-white">$87 on Uber</strong> last
-        month but only used <span className="ins-hl-blue font-bold" style={{ color: "#58A6FF" }}>$10</span> of
-        your monthly Lyft credit. Switch your rides to Lyft to capture the
-        full <span className="ins-hl-blue font-bold" style={{ color: "#58A6FF" }}>$120/yr</span>.
+        You spent{" "}
+        <strong className="font-semibold text-white">$87 on Uber</strong> last
+        month but only used{" "}
+        <span className="ins-hl-blue font-bold" style={{ color: "#58A6FF" }}>
+          $10
+        </span>{" "}
+        of your monthly Lyft credit. Switch your rides to Lyft to capture the
+        full{" "}
+        <span className="ins-hl-blue font-bold" style={{ color: "#58A6FF" }}>
+          $120/yr
+        </span>
+        .
       </>
     ),
     meta: "Chase Sapphire Reserve \u00b7 Lyft credit",
@@ -149,11 +161,19 @@ const insightCards = [
     typeColor: "#fbbf24",
     body: (
       <>
-        Your <strong className="font-semibold text-white">$25 DoorDash credit</strong> resets
-        in <span className="ins-hl-yellow font-bold" style={{ color: "#fbbf24" }}>3 days</span>.
-        You&apos;ve only used the $5 restaurant promo &mdash; you still
-        have <span className="ins-hl-yellow font-bold" style={{ color: "#fbbf24" }}>$20</span> in
-        non-restaurant credits this month.
+        Your{" "}
+        <strong className="font-semibold text-white">
+          $25 DoorDash credit
+        </strong>{" "}
+        resets in{" "}
+        <span className="ins-hl-yellow font-bold" style={{ color: "#fbbf24" }}>
+          3 days
+        </span>
+        . You&apos;ve only used the $5 restaurant promo &mdash; you still have{" "}
+        <span className="ins-hl-yellow font-bold" style={{ color: "#fbbf24" }}>
+          $20
+        </span>{" "}
+        in non-restaurant credits this month.
       </>
     ),
     meta: "Chase Sapphire Reserve \u00b7 Monthly credit",
@@ -170,10 +190,13 @@ const insightCards = [
     typeColor: "#34d399",
     body: (
       <>
-        You&apos;ve captured <strong className="font-semibold text-white">$970</strong> of
-        $2,700 in benefits this year. Your net value
-        is <span className="ins-hl-green font-bold" style={{ color: "#34d399" }}>+$175</span> after
-        the annual fee &mdash; your card is paying for itself.
+        You&apos;ve captured{" "}
+        <strong className="font-semibold text-white">$970</strong> of $2,700 in
+        benefits this year. Your net value is{" "}
+        <span className="ins-hl-green font-bold" style={{ color: "#34d399" }}>
+          +$175
+        </span>{" "}
+        after the annual fee &mdash; your card is paying for itself.
       </>
     ),
     meta: "Chase Sapphire Reserve \u00b7 Annual value",
@@ -340,9 +363,9 @@ export default function Home() {
               className="mb-4 text-center text-[clamp(28px,4vw,42px)] font-bold leading-[1.15]"
               style={{ letterSpacing: "-0.02em" }}
             >
-              See every dollar you&apos;re
+              Most people capture less than half.{" "}
               <br className="hidden sm:block" />
-              leaving on the table.
+              Do you?
             </h2>
           </ScrollReveal>
           <ScrollReveal>
@@ -369,10 +392,7 @@ export default function Home() {
                 >
                   Chase Sapphire Reserve
                 </div>
-                <div
-                  className="mt-1 text-[12px]"
-                  style={{ color: "#6b7280" }}
-                >
+                <div className="mt-1 text-[12px]" style={{ color: "#6b7280" }}>
                   $795/yr annual fee
                 </div>
               </div>
@@ -417,12 +437,14 @@ export default function Home() {
               <div className="h-2 overflow-hidden rounded bg-[rgba(255,255,255,0.06)]">
                 <div
                   className="mock-bar h-full rounded"
-                  style={{
-                    background: "linear-gradient(90deg, #34d399, #5eead4)",
-                    "--fill": "36%",
-                    "--dur": "1.8s",
-                    "--delay": "3.8s",
-                  } as React.CSSProperties}
+                  style={
+                    {
+                      background: "linear-gradient(90deg, #34d399, #5eead4)",
+                      "--fill": "36%",
+                      "--dur": "1.8s",
+                      "--delay": "3.8s",
+                    } as React.CSSProperties
+                  }
                 />
               </div>
             </div>
@@ -436,11 +458,17 @@ export default function Home() {
                 return (
                   <div
                     key={row.name}
-                    className={`${isUnused ? "mock-row-unused" : "mock-row"} flex items-center gap-3.5 px-7 py-3.5 transition-colors hover:bg-[rgba(255,255,255,0.02)]`}
-                    style={{
-                      "--delay": `${rowDelay}s`,
-                      ...(isUnused ? { "--delay2": `${rowDelay + 0.8}s` } : {}),
-                    } as React.CSSProperties}
+                    className={`${
+                      isUnused ? "mock-row-unused" : "mock-row"
+                    } flex items-center gap-3.5 px-7 py-3.5 transition-colors hover:bg-[rgba(255,255,255,0.02)]`}
+                    style={
+                      {
+                        "--delay": `${rowDelay}s`,
+                        ...(isUnused
+                          ? { "--delay2": `${rowDelay + 0.8}s` }
+                          : {}),
+                      } as React.CSSProperties
+                    }
                   >
                     <div
                       className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[13px] font-bold ${row.iconStyle}`}
@@ -476,16 +504,18 @@ export default function Home() {
                       <div className="mt-1 ml-auto h-1 w-[60px] overflow-hidden rounded-sm bg-[rgba(255,255,255,0.06)]">
                         <div
                           className="mock-bar h-full rounded-sm"
-                          style={{
-                            background:
-                              row.status === "full"
-                                ? "#34d399"
-                                : row.status === "partial"
-                                ? "#fbbf24"
-                                : "#4b5563",
-                            "--fill": `${row.pct}%`,
-                            "--delay": `${barDelay}s`,
-                          } as React.CSSProperties}
+                          style={
+                            {
+                              background:
+                                row.status === "full"
+                                  ? "#34d399"
+                                  : row.status === "partial"
+                                  ? "#fbbf24"
+                                  : "#4b5563",
+                              "--fill": `${row.pct}%`,
+                              "--delay": `${barDelay}s`,
+                            } as React.CSSProperties
+                          }
                         />
                       </div>
                     </div>
@@ -497,7 +527,13 @@ export default function Home() {
             {/* Footer */}
             <div
               className="mock-fade border-t border-[rgba(255,255,255,0.06)] px-7 py-4 text-[11px]"
-              style={{ color: "#4b5563", "--delay": "3.6s", "--dur": "0.5s" } as React.CSSProperties}
+              style={
+                {
+                  color: "#4b5563",
+                  "--delay": "3.6s",
+                  "--dur": "0.5s",
+                } as React.CSSProperties
+              }
             >
               6 of 12 benefits tracked &middot; Updated today
             </div>
@@ -543,8 +579,7 @@ export default function Home() {
               }}
             >
               <div className="text-[20px] font-bold text-white mb-1">
-                The{" "}
-                <span style={{ color: "#34d399" }}>Sapphire Preferred</span>{" "}
+                The <span style={{ color: "#34d399" }}>Sapphire Preferred</span>{" "}
                 would save you{" "}
                 <CountUp
                   target={755}
@@ -576,13 +611,15 @@ export default function Home() {
                   <div
                     key={card.rank}
                     className="relative px-4 py-5 border-b border-[rgba(255,255,255,0.04)] last:border-b-0 sm:px-7"
-                    style={{
-                      background: card.rowBg,
-                      opacity: 0,
-                      animation: "mock-row-enter 0.5s ease forwards",
-                      animationDelay: `${rowDelay}s`,
-                      animationPlayState: "var(--play)",
-                    } as React.CSSProperties}
+                    style={
+                      {
+                        background: card.rowBg,
+                        opacity: 0,
+                        animation: "mock-row-enter 0.5s ease forwards",
+                        animationDelay: `${rowDelay}s`,
+                        animationPlayState: "var(--play)",
+                      } as React.CSSProperties
+                    }
                   >
                     {/* Top row: rank + card info + net value */}
                     <div className="flex items-center gap-3 sm:gap-5">
@@ -596,15 +633,16 @@ export default function Home() {
 
                       {/* Card info */}
                       <div className="min-w-0 flex-1 sm:shrink-0 sm:flex-none sm:min-w-[180px]">
-                        <div className="flex items-center gap-2 text-[15px] font-semibold text-[#e5e7eb]">
-                          {card.name}
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[15px] font-semibold text-[#e5e7eb]">
+                          <span className="sm:inline">{card.name}</span>
                           {card.badge === "best" && (
                             <span
                               className="inline-flex items-center rounded px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.06em] bg-[rgba(52,211,153,0.15)] text-[#34d399]"
                               style={{
                                 opacity: 0,
                                 transform: "scale(0.7)",
-                                animation: "mock-badge-pop 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards",
+                                animation:
+                                  "mock-badge-pop 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards",
                                 animationDelay: `${badgeDelay}s`,
                                 animationPlayState: "var(--play)",
                               }}
@@ -618,7 +656,8 @@ export default function Home() {
                               style={{
                                 opacity: 0,
                                 transform: "scale(0.7)",
-                                animation: "mock-badge-pop 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards",
+                                animation:
+                                  "mock-badge-pop 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards",
                                 animationDelay: `${badgeDelay}s`,
                                 animationPlayState: "var(--play)",
                               }}
@@ -640,40 +679,50 @@ export default function Home() {
                         <div className="flex h-7 overflow-hidden rounded-md bg-[rgba(255,255,255,0.04)]">
                           <div
                             className="flex items-center justify-center text-[11px] font-semibold text-white/90 whitespace-nowrap overflow-hidden"
-                            style={{
-                              width: 0,
-                              background: "linear-gradient(90deg, #3b82f6, #2563eb)",
-                              animation: "mock-fill-bar 1s cubic-bezier(0.25,0.46,0.45,0.94) forwards",
-                              animationDelay: `${barBase}s`,
-                              animationPlayState: "var(--play)",
-                              "--fill": `${card.pointsPct}%`,
-                            } as React.CSSProperties}
+                            style={
+                              {
+                                width: 0,
+                                background:
+                                  "linear-gradient(90deg, #3b82f6, #2563eb)",
+                                animation:
+                                  "mock-fill-bar 1s cubic-bezier(0.25,0.46,0.45,0.94) forwards",
+                                animationDelay: `${barBase}s`,
+                                animationPlayState: "var(--play)",
+                                "--fill": `${card.pointsPct}%`,
+                              } as React.CSSProperties
+                            }
                           >
                             {card.pointsPct > 15 ? card.pointsLabel : ""}
                           </div>
                           <div
                             className="flex items-center justify-center text-[11px] font-semibold text-white/90 whitespace-nowrap overflow-hidden"
-                            style={{
-                              width: 0,
-                              background: "rgba(52,211,153,0.5)",
-                              animation: "mock-fill-bar 0.6s cubic-bezier(0.25,0.46,0.45,0.94) forwards",
-                              animationDelay: `${barBase + 0.4}s`,
-                              animationPlayState: "var(--play)",
-                              "--fill": `${card.benefitsPct}%`,
-                            } as React.CSSProperties}
+                            style={
+                              {
+                                width: 0,
+                                background: "rgba(52,211,153,0.5)",
+                                animation:
+                                  "mock-fill-bar 0.6s cubic-bezier(0.25,0.46,0.45,0.94) forwards",
+                                animationDelay: `${barBase + 0.4}s`,
+                                animationPlayState: "var(--play)",
+                                "--fill": `${card.benefitsPct}%`,
+                              } as React.CSSProperties
+                            }
                           >
                             {card.benefitsPct > 10 ? card.benefitsLabel : ""}
                           </div>
                           <div
                             className="flex items-center justify-center text-[11px] font-semibold text-white/70 whitespace-nowrap overflow-hidden"
-                            style={{
-                              width: 0,
-                              background: "rgba(239,68,68,0.25)",
-                              animation: "mock-fill-bar 0.4s cubic-bezier(0.25,0.46,0.45,0.94) forwards",
-                              animationDelay: `${barBase + 0.7}s`,
-                              animationPlayState: "var(--play)",
-                              "--fill": `${card.feePct}%`,
-                            } as React.CSSProperties}
+                            style={
+                              {
+                                width: 0,
+                                background: "rgba(239,68,68,0.25)",
+                                animation:
+                                  "mock-fill-bar 0.4s cubic-bezier(0.25,0.46,0.45,0.94) forwards",
+                                animationDelay: `${barBase + 0.7}s`,
+                                animationPlayState: "var(--play)",
+                                "--fill": `${card.feePct}%`,
+                              } as React.CSSProperties
+                            }
                           >
                             {card.feePct > 6 ? card.feeLabel : ""}
                           </div>
@@ -735,40 +784,50 @@ export default function Home() {
                       <div className="flex h-6 overflow-hidden rounded-md bg-[rgba(255,255,255,0.04)]">
                         <div
                           className="flex items-center justify-center text-[10px] font-semibold text-white/90 whitespace-nowrap overflow-hidden"
-                          style={{
-                            width: 0,
-                            background: "linear-gradient(90deg, #3b82f6, #2563eb)",
-                            animation: "mock-fill-bar 1s cubic-bezier(0.25,0.46,0.45,0.94) forwards",
-                            animationDelay: `${barBase}s`,
-                            animationPlayState: "var(--play)",
-                            "--fill": `${card.pointsPct}%`,
-                          } as React.CSSProperties}
+                          style={
+                            {
+                              width: 0,
+                              background:
+                                "linear-gradient(90deg, #3b82f6, #2563eb)",
+                              animation:
+                                "mock-fill-bar 1s cubic-bezier(0.25,0.46,0.45,0.94) forwards",
+                              animationDelay: `${barBase}s`,
+                              animationPlayState: "var(--play)",
+                              "--fill": `${card.pointsPct}%`,
+                            } as React.CSSProperties
+                          }
                         >
                           {card.pointsPct > 20 ? card.pointsLabel : ""}
                         </div>
                         <div
                           className="flex items-center justify-center text-[10px] font-semibold text-white/90 whitespace-nowrap overflow-hidden"
-                          style={{
-                            width: 0,
-                            background: "rgba(52,211,153,0.5)",
-                            animation: "mock-fill-bar 0.6s cubic-bezier(0.25,0.46,0.45,0.94) forwards",
-                            animationDelay: `${barBase + 0.4}s`,
-                            animationPlayState: "var(--play)",
-                            "--fill": `${card.benefitsPct}%`,
-                          } as React.CSSProperties}
+                          style={
+                            {
+                              width: 0,
+                              background: "rgba(52,211,153,0.5)",
+                              animation:
+                                "mock-fill-bar 0.6s cubic-bezier(0.25,0.46,0.45,0.94) forwards",
+                              animationDelay: `${barBase + 0.4}s`,
+                              animationPlayState: "var(--play)",
+                              "--fill": `${card.benefitsPct}%`,
+                            } as React.CSSProperties
+                          }
                         >
                           {card.benefitsPct > 15 ? card.benefitsLabel : ""}
                         </div>
                         <div
                           className="flex items-center justify-center text-[10px] font-semibold text-white/70 whitespace-nowrap overflow-hidden"
-                          style={{
-                            width: 0,
-                            background: "rgba(239,68,68,0.25)",
-                            animation: "mock-fill-bar 0.4s cubic-bezier(0.25,0.46,0.45,0.94) forwards",
-                            animationDelay: `${barBase + 0.7}s`,
-                            animationPlayState: "var(--play)",
-                            "--fill": `${card.feePct}%`,
-                          } as React.CSSProperties}
+                          style={
+                            {
+                              width: 0,
+                              background: "rgba(239,68,68,0.25)",
+                              animation:
+                                "mock-fill-bar 0.4s cubic-bezier(0.25,0.46,0.45,0.94) forwards",
+                              animationDelay: `${barBase + 0.7}s`,
+                              animationPlayState: "var(--play)",
+                              "--fill": `${card.feePct}%`,
+                            } as React.CSSProperties
+                          }
                         >
                           {card.feePct > 8 ? card.feeLabel : ""}
                         </div>
@@ -817,8 +876,8 @@ export default function Home() {
             >
               Points valued conservatively (Chase UR: 1.25&cent;, Amex MR:
               1.0&cent;). Transfer partner redemptions can yield higher value.
-              Your card shows benefits actually captured; other cards show
-              total available benefits.
+              Your card shows benefits actually captured; other cards show total
+              available benefits.
             </div>
           </AnimatedMockup>
         </div>
@@ -843,22 +902,30 @@ export default function Home() {
             {/* Step 1: Connect */}
             <ScrollReveal className="flex">
               <div className="flex-1 flex flex-col rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[#111827] p-7 pt-8">
-                <div className="text-[13px] font-semibold mb-5" style={{ color: "#4b5563" }}>
+                <div
+                  className="text-[13px] font-semibold mb-5"
+                  style={{ color: "#4b5563" }}
+                >
                   01
                 </div>
 
                 {/* Animation: Card → Shield */}
                 <div className="relative mb-6 h-[180px] w-full overflow-hidden rounded-xl border border-[rgba(255,255,255,0.04)] bg-[rgba(255,255,255,0.02)]">
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="relative" style={{ width: 160, height: 120 }}>
+                    <div
+                      className="relative"
+                      style={{ width: 160, height: 120 }}
+                    >
                       {/* Card */}
                       <div
                         className="absolute rounded-md"
                         style={{
                           width: 72,
                           height: 46,
-                          background: "linear-gradient(145deg, #1a1f3a, #0d1129)",
-                          boxShadow: "0 2px 8px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.06)",
+                          background:
+                            "linear-gradient(145deg, #1a1f3a, #0d1129)",
+                          boxShadow:
+                            "0 2px 8px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.06)",
                           left: 0,
                           top: "50%",
                           animation: "hiw-card-slide 3.5s ease-in-out infinite",
@@ -875,7 +942,10 @@ export default function Home() {
                             border: "0.5px solid rgba(255,255,255,0.1)",
                           }}
                         />
-                        <div className="absolute" style={{ bottom: 8, left: 10, right: 10 }}>
+                        <div
+                          className="absolute"
+                          style={{ bottom: 8, left: 10, right: 10 }}
+                        >
                           <div className="mb-[3px] h-[2px] rounded-sm bg-[rgba(255,255,255,0.08)]" />
                           <div className="mb-[3px] h-[2px] rounded-sm bg-[rgba(255,255,255,0.08)]" />
                           <div className="h-[2px] w-[60%] rounded-sm bg-[rgba(255,255,255,0.08)]" />
@@ -885,15 +955,23 @@ export default function Home() {
                       {/* Connection line */}
                       <div
                         className="absolute"
-                        style={{ top: "50%", left: 72, right: 66, height: 2, transform: "translateY(-50%)" }}
+                        style={{
+                          top: "50%",
+                          left: 72,
+                          right: 66,
+                          height: 2,
+                          transform: "translateY(-50%)",
+                        }}
                       >
                         <div className="relative h-full w-full overflow-hidden rounded-sm bg-[rgba(255,255,255,0.06)]">
                           <div
                             className="absolute top-0 h-full rounded-sm"
                             style={{
                               width: "30%",
-                              background: "linear-gradient(90deg, transparent, #58A6FF, transparent)",
-                              animation: "hiw-pulse-slide 3.5s ease-in-out infinite",
+                              background:
+                                "linear-gradient(90deg, transparent, #58A6FF, transparent)",
+                              animation:
+                                "hiw-pulse-slide 3.5s ease-in-out infinite",
                             }}
                           />
                         </div>
@@ -902,10 +980,23 @@ export default function Home() {
                       {/* Shield */}
                       <div
                         className="absolute flex items-center justify-center"
-                        style={{ right: 10, top: "50%", transform: "translateY(-50%)", width: 56, height: 64 }}
+                        style={{
+                          right: 10,
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          width: 56,
+                          height: 64,
+                        }}
                       >
-                        <div className="relative" style={{ width: 48, height: 56 }}>
-                          <svg viewBox="0 0 48 56" fill="none" className="h-full w-full">
+                        <div
+                          className="relative"
+                          style={{ width: 48, height: 56 }}
+                        >
+                          <svg
+                            viewBox="0 0 48 56"
+                            fill="none"
+                            className="h-full w-full"
+                          >
                             <path
                               d="M24 2L4 12V28C4 40 14 50 24 54C34 50 44 40 44 28V12L24 2Z"
                               fill="rgba(88,166,255,0.08)"
@@ -918,11 +1009,23 @@ export default function Home() {
                             style={{
                               top: "50%",
                               left: "50%",
-                              animation: "hiw-check-pop 3.5s ease-in-out infinite",
+                              animation:
+                                "hiw-check-pop 3.5s ease-in-out infinite",
                             }}
                           >
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                              <path d="M5 10L9 14L15 6" stroke="#58A6FF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                            <svg
+                              width="20"
+                              height="20"
+                              viewBox="0 0 20 20"
+                              fill="none"
+                            >
+                              <path
+                                d="M5 10L9 14L15 6"
+                                stroke="#58A6FF"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
                             </svg>
                           </div>
                         </div>
@@ -931,8 +1034,13 @@ export default function Home() {
                   </div>
                 </div>
 
-                <h3 className="mb-2 text-[20px] font-bold">Connect via Plaid</h3>
-                <p className="text-[14px] leading-relaxed" style={{ color: "#8b95a8" }}>
+                <h3 className="mb-2 text-[20px] font-bold">
+                  Connect via Plaid
+                </h3>
+                <p
+                  className="text-[14px] leading-relaxed"
+                  style={{ color: "#8b95a8" }}
+                >
                   Read-only access to your transactions. We never see your card
                   number, login, or balance.
                 </p>
@@ -942,43 +1050,78 @@ export default function Home() {
             {/* Step 2: Scan */}
             <ScrollReveal className="flex">
               <div className="flex-1 flex flex-col rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[#111827] p-7 pt-8">
-                <div className="text-[13px] font-semibold mb-5" style={{ color: "#4b5563" }}>
+                <div
+                  className="text-[13px] font-semibold mb-5"
+                  style={{ color: "#4b5563" }}
+                >
                   02
                 </div>
 
                 {/* Animation: Transaction scanning */}
                 <div className="relative mb-6 h-[180px] w-full overflow-hidden rounded-xl border border-[rgba(255,255,255,0.04)] bg-[rgba(255,255,255,0.02)] flex flex-col justify-center px-5 py-4 gap-0">
                   {[
-                    { merchant: "Uber", amount: "$32.40", match: true, delay: "0s" },
-                    { merchant: "DoorDash", amount: "$24.80", match: true, delay: "0.4s" },
-                    { merchant: "Whole Foods", amount: "$67.32", match: false, delay: "0.8s" },
-                    { merchant: "StubHub", amount: "$95.00", match: true, delay: "1.2s" },
+                    {
+                      merchant: "Uber",
+                      amount: "$32.40",
+                      match: true,
+                      delay: "0s",
+                    },
+                    {
+                      merchant: "DoorDash",
+                      amount: "$24.80",
+                      match: true,
+                      delay: "0.4s",
+                    },
+                    {
+                      merchant: "Whole Foods",
+                      amount: "$67.32",
+                      match: false,
+                      delay: "0.8s",
+                    },
+                    {
+                      merchant: "StubHub",
+                      amount: "$95.00",
+                      match: true,
+                      delay: "1.2s",
+                    },
                   ].map((row) => (
                     <div
                       key={row.merchant}
                       className="flex items-center gap-2.5 rounded-md px-2 h-9"
                       style={{
                         opacity: 0,
-                        animation: `${row.match ? "hiw-scan-row-match" : "hiw-scan-row-in"} 4s ease-in-out infinite`,
+                        animation: `${
+                          row.match ? "hiw-scan-row-match" : "hiw-scan-row-in"
+                        } 4s ease-in-out infinite`,
                         animationDelay: row.delay,
                       }}
                     >
-                      <span className="flex-1 text-[12px] whitespace-nowrap" style={{ color: "#8b95a8" }}>
+                      <span
+                        className="flex-1 text-[12px] whitespace-nowrap"
+                        style={{ color: "#8b95a8" }}
+                      >
                         {row.merchant}
                       </span>
                       <span
                         className="shrink-0 w-[50px] text-right text-[12px]"
-                        style={{ color: "#6b7280", fontVariantNumeric: "tabular-nums" }}
+                        style={{
+                          color: "#6b7280",
+                          fontVariantNumeric: "tabular-nums",
+                        }}
                       >
                         {row.amount}
                       </span>
                       <span
                         className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px]"
                         style={{
-                          background: row.match ? "rgba(88,166,255,0.15)" : "rgba(255,255,255,0.04)",
+                          background: row.match
+                            ? "rgba(88,166,255,0.15)"
+                            : "rgba(255,255,255,0.04)",
                           color: row.match ? "#58A6FF" : "#4b5563",
                           opacity: 0,
-                          animation: `${row.match ? "hiw-match-pop" : "hiw-nomatch-pop"} 4s ease-in-out infinite`,
+                          animation: `${
+                            row.match ? "hiw-match-pop" : "hiw-nomatch-pop"
+                          } 4s ease-in-out infinite`,
                           animationDelay: `${parseFloat(row.delay) + 0.6}s`,
                         }}
                       >
@@ -988,10 +1131,16 @@ export default function Home() {
                   ))}
                 </div>
 
-                <h3 className="mb-2 text-[20px] font-bold">We scan your spending</h3>
-                <p className="text-[14px] leading-relaxed" style={{ color: "#8b95a8" }}>
-                  Every transaction is matched against your card&apos;s full benefit
-                  catalog &mdash; credits, multipliers, promos, partner perks.
+                <h3 className="mb-2 text-[20px] font-bold">
+                  We scan your spending
+                </h3>
+                <p
+                  className="text-[14px] leading-relaxed"
+                  style={{ color: "#8b95a8" }}
+                >
+                  Every transaction is matched against your card&apos;s full
+                  benefit catalog &mdash; credits, multipliers, promos, partner
+                  perks.
                 </p>
               </div>
             </ScrollReveal>
@@ -999,7 +1148,10 @@ export default function Home() {
             {/* Step 3: Insights */}
             <ScrollReveal className="flex">
               <div className="flex-1 flex flex-col rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[#111827] p-7 pt-8">
-                <div className="text-[13px] font-semibold mb-5" style={{ color: "#4b5563" }}>
+                <div
+                  className="text-[13px] font-semibold mb-5"
+                  style={{ color: "#4b5563" }}
+                >
                   03
                 </div>
 
@@ -1015,13 +1167,22 @@ export default function Home() {
                   >
                     <div
                       className="mb-2.5 inline-flex items-center gap-1 rounded px-2 py-[3px] text-[9px] font-bold uppercase tracking-[0.06em]"
-                      style={{ color: "#fbbf24", background: "rgba(251,191,36,0.1)" }}
+                      style={{
+                        color: "#fbbf24",
+                        background: "rgba(251,191,36,0.1)",
+                      }}
                     >
                       &uarr; Redirect spending
                     </div>
-                    <div className="mb-3 text-[13px] leading-relaxed" style={{ color: "#c9d1d9" }}>
-                      You spent <strong className="font-semibold text-white">$87 on Uber</strong> last
-                      month. Your{" "}
+                    <div
+                      className="mb-3 text-[13px] leading-relaxed"
+                      style={{ color: "#c9d1d9" }}
+                    >
+                      You spent{" "}
+                      <strong className="font-semibold text-white">
+                        $87 on Uber
+                      </strong>{" "}
+                      last month. Your{" "}
                       <span className="font-bold" style={{ color: "#58A6FF" }}>
                         $10/mo Lyft credit
                       </span>{" "}
@@ -1036,7 +1197,8 @@ export default function Home() {
                           letterSpacing: "-0.02em",
                           fontVariantNumeric: "tabular-nums",
                           opacity: 0,
-                          animation: "hiw-amount-count 4.5s ease-in-out infinite",
+                          animation:
+                            "hiw-amount-count 4.5s ease-in-out infinite",
                         }}
                       >
                         $120
@@ -1055,10 +1217,16 @@ export default function Home() {
                   </div>
                 </div>
 
-                <h3 className="mb-2 text-[20px] font-bold">Get personalized insights</h3>
-                <p className="text-[14px] leading-relaxed" style={{ color: "#8b95a8" }}>
+                <h3 className="mb-2 text-[20px] font-bold">
+                  Get personalized insights
+                </h3>
+                <p
+                  className="text-[14px] leading-relaxed"
+                  style={{ color: "#8b95a8" }}
+                >
                   Missed credits, better merchants, expiring benefits, and what
-                  you&apos;d save by switching cards. Tailored to your actual spending.
+                  you&apos;d save by switching cards. Tailored to your actual
+                  spending.
                 </p>
               </div>
             </ScrollReveal>
@@ -1092,7 +1260,7 @@ export default function Home() {
             </p>
           </ScrollReveal>
 
-          <div className="mx-auto flex max-w-[640px] flex-col items-center gap-4">
+          <AnimatedMockup className="mx-auto flex max-w-[640px] flex-col items-center gap-4">
             {insightCards.map((card, i) => (
               <div
                 key={i}
@@ -1100,8 +1268,9 @@ export default function Home() {
                 style={{
                   background: "#111827",
                   opacity: 0,
-                  animation: `ins-card-enter 9s ease-in-out infinite`,
-                  animationDelay: card.enterDelay,
+                  animation: "ins-card-enter 0.6s ease forwards",
+                  animationDelay: `${0.2 + i * 0.3}s`,
+                  animationPlayState: "var(--play)",
                 }}
               >
                 {/* Border flash overlay */}
@@ -1109,8 +1278,9 @@ export default function Home() {
                   className="pointer-events-none absolute inset-0 rounded-[14px]"
                   style={{
                     border: "1px solid rgba(255,255,255,0.06)",
-                    animation: `${card.borderAnim} 9s ease-in-out infinite`,
-                    animationDelay: card.enterDelay,
+                    animation: `${card.borderAnim} 1.5s ease-in-out 1`,
+                    animationDelay: `${0.5 + i * 0.3}s`,
+                    animationPlayState: "var(--play)",
                   }}
                 />
 
@@ -1118,13 +1288,22 @@ export default function Home() {
                   {/* Accent bar */}
                   <div
                     className="shrink-0 self-stretch rounded-sm"
-                    style={{ width: 4, minHeight: 48, background: card.accentColor }}
+                    style={{
+                      width: 4,
+                      minHeight: 48,
+                      background: card.accentColor,
+                    }}
                   />
 
                   {/* Icon */}
                   <div
                     className="flex shrink-0 items-center justify-center rounded-[10px]"
-                    style={{ width: 36, height: 36, background: card.iconBg, fontSize: 16 }}
+                    style={{
+                      width: 36,
+                      height: 36,
+                      background: card.iconBg,
+                      fontSize: 16,
+                    }}
                   >
                     {card.icon}
                   </div>
@@ -1153,7 +1332,7 @@ export default function Home() {
                 </div>
               </div>
             ))}
-          </div>
+          </AnimatedMockup>
         </div>
       </section>
 
@@ -1165,14 +1344,12 @@ export default function Home() {
               className="mb-4 text-[clamp(28px,4vw,40px)] font-bold leading-tight"
               style={{ letterSpacing: "-1px" }}
             >
-              Your card has more value
-              <br />
-              than you think.
+              Every month you wait, benefits expire.
             </h2>
           </ScrollReveal>
           <ScrollReveal>
             <p className="mb-10 text-base text-[var(--text-secondary)]">
-              Connect in 2 minutes. See what you&apos;re missing today.
+              Connect your card. See what you&apos;re missing today.
             </p>
           </ScrollReveal>
           <ScrollReveal>

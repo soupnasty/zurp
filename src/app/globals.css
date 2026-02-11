@@ -263,50 +263,49 @@ summary {
 /* ── Insights section animations ── */
 
 @keyframes ins-card-enter {
-  0%, 2% { opacity: 0; transform: translateY(20px); }
-  8%, 80% { opacity: 1; transform: translateY(0); }
-  92%, 100% { opacity: 0; transform: translateY(-8px); }
+  0% { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes ins-glow-blue {
-  0%, 8% { text-shadow: none; }
-  12% { text-shadow: 0 0 12px rgba(88,166,255,0.6); }
-  20%, 100% { text-shadow: none; }
+  0%, 20% { text-shadow: none; }
+  40% { text-shadow: 0 0 12px rgba(88,166,255,0.6); }
+  70%, 100% { text-shadow: none; }
 }
 
 @keyframes ins-glow-yellow {
-  0%, 8% { text-shadow: none; }
-  12% { text-shadow: 0 0 12px rgba(251,191,36,0.6); }
-  20%, 100% { text-shadow: none; }
+  0%, 20% { text-shadow: none; }
+  40% { text-shadow: 0 0 12px rgba(251,191,36,0.6); }
+  70%, 100% { text-shadow: none; }
 }
 
 @keyframes ins-glow-green {
-  0%, 8% { text-shadow: none; }
-  12% { text-shadow: 0 0 12px rgba(52,211,153,0.6); }
-  20%, 100% { text-shadow: none; }
+  0%, 20% { text-shadow: none; }
+  40% { text-shadow: 0 0 12px rgba(52,211,153,0.6); }
+  70%, 100% { text-shadow: none; }
 }
 
 @keyframes ins-border-blue {
-  0%, 5% { border-color: rgba(255,255,255,0.06); }
-  8% { border-color: rgba(88,166,255,0.4); }
-  16%, 100% { border-color: rgba(255,255,255,0.06); }
+  0%, 20% { border-color: rgba(255,255,255,0.06); }
+  40% { border-color: rgba(88,166,255,0.4); }
+  70%, 100% { border-color: rgba(255,255,255,0.06); }
 }
 
 @keyframes ins-border-yellow {
-  0%, 5% { border-color: rgba(255,255,255,0.06); }
-  8% { border-color: rgba(251,191,36,0.4); }
-  16%, 100% { border-color: rgba(255,255,255,0.06); }
+  0%, 20% { border-color: rgba(255,255,255,0.06); }
+  40% { border-color: rgba(251,191,36,0.4); }
+  70%, 100% { border-color: rgba(255,255,255,0.06); }
 }
 
 @keyframes ins-border-green {
-  0%, 5% { border-color: rgba(255,255,255,0.06); }
-  8% { border-color: rgba(52,211,153,0.4); }
-  16%, 100% { border-color: rgba(255,255,255,0.06); }
+  0%, 20% { border-color: rgba(255,255,255,0.06); }
+  40% { border-color: rgba(52,211,153,0.4); }
+  70%, 100% { border-color: rgba(255,255,255,0.06); }
 }
 
-.ins-hl-blue { animation: ins-glow-blue 9s ease-in-out infinite; animation-delay: 0.8s; }
-.ins-hl-yellow { animation: ins-glow-yellow 9s ease-in-out infinite; animation-delay: 2.0s; }
-.ins-hl-green { animation: ins-glow-green 9s ease-in-out infinite; animation-delay: 3.2s; }
+.ins-hl-blue { animation: ins-glow-blue 1.5s ease-in-out 1 forwards; animation-play-state: var(--play); animation-delay: 0.7s; }
+.ins-hl-yellow { animation: ins-glow-yellow 1.5s ease-in-out 1 forwards; animation-play-state: var(--play); animation-delay: 1.0s; }
+.ins-hl-green { animation: ins-glow-green 1.5s ease-in-out 1 forwards; animation-play-state: var(--play); animation-delay: 1.3s; }
 
 /* ── Track & Compare mockup animations ── */
 
@@ -340,6 +339,10 @@ summary {
   0% { opacity: 0; transform: translateX(8px); }
   100% { opacity: 1; transform: translateX(0); }
 }
+
+/* Animation gating: pause until scroll-triggered */
+.mock-container { --play: paused; }
+.mock-container.mock-active { --play: running; }
 
 /* Initial hidden states — visible only after .mock-active */
 .mock-fade,
