@@ -180,7 +180,7 @@ export const chaseSapphireReserve: CardDefinition = {
     // ── Select Hotels Credit ($250 one-time, 2026 only) ──
     b({
       id: "csr_select_hotel_credit_2026",
-      name: "Select Hotels Credit (2026)", icon: "ConciergeBell",
+      name: "Select Hotels Credit", icon: "ConciergeBell",
       category: "travel", type: "credit", creditAmount: 250, cycle: "annual_calendar",
       merchantPatterns: ["ihg", "montage", "pendry", "omni hotel", "virgin hotel", "minor hotel", "pan pacific"],
       autoMatchable: false, requiresActivation: false, priority: 6,

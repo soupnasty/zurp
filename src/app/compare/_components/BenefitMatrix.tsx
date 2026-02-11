@@ -40,11 +40,7 @@ export function BenefitMatrix({
           {cardOrder.map((cardId) => (
             <div key={cardId} className="text-center">
               <div
-                className={`text-[12px] font-semibold ${
-                  cardId === usersCardId
-                    ? "text-[var(--accent)]"
-                    : "text-[var(--text-primary)]"
-                }`}
+                className="text-[12px] font-semibold text-[var(--text-primary)]"
               >
                 {cardNames[cardId] ?? cardId}
               </div>
@@ -65,11 +61,6 @@ export function BenefitMatrix({
               <span className="label-caps font-semibold text-[var(--text-secondary)]">
                 {section.label}
               </span>
-              {section.tracked && (
-                <span className="inline-flex items-center rounded px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-[var(--accent)]/70 border border-[var(--accent)]/20 bg-[var(--accent)]/5">
-                  Tracked by zurp
-                </span>
-              )}
             </div>
 
             {/* Rows */}
@@ -86,23 +77,35 @@ export function BenefitMatrix({
                 <div className="text-[13px] text-[var(--text-primary)]">
                   {row.label}
                 </div>
-                {cardOrder.map((cardId) => {
-                  const cell = row.cards[cardId];
-                  return (
-                    <div key={cardId} className="text-center text-[13px]">
-                      {cell?.value ? (
-                        <div className="flex flex-col items-center">
-                          <span
-                            className={
-                              cell.isBest
-                                ? "font-data font-semibold text-[var(--accent)]"
-                                : cell.value === "✓"
-                                  ? "text-[var(--color-success)]"
-                                  : "text-[var(--text-primary)]"
-                            }
-                          >
-                            {cell.value}
-                          </span>
+                {(() => {
+                  // Find the highest dollar value in this row to highlight it
+                  const dollarValues = cardOrder.map((cardId) => {
+                    const v = row.cards[cardId]?.value;
+                    if (!v) return 0;
+                    const m = v.replace(/[~,]/g, "").match(/\$(\d+)/);
+                    return m ? parseInt(m[1], 10) : 0;
+                  });
+                  const maxVal = Math.max(...dollarValues);
+                  const hasMultipleBest = dollarValues.filter((v) => v === maxVal).length > 1;
+
+                  return cardOrder.map((cardId, colIdx) => {
+                    const cell = row.cards[cardId];
+                    const isHighest = section.tracked && !row.isTotalRow && maxVal > 0 && dollarValues[colIdx] === maxVal && !hasMultipleBest;
+                    return (
+                      <div key={cardId} className="text-center text-[13px]">
+                        {cell?.value ? (
+                          <div className="flex flex-col items-center">
+                            <span
+                              className={
+                                isHighest || cell.isBest
+                                  ? "font-data font-semibold text-[var(--color-success)]"
+                                  : cell.value === "✓"
+                                    ? "text-[var(--color-success)]"
+                                    : "text-[var(--text-primary)]"
+                              }
+                            >
+                              {cell.value}
+                            </span>
                           {cell.detail && (
                             <span className="text-[10px] text-[var(--text-secondary)] max-w-[120px] text-center leading-tight">
                               {cell.detail}
@@ -116,7 +119,8 @@ export function BenefitMatrix({
                       )}
                     </div>
                   );
-                })}
+                });
+                })()}
               </div>
             ))}
           </div>

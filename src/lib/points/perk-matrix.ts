@@ -235,7 +235,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: false,
         cards: {
           chase_sapphire_reserve: { value: "Priority Pass + Sapphire Lounge" },
-          amex_platinum: { value: "Centurion + Priority Pass + Delta Sky Club", isBest: true, detail: "1,550+ lounges" },
+          amex_platinum: { value: "Centurion + Priority Pass + Delta Sky Club", detail: "1,550+ lounges" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: null },
         },
@@ -245,7 +245,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: false,
         cards: {
           chase_sapphire_reserve: { value: "IHG Platinum Elite" },
-          amex_platinum: { value: "Hilton Gold + Marriott Gold", isBest: true },
+          amex_platinum: { value: "Hilton Gold + Marriott Gold" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: null },
         },
@@ -275,7 +275,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: false,
         cards: {
           chase_sapphire_reserve: { value: null },
-          amex_platinum: { value: "Included", isBest: true },
+          amex_platinum: { value: "Included" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: null },
         },
@@ -285,7 +285,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: false,
         cards: {
           chase_sapphire_reserve: { value: null },
-          amex_platinum: { value: "Included", isBest: true },
+          amex_platinum: { value: "Included" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: null },
         },
@@ -295,7 +295,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: false,
         cards: {
           chase_sapphire_reserve: { value: null },
-          amex_platinum: { value: "$209/yr credit", isBest: true },
+          amex_platinum: { value: "$209/yr credit" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: null },
         },
@@ -331,10 +331,10 @@ export const PERK_SECTIONS: PerkSection[] = [
         label: "Auto rental CDW",
         tracked: false,
         cards: {
-          chase_sapphire_reserve: { value: "Primary", isBest: true },
+          chase_sapphire_reserve: { value: "Primary" },
           amex_platinum: { value: "Secondary" },
           amex_gold: { value: "Secondary" },
-          chase_sapphire_preferred: { value: "Primary", isBest: true },
+          chase_sapphire_preferred: { value: "Primary" },
         },
       },
       {

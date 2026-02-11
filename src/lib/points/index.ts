@@ -36,7 +36,10 @@ export async function computeComparison(
       id: tx.id,
       date: tx.date,
       merchantName: tx.merchantName,
+      merchantNameRaw: tx.merchantNameRaw,
       amount: tx.amount,
+      plaidCategoryPrimary: tx.plaidCategoryPrimary,
+      plaidCategoryDetailed: tx.plaidCategoryDetailed,
       assignment,
     };
   });

@@ -118,7 +118,7 @@ export function CategoryBreakdown({
         {/* Boring categories */}
         {boringCats.length > 0 && (
           <div
-            className="grid gap-2 px-3 py-3.5 border-b border-[rgba(255,255,255,0.03)] items-center opacity-50"
+            className="grid gap-2 px-3 py-3.5 border-b border-[rgba(255,255,255,0.03)] items-center"
             style={{ gridTemplateColumns: colTemplate }}
           >
             <div>

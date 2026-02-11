@@ -82,7 +82,7 @@ const compareCards = [
     pointsPct: 71,
     pointsLabel: "Points $798",
     benefitsPct: 15,
-    benefitsLabel: "$170",
+    benefitsLabel: "~$170",
     feePct: 9,
     feeLabel: "-$95",
     net: "+$873",
@@ -90,7 +90,7 @@ const compareCards = [
     rowBg: "rgba(52,211,153,0.03)",
     detailedLabels: {
       points: "Points $798",
-      benefits: "$170 available",
+      benefits: "~$170 simulated",
       fee: "Fee -$95",
     },
   },
@@ -102,7 +102,7 @@ const compareCards = [
     pointsPct: 48,
     pointsLabel: "Points $656",
     benefitsPct: 23,
-    benefitsLabel: "$304",
+    benefitsLabel: "~$304",
     feePct: 24,
     feeLabel: "-$325",
     net: "+$635",
@@ -110,7 +110,7 @@ const compareCards = [
     rowBg: undefined,
     detailedLabels: {
       points: "Points $656",
-      benefits: "$304 available",
+      benefits: "~$304 simulated",
       fee: "Fee -$325",
     },
   },
@@ -130,7 +130,7 @@ const compareCards = [
     rowBg: "rgba(88,166,255,0.03)",
     detailedLabels: {
       points: "Points $838",
-      benefits: "$75 captured of $2,060",
+      benefits: "$75 captured of $2,628",
       fee: "Fee -$795",
     },
   },
@@ -452,7 +452,7 @@ export default function Home() {
                   captured
                 </div>
                 <div className="text-[13px]" style={{ color: "#6b7280" }}>
-                  of $2,060 available
+                  of $2,628 available
                 </div>
               </div>
               <div className="h-2 overflow-hidden rounded bg-[rgba(255,255,255,0.06)]">
@@ -461,7 +461,7 @@ export default function Home() {
                   style={
                     {
                       background: "linear-gradient(90deg, #34d399, #5eead4)",
-                      "--fill": "47%",
+                      "--fill": "37%",
                       "--dur": "1.8s",
                       "--delay": "3.8s",
                     } as React.CSSProperties
@@ -897,8 +897,8 @@ export default function Home() {
             >
               Points valued conservatively (Chase UR: 1.25&cent;, Amex MR:
               1.0&cent;). Transfer partner redemptions can yield higher value.
-              Your card shows benefits actually captured; other cards show total
-              available benefits.
+              Your card shows benefits actually captured; other cards show
+              benefits simulated from your spending history.
             </div>
           </AnimatedMockup>
         </div>

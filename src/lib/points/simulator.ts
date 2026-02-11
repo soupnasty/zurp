@@ -9,15 +9,21 @@ import type {
   HeadlineVerdict,
   ComparisonOutput,
 } from "./types";
+import type { MatcherTransaction } from "@/lib/types";
 import { calculatePointsForTransaction } from "./calculator";
 import { valuatePoints, computeBenefitsValue } from "./valuation";
 import { EARN_CATEGORY_LABELS, EARN_CATEGORY_ICONS } from "./categories";
+import { runMatcher } from "@/lib/engine/matcher";
+import { getCardDefinition } from "@/lib/cards";
 
 interface SimulationTransaction {
   id: string;
   date: Date;
   merchantName: string | null;
+  merchantNameRaw: string | null;
   amount: number;
+  plaidCategoryPrimary: string | null;
+  plaidCategoryDetailed: string | null;
   assignment: CategoryAssignment;
 }
 
@@ -62,6 +68,17 @@ export function runSimulation(input: SimulationInput): ComparisonOutput {
       config.cardId === usersCardId ? benefitsCaptured : null
     );
   });
+
+  // Simulate benefit matching for non-user cards using the actual matcher
+  for (const sim of simulations) {
+    if (!sim.isUsersCard) {
+      const simulated = simulateBenefitsForCard(sim.cardId, sortedTxns);
+      sim.benefitsSimulated = simulated;
+      sim.netActual = round2(
+        sim.pointsValueConservative + simulated - sim.annualFee
+      );
+    }
+  }
 
   // Rank cards by netFloor descending (apples-to-apples: points only)
   const ranked = [...simulations].sort((a, b) => b.netFloor - a.netFloor);
@@ -219,12 +236,51 @@ function simulateCard(
     pointsValueUpside: values.upside,
     benefitsValue,
     benefitsCaptured: isUsersCard ? benefitsCaptured : null,
+    benefitsSimulated: null,
     netFloor,
     netCeiling,
     netActual,
     rank: 0, // set after ranking
     categories,
   };
+}
+
+/**
+ * Run the benefit matching engine against a card's benefit catalog
+ * using the user's actual transactions. Returns total credits matched.
+ */
+function simulateBenefitsForCard(
+  cardId: string,
+  transactions: SimulationTransaction[]
+): number {
+  const cardDef = getCardDefinition(cardId);
+  if (!cardDef || cardDef.benefits.length === 0) return 0;
+
+  // Convert to MatcherTransaction format (all treated as unmatched)
+  const matcherTxns: MatcherTransaction[] = transactions
+    .filter((tx) => tx.amount > 0)
+    .map((tx) => ({
+      id: tx.id,
+      date: tx.date,
+      merchantName: tx.merchantName,
+      merchantNameRaw: tx.merchantNameRaw,
+      amount: Math.abs(tx.amount),
+      plaidCategoryPrimary: tx.plaidCategoryPrimary,
+      plaidCategoryDetailed: tx.plaidCategoryDetailed,
+      pending: false,
+      matchedStatus: "unmatched" as const,
+    }));
+
+  // Run matcher with empty usage (fresh simulation) and no anniversary date
+  const result = runMatcher(matcherTxns, {
+    benefits: cardDef.benefits,
+    usageMap: new Map(),
+    anniversaryDate: null,
+  });
+
+  // Sum all credits matched
+  const total = result.matches.reduce((sum, m) => sum + m.creditApplied, 0);
+  return round2(total);
 }
 
 function buildCategoryBreakdown(

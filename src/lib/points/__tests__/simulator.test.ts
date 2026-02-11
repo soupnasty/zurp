@@ -17,7 +17,10 @@ function makeTx(
     id,
     date: new Date(date),
     merchantName: merchant,
+    merchantNameRaw: merchant,
     amount,
+    plaidCategoryPrimary: null as string | null,
+    plaidCategoryDetailed: null as string | null,
     assignment: {
       category,
       confidence,

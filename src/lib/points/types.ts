@@ -118,11 +118,13 @@ export interface CardSimulation {
   pointsValueUpside: number;
   benefitsValue: number;
   benefitsCaptured: number | null;
+  /** For non-user cards: simulated benefit capture from matcher. Null for user's card. */
+  benefitsSimulated: number | null;
   /** Points only - fee (guaranteed value, no benefits assumed) */
   netFloor: number;
   /** Points + full catalog benefits - fee (max possible) */
   netCeiling: number;
-  /** For user's card: points + captured benefits - fee. For others: same as netCeiling. */
+  /** For user's card: points + captured benefits - fee. For others: points + estimated benefits - fee. */
   netActual: number;
   rank: number;
   categories: CategoryEarnSummary[];

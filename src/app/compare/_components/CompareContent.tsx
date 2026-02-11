@@ -27,13 +27,6 @@ function formatDollars(amount: number): string {
   }).format(Math.abs(amount));
 }
 
-function shortCardName(name: string): string {
-  if (name.includes("Reserve")) return "CSR";
-  if (name.includes("Preferred")) return "CSP";
-  if (name.includes("Gold")) return "Gold";
-  return name;
-}
-
 export function CompareContent({
   cards,
   categoryBreakdown,
@@ -76,19 +69,16 @@ export function CompareContent({
     cards.map((c) => [c.cardId, c.benefitsValue])
   );
 
-  // Sort links to match card order
-  const orderedLinks = [...cardLinks].sort((a, b) => {
-    const ai = cardOrder.indexOf(a.cardId);
-    const bi = cardOrder.indexOf(b.cardId);
-    return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
-  });
+  // Filter to only compared cards and match their order
+  const orderedLinks = cardOrder
+    .map((id) => cardLinks.find((l) => l.cardId === id))
+    .filter(Boolean) as typeof cardLinks;
 
   const disclaimer = (
     <p className="mt-4 text-[12px] text-[var(--text-secondary)]/60 leading-relaxed">
       Points valued at conservative rates (Chase UR: 1.25¢, Amex MR: 1.0¢).
       Transfer partner redemptions can yield higher value.
-      {usersCard.benefitsCaptured !== null &&
-        " Your card shows benefits actually captured; other cards show total available benefits."}
+      {" "}Your card shows benefits actually captured; other cards show benefits simulated from your spending history.
     </p>
   );
 
@@ -99,7 +89,7 @@ export function CompareContent({
         <h1 className="text-[28px] font-bold text-[var(--text-primary)] leading-tight mb-2.5 tracking-tight">
           {userWins ? (
             <>
-              Your {shortCardName(usersCard.cardName)} earned you{" "}
+              Your {usersCard.cardName} earned you{" "}
               <span className="text-[var(--color-success)]">
                 {formatDollars(usersCard.netActual)}
               </span>{" "}
@@ -108,8 +98,8 @@ export function CompareContent({
           ) : (
             <>
               The{" "}
-              <span>{bestCard.cardName}</span>{" "}
-              would earn you{" "}
+              {bestCard.cardName}{" "}
+              could earn you up to{" "}
               <span className="text-[var(--color-success)]">
                 {formatDollars(margin)} more
               </span>
@@ -118,8 +108,8 @@ export function CompareContent({
         </h1>
         <p className="text-[15px] text-[var(--text-secondary)] leading-relaxed">
           {userWins
-            ? `That's ${formatDollars(margin)} more than the next best card for your spending pattern. Based on ${monthCount} month${monthCount !== 1 ? "s" : ""} of transactions across ${formatDollars(totalSpend)} in total spend.`
-            : `Based on your ${formatDollars(totalSpend)} in spending over ${monthCount} month${monthCount !== 1 ? "s" : ""}, the ${bestCard.cardName} would deliver more value than your current ${usersCard.cardName}.`}
+            ? `That's ${formatDollars(margin)} more than the next best card. Based on ${formatDollars(totalSpend)} in spending over ${monthCount} month${monthCount !== 1 ? "s" : ""}.`
+            : `Based on your ${formatDollars(totalSpend)} in spending over ${monthCount} month${monthCount !== 1 ? "s" : ""}, you'd earn ${formatDollars(margin)} more with the ${bestCard.cardName}.`}
         </p>
       </div>
 
