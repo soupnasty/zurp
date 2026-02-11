@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-A credit card benefits tracker that syncs transactions via Plaid, matches them against card-specific benefit rulesets, and shows users which credits they've used, which are expiring, and whether each card is paying for itself. Supports Chase Sapphire Reserve, Chase Sapphire Preferred, Amex Gold, and Amex Platinum.
+A credit card benefits tracker that syncs transactions via Plaid, matches them against card-specific benefit rulesets, and shows users which credits they've used, which are expiring, and whether each card is paying for itself. Supports Chase Sapphire Reserve, Chase Sapphire Preferred, Amex Gold, Amex Platinum, and Citi Strata Elite.
 
 ## Tech Stack
 
@@ -21,7 +21,7 @@ A credit card benefits tracker that syncs transactions via Plaid, matches them a
 ```bash
 npm run dev          # Start dev server
 npm run build        # Production build
-npm run test:run     # Run all tests (195 tests across 12 files)
+npm run test:run     # Run all tests (218 tests across 12 files)
 npm run db:push      # Push schema to Neon
 npm run db:seed      # Seed cards + benefits + competitor map from registry
 npm run db:studio    # Open Drizzle Studio
@@ -113,12 +113,12 @@ On-demand simulation engine that answers "which card earns the most for your act
 
 - **Category mapper** (`categories.ts`): 3-tier classification — merchant name match → Plaid category fallback → `other`. Uses 19-category taxonomy separate from the 8-category spending system.
 - **Merchant map** (`merchant-map.ts`): ~200 static merchant→category entries with priority-based matching.
-- **Earn configs** (`earn-configs/`): Per-card earn rate definitions (bonus categories, caps, conditions, point valuations). Files: `chase-sapphire-reserve.ts`, `chase-sapphire-preferred.ts`, `amex-gold.ts`, `amex-platinum.ts`.
-- **Calculator** (`calculator.ts`): Per-transaction points calculation with cap tracking.
-- **Simulator** (`simulator.ts`): Full pipeline — classify → calculate per card → aggregate → compute net value (points + benefits - fee).
-- **Perk matrix** (`perk-matrix.ts`): Static benefit comparison data for the Benefits & Perks tab.
-- **Queries** (`queries.ts`): Server-only DB queries for transaction data.
-- **Orchestrator** (`index.ts`): `computeComparison(userId)` — main entry point called from the compare page.
+- **Earn configs** (`earn-configs/`): Per-card earn rate definitions (bonus categories, caps, conditions, point valuations). Files: `chase-sapphire-reserve.ts`, `chase-sapphire-preferred.ts`, `amex-gold.ts`, `amex-platinum.ts`, `citi-strata-elite.ts`.
+- **Calculator** (`calculator.ts`): Per-transaction points calculation with cap tracking. Supports `time_window` conditions for time-based earn rates (e.g., Citi Nights).
+- **Simulator** (`simulator.ts`): Full pipeline — classify → calculate per card → aggregate → compute net value (points + benefits - fee). Supports `portalMode` to reclassify travel as `travel_portal`.
+- **Perk matrix** (`perk-matrix.ts`): Static benefit comparison data for the Benefits & Perks tab (5 cards).
+- **Queries** (`queries.ts`): Server-only DB queries for transaction data (includes `datetime` for time-window matching).
+- **Orchestrator** (`index.ts`): `computeComparison(userId, options?)` — main entry point called from the compare page. Accepts `{ portalMode?: boolean }`.
 
 No new DB tables — computed on-demand from existing transaction data.
 
@@ -126,7 +126,11 @@ No new DB tables — computed on-demand from existing transaction data.
 
 Card definitions live in `src/lib/cards/`. Each card file exports a `CardDefinition` with all benefits. The registry at `src/lib/cards/index.ts` aggregates them. `detect.ts` auto-detects card type from Plaid account metadata. To add a new card, create a new file in `src/lib/cards/` and register it in `index.ts`.
 
+5 cards: CSR, CSP, Amex Gold, Amex Platinum, Citi Strata Elite.
+
 The Amex Platinum (`amex-platinum.ts`) has 21 benefits across 5 period types including quarterly (a new cycle type). It uses `activeMonths` gating for Uber Cash month-specific credits ($15 Jan-Nov, $35 Dec).
+
+The Citi Strata Elite (`citi-strata-elite.ts`) has 2 benefits (hotel collection credit, Global Entry/TSA PreCheck). Its primary value is in earning rates via the points engine, not statement credits.
 
 ## Project Structure
 
@@ -184,6 +188,7 @@ src/
 - [x] Phase 7: Insights Engine v2 — 8 categories, DB persistence, 5-factor scoring, lifecycle, competitor map
 - [x] Phase 8: Compare Page + Points Earn Model — 19-category mapper, 4 card earn configs, simulator, perk matrix, tabbed UI
 - [x] Phase 9: Amex Platinum — 21 benefits, quarterly cycle types, activeMonths gating, earn config, A2 swap templates, competitor map
+- [x] Phase 10: Citi Strata Elite — time-window conditions (Citi Nights 6x), portal mode toggle, 5-card comparison, datetime from Plaid
 
 ### Sync Architecture
 
