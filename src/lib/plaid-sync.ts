@@ -2,7 +2,7 @@ import { plaidClient } from "@/lib/plaid";
 import { decrypt } from "@/lib/encryption";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { processTransactionsForConnection } from "@/lib/engine/orchestrator";
 import type { RemovedTransaction, Transaction } from "plaid";
 
@@ -51,53 +51,60 @@ export async function triggerSync(connectionId: string): Promise<SyncResult> {
     cursor = response.data.next_cursor;
   }
 
-  // Upsert added transactions
-  for (const tx of added) {
+  // Upsert added transactions (batch insert)
+  if (added.length > 0) {
     await db
       .insert(schema.transactions)
-      .values({
-        id: tx.transaction_id,
-        plaidConnectionId: connection.id,
-        userId: connection.userId,
-        date: new Date(tx.date),
-        merchantName: tx.merchant_name || tx.name,
-        merchantNameRaw: tx.name,
-        amount: tx.amount,
-        plaidCategoryPrimary:
-          tx.personal_finance_category?.primary || null,
-        plaidCategoryDetailed:
-          tx.personal_finance_category?.detailed || null,
-        pending: tx.pending,
-        matchedStatus: "unmatched",
-      })
+      .values(
+        added.map((tx) => ({
+          id: tx.transaction_id,
+          plaidConnectionId: connection.id,
+          userId: connection.userId,
+          date: new Date(tx.date),
+          merchantName: tx.merchant_name || tx.name,
+          merchantNameRaw: tx.name,
+          amount: tx.amount,
+          plaidCategoryPrimary:
+            tx.personal_finance_category?.primary || null,
+          plaidCategoryDetailed:
+            tx.personal_finance_category?.detailed || null,
+          pending: tx.pending,
+          matchedStatus: "unmatched",
+        }))
+      )
       .onConflictDoNothing();
   }
 
-  // Update modified transactions
-  for (const tx of modified) {
-    await db
-      .update(schema.transactions)
-      .set({
-        date: new Date(tx.date),
-        merchantName: tx.merchant_name || tx.name,
-        merchantNameRaw: tx.name,
-        amount: tx.amount,
-        plaidCategoryPrimary:
-          tx.personal_finance_category?.primary || null,
-        plaidCategoryDetailed:
-          tx.personal_finance_category?.detailed || null,
-        pending: tx.pending,
-      })
-      .where(eq(schema.transactions.id, tx.transaction_id));
+  // Update modified transactions (parallel — each row has different values)
+  if (modified.length > 0) {
+    await Promise.all(
+      modified.map((tx) =>
+        db
+          .update(schema.transactions)
+          .set({
+            date: new Date(tx.date),
+            merchantName: tx.merchant_name || tx.name,
+            merchantNameRaw: tx.name,
+            amount: tx.amount,
+            plaidCategoryPrimary:
+              tx.personal_finance_category?.primary || null,
+            plaidCategoryDetailed:
+              tx.personal_finance_category?.detailed || null,
+            pending: tx.pending,
+          })
+          .where(eq(schema.transactions.id, tx.transaction_id))
+      )
+    );
   }
 
-  // Remove deleted transactions
-  for (const tx of removed) {
-    if (tx.transaction_id) {
-      await db
-        .delete(schema.transactions)
-        .where(eq(schema.transactions.id, tx.transaction_id));
-    }
+  // Remove deleted transactions (batch delete)
+  const removedIds = removed
+    .map((tx) => tx.transaction_id)
+    .filter((id): id is string => !!id);
+  if (removedIds.length > 0) {
+    await db
+      .delete(schema.transactions)
+      .where(inArray(schema.transactions.id, removedIds));
   }
 
   // Update sync cursor and timestamp
