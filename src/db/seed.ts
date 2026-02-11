@@ -248,6 +248,30 @@ async function seed() {
     // Hotels → AmexTravel.com (A1 — FHR/THC redirect)
     { cardType: "amex_platinum", benefitKey: "plat_hotel_credit_h1", benefitPartner: "AmexTravel.com", competitorMerchant: "Hotels.com", plaidMerchantPattern: "hotels.com", category: "hotels", insightType: "A1" },
     { cardType: "amex_platinum", benefitKey: "plat_hotel_credit_h1", benefitPartner: "AmexTravel.com", competitorMerchant: "Booking.com", plaidMerchantPattern: "booking.com", category: "hotels", insightType: "A1" },
+
+    // ── Capital One Venture X entries ──
+    // Hotels (OTA) → Capital One Travel (A1)
+    { cardType: "capital_one_venture_x", benefitKey: "vx_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Expedia", plaidMerchantPattern: "expedia", category: "hotels", insightType: "A1" },
+    { cardType: "capital_one_venture_x", benefitKey: "vx_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Hotels.com", plaidMerchantPattern: "hotels.com", category: "hotels", insightType: "A1" },
+    { cardType: "capital_one_venture_x", benefitKey: "vx_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Booking.com", plaidMerchantPattern: "booking.com", category: "hotels", insightType: "A1" },
+    { cardType: "capital_one_venture_x", benefitKey: "vx_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Priceline", plaidMerchantPattern: "priceline", category: "hotels", insightType: "A1" },
+    // Hotels (direct) → Capital One Travel (A1)
+    { cardType: "capital_one_venture_x", benefitKey: "vx_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Marriott", plaidMerchantPattern: "marriott", category: "hotels", insightType: "A1" },
+    { cardType: "capital_one_venture_x", benefitKey: "vx_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Hilton", plaidMerchantPattern: "hilton", category: "hotels", insightType: "A1" },
+    // Flights → Capital One Travel (A1)
+    { cardType: "capital_one_venture_x", benefitKey: "vx_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "United", plaidMerchantPattern: "united", category: "flights", insightType: "A1" },
+    { cardType: "capital_one_venture_x", benefitKey: "vx_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Delta", plaidMerchantPattern: "delta", category: "flights", insightType: "A1" },
+    { cardType: "capital_one_venture_x", benefitKey: "vx_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "American Airlines", plaidMerchantPattern: "american air", category: "flights", insightType: "A1" },
+    { cardType: "capital_one_venture_x", benefitKey: "vx_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Southwest", plaidMerchantPattern: "southwest", category: "flights", insightType: "A1" },
+    { cardType: "capital_one_venture_x", benefitKey: "vx_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "JetBlue", plaidMerchantPattern: "jetblue", category: "flights", insightType: "A1" },
+    { cardType: "capital_one_venture_x", benefitKey: "vx_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Alaska Airlines", plaidMerchantPattern: "alaska air", category: "flights", insightType: "A1" },
+    { cardType: "capital_one_venture_x", benefitKey: "vx_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Spirit", plaidMerchantPattern: "spirit", category: "flights", insightType: "A1" },
+    { cardType: "capital_one_venture_x", benefitKey: "vx_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Frontier", plaidMerchantPattern: "frontier", category: "flights", insightType: "A1" },
+    // Rental cars → Capital One Travel (A1)
+    { cardType: "capital_one_venture_x", benefitKey: "vx_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Enterprise", plaidMerchantPattern: "enterprise", category: "rental_cars", insightType: "A1" },
+    { cardType: "capital_one_venture_x", benefitKey: "vx_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "National", plaidMerchantPattern: "national car", category: "rental_cars", insightType: "A1" },
+    { cardType: "capital_one_venture_x", benefitKey: "vx_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Avis", plaidMerchantPattern: "avis", category: "rental_cars", insightType: "A1" },
+    { cardType: "capital_one_venture_x", benefitKey: "vx_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Budget", plaidMerchantPattern: "budget rent", category: "rental_cars", insightType: "A1" },
   ];
 
   for (const entry of competitorEntries) {

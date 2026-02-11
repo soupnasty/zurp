@@ -4,6 +4,7 @@ import { chaseSapphirePreferred } from "./chase-sapphire-preferred";
 import { amexGold } from "./amex-gold";
 import { amexPlatinum } from "./amex-platinum";
 import { citiStrataElite } from "./citi-strata-elite";
+import { capitalOneVentureX } from "./capital-one-venture-x";
 
 export const cardRegistry: CardDefinition[] = [
   chaseSapphireReserve,
@@ -11,6 +12,7 @@ export const cardRegistry: CardDefinition[] = [
   amexGold,
   amexPlatinum,
   citiStrataElite,
+  capitalOneVentureX,
 ];
 
 export function getCardDefinition(cardId: string): CardDefinition | undefined {

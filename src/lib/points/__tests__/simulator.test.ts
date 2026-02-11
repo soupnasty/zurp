@@ -4,6 +4,7 @@ import { csrEarnConfig } from "../earn-configs/chase-sapphire-reserve";
 import { cspEarnConfig } from "../earn-configs/chase-sapphire-preferred";
 import { amexGoldEarnConfig } from "../earn-configs/amex-gold";
 import { citiStrataEliteEarnConfig } from "../earn-configs/citi-strata-elite";
+import { ventureXEarnConfig } from "../earn-configs/capital-one-venture-x";
 import type { CategoryAssignment } from "../types";
 
 function makeTx(
@@ -318,6 +319,64 @@ describe("runSimulation", () => {
 
       // Portal flight: "united" matches merchant_match -> 6x
       expect(portal.cards[0].totalPoints).toBe(6000);
+    });
+  });
+
+  describe("Venture X portal mode", () => {
+    it("earns 10x on portal hotels in portal mode", () => {
+      const transactions = [
+        makeTx("t1", "2025-03-01", "MARRIOTT", 1000, "travel_hotels"),
+      ];
+
+      const portal = runSimulation({
+        transactions,
+        configs: [ventureXEarnConfig],
+        usersCardId: "capital_one_venture_x",
+        benefitsCaptured: null,
+        period,
+        monthCount: 12,
+        portalMode: true,
+      });
+
+      // Portal: 1000 * 10 = 10000 (MARRIOTT isn't an airline, so matches hotel catch-all)
+      expect(portal.cards[0].totalPoints).toBe(10000);
+    });
+
+    it("earns 5x on portal flights in portal mode", () => {
+      const transactions = [
+        makeTx("t1", "2025-03-01", "UNITED AIRLINES", 1000, "travel_flights"),
+      ];
+
+      const portal = runSimulation({
+        transactions,
+        configs: [ventureXEarnConfig],
+        usersCardId: "capital_one_venture_x",
+        benefitsCaptured: null,
+        period,
+        monthCount: 12,
+        portalMode: true,
+      });
+
+      // Portal flight: "united" matches merchant_match -> 5x
+      expect(portal.cards[0].totalPoints).toBe(5000);
+    });
+
+    it("earns 2x on non-travel (base rate)", () => {
+      const transactions = [
+        makeTx("t1", "2025-01-01", "RANDOM STORE", 1000, "other"),
+      ];
+
+      const result = runSimulation({
+        transactions,
+        configs: [ventureXEarnConfig],
+        usersCardId: "capital_one_venture_x",
+        benefitsCaptured: null,
+        period,
+        monthCount: 12,
+      });
+
+      // 1000 * 2 = 2000 (base rate)
+      expect(result.cards[0].totalPoints).toBe(2000);
     });
   });
 

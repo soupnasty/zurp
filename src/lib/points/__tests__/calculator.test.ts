@@ -4,6 +4,7 @@ import { csrEarnConfig } from "../earn-configs/chase-sapphire-reserve";
 import { cspEarnConfig } from "../earn-configs/chase-sapphire-preferred";
 import { amexGoldEarnConfig } from "../earn-configs/amex-gold";
 import { citiStrataEliteEarnConfig } from "../earn-configs/citi-strata-elite";
+import { ventureXEarnConfig } from "../earn-configs/capital-one-venture-x";
 import type { CapState, TimeWindow } from "../types";
 
 describe("calculatePointsForTransaction", () => {
@@ -389,6 +390,95 @@ describe("calculatePointsForTransaction", () => {
     });
   });
 });
+
+  describe("Venture X earn rates", () => {
+    it("earns 2x on dining (base rate)", () => {
+      const capState: CapState = {};
+      const result = calculatePointsForTransaction(
+        {
+          id: "vx1",
+          merchantName: "CHIPOTLE",
+          amount: 15,
+          category: "dining",
+          confidence: "high",
+        },
+        ventureXEarnConfig,
+        capState
+      );
+      expect(result.earnRate).toBe(2);
+      expect(result.points).toBe(30);
+    });
+
+    it("earns 2x on groceries (base rate)", () => {
+      const capState: CapState = {};
+      const result = calculatePointsForTransaction(
+        {
+          id: "vx2",
+          merchantName: "WHOLE FOODS",
+          amount: 200,
+          category: "grocery",
+          confidence: "high",
+        },
+        ventureXEarnConfig,
+        capState
+      );
+      expect(result.earnRate).toBe(2);
+      expect(result.points).toBe(400);
+    });
+
+    it("earns 2x on everything else (base rate)", () => {
+      const capState: CapState = {};
+      const result = calculatePointsForTransaction(
+        {
+          id: "vx3",
+          merchantName: "RANDOM STORE",
+          amount: 100,
+          category: "other",
+          confidence: "low",
+        },
+        ventureXEarnConfig,
+        capState
+      );
+      expect(result.earnRate).toBe(2);
+      expect(result.points).toBe(200);
+    });
+
+    it("earns 10x on portal hotels", () => {
+      const capState: CapState = {};
+      const result = calculatePointsForTransaction(
+        {
+          id: "vx4",
+          merchantName: "MARRIOTT",
+          amount: 500,
+          category: "travel_portal",
+          confidence: "high",
+        },
+        ventureXEarnConfig,
+        capState
+      );
+      expect(result.earnRate).toBe(10);
+      expect(result.points).toBe(5000);
+      expect(result.bonusLabel).toBe("Capital One Travel hotels & rentals");
+    });
+
+    it("earns 5x on portal flights (airline merchant match)", () => {
+      const capState: CapState = {};
+      const result = calculatePointsForTransaction(
+        {
+          id: "vx5",
+          merchantName: "UNITED AIRLINES",
+          amount: 300,
+          category: "travel_portal",
+          confidence: "high",
+        },
+        ventureXEarnConfig,
+        capState
+      );
+      expect(result.earnRate).toBe(5);
+      expect(result.points).toBe(1500);
+      expect(result.bonusLabel).toBe("Capital One Travel flights");
+    });
+  });
 
 describe("getDatePartsInTimezone", () => {
   it("converts UTC to Eastern time correctly", () => {
