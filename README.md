@@ -2,7 +2,7 @@
 
 A credit card benefits tracker that syncs transactions via Plaid, matches them against card-specific benefit rulesets, and shows users which credits they've used, which are expiring, and whether each card is paying for itself.
 
-Supports Chase Sapphire Reserve, Chase Sapphire Preferred, and Amex Gold.
+Supports Chase Sapphire Reserve, Chase Sapphire Preferred, Amex Gold, and Amex Platinum.
 
 ## Tech Stack
 
@@ -122,7 +122,7 @@ verification_tokens      (NextAuth magic link tokens)
 **`benefits`** — Individual card benefits with matching rules:
 - `merchantPatterns` — array of substring patterns for merchant name matching
 - `plaidCategories` — Plaid category codes for matching
-- `cycle` — billing cycle type (`monthly`, `biannual_h1`, `biannual_h2`, `annual_calendar`, `annual_anniversary`, `quadrennial`, `subscription`)
+- `cycle` — billing cycle type (`monthly`, `biannual_h1`, `biannual_h2`, `quarterly_q1`, `quarterly_q2`, `quarterly_q3`, `quarterly_q4`, `annual_calendar`, `annual_anniversary`, `quadrennial`, `subscription`)
 - `priority` — matching priority (lower = matched first)
 - `autoMatchable` — whether the engine can auto-match or requires manual confirmation
 - `displayGroup` / `displayGroupName` / `displayGroupIcon` — for grouping sub-credits (e.g., DoorDash's 3 sub-credits appear as one $25/month card in the UI)
@@ -145,7 +145,7 @@ The core matching engine (`src/lib/engine/`) is a set of **pure functions with n
 
 | Module | Purpose |
 |---|---|
-| `cycle-utils.ts` | Date math for all 7 cycle types. Computes period bounds, days remaining, period keys. |
+| `cycle-utils.ts` | Date math for all 11 cycle types. Computes period bounds, days remaining, period keys. |
 | `normalize.ts` | Merchant name normalization — lowercase, strip order numbers, trailing IDs (`"LYFT *RIDE 8472"` → `"lyft ride"`). |
 | `matcher.ts` | Priority-based transaction matching. Handles DoorDash sub-credit depletion, negative matching for broad travel credits, and ambiguous flagging for non-auto-matchable benefits. |
 | `anniversary-detector.ts` | Scans transactions for the annual fee charge (~$795 with 5% tolerance) to auto-detect the card anniversary date. |
@@ -199,7 +199,7 @@ Custom utility classes:
 - `.font-data` — JetBrains Mono for dollar amounts and numbers
 - `.label-caps` — Uppercase, letter-spaced caption labels
 
-Full reference: `docs/zurp-style-guide.md`
+Full reference: `docs/styling/style-guide.md`
 
 ## Project Structure
 
@@ -230,6 +230,10 @@ src/
 │   │   ├── page.tsx              #   Monthly spending breakdown
 │   │   ├── layout.tsx            #   AppShell wrapper
 │   │   └── _components/          #   MonthSelector, SpendingHeadline, CategoryBreakdown
+│   ├── compare/                  # Card comparison
+│   │   ├── page.tsx              #   Points earn simulation, perk matrix
+│   │   ├── layout.tsx            #   AppShell wrapper
+│   │   └── _components/          #   CompareContent (tabbed: Total Value, By Category, Perks)
 │   ├── settings/                 # User settings
 │   │   ├── page.tsx              #   Card types, anniversary, connections, theme
 │   │   ├── actions.ts            #   Server actions (anniversary, unlink)
@@ -273,7 +277,7 @@ src/
 │   └── ThemeProvider.tsx         # Dark mode provider (next-themes)
 ├── lib/
 │   ├── engine/                   # Pure matching engine
-│   │   ├── cycle-utils.ts        #   Date math for 7 cycle types
+│   │   ├── cycle-utils.ts        #   Date math for 11 cycle types
 │   │   ├── normalize.ts          #   Merchant name normalization
 │   │   ├── matcher.ts            #   Priority-based transaction matching
 │   │   ├── anniversary-detector.ts  # Annual fee detection
@@ -295,7 +299,17 @@ src/
 │   │   ├── detect.ts             #   Auto-detect card type from Plaid metadata
 │   │   ├── chase-sapphire-reserve.ts
 │   │   ├── chase-sapphire-preferred.ts
-│   │   └── amex-gold.ts
+│   │   ├── amex-gold.ts
+│   │   └── amex-platinum.ts
+│   ├── points/                   # Points earn model
+│   │   ├── index.ts              #   Orchestrator (computeComparison)
+│   │   ├── categories.ts         #   3-tier category mapper
+│   │   ├── merchant-map.ts       #   ~200 merchant→category entries
+│   │   ├── calculator.ts         #   Per-transaction points calculation
+│   │   ├── simulator.ts          #   Full simulation pipeline
+│   │   ├── perk-matrix.ts        #   Static benefit comparison data
+│   │   ├── queries.ts            #   Server-only DB queries
+│   │   └── earn-configs/         #   Per-card earn rate definitions (CSR, CSP, Gold, Platinum)
 │   ├── auth.ts                   # NextAuth v5 config (lazy init)
 │   ├── auth-helpers.ts           # getAuthUser(), requireAuth()
 │   ├── actions.ts                # Server actions (updateCardType, removeCardProfile)
@@ -313,7 +327,7 @@ src/
 
 ## Testing
 
-Tests cover the matching engine, insights engine, and spending module (134 tests across 9 files):
+Tests cover the matching engine, insights engine, and spending module (195 tests across 12 files):
 
 ```bash
 # Run once
@@ -380,6 +394,7 @@ The handler processes `SYNC_UPDATES_AVAILABLE` (triggers a sync) and `ITEM.ERROR
 - **Chase Sapphire Reserve** — 16 benefits across 7 billing cycle types
 - **Chase Sapphire Preferred** — Core travel and dining benefits
 - **Amex Gold** — Dining and travel credits
+- **Amex Platinum** — 21 benefits across 5 period types including quarterly cycles and `activeMonths` gating
 
 Card definitions live in `src/lib/cards/`. See `docs/catalogs/` for full benefit catalogs.
 
@@ -387,7 +402,8 @@ Card definitions live in `src/lib/cards/`. See `docs/catalogs/` for full benefit
 
 - `docs/architecture/zurp.md` — Full app spec (data model, matching engine, benefits)
 - `docs/architecture/design-principles.md` — Dashboard design checklist
-- `docs/insight-engine/insights-engine.md` — Insights Engine v2 spec
+- `docs/engines/insights-engine.md` — Insights Engine v2 spec (categories, scoring, templates, display rules)
+- `docs/engines/points-engine.md` — Points earn model spec (category taxonomy, earn rates, caps)
 - `docs/styling/style-guide.md` — Brand colors, typography, spacing, motion
-- `docs/catalogs/` — Card benefit catalogs (CSR, CSP, Amex Gold)
-- `docs/zurp-dashboard-spec.md` — Dashboard UI spec
+- `docs/catalogs/` — Card benefit catalogs (CSR, CSP, Amex Gold, Amex Platinum)
+- `docs/terms/` — Privacy policy, terms of service, security documentation

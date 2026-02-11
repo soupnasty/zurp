@@ -7,6 +7,7 @@ import { requireAuth } from "@/lib/auth-helpers";
 import { decrypt } from "@/lib/encryption";
 import { plaidClient } from "@/lib/plaid";
 import { revalidatePath } from "next/cache";
+import { reprocessAllTransactions } from "@/lib/engine/orchestrator";
 
 export async function updateAnniversaryDate(
   cardProfileId: string,
@@ -33,8 +34,13 @@ export async function updateAnniversaryDate(
     })
     .where(eq(schema.cardProfiles.id, cardProfileId));
 
+  // Reprocess: clears old usage/matches, re-initializes benefit cycles
+  // with the new anniversary date, re-matches all transactions
+  await reprocessAllTransactions(cardProfileId);
+
   revalidatePath("/settings");
   revalidatePath("/benefits");
+  revalidatePath("/spending");
 }
 
 export async function unlinkConnection(connectionId: string) {

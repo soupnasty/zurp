@@ -18,9 +18,15 @@ export async function removeCardProfile(cardProfileId: string) {
     throw new Error("Unauthorized");
   }
 
-  await db.delete(schema.cardProfiles).where(eq(schema.cardProfiles.id, cardProfileId));
+  // Delete the plaid connection — cascades to card profiles, transactions,
+  // matched_tx, benefit_usage, and transaction_flags for this connection
+  await db
+    .delete(schema.plaidConnections)
+    .where(eq(schema.plaidConnections.id, cardProfile.plaidConnectionId));
 
   revalidatePath("/settings");
+  revalidatePath("/benefits");
+  revalidatePath("/spending");
 }
 
 export async function updateCardType(cardProfileId: string, newCardType: string) {

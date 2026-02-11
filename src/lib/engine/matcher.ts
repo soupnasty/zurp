@@ -27,10 +27,15 @@ export function runMatcher(
 ): MatcherOutput {
   const { benefits, anniversaryDate, referenceDate = new Date() } = config;
 
-  // Clone usage map to track running totals
+  // Clone usage map to track running totals, keyed by benefitId:periodKey
+  // so monthly benefits get independent budgets per period
   const usageMap = new Map<string, number>();
-  for (const [key, val] of config.usageMap) {
-    usageMap.set(key, val.amountUsed);
+  for (const [benefitId, val] of config.usageMap) {
+    const benefit = benefits.find((b) => b.id === benefitId);
+    if (benefit) {
+      const bounds = getCurrentCycleBounds(benefit.cycle as any, referenceDate, anniversaryDate);
+      usageMap.set(`${benefitId}:${bounds.periodKey}`, val.amountUsed);
+    }
   }
 
   const matches: MatchResult[] = [];
@@ -55,6 +60,7 @@ export function runMatcher(
     const eligibleBenefits: Array<{
       benefit: BenefitDefinition;
       confidence: MatchConfidence;
+      usageKey: string;
     }> = [];
 
     for (const benefit of sortedBenefits) {
@@ -71,8 +77,10 @@ export function runMatcher(
         continue;
       }
 
-      // Check if benefit has remaining credit
-      const currentUsed = usageMap.get(benefit.id) ?? 0;
+      // Check if benefit has remaining credit (per-period)
+      const bounds = getCurrentCycleBounds(benefit.cycle as any, tx.date, anniversaryDate);
+      const usageKey = `${benefit.id}:${bounds.periodKey}`;
+      const currentUsed = usageMap.get(usageKey) ?? 0;
       const effectiveCredit = getEffectiveCredit(benefit, config);
       if (currentUsed >= effectiveCredit) continue;
 
@@ -113,7 +121,7 @@ export function runMatcher(
         if (hasSpecificMatch) continue;
       }
 
-      eligibleBenefits.push({ benefit, confidence });
+      eligibleBenefits.push({ benefit, confidence, usageKey });
     }
 
     if (eligibleBenefits.length === 0) {
@@ -144,19 +152,19 @@ export function runMatcher(
     autoMatches.sort((a, b) => a.benefit.priority - b.benefit.priority);
 
     const bestMatch = autoMatches[0];
-    const { benefit, confidence } = bestMatch;
+    const { benefit, confidence, usageKey } = bestMatch;
 
-    // Compute credit applied
-    const currentUsed = usageMap.get(benefit.id) ?? 0;
+    // Compute credit applied (per-period)
+    const currentUsed = usageMap.get(usageKey) ?? 0;
     const effectiveCredit = getEffectiveCredit(benefit, config);
     const remaining = effectiveCredit - currentUsed;
     const creditApplied = Math.min(tx.amount, remaining);
 
-    // Update usage tracking
-    usageMap.set(benefit.id, currentUsed + creditApplied);
+    // Update usage tracking (per-period)
+    usageMap.set(usageKey, currentUsed + creditApplied);
     usageUpdates.set(
-      benefit.id,
-      (usageUpdates.get(benefit.id) ?? 0) + creditApplied
+      usageKey,
+      (usageUpdates.get(usageKey) ?? 0) + creditApplied
     );
 
     matches.push({

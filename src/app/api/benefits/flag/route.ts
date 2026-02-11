@@ -21,9 +21,9 @@ export async function POST(request: Request) {
       );
     }
 
-    if (flagType !== "removed" && flagType !== "added") {
+    if (flagType !== "removed" && flagType !== "added" && flagType !== "skipped") {
       return NextResponse.json(
-        { error: "flagType must be 'removed' or 'added'" },
+        { error: "flagType must be 'removed', 'added', or 'skipped'" },
         { status: 400 }
       );
     }
@@ -44,6 +44,36 @@ export async function POST(request: Request) {
     }
 
     const flagId = crypto.randomUUID();
+
+    if (flagType === "skipped") {
+      // Mark transaction as skipped — no credit applied, no matchedTx created
+      await db
+        .update(schema.transactions)
+        .set({ matchedStatus: "skipped" })
+        .where(eq(schema.transactions.id, transactionId));
+
+      // Upsert flag (delete any stale flag from prior attempts, then insert)
+      await db
+        .delete(schema.transactionFlags)
+        .where(
+          and(
+            eq(schema.transactionFlags.userId, session.user.id),
+            eq(schema.transactionFlags.transactionId, transactionId),
+            eq(schema.transactionFlags.benefitId, benefitId)
+          )
+        );
+      await db.insert(schema.transactionFlags).values({
+        id: flagId,
+        userId: session.user.id,
+        transactionId,
+        benefitId,
+        flagType: "skipped",
+        reason: reason || null,
+        originalMatch: false,
+      });
+
+      return NextResponse.json({ flag: { id: flagId }, creditApplied: 0 });
+    }
 
     if (flagType === "removed") {
       let creditApplied = 0;
@@ -229,7 +259,13 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "Flag not found" }, { status: 404 });
     }
 
-    if (flag.flagType === "removed") {
+    if (flag.flagType === "skipped") {
+      // Undo skip: revert transaction to ambiguous
+      await db
+        .update(schema.transactions)
+        .set({ matchedStatus: "ambiguous" })
+        .where(eq(schema.transactions.id, flag.transactionId));
+    } else if (flag.flagType === "removed") {
       // Re-create the matchedTx: find the current-period usage for this benefit
       const usageRecords = await db.query.benefitUsage.findMany({
         where: and(

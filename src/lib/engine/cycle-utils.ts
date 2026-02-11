@@ -1,5 +1,62 @@
 import type { BenefitCycle, CycleBounds } from "@/lib/types";
 
+/** Fixed-range cycles: extract year, return a constant month range. */
+const FIXED_RANGES: Partial<
+  Record<
+    BenefitCycle,
+    { suffix: string; startMonth: number; endMonth: number; endDay: number }
+  >
+> = {
+  biannual_h1: { suffix: "-H1", startMonth: 0, endMonth: 5, endDay: 30 },
+  biannual_h2: { suffix: "-H2", startMonth: 6, endMonth: 11, endDay: 31 },
+  quarterly_q1: { suffix: "-Q1", startMonth: 0, endMonth: 2, endDay: 31 },
+  quarterly_q2: { suffix: "-Q2", startMonth: 3, endMonth: 5, endDay: 30 },
+  quarterly_q3: { suffix: "-Q3", startMonth: 6, endMonth: 8, endDay: 30 },
+  quarterly_q4: { suffix: "-Q4", startMonth: 9, endMonth: 11, endDay: 31 },
+  annual_calendar: { suffix: "", startMonth: 0, endMonth: 11, endDay: 31 },
+};
+
+/** Previous-cycle mapping: which cycle to query and at what reference date. */
+const PREV_CYCLE_MAP: Partial<
+  Record<
+    BenefitCycle,
+    { prevCycle: BenefitCycle; getRef: (r: Date) => Date }
+  >
+> = {
+  monthly: {
+    prevCycle: "monthly",
+    getRef: (r) => new Date(r.getFullYear(), r.getMonth() - 1, 1),
+  },
+  biannual_h1: {
+    prevCycle: "biannual_h2",
+    getRef: (r) => new Date(r.getFullYear() - 1, 7, 1),
+  },
+  biannual_h2: {
+    prevCycle: "biannual_h1",
+    getRef: (r) => new Date(r.getFullYear(), 1, 1),
+  },
+  quarterly_q1: {
+    prevCycle: "quarterly_q4",
+    getRef: (r) => new Date(r.getFullYear() - 1, 10, 1),
+  },
+  quarterly_q2: {
+    prevCycle: "quarterly_q1",
+    getRef: (r) => new Date(r.getFullYear(), 1, 1),
+  },
+  quarterly_q3: {
+    prevCycle: "quarterly_q2",
+    getRef: (r) => new Date(r.getFullYear(), 4, 1),
+  },
+  quarterly_q4: {
+    prevCycle: "quarterly_q3",
+    getRef: (r) => new Date(r.getFullYear(), 7, 1),
+  },
+  annual_calendar: {
+    prevCycle: "annual_calendar",
+    getRef: (r) => new Date(r.getFullYear() - 1, 6, 1),
+  },
+};
+
 /**
  * Get the current cycle bounds for a benefit.
  *
@@ -15,6 +72,26 @@ export function getCurrentCycleBounds(
 ): CycleBounds {
   const ref = new Date(referenceDate);
 
+  // Handle the 7 fixed-range cycles via lookup
+  const fixed = FIXED_RANGES[cycle];
+  if (fixed) {
+    const year = ref.getFullYear();
+    return {
+      periodKey: `${year}${fixed.suffix}`,
+      cycleStart: new Date(year, fixed.startMonth, 1),
+      cycleEnd: new Date(
+        year,
+        fixed.endMonth,
+        fixed.endDay,
+        23,
+        59,
+        59,
+        999
+      ),
+    };
+  }
+
+  // Special cases with unique logic
   switch (cycle) {
     case "monthly": {
       const year = ref.getFullYear();
@@ -23,69 +100,6 @@ export function getCurrentCycleBounds(
       const cycleEnd = new Date(year, month + 1, 0, 23, 59, 59, 999);
       const periodKey = `${year}-${String(month + 1).padStart(2, "0")}`;
       return { periodKey, cycleStart, cycleEnd };
-    }
-
-    case "biannual_h1": {
-      const year = ref.getFullYear();
-      return {
-        periodKey: `${year}-H1`,
-        cycleStart: new Date(year, 0, 1),
-        cycleEnd: new Date(year, 5, 30, 23, 59, 59, 999),
-      };
-    }
-
-    case "biannual_h2": {
-      const year = ref.getFullYear();
-      return {
-        periodKey: `${year}-H2`,
-        cycleStart: new Date(year, 6, 1),
-        cycleEnd: new Date(year, 11, 31, 23, 59, 59, 999),
-      };
-    }
-
-    case "quarterly_q1": {
-      const year = ref.getFullYear();
-      return {
-        periodKey: `${year}-Q1`,
-        cycleStart: new Date(year, 0, 1),
-        cycleEnd: new Date(year, 2, 31, 23, 59, 59, 999),
-      };
-    }
-
-    case "quarterly_q2": {
-      const year = ref.getFullYear();
-      return {
-        periodKey: `${year}-Q2`,
-        cycleStart: new Date(year, 3, 1),
-        cycleEnd: new Date(year, 5, 30, 23, 59, 59, 999),
-      };
-    }
-
-    case "quarterly_q3": {
-      const year = ref.getFullYear();
-      return {
-        periodKey: `${year}-Q3`,
-        cycleStart: new Date(year, 6, 1),
-        cycleEnd: new Date(year, 8, 30, 23, 59, 59, 999),
-      };
-    }
-
-    case "quarterly_q4": {
-      const year = ref.getFullYear();
-      return {
-        periodKey: `${year}-Q4`,
-        cycleStart: new Date(year, 9, 1),
-        cycleEnd: new Date(year, 11, 31, 23, 59, 59, 999),
-      };
-    }
-
-    case "annual_calendar": {
-      const year = ref.getFullYear();
-      return {
-        periodKey: `${year}`,
-        cycleStart: new Date(year, 0, 1),
-        cycleEnd: new Date(year, 11, 31, 23, 59, 59, 999),
-      };
     }
 
     case "annual_anniversary": {
@@ -172,53 +186,14 @@ export function getPreviousCycleBounds(
 ): CycleBounds {
   const ref = new Date(referenceDate);
 
+  // Handle the 8 simple delegate cases via lookup
+  const mapping = PREV_CYCLE_MAP[cycle];
+  if (mapping) {
+    return getCurrentCycleBounds(mapping.prevCycle, mapping.getRef(ref), anniversaryDate);
+  }
+
+  // Special cases with unique logic
   switch (cycle) {
-    case "monthly": {
-      const prevMonth = new Date(ref.getFullYear(), ref.getMonth() - 1, 1);
-      return getCurrentCycleBounds(cycle, prevMonth);
-    }
-
-    case "biannual_h1": {
-      // Previous is H2 of prior year
-      const prevRef = new Date(ref.getFullYear() - 1, 7, 1);
-      return getCurrentCycleBounds("biannual_h2", prevRef);
-    }
-
-    case "biannual_h2": {
-      // Previous is H1 of same year
-      const prevRef = new Date(ref.getFullYear(), 1, 1);
-      return getCurrentCycleBounds("biannual_h1", prevRef);
-    }
-
-    case "quarterly_q1": {
-      // Previous is Q4 of prior year
-      const prevRef = new Date(ref.getFullYear() - 1, 10, 1);
-      return getCurrentCycleBounds("quarterly_q4", prevRef);
-    }
-
-    case "quarterly_q2": {
-      // Previous is Q1 of same year
-      const prevRef = new Date(ref.getFullYear(), 1, 1);
-      return getCurrentCycleBounds("quarterly_q1", prevRef);
-    }
-
-    case "quarterly_q3": {
-      // Previous is Q2 of same year
-      const prevRef = new Date(ref.getFullYear(), 4, 1);
-      return getCurrentCycleBounds("quarterly_q2", prevRef);
-    }
-
-    case "quarterly_q4": {
-      // Previous is Q3 of same year
-      const prevRef = new Date(ref.getFullYear(), 7, 1);
-      return getCurrentCycleBounds("quarterly_q3", prevRef);
-    }
-
-    case "annual_calendar": {
-      const prevRef = new Date(ref.getFullYear() - 1, 6, 1);
-      return getCurrentCycleBounds(cycle, prevRef);
-    }
-
     case "annual_anniversary": {
       if (!anniversaryDate) {
         const prevRef = new Date(ref.getFullYear() - 1, 6, 1);

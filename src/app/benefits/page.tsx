@@ -10,6 +10,7 @@ import {
   getCardProfiles,
   getUserAnniversaryStatus,
   getCreditsDebugBreakdown,
+  getDebugTransactions,
 } from "@/lib/queries";
 import type { BenefitTransaction } from "@/lib/queries";
 import { getConnectionAlerts } from "@/lib/notifications";
@@ -25,6 +26,7 @@ import { CardSwitcher } from "./_components/CardSwitcher";
 import { UpcomingBenefits } from "./_components/UpcomingBenefits";
 import { InsightsSection } from "./_components/InsightsSection";
 import { DebugCreditsTable } from "./_components/DebugCreditsTable";
+import { DebugTransactionsTable } from "./_components/DebugTransactionsTable";
 import { Badge } from "@/components/ui/Badge";
 import Link from "next/link";
 import { LinkIcon, Plus } from "lucide-react";
@@ -67,10 +69,11 @@ export default async function DashboardPage() {
 
   // Fetch benefit-linked transactions and insights
   const allBenefitIds = benefits.map((b) => b.benefitId);
-  const [benefitTxs, insights, debugData] = await Promise.all([
+  const [benefitTxs, insights, debugData, debugTxRows] = await Promise.all([
     getBenefitTransactions(user.id!, allBenefitIds, activeCardId),
     getInsightsForDisplay(user.id!, "benefits_page", 3),
     isDev ? getCreditsDebugBreakdown(user.id!, activeCardId) : null,
+    isDev ? getDebugTransactions(user.id!, activeCardId) : null,
   ]);
 
   // Group benefits by displayGroup for DoorDash
@@ -152,7 +155,7 @@ export default async function DashboardPage() {
       )}
 
       {/* Summary cards */}
-      <SummaryBar summary={summary} />
+      <SummaryBar summary={summary} capturedLabel={capturedLabel} />
 
       {/* Countdown */}
       {nearestExpiring && (
@@ -198,6 +201,7 @@ export default async function DashboardPage() {
       })()}
 
       {isDev && debugData && <DebugCreditsTable data={debugData} />}
+      {isDev && debugTxRows && <DebugTransactionsTable rows={debugTxRows} />}
     </div>
   );
 }

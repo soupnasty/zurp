@@ -29,7 +29,7 @@ export type MatchMethod = "auto" | "manual";
 export type MatchedStatus = "unmatched" | "matched" | "ambiguous" | "skipped";
 export type AnniversarySource = "auto_detected" | "user_provided" | "pending";
 export type ConnectionStatus = "active" | "needs_reauth" | "disconnected";
-export type FlagType = "removed" | "added";
+export type FlagType = "removed" | "added" | "skipped";
 
 export interface TransactionFlag {
   id: string;
@@ -124,6 +124,8 @@ export interface BenefitUsageSummary {
   daysRemaining: number;
   requiresActivation: boolean;
   autoMatchable: boolean;
+  merchantPatterns: string[];
+  plaidCategories: string[];
   sunsetDate: string | null;
   displayGroup: string | null;
   displayGroupName: string | null;
@@ -151,6 +153,8 @@ export interface TransactionWithMatch {
   creditApplied: number | null;
   matchConfidence: MatchConfidence | null;
   matchMethod: MatchMethod | null;
+  plaidCategoryPrimary: string | null;
+  plaidCategoryDetailed: string | null;
 }
 
 // ── Engine types ──

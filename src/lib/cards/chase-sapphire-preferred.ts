@@ -1,4 +1,10 @@
 import type { BenefitDetails, CardDefinition } from "@/lib/types";
+import { defineBenefit, type BenefitInput } from "./helpers";
+
+const CARD_ID = "chase_sapphire_preferred";
+const b = (input: BenefitInput) => defineBenefit(CARD_ID, input);
+
+// ── Benefit Details ──
 
 const doordashPromoDetails: BenefitDetails = {
   description:
@@ -8,7 +14,7 @@ const doordashPromoDetails: BenefitDetails = {
     "Add your Sapphire Preferred as the default payment method",
     "Activate your DashPass membership first (required for promos)",
     "Each month, select the promo from your promotion wallet at checkout",
-    "Filter by \"Pickup\" → \"Grocery\" or \"Convenience\" for best value",
+    "Filter by \"Pickup\" \u2192 \"Grocery\" or \"Convenience\" for best value",
     "Make sure the \"Chase monthly benefit\" toggle is ON at checkout",
   ],
   links: [
@@ -48,8 +54,10 @@ const hotelCreditDetails: BenefitDetails = {
   ],
 };
 
+// ── Card Definition ──
+
 export const chaseSapphirePreferred: CardDefinition = {
-  id: "chase_sapphire_preferred",
+  id: CARD_ID,
   name: "Chase Sapphire Preferred\u00AE",
   issuer: "chase",
   network: "visa",
@@ -59,93 +67,43 @@ export const chaseSapphirePreferred: CardDefinition = {
   isActive: true,
   benefits: [
     // ── Chase Travel Hotel Credit ($50/anniversary year) ──
-    {
+    b({
       id: "csp_hotel_credit",
-      cardId: "chase_sapphire_preferred",
-      name: "Chase Travel Hotel Credit",
-      icon: "ConciergeBell",
-      category: "travel",
-      type: "credit",
-      creditAmount: 50,
-      cycle: "annual_anniversary",
-      carriesOver: false,
-      maxCarryoverPeriods: null,
-      maxAccrued: null,
+      name: "Chase Travel Hotel Credit", icon: "ConciergeBell",
+      category: "travel", type: "credit", creditAmount: 50, cycle: "annual_anniversary",
       merchantPatterns: ["chase travel"],
-      plaidCategories: [],
-      autoMatchable: false,
-      requiresActivation: false,
-      priority: 10,
-      description:
-        "Up to $50 in annual statement credits for hotel stays booked through Chase Travel.",
+      autoMatchable: false, requiresActivation: false, priority: 10,
+      description: "Up to $50 in annual statement credits for hotel stays booked through Chase Travel.",
       notes: "Must book through Chase Travel portal. Anniversary year cycle.",
-      sunsetDate: null,
-      sourceUrl: null,
-      displayGroup: null,
-      displayGroupName: null,
-      displayGroupIcon: null,
       details: hotelCreditDetails,
-    },
+    }),
 
     // ── DoorDash Non-Restaurant Promo ($10/month) ──
-    {
+    b({
       id: "csp_doordash_nonrestaurant_promo",
-      cardId: "chase_sapphire_preferred",
-      name: "DoorDash Non-Restaurant Promo",
-      icon: "Bike",
-      category: "shopping",
-      type: "credit",
-      creditAmount: 10,
-      cycle: "monthly",
-      carriesOver: false,
-      maxCarryoverPeriods: null,
-      maxAccrued: null,
+      name: "DoorDash Non-Restaurant Promo", icon: "Bike",
+      category: "shopping", type: "credit", creditAmount: 10, cycle: "monthly",
       merchantPatterns: ["doordash"],
-      plaidCategories: [],
-      autoMatchable: true,
-      requiresActivation: true,
-      priority: 20,
-      description:
-        "$10/month non-restaurant credit on DoorDash (grocery, convenience, retail).",
-      notes:
-        "Use-it-or-lose-it. If full value is not used on a single order, remaining is forfeited.",
+      autoMatchable: true, requiresActivation: true, priority: 20,
+      description: "$10/month non-restaurant credit on DoorDash (grocery, convenience, retail).",
+      notes: "Use-it-or-lose-it. If full value is not used on a single order, remaining is forfeited.",
       sunsetDate: "2027-12-31",
-      sourceUrl: null,
-      displayGroup: null,
-      displayGroupName: null,
-      displayGroupIcon: null,
       details: doordashPromoDetails,
       brandSlug: "doordash",
-    },
+    }),
 
     // ── DashPass (subscription) ──
-    {
+    b({
       id: "csp_dashpass",
-      cardId: "chase_sapphire_preferred",
-      name: "DashPass by DoorDash",
-      icon: "Bike",
-      category: "subscription",
-      type: "subscription",
-      creditAmount: 0,
-      cycle: "subscription",
-      carriesOver: false,
-      maxCarryoverPeriods: null,
-      maxAccrued: null,
+      name: "DashPass by DoorDash", icon: "Bike",
+      category: "subscription", type: "subscription", creditAmount: 0, cycle: "subscription",
       merchantPatterns: ["doordash", "dashpass"],
-      plaidCategories: [],
-      autoMatchable: true,
-      requiresActivation: true,
-      priority: 50,
-      description:
-        "Complimentary DashPass membership for free delivery on DoorDash.",
+      autoMatchable: true, requiresActivation: true, priority: 50,
+      description: "Complimentary DashPass membership for free delivery on DoorDash.",
       notes: "Must activate through DoorDash.",
       sunsetDate: "2027-12-31",
-      sourceUrl: null,
-      displayGroup: null,
-      displayGroupName: null,
-      displayGroupIcon: null,
       details: dashpassDetails,
       brandSlug: "doordash",
-    },
+    }),
   ],
 };

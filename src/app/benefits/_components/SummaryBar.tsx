@@ -75,13 +75,14 @@ function getRoiColor(roiPct: number, yearProgressPct: number): string {
 
 interface SummaryBarProps {
   summary: CardSummary;
+  capturedLabel: string;
 }
 
-export function SummaryBar({ summary }: SummaryBarProps) {
+export function SummaryBar({ summary, capturedLabel }: SummaryBarProps) {
   const stats = [
     {
       label: "Credits Used",
-      tooltip: "Total card benefits redeemed this card year",
+      tooltip: `Credits captured ${capturedLabel}`,
       value: summary.creditsUsed,
       format: "dollar" as const,
       color: summary.creditsUsed > 0 ? "var(--color-success)" : "var(--text-primary)",

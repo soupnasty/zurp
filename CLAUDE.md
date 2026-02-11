@@ -113,7 +113,7 @@ On-demand simulation engine that answers "which card earns the most for your act
 
 - **Category mapper** (`categories.ts`): 3-tier classification — merchant name match → Plaid category fallback → `other`. Uses 19-category taxonomy separate from the 8-category spending system.
 - **Merchant map** (`merchant-map.ts`): ~200 static merchant→category entries with priority-based matching.
-- **Earn configs** (`earn-configs/`): Per-card earn rate definitions (bonus categories, caps, conditions, point valuations). Files: `chase-sapphire-reserve.ts`, `chase-sapphire-preferred.ts`, `amex-gold.ts`.
+- **Earn configs** (`earn-configs/`): Per-card earn rate definitions (bonus categories, caps, conditions, point valuations). Files: `chase-sapphire-reserve.ts`, `chase-sapphire-preferred.ts`, `amex-gold.ts`, `amex-platinum.ts`.
 - **Calculator** (`calculator.ts`): Per-transaction points calculation with cap tracking.
 - **Simulator** (`simulator.ts`): Full pipeline — classify → calculate per card → aggregate → compute net value (points + benefits - fee).
 - **Perk matrix** (`perk-matrix.ts`): Static benefit comparison data for the Benefits & Perks tab.
@@ -182,7 +182,7 @@ src/
 - [x] Phase 5: Dashboard UI
 - [x] Phase 6: Polish, webhooks, cron, deployment
 - [x] Phase 7: Insights Engine v2 — 8 categories, DB persistence, 5-factor scoring, lifecycle, competitor map
-- [x] Phase 8: Compare Page + Points Earn Model — 19-category mapper, 3 card earn configs, simulator, perk matrix, tabbed UI
+- [x] Phase 8: Compare Page + Points Earn Model — 19-category mapper, 4 card earn configs, simulator, perk matrix, tabbed UI
 - [x] Phase 9: Amex Platinum — 21 benefits, quarterly cycle types, activeMonths gating, earn config, A2 swap templates, competitor map
 
 ### Sync Architecture
@@ -204,10 +204,9 @@ Connection health alerts (`src/lib/notifications.ts`) surface stale/reauth/disco
 
 - `docs/architecture/zurp.md` — Full app spec (data model, matching engine, benefits)
 - `docs/architecture/design-principles.md` — S-tier SaaS dashboard design checklist
-- `docs/insight-engine/insights-engine.md` — Insights Engine v2 spec (categories, scoring, templates, display rules)
+- `docs/engines/insights-engine.md` — Insights Engine v2 spec (categories, scoring, templates, display rules)
+- `docs/engines/points-engine.md` — Points earn model spec (category taxonomy, earn rates, caps)
 - `docs/styling/style-guide.md` — Brand colors, typography, spacing, motion
-- `docs/catalogs/` — Card benefit catalogs (CSR, CSP, Amex Gold)
-- `docs/zurp-dashboard-spec.md` — Dashboard UI spec
-- `docs/zurp-compare-page-spec.md` — Compare page UI spec
-- `docs/zurp-points-earn-model.md` — Points earn model spec (category taxonomy, earn rates, caps)
+- `docs/catalogs/` — Card benefit catalogs (CSR, CSP, Amex Gold, Amex Platinum)
+- `docs/terms/` — Privacy policy, terms of service, security documentation
 - `public/zurp-logo.svg` — Logo
