@@ -115,6 +115,7 @@ export const chaseSapphirePreferred: CardDefinition = {
       displayGroupName: null,
       displayGroupIcon: null,
       details: doordashPromoDetails,
+      brandSlug: "doordash",
     },
 
     // ── DashPass (subscription) ──
@@ -144,6 +145,7 @@ export const chaseSapphirePreferred: CardDefinition = {
       displayGroupName: null,
       displayGroupIcon: null,
       details: dashpassDetails,
+      brandSlug: "doordash",
     },
   ],
 };

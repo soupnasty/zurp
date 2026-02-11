@@ -349,6 +349,11 @@ export async function initializeBenefitUsage(
   for (const benefit of cardDef.benefits) {
     if (benefit.type === "subscription") continue;
 
+    // Skip benefits that aren't active in the current month
+    if (benefit.activeMonths && !benefit.activeMonths.includes(new Date().getMonth())) {
+      continue;
+    }
+
     const bounds = getCurrentCycleBounds(
       benefit.cycle as any,
       new Date(),

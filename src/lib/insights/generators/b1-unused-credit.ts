@@ -84,8 +84,11 @@ export function generateB1(ctx: GeneratorContext): InsightCandidate[] {
     if (usage.creditAmount <= 0) continue;
     if (usage.isActivated) continue;
 
-    const monthly = usage.creditAmount;
-    const annual = Math.round(monthly * 12);
+    // creditAmount meaning depends on cycle:
+    // "subscription" cycle → monthly rate, "annual_*" → yearly total
+    const isMonthlyRate = usage.cycle === "subscription" || usage.cycle === "monthly";
+    const monthly = isMonthlyRate ? usage.creditAmount : usage.creditAmount / 12;
+    const annual = isMonthlyRate ? Math.round(usage.creditAmount * 12) : Math.round(usage.creditAmount);
 
     insights.push({
       category: "B1",

@@ -100,6 +100,50 @@ describe("getCurrentCycleBounds", () => {
     });
   });
 
+  describe("quarterly_q1", () => {
+    it("returns Q1 bounds (Jan-Mar)", () => {
+      const ref = new Date(2026, 1, 15); // Feb 15
+      const result = getCurrentCycleBounds("quarterly_q1", ref);
+      expect(result.periodKey).toBe("2026-Q1");
+      expect(result.cycleStart).toEqual(new Date(2026, 0, 1));
+      expect(result.cycleEnd.getMonth()).toBe(2); // March
+      expect(result.cycleEnd.getDate()).toBe(31);
+    });
+  });
+
+  describe("quarterly_q2", () => {
+    it("returns Q2 bounds (Apr-Jun)", () => {
+      const ref = new Date(2026, 4, 10); // May 10
+      const result = getCurrentCycleBounds("quarterly_q2", ref);
+      expect(result.periodKey).toBe("2026-Q2");
+      expect(result.cycleStart).toEqual(new Date(2026, 3, 1));
+      expect(result.cycleEnd.getMonth()).toBe(5); // June
+      expect(result.cycleEnd.getDate()).toBe(30);
+    });
+  });
+
+  describe("quarterly_q3", () => {
+    it("returns Q3 bounds (Jul-Sep)", () => {
+      const ref = new Date(2026, 7, 20); // Aug 20
+      const result = getCurrentCycleBounds("quarterly_q3", ref);
+      expect(result.periodKey).toBe("2026-Q3");
+      expect(result.cycleStart).toEqual(new Date(2026, 6, 1));
+      expect(result.cycleEnd.getMonth()).toBe(8); // September
+      expect(result.cycleEnd.getDate()).toBe(30);
+    });
+  });
+
+  describe("quarterly_q4", () => {
+    it("returns Q4 bounds (Oct-Dec)", () => {
+      const ref = new Date(2026, 10, 5); // Nov 5
+      const result = getCurrentCycleBounds("quarterly_q4", ref);
+      expect(result.periodKey).toBe("2026-Q4");
+      expect(result.cycleStart).toEqual(new Date(2026, 9, 1));
+      expect(result.cycleEnd.getMonth()).toBe(11); // December
+      expect(result.cycleEnd.getDate()).toBe(31);
+    });
+  });
+
   describe("quadrennial", () => {
     it("returns 4-year bounds", () => {
       const ref = new Date(2026, 0, 1);
@@ -151,6 +195,30 @@ describe("getPreviousCycleBounds", () => {
     const result = getPreviousCycleBounds("biannual_h2", ref);
     expect(result.periodKey).toBe("2026-H1");
   });
+
+  it("returns Q4 of prior year for quarterly_q1", () => {
+    const ref = new Date(2026, 1, 15);
+    const result = getPreviousCycleBounds("quarterly_q1", ref);
+    expect(result.periodKey).toBe("2025-Q4");
+  });
+
+  it("returns Q1 of same year for quarterly_q2", () => {
+    const ref = new Date(2026, 4, 15);
+    const result = getPreviousCycleBounds("quarterly_q2", ref);
+    expect(result.periodKey).toBe("2026-Q1");
+  });
+
+  it("returns Q2 of same year for quarterly_q3", () => {
+    const ref = new Date(2026, 7, 15);
+    const result = getPreviousCycleBounds("quarterly_q3", ref);
+    expect(result.periodKey).toBe("2026-Q2");
+  });
+
+  it("returns Q3 of same year for quarterly_q4", () => {
+    const ref = new Date(2026, 10, 15);
+    const result = getPreviousCycleBounds("quarterly_q4", ref);
+    expect(result.periodKey).toBe("2026-Q3");
+  });
 });
 
 describe("daysRemainingInCycle", () => {
@@ -184,5 +252,17 @@ describe("isDateInCycle", () => {
     const date = new Date(2026, 0, 1);
     const ref = new Date(2026, 0, 15);
     expect(isDateInCycle(date, "monthly", ref)).toBe(true);
+  });
+
+  it("returns true for Q1 date in Q1 cycle", () => {
+    const date = new Date(2026, 1, 15); // Feb 15
+    const ref = new Date(2026, 1, 15);
+    expect(isDateInCycle(date, "quarterly_q1", ref)).toBe(true);
+  });
+
+  it("returns false for Q2 date in Q1 cycle", () => {
+    const date = new Date(2026, 4, 1); // May 1
+    const ref = new Date(2026, 1, 15); // Feb 15
+    expect(isDateInCycle(date, "quarterly_q1", ref)).toBe(false);
   });
 });

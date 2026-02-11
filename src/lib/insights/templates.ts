@@ -29,6 +29,14 @@ const TEMPLATES: Record<string, Template> = {
     title: "${service} charge of $${amount}",
     body: "You have complimentary ${partner} — consider using both or switching.",
   },
+  a2_swap: {
+    title: "${service} isn't covered by your ${credit_name}",
+    body: "But ${partner} is — up to $${credit}/mo. Consider switching to save $${annual}/yr.",
+  },
+  a2_swap_alt: {
+    title: "You're paying $${amount}/mo for ${service}",
+    body: "${partner} is covered by your $${credit}/mo ${credit_name}. Switching could save you $${annual}/yr.",
+  },
 
   // ── B1: Unused Credit (Time Pressure) ──
   b1_standard: {
@@ -45,7 +53,7 @@ const TEMPLATES: Record<string, Template> = {
   },
   b1_unactivated_subscription: {
     title: "Activate your free ${benefit}",
-    body: "Worth $${monthly}/mo ($${annual}/yr). Activate through Chase benefits portal.",
+    body: "Worth $${monthly}/mo ($${annual}/yr). Activate through your card's benefits portal.",
   },
 
   // ── B2: Nearly Maxed Credit ──

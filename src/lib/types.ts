@@ -4,6 +4,10 @@ export type BenefitCycle =
   | "monthly"
   | "biannual_h1"
   | "biannual_h2"
+  | "quarterly_q1"
+  | "quarterly_q2"
+  | "quarterly_q3"
+  | "quarterly_q4"
   | "annual_calendar"
   | "annual_anniversary"
   | "quadrennial"
@@ -85,6 +89,8 @@ export interface BenefitDefinition {
   displayGroupName: string | null;
   displayGroupIcon: string | null;
   details: BenefitDetails | null;
+  activeMonths?: number[]; // 0=Jan, 11=Dec. If set, benefit only matches in these months.
+  brandSlug?: string; // Simple Icons CDN slug for brand logo (e.g. "doordash", "uber")
 }
 
 // ── Computed summaries ──
@@ -129,6 +135,8 @@ export interface BenefitUsageSummary {
   ytdUsed?: number;
   isActivated?: boolean;
   activatedAt?: string | null;
+  activeMonths?: number[];
+  brandSlug?: string;
 }
 
 export interface TransactionWithMatch {

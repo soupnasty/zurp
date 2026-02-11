@@ -10,6 +10,12 @@ import {
   Tv,
   Music,
   CreditCard,
+  ShoppingBag,
+  Hotel,
+  ShoppingCart,
+  Shield,
+  Activity,
+  Coffee,
 } from "lucide-react";
 
 const lucideMap: Record<string, React.ComponentType<any>> = {
@@ -24,27 +30,22 @@ const lucideMap: Record<string, React.ComponentType<any>> = {
   Tv,
   Music,
   CreditCard,
-};
-
-/** Maps Lucide icon keys to Simple Icons CDN slugs for brand logos */
-const brandIconMap: Record<string, string> = {
-  Bike: "doordash",
-  Car: "lyft",
-  Dumbbell: "peloton",
-  Tv: "apple",
-  Music: "apple",
-  Ticket: "stubhub",
+  ShoppingBag,
+  Hotel,
+  ShoppingCart,
+  Shield,
+  Activity,
+  Coffee,
 };
 
 interface BenefitIconProps {
   icon: string;
+  brandSlug?: string;
   size?: number;
   className?: string;
 }
 
-export function BenefitIcon({ icon, size = 20, className = "text-[var(--accent)]" }: BenefitIconProps) {
-  const brandSlug = brandIconMap[icon];
-
+export function BenefitIcon({ icon, brandSlug, size = 20, className = "text-[var(--accent)]" }: BenefitIconProps) {
   if (brandSlug) {
     return (
       <img
@@ -53,7 +54,6 @@ export function BenefitIcon({ icon, size = 20, className = "text-[var(--accent)]
         width={size}
         height={size}
         className={className}
-        style={{ filter: "var(--benefit-icon-invert, none)" }}
       />
     );
   }

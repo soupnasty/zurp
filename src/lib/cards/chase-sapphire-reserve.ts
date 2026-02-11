@@ -381,6 +381,7 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroupName: null,
       displayGroupIcon: null,
       details: stubhubDetails,
+      brandSlug: "stubhub",
     },
     {
       id: "csr_stubhub_h2",
@@ -408,6 +409,7 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroupName: null,
       displayGroupIcon: null,
       details: stubhubDetails,
+      brandSlug: "stubhub",
     },
 
     // ── DoorDash (3 sub-credits, displayed as one $25/month group) ──
@@ -438,6 +440,7 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroupName: "DoorDash Credits",
       displayGroupIcon: "Bike",
       details: doordashDetails,
+      brandSlug: "doordash",
     },
     {
       id: "csr_doordash_nonrestaurant_1",
@@ -465,6 +468,7 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroupName: "DoorDash Credits",
       displayGroupIcon: "Bike",
       details: doordashDetails,
+      brandSlug: "doordash",
     },
     {
       id: "csr_doordash_nonrestaurant_2",
@@ -491,6 +495,7 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroupName: "DoorDash Credits",
       displayGroupIcon: "Bike",
       details: doordashDetails,
+      brandSlug: "doordash",
     },
 
     // ── Lyft ($10/month) ──
@@ -532,6 +537,7 @@ export const chaseSapphireReserve: CardDefinition = {
           { label: "Learn More", url: "https://account.chase.com/sapphire/reserve/benefits" },
         ],
       },
+      brandSlug: "lyft",
     },
 
     // ── Peloton ($10/month) ──
@@ -576,6 +582,7 @@ export const chaseSapphireReserve: CardDefinition = {
           { label: "Learn More", url: "https://www.chase.com/personal/credit-cards/education/rewards-benefits/how-to-earn-10x-points-on-peloton-with-chase-sapphire-reserve" },
         ],
       },
+      brandSlug: "peloton",
     },
 
     // ── Global Entry / TSA PreCheck ($120/4 years) ──
@@ -647,6 +654,7 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroupName: null,
       displayGroupIcon: null,
       details: appleTvDetails,
+      brandSlug: "apple",
     },
 
     // ── Apple Music (subscription) ──
@@ -675,6 +683,7 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroupName: null,
       displayGroupIcon: null,
       details: appleMusicDetails,
+      brandSlug: "apple",
     },
 
     // ── DashPass (subscription) ──
@@ -704,6 +713,7 @@ export const chaseSapphireReserve: CardDefinition = {
       displayGroupName: null,
       displayGroupIcon: null,
       details: dashPassDetails,
+      brandSlug: "doordash",
     },
   ],
 };

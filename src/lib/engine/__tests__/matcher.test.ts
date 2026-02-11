@@ -283,6 +283,96 @@ describe("runMatcher", () => {
     expect(result.unmatchedTransactionIds).toContain("tx_1");
   });
 
+  it("matches transaction in Q1 to quarterly_q1 benefit, skips quarterly_q2", () => {
+    const q1Benefit = makeBenefit({
+      id: "plat_resy_q1",
+      cycle: "quarterly_q1",
+      merchantPatterns: ["resy"],
+    });
+    const q2Benefit = makeBenefit({
+      id: "plat_resy_q2",
+      cycle: "quarterly_q2",
+      merchantPatterns: ["resy"],
+    });
+    const tx = makeTx({
+      date: new Date(2026, 1, 15), // Feb 15 — Q1
+      merchantName: "RESY",
+    });
+    const config = makeConfig([q1Benefit, q2Benefit]);
+
+    const result = runMatcher([tx], config);
+
+    expect(result.matches).toHaveLength(1);
+    expect(result.matches[0].benefitId).toBe("plat_resy_q1");
+  });
+
+  it("skips benefit when activeMonths excludes transaction month", () => {
+    const janNovBenefit = makeBenefit({
+      id: "plat_uber_cash",
+      activeMonths: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      merchantPatterns: ["uber"],
+    });
+    const tx = makeTx({
+      date: new Date(2026, 11, 15), // December
+      merchantName: "UBER",
+    });
+    const config = makeConfig([janNovBenefit]);
+
+    const result = runMatcher([tx], config);
+
+    expect(result.matches).toHaveLength(0);
+    expect(result.unmatchedTransactionIds).toContain("tx_1");
+  });
+
+  it("matches December-only benefit in December", () => {
+    const decBenefit = makeBenefit({
+      id: "plat_uber_cash_dec",
+      activeMonths: [11],
+      creditAmount: 35,
+      merchantPatterns: ["uber"],
+    });
+    const tx = makeTx({
+      date: new Date(2026, 11, 15), // December
+      merchantName: "UBER",
+      amount: 30,
+    });
+    const config = makeConfig([decBenefit]);
+
+    const result = runMatcher([tx], config);
+
+    expect(result.matches).toHaveLength(1);
+    expect(result.matches[0].benefitId).toBe("plat_uber_cash_dec");
+    expect(result.matches[0].creditApplied).toBe(30);
+  });
+
+  it("matches Jan-Nov benefit in January, skips December benefit", () => {
+    const janNov = makeBenefit({
+      id: "plat_uber_cash",
+      activeMonths: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      creditAmount: 15,
+      merchantPatterns: ["uber"],
+      priority: 20,
+    });
+    const dec = makeBenefit({
+      id: "plat_uber_cash_dec",
+      activeMonths: [11],
+      creditAmount: 35,
+      merchantPatterns: ["uber"],
+      priority: 19,
+    });
+    const tx = makeTx({
+      date: new Date(2026, 0, 15), // January
+      merchantName: "UBER",
+      amount: 10,
+    });
+    const config = makeConfig([janNov, dec]);
+
+    const result = runMatcher([tx], config);
+
+    expect(result.matches).toHaveLength(1);
+    expect(result.matches[0].benefitId).toBe("plat_uber_cash");
+  });
+
   it("handles max_accrued for carryover benefits", () => {
     const benefit = makeBenefit({
       creditAmount: 5,

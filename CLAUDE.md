@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-A credit card benefits tracker that syncs transactions via Plaid, matches them against card-specific benefit rulesets, and shows users which credits they've used, which are expiring, and whether each card is paying for itself. Supports Chase Sapphire Reserve, Chase Sapphire Preferred, and Amex Gold.
+A credit card benefits tracker that syncs transactions via Plaid, matches them against card-specific benefit rulesets, and shows users which credits they've used, which are expiring, and whether each card is paying for itself. Supports Chase Sapphire Reserve, Chase Sapphire Preferred, Amex Gold, and Amex Platinum.
 
 ## Tech Stack
 
@@ -21,7 +21,7 @@ A credit card benefits tracker that syncs transactions via Plaid, matches them a
 ```bash
 npm run dev          # Start dev server
 npm run build        # Production build
-npm run test:run     # Run all tests (178 tests across 12 files)
+npm run test:run     # Run all tests (195 tests across 12 files)
 npm run db:push      # Push schema to Neon
 npm run db:seed      # Seed cards + benefits + competitor map from registry
 npm run db:studio    # Open Drizzle Studio
@@ -54,7 +54,7 @@ See `docs/styling/style-guide.md` for full brand reference.
 ### Core Engine (`src/lib/engine/`)
 
 Pure-function matching engine with no DB dependencies:
-- `cycle-utils.ts` — Date math for 7 cycle types (monthly, biannual_h1/h2, annual_calendar, annual_anniversary, quadrennial, subscription)
+- `cycle-utils.ts` — Date math for 11 cycle types (monthly, biannual_h1/h2, quarterly_q1/q2/q3/q4, annual_calendar, annual_anniversary, quadrennial, subscription)
 - `normalize.ts` — Merchant name normalization (lowercase, strip order numbers/trailing IDs)
 - `matcher.ts` — Priority-based transaction matching, DoorDash sub-credit depletion, negative matching for travel credit
 - `anniversary-detector.ts` — Detects annual fee charge to determine card anniversary date
@@ -126,6 +126,8 @@ No new DB tables — computed on-demand from existing transaction data.
 
 Card definitions live in `src/lib/cards/`. Each card file exports a `CardDefinition` with all benefits. The registry at `src/lib/cards/index.ts` aggregates them. `detect.ts` auto-detects card type from Plaid account metadata. To add a new card, create a new file in `src/lib/cards/` and register it in `index.ts`.
 
+The Amex Platinum (`amex-platinum.ts`) has 21 benefits across 5 period types including quarterly (a new cycle type). It uses `activeMonths` gating for Uber Cash month-specific credits ($15 Jan-Nov, $35 Dec).
+
 ## Project Structure
 
 ```
@@ -181,6 +183,7 @@ src/
 - [x] Phase 6: Polish, webhooks, cron, deployment
 - [x] Phase 7: Insights Engine v2 — 8 categories, DB persistence, 5-factor scoring, lifecycle, competitor map
 - [x] Phase 8: Compare Page + Points Earn Model — 19-category mapper, 3 card earn configs, simulator, perk matrix, tabbed UI
+- [x] Phase 9: Amex Platinum — 21 benefits, quarterly cycle types, activeMonths gating, earn config, A2 swap templates, competitor map
 
 ### Sync Architecture
 

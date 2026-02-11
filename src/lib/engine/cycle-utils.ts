@@ -43,6 +43,42 @@ export function getCurrentCycleBounds(
       };
     }
 
+    case "quarterly_q1": {
+      const year = ref.getFullYear();
+      return {
+        periodKey: `${year}-Q1`,
+        cycleStart: new Date(year, 0, 1),
+        cycleEnd: new Date(year, 2, 31, 23, 59, 59, 999),
+      };
+    }
+
+    case "quarterly_q2": {
+      const year = ref.getFullYear();
+      return {
+        periodKey: `${year}-Q2`,
+        cycleStart: new Date(year, 3, 1),
+        cycleEnd: new Date(year, 5, 30, 23, 59, 59, 999),
+      };
+    }
+
+    case "quarterly_q3": {
+      const year = ref.getFullYear();
+      return {
+        periodKey: `${year}-Q3`,
+        cycleStart: new Date(year, 6, 1),
+        cycleEnd: new Date(year, 8, 30, 23, 59, 59, 999),
+      };
+    }
+
+    case "quarterly_q4": {
+      const year = ref.getFullYear();
+      return {
+        periodKey: `${year}-Q4`,
+        cycleStart: new Date(year, 9, 1),
+        cycleEnd: new Date(year, 11, 31, 23, 59, 59, 999),
+      };
+    }
+
     case "annual_calendar": {
       const year = ref.getFullYear();
       return {
@@ -152,6 +188,30 @@ export function getPreviousCycleBounds(
       // Previous is H1 of same year
       const prevRef = new Date(ref.getFullYear(), 1, 1);
       return getCurrentCycleBounds("biannual_h1", prevRef);
+    }
+
+    case "quarterly_q1": {
+      // Previous is Q4 of prior year
+      const prevRef = new Date(ref.getFullYear() - 1, 10, 1);
+      return getCurrentCycleBounds("quarterly_q4", prevRef);
+    }
+
+    case "quarterly_q2": {
+      // Previous is Q1 of same year
+      const prevRef = new Date(ref.getFullYear(), 1, 1);
+      return getCurrentCycleBounds("quarterly_q1", prevRef);
+    }
+
+    case "quarterly_q3": {
+      // Previous is Q2 of same year
+      const prevRef = new Date(ref.getFullYear(), 4, 1);
+      return getCurrentCycleBounds("quarterly_q2", prevRef);
+    }
+
+    case "quarterly_q4": {
+      // Previous is Q3 of same year
+      const prevRef = new Date(ref.getFullYear(), 7, 1);
+      return getCurrentCycleBounds("quarterly_q3", prevRef);
     }
 
     case "annual_calendar": {

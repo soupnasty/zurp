@@ -13,7 +13,7 @@ export function BenefitCard({ group, capturedLabel = "this year" }: { group: Ben
   const used = group.totalUsed;
   const remaining = Math.max(0, group.totalRemaining);
 
-  const cycleLabel = getCycleLabel(group.cycle);
+  const cycleLabel = getCycleLabel(group.cycle, group.activeMonths);
   const cycleExpiry = formatCycleExpiry(group.cycle, group.cycleEnd);
   const isGrouped = group.benefits.length > 1;
 
@@ -24,7 +24,7 @@ export function BenefitCard({ group, capturedLabel = "this year" }: { group: Ben
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent)]/10">
-                <BenefitIcon icon={group.icon} size={20} />
+                <BenefitIcon icon={group.icon} brandSlug={group.brandSlug} size={20} />
               </div>
               <div>
                 <h3 className="text-[var(--text-body)] font-semibold text-[var(--text-primary)]">
@@ -133,8 +133,8 @@ export function BenefitCard({ group, capturedLabel = "this year" }: { group: Ben
                 </>
               ) : (
                 <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center rounded-full bg-[var(--text-muted)]/15 px-2 py-0.5 text-[var(--text-caption)] font-medium text-[var(--text-muted)]">
-                    Not activated
+                  <span className="inline-flex items-center rounded-full bg-[var(--color-warning)]/15 px-2 py-0.5 text-[var(--text-caption)] font-medium text-[var(--color-warning)]">
+                    Needs activation
                   </span>
                   <span className="font-data text-[var(--text-caption)] text-[var(--text-secondary)]">
                     ${group.totalCredit.toFixed(2)}/mo available
@@ -181,7 +181,17 @@ function formatSunsetDate(dateStr: string): string {
   return `${month} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
 }
 
-function getCycleLabel(cycle: string): string {
+const MONTH_ABBREVS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+function getCycleLabel(cycle: string, activeMonths?: number[]): string {
+  // If activeMonths is set, show month-specific label instead of generic cycle name
+  if (activeMonths && activeMonths.length > 0 && activeMonths.length < 12) {
+    if (activeMonths.length === 1) {
+      return MONTH_ABBREVS[activeMonths[0]];
+    }
+    return `${MONTH_ABBREVS[activeMonths[0]]} \u2013 ${MONTH_ABBREVS[activeMonths[activeMonths.length - 1]]}`;
+  }
+
   switch (cycle) {
     case "monthly":
       return "Monthly";
@@ -193,6 +203,14 @@ function getCycleLabel(cycle: string): string {
       return "Annual";
     case "annual_anniversary":
       return "Anniversary year";
+    case "quarterly_q1":
+      return "Quarterly (Jan \u2013 Mar)";
+    case "quarterly_q2":
+      return "Quarterly (Apr \u2013 Jun)";
+    case "quarterly_q3":
+      return "Quarterly (Jul \u2013 Sep)";
+    case "quarterly_q4":
+      return "Quarterly (Oct \u2013 Dec)";
     case "quadrennial":
       return "Every 4 years";
     case "subscription":

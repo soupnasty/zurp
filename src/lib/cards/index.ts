@@ -2,11 +2,13 @@ import type { CardDefinition } from "@/lib/types";
 import { chaseSapphireReserve } from "./chase-sapphire-reserve";
 import { chaseSapphirePreferred } from "./chase-sapphire-preferred";
 import { amexGold } from "./amex-gold";
+import { amexPlatinum } from "./amex-platinum";
 
 export const cardRegistry: CardDefinition[] = [
   chaseSapphireReserve,
   chaseSapphirePreferred,
   amexGold,
+  amexPlatinum,
 ];
 
 export function getCardDefinition(cardId: string): CardDefinition | undefined {

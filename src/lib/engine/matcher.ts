@@ -66,6 +66,11 @@ export function runMatcher(
         continue;
       }
 
+      // Check if benefit is active in this month
+      if (benefit.activeMonths && !benefit.activeMonths.includes(tx.date.getMonth())) {
+        continue;
+      }
+
       // Check if benefit has remaining credit
       const currentUsed = usageMap.get(benefit.id) ?? 0;
       const effectiveCredit = getEffectiveCredit(benefit, config);

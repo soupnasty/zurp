@@ -41,6 +41,11 @@ function getCycleMultiplier(cycle: BenefitCycle): number {
     case "biannual_h1":
     case "biannual_h2":
       return 1; // Each half appears once per year
+    case "quarterly_q1":
+    case "quarterly_q2":
+    case "quarterly_q3":
+    case "quarterly_q4":
+      return 1; // Each quarter is a separate benefit, 4 benefits × 1 = annualized
     case "annual_calendar":
     case "annual_anniversary":
       return 1;

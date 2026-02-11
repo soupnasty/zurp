@@ -30,6 +30,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: true,
         cards: {
           chase_sapphire_reserve: { value: "$300", detail: "per anniversary year" },
+          amex_platinum: { value: "$200", detail: "airline fee credit per calendar year" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: "$50", detail: "hotel credit per anniversary year" },
         },
@@ -39,6 +40,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: true,
         cards: {
           chase_sapphire_reserve: { value: "$300", detail: "Exclusive Tables, semi-annual" },
+          amex_platinum: { value: "$400", detail: "Resy ($100/quarter)", isBest: true },
           amex_gold: { value: "$220", detail: "$10/mo at select merchants + $50/semi Resy", footnote: true },
           chase_sapphire_preferred: { value: null },
         },
@@ -48,6 +50,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: true,
         cards: {
           chase_sapphire_reserve: { value: "$300", detail: "$5 restaurant + 2x$10 non-restaurant/mo" },
+          amex_platinum: { value: null },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: "$120", detail: "$10/mo non-restaurant" },
         },
@@ -57,6 +60,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: true,
         cards: {
           chase_sapphire_reserve: { value: "$120", detail: "Lyft Pink" },
+          amex_platinum: { value: "$320", detail: "$200/yr Uber Cash + $120 Uber One", isBest: true },
           amex_gold: { value: "$120", detail: "Uber Cash ($10/mo)", footnote: true },
           chase_sapphire_preferred: { value: null },
         },
@@ -66,6 +70,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: true,
         cards: {
           chase_sapphire_reserve: { value: "$300", detail: "StubHub credit" },
+          amex_platinum: { value: null },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: null },
         },
@@ -75,6 +80,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: true,
         cards: {
           chase_sapphire_reserve: { value: "~$250", detail: "Apple Music/TV+" },
+          amex_platinum: { value: "$300", detail: "Digital entertainment ($25/mo)", isBest: true },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: null },
         },
@@ -84,6 +90,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: true,
         cards: {
           chase_sapphire_reserve: { value: "$120", detail: "Peloton credit" },
+          amex_platinum: { value: "$300", detail: "Equinox credit", isBest: true },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: null },
         },
@@ -93,6 +100,17 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: true,
         cards: {
           chase_sapphire_reserve: { value: "$750", detail: "Edit + Select hotels" },
+          amex_platinum: { value: "$600", detail: "FHR/THC ($300/half)" },
+          amex_gold: { value: null },
+          chase_sapphire_preferred: { value: null },
+        },
+      },
+      {
+        label: "Shopping",
+        tracked: true,
+        cards: {
+          chase_sapphire_reserve: { value: null },
+          amex_platinum: { value: "$400", detail: "lululemon ($75/qtr) + Saks ($50/half)", isBest: true },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: null },
         },
@@ -102,6 +120,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: true,
         cards: {
           chase_sapphire_reserve: { value: null },
+          amex_platinum: { value: null },
           amex_gold: { value: "$84", detail: "Dunkin' ($7/mo)" },
           chase_sapphire_preferred: { value: null },
         },
@@ -111,7 +130,8 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: true,
         isTotalRow: true,
         cards: {
-          chase_sapphire_reserve: { value: "$2,060", isBest: true },
+          chase_sapphire_reserve: { value: "$2,060" },
+          amex_platinum: { value: "$2,850", isBest: true },
           amex_gold: { value: "$424" },
           chase_sapphire_preferred: { value: "$290" },
         },
@@ -128,6 +148,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: true,
         cards: {
           chase_sapphire_reserve: { value: "3x" },
+          amex_platinum: { value: "1x" },
           amex_gold: { value: "4x", isBest: true },
           chase_sapphire_preferred: { value: "3x" },
         },
@@ -137,6 +158,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: true,
         cards: {
           chase_sapphire_reserve: { value: "1x" },
+          amex_platinum: { value: "1x" },
           amex_gold: { value: "4x", isBest: true, detail: "cap $25K/yr" },
           chase_sapphire_preferred: { value: "1x" },
         },
@@ -145,7 +167,8 @@ export const PERK_SECTIONS: PerkSection[] = [
         label: "Travel (direct)",
         tracked: true,
         cards: {
-          chase_sapphire_reserve: { value: "4x", isBest: true },
+          chase_sapphire_reserve: { value: "4x" },
+          amex_platinum: { value: "5x", isBest: true, detail: "flights only" },
           amex_gold: { value: "3x", detail: "flights only" },
           chase_sapphire_preferred: { value: "2x" },
         },
@@ -155,6 +178,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: true,
         cards: {
           chase_sapphire_reserve: { value: "8x", isBest: true },
+          amex_platinum: { value: "5x", detail: "hotels via AmexTravel" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: "5x" },
         },
@@ -164,6 +188,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: true,
         cards: {
           chase_sapphire_reserve: { value: "1x" },
+          amex_platinum: { value: "1x" },
           amex_gold: { value: "1x" },
           chase_sapphire_preferred: { value: "3x", isBest: true },
         },
@@ -173,6 +198,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: true,
         cards: {
           chase_sapphire_reserve: { value: "5x", isBest: true },
+          amex_platinum: { value: "1x" },
           amex_gold: { value: "1x" },
           chase_sapphire_preferred: { value: "5x", isBest: true },
         },
@@ -182,6 +208,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: true,
         cards: {
           chase_sapphire_reserve: { value: "1x" },
+          amex_platinum: { value: "1x" },
           amex_gold: { value: "1x" },
           chase_sapphire_preferred: { value: "1x" },
         },
@@ -191,6 +218,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: true,
         cards: {
           chase_sapphire_reserve: { value: "1.25\u00A2", isBest: true },
+          amex_platinum: { value: "1.0\u00A2" },
           amex_gold: { value: "1.0\u00A2" },
           chase_sapphire_preferred: { value: "1.25\u00A2", isBest: true },
         },
@@ -207,6 +235,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: false,
         cards: {
           chase_sapphire_reserve: { value: "Priority Pass + Sapphire Lounge" },
+          amex_platinum: { value: "Centurion + Priority Pass + Delta Sky Club", isBest: true, detail: "1,550+ lounges" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: null },
         },
@@ -216,6 +245,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: false,
         cards: {
           chase_sapphire_reserve: { value: "IHG Platinum Elite" },
+          amex_platinum: { value: "Hilton Gold + Marriott Gold", isBest: true },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: null },
         },
@@ -225,6 +255,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: false,
         cards: {
           chase_sapphire_reserve: { value: "$30/yr" },
+          amex_platinum: { value: "$120/4yr" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: null },
         },
@@ -234,8 +265,39 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: false,
         cards: {
           chase_sapphire_reserve: { value: "Included" },
+          amex_platinum: { value: null },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: "Included" },
+        },
+      },
+      {
+        label: "Uber One",
+        tracked: false,
+        cards: {
+          chase_sapphire_reserve: { value: null },
+          amex_platinum: { value: "Included", isBest: true },
+          amex_gold: { value: null },
+          chase_sapphire_preferred: { value: null },
+        },
+      },
+      {
+        label: "Walmart+",
+        tracked: false,
+        cards: {
+          chase_sapphire_reserve: { value: null },
+          amex_platinum: { value: "Included", isBest: true },
+          amex_gold: { value: null },
+          chase_sapphire_preferred: { value: null },
+        },
+      },
+      {
+        label: "CLEAR+",
+        tracked: false,
+        cards: {
+          chase_sapphire_reserve: { value: null },
+          amex_platinum: { value: "$209/yr credit", isBest: true },
+          amex_gold: { value: null },
+          chase_sapphire_preferred: { value: null },
         },
       },
       {
@@ -243,6 +305,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: false,
         cards: {
           chase_sapphire_reserve: { value: "Reserve Designer" },
+          amex_platinum: { value: "Platinum Concierge" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: null },
         },
@@ -252,6 +315,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: false,
         cards: {
           chase_sapphire_reserve: { value: null },
+          amex_platinum: { value: "Yes", detail: "FHR + THC" },
           amex_gold: { value: "Yes" },
           chase_sapphire_preferred: { value: null },
         },
@@ -268,6 +332,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: false,
         cards: {
           chase_sapphire_reserve: { value: "Primary", isBest: true },
+          amex_platinum: { value: "Secondary" },
           amex_gold: { value: "Secondary" },
           chase_sapphire_preferred: { value: "Primary", isBest: true },
         },
@@ -277,6 +342,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: false,
         cards: {
           chase_sapphire_reserve: { value: "Yes" },
+          amex_platinum: { value: "Yes" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: "Yes" },
         },
@@ -286,6 +352,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: false,
         cards: {
           chase_sapphire_reserve: { value: "Yes" },
+          amex_platinum: { value: "Yes" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: "Yes" },
         },
@@ -295,6 +362,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: false,
         cards: {
           chase_sapphire_reserve: { value: "Yes" },
+          amex_platinum: { value: "Yes" },
           amex_gold: { value: null },
           chase_sapphire_preferred: { value: "Yes" },
         },
@@ -304,6 +372,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: false,
         cards: {
           chase_sapphire_reserve: { value: "Yes" },
+          amex_platinum: { value: "Yes" },
           amex_gold: { value: "Yes" },
           chase_sapphire_preferred: { value: "Yes" },
         },
@@ -313,6 +382,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: false,
         cards: {
           chase_sapphire_reserve: { value: "Yes" },
+          amex_platinum: { value: "Yes" },
           amex_gold: { value: "Yes" },
           chase_sapphire_preferred: { value: "Yes" },
         },
@@ -322,6 +392,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: false,
         cards: {
           chase_sapphire_reserve: { value: null },
+          amex_platinum: { value: "Yes" },
           amex_gold: { value: "Yes" },
           chase_sapphire_preferred: { value: null },
         },
@@ -331,6 +402,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: false,
         cards: {
           chase_sapphire_reserve: { value: "Yes" },
+          amex_platinum: { value: "Yes" },
           amex_gold: { value: "Yes" },
           chase_sapphire_preferred: { value: "Yes" },
         },
@@ -347,6 +419,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: false,
         cards: {
           chase_sapphire_reserve: { value: "Hyatt, IHG, Marriott" },
+          amex_platinum: { value: "Hilton, Marriott, Choice" },
           amex_gold: { value: "Hilton, Choice" },
           chase_sapphire_preferred: { value: "Hyatt, IHG, Marriott" },
         },
@@ -356,6 +429,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         tracked: false,
         cards: {
           chase_sapphire_reserve: { value: "United, SW, BA, Air France" },
+          amex_platinum: { value: "Delta, JetBlue, ANA, Singapore, Virgin Atlantic" },
           amex_gold: { value: "Delta, JetBlue, ANA, Singapore" },
           chase_sapphire_preferred: { value: "United, SW, BA, Air France" },
         },
@@ -384,6 +458,16 @@ export const CARD_REFERENCE_LINKS: CardReferenceLinks[] = [
       { label: "Rewards & earn rates", url: "https://www.chase.com/personal/credit-cards/sapphire/reserve/earn-rewards" },
       { label: "Transfer partners", url: "https://ultimaterewardspoints.chase.com/transfer-partners" },
       { label: "Insurance & protections", url: "https://www.chase.com/personal/credit-cards/sapphire/reserve/card-benefits" },
+    ],
+  },
+  {
+    cardId: "amex_platinum",
+    cardName: "Amex Platinum",
+    links: [
+      { label: "Card benefits overview", url: "https://www.americanexpress.com/us/credit-cards/card/platinum/" },
+      { label: "Rewards & earn rates", url: "https://www.americanexpress.com/us/credit-cards/card/platinum/rewards" },
+      { label: "Transfer partners", url: "https://global.americanexpress.com/rewards/transfer" },
+      { label: "Insurance & protections", url: "https://www.americanexpress.com/us/credit-cards/card/platinum/benefits" },
     ],
   },
   {

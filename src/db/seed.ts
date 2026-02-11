@@ -228,6 +228,26 @@ async function seed() {
     { cardType: "amex_gold", benefitKey: "gold_hotel_collection", benefitPartner: "AmexTravel.com", competitorMerchant: "Trivago", plaidMerchantPattern: "trivago", category: "hotels", insightType: "A1" },
     // Dining reservations → Resy (A1 — Resy credit redirect)
     { cardType: "amex_gold", benefitKey: "gold_resy_credit_h1", benefitPartner: "Resy", competitorMerchant: "OpenTable", plaidMerchantPattern: "opentable", category: "dining_reservation", insightType: "A1" },
+
+    // ── Amex Platinum entries ──
+    // Rideshare → Uber (A1 — Uber Cash redirect)
+    { cardType: "amex_platinum", benefitKey: "plat_uber_cash", benefitPartner: "Uber", competitorMerchant: "Lyft", plaidMerchantPattern: "lyft", category: "rideshare", insightType: "A1" },
+    // Food delivery → Uber Eats (A1 — Uber Cash redirect)
+    { cardType: "amex_platinum", benefitKey: "plat_uber_cash", benefitPartner: "Uber Eats", competitorMerchant: "DoorDash", plaidMerchantPattern: "doordash", category: "food_delivery", insightType: "A1" },
+    { cardType: "amex_platinum", benefitKey: "plat_uber_cash", benefitPartner: "Uber Eats", competitorMerchant: "DoorDash", plaidMerchantPattern: "door dash", category: "food_delivery", insightType: "A1" },
+    { cardType: "amex_platinum", benefitKey: "plat_uber_cash", benefitPartner: "Uber Eats", competitorMerchant: "Grubhub", plaidMerchantPattern: "grubhub", category: "food_delivery", insightType: "A1" },
+    { cardType: "amex_platinum", benefitKey: "plat_uber_cash", benefitPartner: "Uber Eats", competitorMerchant: "Postmates", plaidMerchantPattern: "postmates", category: "food_delivery", insightType: "A1" },
+    // Streaming → Eligible services (A2 — digital entertainment credit pool)
+    { cardType: "amex_platinum", benefitKey: "plat_digital_entertainment", benefitPartner: "Disney+, Hulu, ESPN+, or YouTube Premium", competitorMerchant: "Netflix", plaidMerchantPattern: "netflix", category: "streaming", insightType: "A2" },
+    { cardType: "amex_platinum", benefitKey: "plat_digital_entertainment", benefitPartner: "YouTube Premium or Disney+", competitorMerchant: "Spotify", plaidMerchantPattern: "spotify", category: "streaming", insightType: "A2" },
+    { cardType: "amex_platinum", benefitKey: "plat_digital_entertainment", benefitPartner: "Disney+, Hulu, or Peacock", competitorMerchant: "Apple TV+", plaidMerchantPattern: "apple tv", category: "streaming", insightType: "A2" },
+    { cardType: "amex_platinum", benefitKey: "plat_digital_entertainment", benefitPartner: "Disney+, Hulu, or Peacock", competitorMerchant: "Max", plaidMerchantPattern: "max.com", category: "streaming", insightType: "A2" },
+    { cardType: "amex_platinum", benefitKey: "plat_digital_entertainment", benefitPartner: "Disney+, Hulu, or Peacock", competitorMerchant: "HBO Max", plaidMerchantPattern: "hbo max", category: "streaming", insightType: "A2" },
+    // Dining reservations → Resy (A1 — Resy credit redirect)
+    { cardType: "amex_platinum", benefitKey: "plat_resy_credit_q1", benefitPartner: "Resy", competitorMerchant: "OpenTable", plaidMerchantPattern: "opentable", category: "dining_reservation", insightType: "A1" },
+    // Hotels → AmexTravel.com (A1 — FHR/THC redirect)
+    { cardType: "amex_platinum", benefitKey: "plat_hotel_credit_h1", benefitPartner: "AmexTravel.com", competitorMerchant: "Hotels.com", plaidMerchantPattern: "hotels.com", category: "hotels", insightType: "A1" },
+    { cardType: "amex_platinum", benefitKey: "plat_hotel_credit_h1", benefitPartner: "AmexTravel.com", competitorMerchant: "Booking.com", plaidMerchantPattern: "booking.com", category: "hotels", insightType: "A1" },
   ];
 
   for (const entry of competitorEntries) {

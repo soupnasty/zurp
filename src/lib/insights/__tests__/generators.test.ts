@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { runAllGenerators } from "../generators";
 import { generateA1 } from "../generators/a1-competitor-redirect";
+import { generateA2 } from "../generators/a2-subscription-swap";
 import { generateB1 } from "../generators/b1-unused-credit";
 import { generateB3 } from "../generators/b3-underused-credit";
 import { generateC1 } from "../generators/c1-benefit-maxed";
@@ -249,6 +250,101 @@ describe("B3: Underused Credit", () => {
     });
 
     expect(generateB3(ctx)).toHaveLength(0);
+  });
+});
+
+describe("A2: Subscription Swap", () => {
+  function makeRecurringTxs(merchant: string, amount: number): CategorizedTransaction[] {
+    // 4 monthly charges, 30 days apart
+    return Array.from({ length: 4 }, (_, i) => {
+      const date = new Date();
+      date.setDate(date.getDate() - (i * 30));
+      return makeTx({
+        id: `tx-${i}`,
+        merchantName: merchant,
+        amount,
+        date: date.toISOString(),
+      });
+    });
+  }
+
+  it("uses a2_free template for subscription benefit type (CSR Apple Music)", () => {
+    const competitors: CompetitorMapEntry[] = [
+      {
+        benefitKey: "csr_apple_music",
+        benefitPartner: "Apple Music",
+        competitorMerchant: "Spotify",
+        plaidMerchantPattern: "spotify",
+        category: "streaming",
+        insightType: "A2",
+      },
+    ];
+
+    const ctx = makeCtx({
+      transactions: makeRecurringTxs("Spotify", 11),
+      competitorEntries: competitors,
+      cardType: "chase_sapphire_reserve",
+    });
+
+    const results = generateA2(ctx);
+    expect(results.length).toBe(1);
+    expect(results[0].category).toBe("A2");
+    expect(results[0].templateKey).toBe("a2_free");
+    expect(results[0].confidence).toBe("exact_confirmed");
+    expect(results[0].actionability).toBe("change_recurring");
+  });
+
+  it("uses a2_swap template for credit-pool benefit type (Platinum digital entertainment)", () => {
+    const competitors: CompetitorMapEntry[] = [
+      {
+        benefitKey: "plat_digital_entertainment",
+        benefitPartner: "Disney+, Hulu, ESPN+, or YouTube Premium",
+        competitorMerchant: "Netflix",
+        plaidMerchantPattern: "netflix",
+        category: "streaming",
+        insightType: "A2",
+      },
+    ];
+
+    const ctx = makeCtx({
+      transactions: makeRecurringTxs("Netflix", 16),
+      competitorEntries: competitors,
+      cardType: "amex_platinum",
+    });
+
+    const results = generateA2(ctx);
+    expect(results.length).toBe(1);
+    expect(results[0].category).toBe("A2");
+    expect(results[0].templateKey).toBe("a2_swap");
+    expect(results[0].confidence).toBe("category_match");
+    expect(results[0].actionability).toBe("plan_future");
+    expect(results[0].templateVars.credit_name).toBe("Digital Entertainment Credit");
+    expect(results[0].templateVars.credit).toBe(25);
+  });
+
+  it("skips non-recurring charges", () => {
+    const competitors: CompetitorMapEntry[] = [
+      {
+        benefitKey: "plat_digital_entertainment",
+        benefitPartner: "Disney+",
+        competitorMerchant: "Netflix",
+        plaidMerchantPattern: "netflix",
+        category: "streaming",
+        insightType: "A2",
+      },
+    ];
+
+    const ctx = makeCtx({
+      // Only 2 charges — fails recurring heuristic (needs 3+)
+      transactions: [
+        makeTx({ id: "tx-1", merchantName: "Netflix", amount: 16 }),
+        makeTx({ id: "tx-2", merchantName: "Netflix", amount: 16 }),
+      ],
+      competitorEntries: competitors,
+      cardType: "amex_platinum",
+    });
+
+    expect(generateA2(ctx)).toHaveLength(0);
   });
 });
 

@@ -118,6 +118,9 @@ export async function getCardSummary(
   for (const benefit of cardDef.benefits) {
     if (benefit.type === "subscription") continue;
 
+    // Skip benefits not active in the current month
+    if (benefit.activeMonths && !benefit.activeMonths.includes(now.getMonth())) continue;
+
     const bounds = getCurrentCycleBounds(
       benefit.cycle as BenefitCycle,
       now,
@@ -306,6 +309,11 @@ export async function getBenefitUsageSummaries(
   });
 
   for (const benefit of cardDef.benefits) {
+    // Skip benefits not active in the current month
+    if (benefit.activeMonths && !benefit.activeMonths.includes(now.getMonth())) {
+      continue;
+    }
+
     const bounds = getCurrentCycleBounds(
       benefit.cycle as BenefitCycle,
       now,
@@ -398,6 +406,8 @@ export async function getBenefitUsageSummaries(
       ytdUsed,
       isActivated,
       activatedAt,
+      activeMonths: benefit.activeMonths,
+      brandSlug: benefit.brandSlug,
     });
   }
 
