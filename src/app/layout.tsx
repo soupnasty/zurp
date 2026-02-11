@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 import "./globals.css";
 
@@ -30,6 +31,7 @@ export default function RootLayout({
         className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
       >
         <ToastProvider>{children}</ToastProvider>
+        <Analytics />
       </body>
     </html>
   );
