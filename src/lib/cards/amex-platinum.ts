@@ -39,7 +39,7 @@ const uberOneDetails: BenefitDetails = {
 
 const digitalEntertainmentDetails: BenefitDetails = {
   description:
-    "Up to $25/month in statement credits for eligible digital entertainment subscriptions: Disney+, Hulu, ESPN+, The New York Times, The Wall Street Journal, YouTube Premium, SiriusXM, Audible, Peacock, and more. Must enroll before first purchase.",
+    "Up to $25/month in statement credits for eligible digital entertainment subscriptions: Disney+, Disney+ Bundle, Hulu, ESPN+, The New York Times, The Wall Street Journal, YouTube Premium, YouTube TV, Peacock, and Paramount+. Must enroll before first purchase.",
   howToUse: [
     "Open the Amex app or log in to americanexpress.com",
     "Go to Benefits → find the Digital Entertainment Credit",
@@ -165,7 +165,7 @@ const equinoxDetails: BenefitDetails = {
 
 const clearDetails: BenefitDetails = {
   description:
-    "Up to $209/year in statement credits covering a CLEAR Plus membership (normally $189/yr, may vary). CLEAR provides expedited security screening at 50+ airports and select stadiums.",
+    "Up to $209/year in statement credits covering a CLEAR Plus membership (currently $209/yr). CLEAR provides expedited security screening at 50+ airports and select stadiums.",
   howToUse: [
     "Sign up for CLEAR Plus at clearme.com or at an airport CLEAR pod",
     "Pay with your Platinum Card",
@@ -211,7 +211,7 @@ export const amexPlatinum: CardDefinition = {
   name: "American Express\u00AE Platinum Card",
   issuer: "amex",
   network: "amex",
-  annualFee: 695,
+  annualFee: 895,
   feeDescriptor: "annual membership fee",
   imageUrl: null,
   isActive: true,
@@ -278,12 +278,12 @@ export const amexPlatinum: CardDefinition = {
       merchantPatterns: [
         "disney+", "disneyplus", "hulu", "espn+", "espnplus",
         "new york times", "nytimes", "wall street journal", "wsj",
-        "youtube premium", "youtube music", "sirius", "siriusxm",
-        "audible", "peacock",
+        "youtube premium", "youtube music", "youtube tv",
+        "peacock", "paramount+", "paramount plus", "paramountplus",
       ],
       autoMatchable: true, requiresActivation: true, priority: 20,
       description: "Up to $25/month for eligible digital entertainment subscriptions.",
-      notes: "Must enroll before first purchase. Eligible services include Disney+, Hulu, ESPN+, NYT, WSJ, YouTube Premium, SiriusXM, Audible, Peacock.",
+      notes: "Must enroll before first purchase. Eligible services include Disney+, Disney+ Bundle, Hulu, ESPN+, NYT, WSJ, YouTube Premium, YouTube TV, Peacock, Paramount+.",
       details: digitalEntertainmentDetails,
     }),
     b({
