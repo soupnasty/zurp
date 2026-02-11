@@ -67,7 +67,7 @@ export function BenefitMatrix({
               </span>
               {section.tracked && (
                 <span className="inline-flex items-center rounded px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-[var(--accent)]/70 border border-[var(--accent)]/20 bg-[var(--accent)]/5">
-                  Tracked by Zurp
+                  Tracked by zurp
                 </span>
               )}
             </div>

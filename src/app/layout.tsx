@@ -16,7 +16,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "zurp",
   description:
-    "Zurp tracks your credit card benefits automatically — and shows you what you'd gain or lose on every other card.",
+    "zurp tracks your credit card benefits automatically — and shows you what you'd gain or lose on every other card.",
 };
 
 export default function RootLayout({

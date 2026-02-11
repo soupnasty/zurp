@@ -49,8 +49,8 @@ export function AppShell({ children, userEmail }: AppShellProps) {
                   height="34"
                   rx="5"
                   stroke="var(--accent)"
-                  strokeWidth="2.5"
-                  opacity="0.4"
+                  strokeWidth="3"
+                  opacity="0.55"
                 />
                 <line
                   x1="0"
@@ -58,8 +58,8 @@ export function AppShell({ children, userEmail }: AppShellProps) {
                   x2="50"
                   y2="12"
                   stroke="var(--accent)"
-                  strokeWidth="1.2"
-                  opacity="0.2"
+                  strokeWidth="1.5"
+                  opacity="0.3"
                 />
                 <circle cx="12" cy="24" r="2.5" fill="var(--accent)" />
                 <circle
@@ -91,8 +91,8 @@ export function AppShell({ children, userEmail }: AppShellProps) {
                 height="34"
                 rx="5"
                 stroke="var(--accent)"
-                strokeWidth="2.5"
-                opacity="0.4"
+                strokeWidth="3"
+                opacity="0.55"
               />
               <circle cx="12" cy="24" r="2.5" fill="var(--accent)" />
               <circle cx="21" cy="24" r="2.5" fill="var(--accent)" opacity="0.55" />

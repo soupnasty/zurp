@@ -193,7 +193,7 @@ export function CompareContent({
         data {" · "} {totalTransactions.toLocaleString()} transactions {" · "}{" "}
         {formatDollars(totalSpend)} total spend
         <br />
-        Zurp shows the math — you make the call. No affiliate links. No card
+        zurp shows the math — you make the call. No affiliate links. No card
         recommendations.
       </div>
     </>

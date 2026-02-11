@@ -30,7 +30,7 @@ const trackerRows = [
   {
     icon: "E",
     name: "Exclusive Tables",
-    period: "$0 remaining \u00b7 resets Jul 1",
+    period: "$150 remaining \u00b7 resets Jul 1",
     used: "$150",
     total: "$300",
     pct: 50,
@@ -69,55 +69,68 @@ const trackerRows = [
   },
 ];
 
-/* ── Compare card rows ── */
+/* ── Compare card rows ──
+   All bars fill to the same total width (95%) so they line up visually.
+   Segments are proportional within each card (value / total × 95).
+   Detailed labels show absolute dollar amounts for honest cross-row comparison. */
 const compareCards = [
   {
     rank: 1,
     name: "Sapphire Preferred",
     fee: "$95/yr fee",
-    badge: "best" as const,
-    pointsPct: 72,
+    badge: null,
+    pointsPct: 71,
     pointsLabel: "Points $798",
     benefitsPct: 15,
     benefitsLabel: "$170",
-    feePct: 8,
+    feePct: 9,
     feeLabel: "-$95",
     net: "+$873",
     netColor: "#34d399",
     rowBg: "rgba(52,211,153,0.03)",
+    detailedLabels: {
+      points: "Points $798",
+      benefits: "$170 available",
+      fee: "Fee -$95",
+    },
   },
   {
     rank: 2,
     name: "Amex Gold",
     fee: "$325/yr fee",
     badge: null,
-    pointsPct: 57,
+    pointsPct: 48,
     pointsLabel: "Points $656",
-    benefitsPct: 26,
+    benefitsPct: 23,
     benefitsLabel: "$304",
-    feePct: 12,
+    feePct: 24,
     feeLabel: "-$325",
     net: "+$635",
     netColor: "#fbbf24",
     rowBg: undefined,
+    detailedLabels: {
+      points: "Points $656",
+      benefits: "$304 available",
+      fee: "Fee -$325",
+    },
   },
   {
     rank: 3,
     name: "Sapphire Reserve",
     fee: "$795/yr fee",
-    badge: "current" as const,
-    pointsPct: 69,
+    badge: null,
+    pointsPct: 47,
     pointsLabel: "Points $838",
-    benefitsPct: 6,
+    benefitsPct: 4,
     benefitsLabel: "",
-    feePct: 20,
+    feePct: 44,
     feeLabel: "-$795",
     net: "+$118",
     netColor: "#6b7280",
     rowBg: "rgba(88,166,255,0.03)",
     detailedLabels: {
       points: "Points $838",
-      benefits: "Benefits $75",
+      benefits: "$75 captured of $2,060",
       fee: "Fee -$795",
     },
   },
@@ -161,19 +174,19 @@ const insightCards = [
     typeColor: "#fbbf24",
     body: (
       <>
-        Your{" "}
+        You&apos;ve only used{" "}
+        <span className="ins-hl-yellow font-bold" style={{ color: "#fbbf24" }}>
+          $5
+        </span>{" "}
+        of your{" "}
         <strong className="font-semibold text-white">
           $25 DoorDash credit
         </strong>{" "}
-        resets in{" "}
+        &mdash;{" "}
         <span className="ins-hl-yellow font-bold" style={{ color: "#fbbf24" }}>
           3 days
-        </span>
-        . You&apos;ve only used the $5 restaurant promo &mdash; you still have{" "}
-        <span className="ins-hl-yellow font-bold" style={{ color: "#fbbf24" }}>
-          $20
         </span>{" "}
-        in non-restaurant credits this month.
+        left to use the rest.
       </>
     ),
     meta: "Chase Sapphire Reserve \u00b7 Monthly credit",
@@ -222,8 +235,8 @@ export default function Home() {
                 height="34"
                 rx="5"
                 stroke="var(--accent)"
-                strokeWidth="2.5"
-                opacity="0.4"
+                strokeWidth="3"
+                opacity="0.55"
               />
               <line
                 x1="0"
@@ -231,8 +244,8 @@ export default function Home() {
                 x2="50"
                 y2="12"
                 stroke="var(--accent)"
-                strokeWidth="1.2"
-                opacity="0.2"
+                strokeWidth="1.5"
+                opacity="0.3"
               />
               <circle cx="12" cy="24" r="2.5" fill="var(--accent)" />
               <circle
@@ -317,8 +330,8 @@ export default function Home() {
           </h1>
 
           <p className="mx-auto mb-10 max-w-[520px] text-lg leading-relaxed text-[var(--text-secondary)] animate-[fadeUp_0.6s_ease_0.2s_both]">
-            Zurp tracks your credit card benefits automatically &mdash; and
-            shows you what you&apos;d gain or lose on every other card.
+            Your card comes with $2,000+ in benefits. Zurp makes sure you
+            actually use them.
           </p>
 
           <div className="mb-3 flex flex-col items-center justify-center gap-4 sm:flex-row animate-[fadeUp_0.6s_ease_0.3s_both]">
@@ -331,7 +344,16 @@ export default function Home() {
           </div>
 
           <p className="text-[13px] text-[var(--text-secondary)] animate-[fadeUp_0.6s_ease_0.4s_both]">
-            Free to use. Secure, read-only connection via Plaid.
+            Free to use. Secure, read-only connection{" "}
+            <a
+              href="https://plaid.com/what-is-plaid/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-2 hover:text-[var(--text-primary)] transition-colors"
+            >
+              via Plaid
+            </a>
+            .
           </p>
         </div>
       </section>
@@ -363,9 +385,8 @@ export default function Home() {
               className="mb-4 text-center text-[clamp(28px,4vw,42px)] font-bold leading-[1.15]"
               style={{ letterSpacing: "-0.02em" }}
             >
-              Most people capture less than half.{" "}
-              <br className="hidden sm:block" />
-              Do you?
+              You&apos;re paying for benefits <br className="hidden sm:block" />
+              you&apos;ve never touched
             </h2>
           </ScrollReveal>
           <ScrollReveal>
@@ -374,7 +395,7 @@ export default function Home() {
               style={{ fontSize: 17, color: "#8b95a8" }}
             >
               Zurp maps your transactions against your card&apos;s full benefit
-              catalog &mdash; credits, promos, multipliers &mdash; and shows
+              catalog &mdash; credits, perks, multipliers &mdash; and shows
               exactly what you&apos;ve captured and what you&apos;re missing.
             </p>
           </ScrollReveal>
@@ -431,7 +452,7 @@ export default function Home() {
                   captured
                 </div>
                 <div className="text-[13px]" style={{ color: "#6b7280" }}>
-                  of $2,700 available
+                  of $2,060 available
                 </div>
               </div>
               <div className="h-2 overflow-hidden rounded bg-[rgba(255,255,255,0.06)]">
@@ -440,7 +461,7 @@ export default function Home() {
                   style={
                     {
                       background: "linear-gradient(90deg, #34d399, #5eead4)",
-                      "--fill": "36%",
+                      "--fill": "47%",
                       "--dur": "1.8s",
                       "--delay": "3.8s",
                     } as React.CSSProperties
@@ -562,7 +583,7 @@ export default function Home() {
               className="mx-auto mb-12 max-w-[540px] text-center leading-relaxed"
               style={{ fontSize: 17, color: "#8b95a8" }}
             >
-              Based on your real spending, Zurp calculates the exact dollar
+              Based on your real spending, zurp calculates the exact dollar
               difference if you switched cards. No guesswork, no affiliate bias.
             </p>
           </ScrollReveal>
@@ -580,7 +601,7 @@ export default function Home() {
             >
               <div className="text-[20px] font-bold text-white mb-1">
                 The <span style={{ color: "#34d399" }}>Sapphire Preferred</span>{" "}
-                would save you{" "}
+                could save you{" "}
                 <CountUp
                   target={755}
                   prefix="$"
@@ -692,7 +713,7 @@ export default function Home() {
                               } as React.CSSProperties
                             }
                           >
-                            {card.pointsPct > 15 ? card.pointsLabel : ""}
+                            {card.pointsPct > 25 ? card.pointsLabel : ""}
                           </div>
                           <div
                             className="flex items-center justify-center text-[11px] font-semibold text-white/90 whitespace-nowrap overflow-hidden"
@@ -708,7 +729,7 @@ export default function Home() {
                               } as React.CSSProperties
                             }
                           >
-                            {card.benefitsPct > 10 ? card.benefitsLabel : ""}
+                            {card.benefitsPct > 12 ? card.benefitsLabel : ""}
                           </div>
                           <div
                             className="flex items-center justify-center text-[11px] font-semibold text-white/70 whitespace-nowrap overflow-hidden"
@@ -724,7 +745,7 @@ export default function Home() {
                               } as React.CSSProperties
                             }
                           >
-                            {card.feePct > 6 ? card.feeLabel : ""}
+                            {card.feePct > 8 ? card.feeLabel : ""}
                           </div>
                         </div>
                         {/* Legend dots */}
@@ -797,7 +818,7 @@ export default function Home() {
                             } as React.CSSProperties
                           }
                         >
-                          {card.pointsPct > 20 ? card.pointsLabel : ""}
+                          {card.pointsPct > 25 ? card.pointsLabel : ""}
                         </div>
                         <div
                           className="flex items-center justify-center text-[10px] font-semibold text-white/90 whitespace-nowrap overflow-hidden"
@@ -1042,7 +1063,16 @@ export default function Home() {
                   style={{ color: "#8b95a8" }}
                 >
                   Read-only access to your transactions. We never see your card
-                  number, login, or balance.
+                  number, login, or balance.{" "}
+                  <a
+                    href="https://plaid.com/what-is-plaid/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline underline-offset-2 hover:text-[var(--text-primary)] transition-colors"
+                  >
+                    Learn more about Plaid
+                  </a>
+                  .
                 </p>
               </div>
             </ScrollReveal>
@@ -1139,8 +1169,7 @@ export default function Home() {
                   style={{ color: "#8b95a8" }}
                 >
                   Every transaction is matched against your card&apos;s full
-                  benefit catalog &mdash; credits, multipliers, promos, partner
-                  perks.
+                  benefit catalog &mdash; credits, multipliers, and perks.
                 </p>
               </div>
             </ScrollReveal>
@@ -1188,9 +1217,9 @@ export default function Home() {
                       </span>{" "}
                       is sitting unused.
                     </div>
-                    <div className="flex items-baseline gap-1.5">
+                    <div className="flex items-end gap-1.5">
                       <span
-                        className="font-data font-bold"
+                        className="font-data font-bold leading-none"
                         style={{
                           fontSize: 28,
                           color: "#58A6FF",
@@ -1204,7 +1233,7 @@ export default function Home() {
                         $120
                       </span>
                       <span
-                        className="text-[12px]"
+                        className="text-[12px] leading-none mb-[3px]"
                         style={{
                           color: "#6b7280",
                           opacity: 0,
@@ -1225,8 +1254,7 @@ export default function Home() {
                   style={{ color: "#8b95a8" }}
                 >
                   Missed credits, better merchants, expiring benefits, and what
-                  you&apos;d save by switching cards. Tailored to your actual
-                  spending.
+                  you&apos;d save by switching cards. spending.
                 </p>
               </div>
             </ScrollReveal>
@@ -1238,16 +1266,14 @@ export default function Home() {
       <section className="py-24" id="insights">
         <div className="mx-auto max-w-[1080px] px-6">
           <ScrollReveal>
-            <p className="label-caps mb-4 text-center">
-              Powered by your real data
-            </p>
+            <p className="label-caps mb-4 text-center">Insights</p>
           </ScrollReveal>
           <ScrollReveal>
             <h2
               className="mb-4 text-center text-[clamp(28px,4vw,42px)] font-bold leading-[1.15]"
               style={{ letterSpacing: "-0.02em" }}
             >
-              Insights that actually save you money.
+              Smart insights. Real dollars.
             </h2>
           </ScrollReveal>
           <ScrollReveal>
@@ -1255,8 +1281,8 @@ export default function Home() {
               className="mx-auto mb-14 max-w-[540px] text-center leading-relaxed"
               style={{ fontSize: 17, color: "#8b95a8" }}
             >
-              Every insight is based on your transactions, your card, your
-              benefit periods. No generic tips.
+              Every insight is based on your card, your transactions, your
+              perks. No generic tips.
             </p>
           </ScrollReveal>
 
@@ -1344,7 +1370,7 @@ export default function Home() {
               className="mb-4 text-[clamp(28px,4vw,40px)] font-bold leading-tight"
               style={{ letterSpacing: "-1px" }}
             >
-              Every month you wait, benefits expire.
+              You already paid the annual fee. Get what&apos;s yours.
             </h2>
           </ScrollReveal>
           <ScrollReveal>
@@ -1364,7 +1390,16 @@ export default function Home() {
           </ScrollReveal>
           <ScrollReveal>
             <p className="mt-3 text-[13px] text-[var(--text-secondary)]">
-              Free to use. Secure, read-only connection via Plaid.
+              Free to use. Secure, read-only connection{" "}
+              <a
+                href="https://plaid.com/what-is-plaid/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-2 hover:text-[var(--text-primary)] transition-colors"
+              >
+                via Plaid
+              </a>
+              .
             </p>
           </ScrollReveal>
         </div>
@@ -1374,7 +1409,7 @@ export default function Home() {
       <footer className="border-t border-[var(--border-default)] py-10">
         <div className="mx-auto flex max-w-[1080px] flex-col items-center justify-between gap-4 px-6 sm:flex-row">
           <div className="text-[13px] text-[var(--text-secondary)]">
-            &copy; 2026 Zurp
+            &copy; 2026 zurp
           </div>
           <div className="flex gap-6">
             <Link

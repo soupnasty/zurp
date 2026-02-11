@@ -20,7 +20,7 @@ export default function TermsPage() {
             Terms of Service
           </h1>
           <p className="mt-2">
-            <strong className="text-[var(--text-primary)]">Zurp, LLC</strong>
+            <strong className="text-[var(--text-primary)]">zurp, LLC</strong>
             <br />
             Effective Date: February 9, 2026
             <br />
@@ -36,9 +36,9 @@ export default function TermsPage() {
           <p>
             These Terms of Service (&ldquo;Terms&rdquo;) constitute a legally
             binding agreement between you (&ldquo;you&rdquo; or
-            &ldquo;User&rdquo;) and Zurp, LLC (&ldquo;Zurp,&rdquo;
+            &ldquo;User&rdquo;) and zurp, LLC (&ldquo;zurp,&rdquo;
             &ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;us&rdquo;). These
-            Terms govern your access to and use of the Zurp web application,
+            Terms govern your access to and use of the zurp web application,
             website (zurp.com), and all related services, features, and content
             (collectively, the &ldquo;Service&rdquo;).
           </p>
@@ -230,7 +230,7 @@ export default function TermsPage() {
               </strong>
             </li>
             <li>
-              You authorize Plaid to retrieve and transmit to Zurp: transaction
+              You authorize Plaid to retrieve and transmit to zurp: transaction
               history (up to 24 months) and account metadata (account name,
               type, institution, last four digits).
             </li>
@@ -264,7 +264,7 @@ export default function TermsPage() {
             5.3 Data Accuracy
           </h3>
           <p>
-            Transaction data is provided to Zurp by Plaid, which retrieves it
+            Transaction data is provided to zurp by Plaid, which retrieves it
             from your financial institution. While we strive for accuracy, we do
             not guarantee that transaction data, merchant categorizations, or
             benefit tracking calculations will be 100% accurate at all times.
@@ -284,7 +284,7 @@ export default function TermsPage() {
           </h3>
           <p>
             You may disconnect your financial accounts at any time through the
-            Zurp app settings or directly through Plaid&apos;s portal at{" "}
+            zurp app settings or directly through Plaid&apos;s portal at{" "}
             <a
               href="https://my.plaid.com"
               target="_blank"
@@ -293,7 +293,7 @@ export default function TermsPage() {
             >
               my.plaid.com
             </a>
-            . Disconnecting an account will stop new data from flowing to Zurp
+            . Disconnecting an account will stop new data from flowing to zurp
             but will not automatically delete historical data already processed.
             To delete your data, see Section 12 (Account Termination).
           </p>
@@ -399,7 +399,7 @@ export default function TermsPage() {
             The Service, including its software, algorithms, insight engine,
             benefit catalogs, competitor maps, user interface, design, graphics,
             text, logos, and all other content and materials (collectively,
-            &ldquo;Zurp Content&rdquo;), is owned by or licensed to Zurp, LLC
+            &ldquo;zurp Content&rdquo;), is owned by or licensed to zurp, LLC
             and is protected by copyright, trademark, trade secret, and other
             intellectual property laws.
           </p>
@@ -412,17 +412,17 @@ export default function TermsPage() {
           <ul className="ml-[var(--space-lg)] list-disc space-y-1">
             <li>
               Modify, copy, or create derivative works based on the Service or
-              Zurp Content;
+              zurp Content;
             </li>
             <li>
               Use any data mining, robots, or similar data gathering or
               extraction methods;
             </li>
             <li>
-              Download or cache any Zurp Content except as expressly permitted;
+              Download or cache any zurp Content except as expressly permitted;
             </li>
             <li>
-              Use the Zurp name, logo, or trademarks without our prior written
+              Use the zurp name, logo, or trademarks without our prior written
               consent.
             </li>
           </ul>
@@ -432,7 +432,7 @@ export default function TermsPage() {
           </h3>
           <p>
             You retain ownership of any content you submit to the Service (e.g.,
-            support messages, feedback). By submitting content, you grant Zurp a
+            support messages, feedback). By submitting content, you grant zurp a
             non-exclusive, royalty-free, worldwide license to use, reproduce,
             and display that content solely for the purpose of operating and
             improving the Service.
@@ -443,11 +443,11 @@ export default function TermsPage() {
           </h3>
           <p>
             If you provide suggestions, ideas, or feedback about the Service
-            (&ldquo;Feedback&rdquo;), you grant Zurp an irrevocable,
+            (&ldquo;Feedback&rdquo;), you grant zurp an irrevocable,
             non-exclusive, royalty-free, perpetual, worldwide license to use,
             modify, and incorporate that Feedback into the Service without any
             obligation to you. You acknowledge that Feedback is not confidential
-            and that Zurp may already be developing similar ideas independently.
+            and that zurp may already be developing similar ideas independently.
           </p>
 
           <h3 className="mt-[var(--space-md)] font-semibold text-[var(--text-primary)]">
@@ -503,7 +503,7 @@ export default function TermsPage() {
           <p>
             Your use of the Service may require internet access and a compatible
             device, the costs of which are your responsibility. Your financial
-            institution may impose fees related to account access; Zurp is not
+            institution may impose fees related to account access; zurp is not
             responsible for any such fees.
           </p>
         </section>
@@ -547,7 +547,7 @@ export default function TermsPage() {
             sources and are updated periodically. Credit card benefits, terms,
             fees, rewards rates, partner offers, and promotional programs are
             subject to change by card issuers at any time without notice to
-            Zurp.{" "}
+            zurp.{" "}
             <strong className="text-[var(--text-primary)]">
               We do not guarantee that the benefit information displayed in the
               Service is current, complete, or accurate at all times.
@@ -557,7 +557,7 @@ export default function TermsPage() {
             Your card&apos;s official cardmember agreement and benefits guide,
             as provided by your card issuer, are the authoritative source for
             your card&apos;s benefits. In the event of any discrepancy between
-            information in Zurp and information from your card issuer, your card
+            information in zurp and information from your card issuer, your card
             issuer&apos;s terms control.
           </p>
 
@@ -612,7 +612,7 @@ export default function TermsPage() {
           </h3>
           <p className="font-semibold text-[var(--text-primary)] uppercase text-sm">
             To the maximum extent permitted by applicable law, in no event shall
-            Zurp, its officers, directors, members, employees, agents, or
+            zurp, its officers, directors, members, employees, agents, or
             licensors be liable for any indirect, incidental, special,
             consequential, punitive, or exemplary damages, including but not
             limited to:
@@ -641,7 +641,7 @@ export default function TermsPage() {
           </ul>
           <p className="font-semibold text-[var(--text-primary)] uppercase text-sm">
             Whether based on warranty, contract, tort (including negligence),
-            strict liability, or any other legal theory, and whether or not Zurp
+            strict liability, or any other legal theory, and whether or not zurp
             has been advised of the possibility of such damages.
           </p>
 
@@ -652,7 +652,7 @@ export default function TermsPage() {
             To the maximum extent permitted by applicable law, Zurp&apos;s total
             aggregate liability to you for all claims arising out of or relating
             to these Terms or the Service shall not exceed the greater of: (a)
-            the amounts you have paid to Zurp in the twelve (12) months
+            the amounts you have paid to zurp in the twelve (12) months
             immediately preceding the event giving rise to the claim, or (b) one
             hundred dollars ($100).
           </p>
@@ -663,7 +663,7 @@ export default function TermsPage() {
           <p>
             You acknowledge that the disclaimers and limitations of liability in
             Sections 9 and 10 reflect a fair and reasonable allocation of risk
-            and form an essential basis of the bargain between you and Zurp.
+            and form an essential basis of the bargain between you and zurp.
             Zurp would not provide the Service without these limitations.
           </p>
 
@@ -683,7 +683,7 @@ export default function TermsPage() {
             11. Indemnification
           </h2>
           <p>
-            You agree to indemnify, defend, and hold harmless Zurp, LLC and its
+            You agree to indemnify, defend, and hold harmless zurp, LLC and its
             officers, directors, members, employees, agents, and licensors from
             and against any and all claims, damages, losses, liabilities, costs,
             and expenses (including reasonable attorneys&apos; fees) arising out
@@ -756,7 +756,7 @@ export default function TermsPage() {
           </p>
 
           <h3 className="mt-[var(--space-md)] font-semibold text-[var(--text-primary)]">
-            12.2 Termination or Suspension by Zurp
+            12.2 Termination or Suspension by zurp
           </h3>
           <p>
             We may suspend or terminate your account and access to the Service
@@ -829,7 +829,7 @@ export default function TermsPage() {
           <p>
             If we cannot resolve a dispute informally,{" "}
             <strong className="text-[var(--text-primary)]">
-              you and Zurp agree to resolve any dispute, claim, or controversy
+              you and zurp agree to resolve any dispute, claim, or controversy
               arising out of or relating to these Terms or the Service through
               binding individual arbitration
             </strong>
@@ -850,7 +850,7 @@ export default function TermsPage() {
             13.3 Class Action Waiver
           </h3>
           <p className="font-semibold text-[var(--text-primary)] uppercase text-sm">
-            You and Zurp agree that each party may bring claims against the
+            You and zurp agree that each party may bring claims against the
             other only in your or its individual capacity, and not as a
             plaintiff or class member in any purported class, collective, or
             representative action.
@@ -891,7 +891,7 @@ export default function TermsPage() {
               support@zurp.com
             </a>{" "}
             within 30 days of first accepting these Terms. Your notice must
-            include your full name, email address associated with your Zurp
+            include your full name, email address associated with your zurp
             account, and a clear statement that you wish to opt out of
             arbitration. If you opt out, any disputes will be resolved in the
             courts specified in Section 14.
@@ -929,7 +929,7 @@ export default function TermsPage() {
           <p>
             These Terms, together with the Privacy Policy and any other policies
             or agreements referenced herein, constitute the entire agreement
-            between you and Zurp regarding the Service and supersede all prior
+            between you and zurp regarding the Service and supersede all prior
             agreements, understandings, and communications, whether written or
             oral.
           </p>
@@ -952,7 +952,7 @@ export default function TermsPage() {
             Our failure to enforce any right or provision of these Terms shall
             not be deemed a waiver of that right or provision. A waiver of any
             provision shall be effective only if made in writing and signed by
-            Zurp.
+            zurp.
           </p>
 
           <h3 className="mt-[var(--space-md)] font-semibold text-[var(--text-primary)]">
@@ -983,7 +983,7 @@ export default function TermsPage() {
           </h3>
           <p>
             Notices to you may be sent to the email address associated with your
-            account. Notices to Zurp should be sent to{" "}
+            account. Notices to zurp should be sent to{" "}
             <a
               href="mailto:support@zurp.com"
               className="text-[var(--accent)] hover:opacity-80"
@@ -1018,7 +1018,7 @@ export default function TermsPage() {
           <p>
             Nothing in these Terms shall be construed to create a partnership,
             joint venture, agency, or employment relationship between you and
-            Zurp. Neither party has the authority to bind the other.
+            zurp. Neither party has the authority to bind the other.
           </p>
         </section>
 
@@ -1031,7 +1031,7 @@ export default function TermsPage() {
             If you have questions about these Terms, please contact us:
           </p>
           <p>
-            <strong className="text-[var(--text-primary)]">Zurp, LLC</strong>
+            <strong className="text-[var(--text-primary)]">zurp, LLC</strong>
             <br />
             Email:{" "}
             <a

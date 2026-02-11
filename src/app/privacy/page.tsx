@@ -34,8 +34,8 @@ export default function PrivacyPage() {
             1. Introduction
           </h2>
           <p>
-            Zurp, LLC (&ldquo;Zurp,&rdquo; &ldquo;we,&rdquo;
-            &ldquo;our,&rdquo; or &ldquo;us&rdquo;) operates the Zurp web
+            Zurp, LLC (&ldquo;zurp,&rdquo; &ldquo;we,&rdquo;
+            &ldquo;our,&rdquo; or &ldquo;us&rdquo;) operates the zurp web
             application and related services (collectively, the
             &ldquo;Service&rdquo;). Zurp is a credit card benefit optimization
             platform that helps you understand, track, and maximize the value of
@@ -49,7 +49,7 @@ export default function PrivacyPage() {
           </p>
           <p>
             <strong className="text-[var(--text-primary)]">
-              By using Zurp, you agree to the collection and use of information
+              By using zurp, you agree to the collection and use of information
               in accordance with this policy.
             </strong>{" "}
             If you do not agree, please do not use the Service.
@@ -70,7 +70,7 @@ export default function PrivacyPage() {
               <strong className="text-[var(--text-primary)]">
                 Account information:
               </strong>{" "}
-              When you create a Zurp account, we collect your email address. You
+              When you create a zurp account, we collect your email address. You
               may also provide a display name.
             </li>
             <li>
@@ -103,10 +103,10 @@ export default function PrivacyPage() {
             2.2 Information Collected Through Plaid
           </h3>
           <p>
-            When you connect your credit card account to Zurp, we use Plaid,
+            When you connect your credit card account to zurp, we use Plaid,
             Inc. (&ldquo;Plaid&rdquo;) as a secure intermediary to access your
             financial data. You authenticate directly with your financial
-            institution through Plaid&apos;s interface &mdash; Zurp never sees,
+            institution through Plaid&apos;s interface &mdash; zurp never sees,
             handles, or stores your bank login credentials.
           </p>
           <p>Through Plaid, we receive:</p>
@@ -272,8 +272,8 @@ export default function PrivacyPage() {
                 Plaid, Inc.
               </strong>{" "}
               &mdash; financial data aggregation; secure connection between your
-              bank and Zurp. Plaid returns transaction data and account metadata
-              to Zurp.
+              bank and zurp. Plaid returns transaction data and account metadata
+              to zurp.
             </li>
             <li>
               <strong className="text-[var(--text-primary)]">
@@ -310,7 +310,7 @@ export default function PrivacyPage() {
             </li>
             <li>Enforce our Terms of Service or other agreements</li>
             <li>
-              Protect the rights, property, or safety of Zurp, our users, or
+              Protect the rights, property, or safety of zurp, our users, or
               the public
             </li>
             <li>
@@ -322,7 +322,7 @@ export default function PrivacyPage() {
             4.3 Business Transfers
           </h3>
           <p>
-            If Zurp is involved in a merger, acquisition, reorganization, or
+            If zurp is involved in a merger, acquisition, reorganization, or
             sale of assets, your information may be transferred as part of that
             transaction. We will notify you via email and/or a prominent notice
             on the Service before your information becomes subject to a
@@ -408,7 +408,7 @@ export default function PrivacyPage() {
               <strong className="text-[var(--text-primary)]">
                 Encryption in transit:
               </strong>{" "}
-              All data transmitted between your browser, Zurp&apos;s servers,
+              All data transmitted between your browser, zurp&apos;s servers,
               and Plaid is encrypted using TLS 1.2 or higher.
             </li>
             <li>
@@ -495,7 +495,7 @@ export default function PrivacyPage() {
               </strong>{" "}
               You can disconnect your financial institution at any time through
               the app or through Plaid&apos;s portal (my.plaid.com).
-              Disconnecting stops new data from flowing to Zurp. You can also
+              Disconnecting stops new data from flowing to zurp. You can also
               request deletion of data Plaid holds about you directly through
               Plaid.
             </li>
@@ -543,7 +543,7 @@ export default function PrivacyPage() {
               <strong className="text-[var(--text-primary)]">
                 Right to opt out of sale/sharing:
               </strong>{" "}
-              Zurp does not sell your personal information and does not share it
+              zurp does not sell your personal information and does not share it
               for cross-context behavioral advertising. Therefore, there is no
               sale or sharing to opt out of.
             </li>

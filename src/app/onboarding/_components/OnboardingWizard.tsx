@@ -53,8 +53,8 @@ function ZurpLoader() {
           height="34"
           rx="5"
           stroke="#58A6FF"
-          strokeWidth="2.5"
-          opacity="0.4"
+          strokeWidth="3"
+          opacity="0.55"
         />
         {/* Card stripe */}
         <line
@@ -63,8 +63,8 @@ function ZurpLoader() {
           x2="50"
           y2="20"
           stroke="#58A6FF"
-          strokeWidth="1.2"
-          opacity="0.2"
+          strokeWidth="1.5"
+          opacity="0.3"
         />
         {/* Animated progress dots */}
         <circle cx="12" cy="32" r="2.5" fill="#58A6FF">

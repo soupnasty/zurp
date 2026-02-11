@@ -8,7 +8,7 @@ import { CATEGORY_LABELS } from "./categories";
 
 /**
  * Fetch all non-pending, non-annual-fee transactions for a given month.
- * Returns classified transactions with Zurp spending categories.
+ * Returns classified transactions with zurp spending categories.
  */
 export async function getMonthlyTransactions(
   userId: string,

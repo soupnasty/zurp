@@ -20,7 +20,7 @@ export default function SecurityPage() {
             Security Overview
           </h1>
           <p className="mt-2">
-            <strong className="text-[var(--text-primary)]">Zurp, LLC</strong>
+            <strong className="text-[var(--text-primary)]">zurp, LLC</strong>
             <br />
             Last Updated: February 9, 2026
           </p>
@@ -64,7 +64,7 @@ export default function SecurityPage() {
             credentials never touch our systems:
           </p>
           <div className="overflow-x-auto rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] p-4 font-mono text-sm">
-            <pre>{`Your Bank        Plaid            Zurp
+            <pre>{`Your Bank        Plaid            zurp
 (credentials  <-> (auth broker  <-> (read-only
  stay here)       + data pipe)      analytics)`}</pre>
           </div>
@@ -80,11 +80,11 @@ export default function SecurityPage() {
             </li>
             <li>
               <strong className="text-[var(--text-primary)]">
-                Plaid retrieves your financial data and transmits it to Zurp.
+                Plaid retrieves your financial data and transmits it to zurp.
               </strong>{" "}
               Plaid returns a tokenized access credential and your authorized
-              data (transactions, account metadata) to Zurp&apos;s backend
-              over encrypted channels. The access token allows Zurp to request
+              data (transactions, account metadata) to zurp&apos;s backend
+              over encrypted channels. The access token allows zurp to request
               data refreshes from Plaid &mdash; it cannot be used to log in to
               your bank, initiate payments, or take any action on your
               accounts.
@@ -113,7 +113,7 @@ export default function SecurityPage() {
                 <tr className="border-b border-[var(--border-default)] text-left text-[var(--text-primary)]">
                   <th className="pb-2 pr-4 font-semibold">Plaid Product</th>
                   <th className="pb-2 pr-4 font-semibold">What It Does</th>
-                  <th className="pb-2 font-semibold">What Zurp Uses It For</th>
+                  <th className="pb-2 font-semibold">What zurp Uses It For</th>
                 </tr>
               </thead>
               <tbody>
@@ -160,7 +160,7 @@ export default function SecurityPage() {
             3.1 In Transit
           </h3>
           <p>
-            All data transmitted between any two components of the Zurp system
+            All data transmitted between any two components of the zurp system
             is encrypted:
           </p>
           <div className="overflow-x-auto">
@@ -174,7 +174,7 @@ export default function SecurityPage() {
               </thead>
               <tbody className="divide-y divide-[var(--border-default)]">
                 <tr>
-                  <td className="py-2 pr-4">Your browser &harr; Zurp servers</td>
+                  <td className="py-2 pr-4">Your browser &harr; zurp servers</td>
                   <td className="py-2 pr-4">HTTPS (TLS)</td>
                   <td className="py-2">TLS 1.2+; TLS 1.3 preferred</td>
                 </tr>
@@ -432,7 +432,7 @@ export default function SecurityPage() {
             5.1 Principle of Least Privilege
           </h3>
           <p>
-            All access to Zurp&apos;s systems &mdash; by personnel, services,
+            All access to zurp&apos;s systems &mdash; by personnel, services,
             and automated processes &mdash; follows the principle of least
             privilege:
           </p>
@@ -478,7 +478,7 @@ export default function SecurityPage() {
               </thead>
               <tbody className="divide-y divide-[var(--border-default)]">
                 <tr>
-                  <td className="py-2 pr-4">User accounts (Zurp app)</td>
+                  <td className="py-2 pr-4">User accounts (zurp app)</td>
                   <td className="py-2">
                     Email-based magic link authentication (passwordless); no
                     credentials stored
@@ -946,7 +946,7 @@ export default function SecurityPage() {
             8. Plaid Security
           </h2>
           <p>
-            Because Plaid is a critical component of Zurp&apos;s data
+            Because Plaid is a critical component of zurp&apos;s data
             pipeline, its security posture directly affects yours. Here is a
             summary of Plaid&apos;s security practices:
           </p>
@@ -975,7 +975,7 @@ export default function SecurityPage() {
                   <td className="py-2 pr-4">Credential handling</td>
                   <td className="py-2">
                     Bank credentials processed in Plaid&apos;s secure
-                    environment; never exposed to Zurp
+                    environment; never exposed to zurp
                   </td>
                 </tr>
                 <tr>
@@ -1032,7 +1032,7 @@ export default function SecurityPage() {
             .
           </p>
           <p>
-            If you disconnect your bank account from Zurp, we immediately
+            If you disconnect your bank account from zurp, we immediately
             invalidate the associated Plaid access token. You can also revoke
             Plaid&apos;s access to your bank directly through my.plaid.com or
             by contacting Plaid&apos;s support.
@@ -1192,7 +1192,7 @@ export default function SecurityPage() {
               measures;
             </li>
             <li>
-              Notifying Zurp promptly of any security incident or data
+              Notifying zurp promptly of any security incident or data
               breach;
             </li>
             <li>
@@ -1261,14 +1261,14 @@ export default function SecurityPage() {
                 <tr>
                   <td className="py-2 pr-4">GLBA (Gramm-Leach-Bliley Act)</td>
                   <td className="py-2">
-                    Financial data handling, if applicable to Zurp&apos;s
+                    Financial data handling, if applicable to zurp&apos;s
                     classification
                   </td>
                 </tr>
                 <tr>
                   <td className="py-2 pr-4">PCI DSS awareness</td>
                   <td className="py-2">
-                    Not directly applicable (Zurp does not process, store, or
+                    Not directly applicable (zurp does not process, store, or
                     transmit card numbers), but security practices are informed
                     by PCI DSS principles
                   </td>
@@ -1294,7 +1294,7 @@ export default function SecurityPage() {
             </strong>{" "}
             because we do not process, store, or transmit cardholder data (full
             card numbers, CVVs, or PINs). Your card number is never entered
-            into or handled by the Zurp application. Account connections are
+            into or handled by the zurp application. Account connections are
             managed exclusively through Plaid, which handles all credential
             exchange with your financial institution. We receive only
             transaction-level data (merchant names, amounts, dates) and account
@@ -1314,7 +1314,7 @@ export default function SecurityPage() {
             12. User Security Recommendations
           </h2>
           <p>
-            To maximize the security of your Zurp account and connected
+            To maximize the security of your zurp account and connected
             financial data, we recommend:
           </p>
           <ul className="ml-[var(--space-lg)] list-disc space-y-2">
@@ -1322,8 +1322,8 @@ export default function SecurityPage() {
               <strong className="text-[var(--text-primary)]">
                 Secure your email account
               </strong>{" "}
-              &mdash; Zurp uses magic link authentication, so the security of
-              your Zurp account depends on the security of your email. Use a
+              &mdash; zurp uses magic link authentication, so the security of
+              your zurp account depends on the security of your email. Use a
               strong password and enable MFA on your email provider.
             </li>
             <li>
@@ -1350,8 +1350,8 @@ export default function SecurityPage() {
                 Be cautious of phishing.
               </strong>{" "}
               Zurp will never ask for your bank credentials by email, text,
-              phone, or within the Zurp app. If you receive a suspicious
-              communication claiming to be from Zurp, contact us at{" "}
+              phone, or within the zurp app. If you receive a suspicious
+              communication claiming to be from zurp, contact us at{" "}
               <a
                 href="mailto:support@zurp.com"
                 className="text-[var(--accent)] hover:opacity-80"
@@ -1364,7 +1364,7 @@ export default function SecurityPage() {
               <strong className="text-[var(--text-primary)]">
                 Report suspicious activity
               </strong>{" "}
-              on your Zurp account immediately to{" "}
+              on your zurp account immediately to{" "}
               <a
                 href="mailto:support@zurp.com"
                 className="text-[var(--accent)] hover:opacity-80"
@@ -1383,7 +1383,7 @@ export default function SecurityPage() {
           </h2>
           <p>
             We welcome security researchers who help us keep the Service safe.
-            If you discover a security vulnerability in Zurp:
+            If you discover a security vulnerability in zurp:
           </p>
           <ul className="ml-[var(--space-lg)] list-disc space-y-1">
             <li>
@@ -1467,7 +1467,7 @@ export default function SecurityPage() {
             For security-related questions, concerns, or reports:
           </p>
           <p>
-            <strong className="text-[var(--text-primary)]">Zurp, LLC</strong>
+            <strong className="text-[var(--text-primary)]">zurp, LLC</strong>
             <br />
             Security &amp; Vulnerability Reports:{" "}
             <a

@@ -70,7 +70,7 @@ const CATEGORY_MAPPINGS: CategoryMapping[] = [
 ];
 
 /**
- * Map Plaid personal_finance_category to a Zurp spending category.
+ * Map Plaid personal_finance_category to a zurp spending category.
  * Checks detailed-include arrays first (overrides primary),
  * then primary arrays with detailed-exclude.
  */
