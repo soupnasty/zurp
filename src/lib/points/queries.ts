@@ -55,6 +55,51 @@ export async function getCompareTransactions(
   }));
 }
 
+export interface PointsEarningSummaryRow {
+  cardId: string;
+  totalSpend: number;
+  totalPoints: number;
+  valueConservative: number;
+  valueUpside: number;
+  categoryBreakdown: Array<{
+    category: string;
+    spend: number;
+    points: number;
+    earnRate: number;
+    valueConservative: number;
+  }>;
+  lastTransactionDate: Date | null;
+}
+
+/**
+ * Get the persisted points earning summary for a card profile.
+ */
+export async function getPointsEarningSummary(
+  userId: string,
+  cardProfileId: string,
+  periodType = "anniversary_year"
+): Promise<PointsEarningSummaryRow | null> {
+  const row = await db.query.pointsEarningSummary.findFirst({
+    where: and(
+      eq(schema.pointsEarningSummary.userId, userId),
+      eq(schema.pointsEarningSummary.cardProfileId, cardProfileId),
+      eq(schema.pointsEarningSummary.periodType, periodType)
+    ),
+  });
+
+  if (!row) return null;
+
+  return {
+    cardId: row.cardId,
+    totalSpend: row.totalSpend,
+    totalPoints: row.totalPoints,
+    valueConservative: row.valueConservative,
+    valueUpside: row.valueUpside,
+    categoryBreakdown: row.categoryBreakdown,
+    lastTransactionDate: row.lastTransactionDate,
+  };
+}
+
 export interface TransactionPeriod {
   start: Date;
   end: Date;

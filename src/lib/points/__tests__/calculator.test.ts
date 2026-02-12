@@ -138,7 +138,7 @@ describe("calculatePointsForTransaction", () => {
           id: "tx1",
           merchantName: "WHOLE FOODS",
           amount: 150,
-          category: "grocery",
+          category: "groceries",
           confidence: "high",
         },
         amexGoldEarnConfig,
@@ -158,7 +158,7 @@ describe("calculatePointsForTransaction", () => {
           id: "tx2",
           merchantName: "WHOLE FOODS",
           amount: 200,
-          category: "grocery",
+          category: "groceries",
           confidence: "high",
         },
         amexGoldEarnConfig,
@@ -179,7 +179,7 @@ describe("calculatePointsForTransaction", () => {
           id: "tx3",
           merchantName: "WHOLE FOODS",
           amount: 100,
-          category: "grocery",
+          category: "groceries",
           confidence: "high",
         },
         amexGoldEarnConfig,
@@ -352,6 +352,8 @@ describe("calculatePointsForTransaction", () => {
     it("earns 6x dining on Friday with only date (day-of-week fallback)", () => {
       const capState: CapState = {};
       // Friday Jan 3, 2025 — no datetime, day-of-week fallback
+      // Use local-midnight constructor to match DB behavior (neon-http returns
+      // dates where getDay() gives the correct calendar day-of-week).
       const result = calculatePointsForTransaction(
         {
           id: "tw5",
@@ -359,7 +361,7 @@ describe("calculatePointsForTransaction", () => {
           amount: 50,
           category: "dining",
           confidence: "high",
-          date: new Date("2025-01-03"),
+          date: new Date(2025, 0, 3),
           datetime: null,
         },
         citiStrataEliteEarnConfig,
@@ -416,7 +418,7 @@ describe("calculatePointsForTransaction", () => {
           id: "vx2",
           merchantName: "WHOLE FOODS",
           amount: 200,
-          category: "grocery",
+          category: "groceries",
           confidence: "high",
         },
         ventureXEarnConfig,

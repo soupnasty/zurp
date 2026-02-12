@@ -39,25 +39,27 @@ const MERCHANT_MAP_UNSORTED: MerchantEntry[] = [
   { pattern: "peapod", matchType: "prefix", category: "grocery_online", priority: 10 },
   { pattern: "thrive market", matchType: "prefix", category: "grocery_online", priority: 10 },
 
+  // ── Wholesale Clubs (before generic grocery — Amex Gold excludes these) ──
+  { pattern: "costco", matchType: "prefix", category: "wholesale_clubs", priority: 15 },
+  { pattern: "sam's club", matchType: "prefix", category: "wholesale_clubs", priority: 15 },
+
   // ── Grocery (in-store) ──
-  { pattern: "whole foods", matchType: "prefix", category: "grocery", priority: 10 },
-  { pattern: "trader joe", matchType: "prefix", category: "grocery", priority: 10 },
-  { pattern: "kroger", matchType: "prefix", category: "grocery", priority: 10 },
-  { pattern: "safeway", matchType: "prefix", category: "grocery", priority: 10 },
-  { pattern: "albertsons", matchType: "prefix", category: "grocery", priority: 10 },
-  { pattern: "publix", matchType: "prefix", category: "grocery", priority: 10 },
-  { pattern: "aldi", matchType: "prefix", category: "grocery", priority: 10 },
-  { pattern: "costco", matchType: "prefix", category: "grocery", priority: 10 },
-  { pattern: "sam's club", matchType: "prefix", category: "grocery", priority: 10 },
-  { pattern: "heb ", matchType: "prefix", category: "grocery", priority: 10 },
-  { pattern: "wegmans", matchType: "prefix", category: "grocery", priority: 10 },
-  { pattern: "sprouts", matchType: "prefix", category: "grocery", priority: 10 },
-  { pattern: "food lion", matchType: "prefix", category: "grocery", priority: 10 },
-  { pattern: "stop & shop", matchType: "prefix", category: "grocery", priority: 10 },
-  { pattern: "giant food", matchType: "prefix", category: "grocery", priority: 10 },
-  { pattern: "meijer", matchType: "prefix", category: "grocery", priority: 10 },
-  { pattern: "winco", matchType: "prefix", category: "grocery", priority: 10 },
-  { pattern: "harris teeter", matchType: "prefix", category: "grocery", priority: 10 },
+  { pattern: "whole foods", matchType: "prefix", category: "groceries", priority: 10 },
+  { pattern: "trader joe", matchType: "prefix", category: "groceries", priority: 10 },
+  { pattern: "kroger", matchType: "prefix", category: "groceries", priority: 10 },
+  { pattern: "safeway", matchType: "prefix", category: "groceries", priority: 10 },
+  { pattern: "albertsons", matchType: "prefix", category: "groceries", priority: 10 },
+  { pattern: "publix", matchType: "prefix", category: "groceries", priority: 10 },
+  { pattern: "aldi", matchType: "prefix", category: "groceries", priority: 10 },
+  { pattern: "heb ", matchType: "prefix", category: "groceries", priority: 10 },
+  { pattern: "wegmans", matchType: "prefix", category: "groceries", priority: 10 },
+  { pattern: "sprouts", matchType: "prefix", category: "groceries", priority: 10 },
+  { pattern: "food lion", matchType: "prefix", category: "groceries", priority: 10 },
+  { pattern: "stop & shop", matchType: "prefix", category: "groceries", priority: 10 },
+  { pattern: "giant food", matchType: "prefix", category: "groceries", priority: 10 },
+  { pattern: "meijer", matchType: "prefix", category: "groceries", priority: 10 },
+  { pattern: "winco", matchType: "prefix", category: "groceries", priority: 10 },
+  { pattern: "harris teeter", matchType: "prefix", category: "groceries", priority: 10 },
 
   // ── Coffee ──
   { pattern: "starbucks", matchType: "prefix", category: "coffee", priority: 10 },
@@ -130,13 +132,15 @@ const MERCHANT_MAP_UNSORTED: MerchantEntry[] = [
   { pattern: "capitalonetrave", matchType: "prefix", category: "travel_portal", priority: 10 },
   { pattern: "expedia", matchType: "prefix", category: "travel_portal", priority: 10 },
 
-  // ── Car Rental / Travel Other ──
-  { pattern: "hertz", matchType: "prefix", category: "travel_other", priority: 10 },
-  { pattern: "enterprise", matchType: "prefix", category: "travel_other", priority: 10 },
-  { pattern: "avis", matchType: "prefix", category: "travel_other", priority: 10 },
-  { pattern: "national car", matchType: "prefix", category: "travel_other", priority: 10 },
-  { pattern: "budget rent", matchType: "prefix", category: "travel_other", priority: 10 },
-  { pattern: "turo", matchType: "prefix", category: "travel_other", priority: 10 },
+  // ── Car Rentals ──
+  { pattern: "hertz", matchType: "prefix", category: "car_rentals", priority: 10 },
+  { pattern: "enterprise", matchType: "prefix", category: "car_rentals", priority: 10 },
+  { pattern: "avis", matchType: "prefix", category: "car_rentals", priority: 10 },
+  { pattern: "national car", matchType: "prefix", category: "car_rentals", priority: 10 },
+  { pattern: "budget rent", matchType: "prefix", category: "car_rentals", priority: 10 },
+  { pattern: "turo", matchType: "prefix", category: "car_rentals", priority: 10 },
+
+  // ── Travel Other (cruises, rail, etc.) ──
   { pattern: "amtrak", matchType: "prefix", category: "travel_other", priority: 10 },
   { pattern: "carnival cruise", matchType: "prefix", category: "travel_other", priority: 10 },
   { pattern: "royal caribbean", matchType: "prefix", category: "travel_other", priority: 10 },
@@ -149,19 +153,19 @@ const MERCHANT_MAP_UNSORTED: MerchantEntry[] = [
   { pattern: "cta ", matchType: "prefix", category: "transit", priority: 10 },
   { pattern: "metro ", matchType: "prefix", category: "transit", priority: 5 },
 
-  // ── Gas ──
-  { pattern: "shell oil", matchType: "prefix", category: "gas", priority: 10 },
-  { pattern: "shell ", matchType: "prefix", category: "gas", priority: 8 },
-  { pattern: "exxon", matchType: "prefix", category: "gas", priority: 10 },
-  { pattern: "mobil", matchType: "prefix", category: "gas", priority: 10 },
-  { pattern: "chevron", matchType: "prefix", category: "gas", priority: 10 },
-  { pattern: "bp ", matchType: "prefix", category: "gas", priority: 10 },
-  { pattern: "sunoco", matchType: "prefix", category: "gas", priority: 10 },
-  { pattern: "speedway", matchType: "prefix", category: "gas", priority: 10 },
-  { pattern: "circle k", matchType: "prefix", category: "gas", priority: 10 },
-  { pattern: "wawa", matchType: "prefix", category: "gas", priority: 10 },
-  { pattern: "racetrac", matchType: "prefix", category: "gas", priority: 10 },
-  { pattern: "quiktrip", matchType: "prefix", category: "gas", priority: 10 },
+  // ── Gas Stations ──
+  { pattern: "shell oil", matchType: "prefix", category: "gas_stations", priority: 10 },
+  { pattern: "shell ", matchType: "prefix", category: "gas_stations", priority: 8 },
+  { pattern: "exxon", matchType: "prefix", category: "gas_stations", priority: 10 },
+  { pattern: "mobil", matchType: "prefix", category: "gas_stations", priority: 10 },
+  { pattern: "chevron", matchType: "prefix", category: "gas_stations", priority: 10 },
+  { pattern: "bp ", matchType: "prefix", category: "gas_stations", priority: 10 },
+  { pattern: "sunoco", matchType: "prefix", category: "gas_stations", priority: 10 },
+  { pattern: "speedway", matchType: "prefix", category: "gas_stations", priority: 10 },
+  { pattern: "circle k", matchType: "prefix", category: "gas_stations", priority: 10 },
+  { pattern: "wawa", matchType: "prefix", category: "gas_stations", priority: 10 },
+  { pattern: "racetrac", matchType: "prefix", category: "gas_stations", priority: 10 },
+  { pattern: "quiktrip", matchType: "prefix", category: "gas_stations", priority: 10 },
 
   // ── Fitness ──
   { pattern: "peloton", matchType: "prefix", category: "fitness", priority: 10 },
@@ -171,16 +175,16 @@ const MERCHANT_MAP_UNSORTED: MerchantEntry[] = [
   { pattern: "orangetheory", matchType: "prefix", category: "fitness", priority: 10 },
   { pattern: "soulcycle", matchType: "prefix", category: "fitness", priority: 10 },
 
-  // ── Events ──
-  { pattern: "ticketmaster", matchType: "prefix", category: "events", priority: 10 },
-  { pattern: "stubhub", matchType: "prefix", category: "events", priority: 10 },
-  { pattern: "axs", matchType: "prefix", category: "events", priority: 10 },
-  { pattern: "seatgeek", matchType: "prefix", category: "events", priority: 10 },
-  { pattern: "vivid seats", matchType: "prefix", category: "events", priority: 10 },
-  { pattern: "eventbrite", matchType: "prefix", category: "events", priority: 10 },
-  { pattern: "fandango", matchType: "prefix", category: "events", priority: 10 },
-  { pattern: "amc theatre", matchType: "prefix", category: "events", priority: 10 },
-  { pattern: "regal cinema", matchType: "prefix", category: "events", priority: 10 },
+  // ── Entertainment ──
+  { pattern: "ticketmaster", matchType: "prefix", category: "entertainment", priority: 10 },
+  { pattern: "stubhub", matchType: "prefix", category: "entertainment", priority: 10 },
+  { pattern: "axs", matchType: "prefix", category: "entertainment", priority: 10 },
+  { pattern: "seatgeek", matchType: "prefix", category: "entertainment", priority: 10 },
+  { pattern: "vivid seats", matchType: "prefix", category: "entertainment", priority: 10 },
+  { pattern: "eventbrite", matchType: "prefix", category: "entertainment", priority: 10 },
+  { pattern: "fandango", matchType: "prefix", category: "entertainment", priority: 10 },
+  { pattern: "amc theatre", matchType: "prefix", category: "entertainment", priority: 10 },
+  { pattern: "regal cinema", matchType: "prefix", category: "entertainment", priority: 10 },
 
   // ── Shopping Online (before Amazon generic) ──
   { pattern: "amazon", matchType: "prefix", category: "shopping_online", priority: 5 },
@@ -190,25 +194,31 @@ const MERCHANT_MAP_UNSORTED: MerchantEntry[] = [
   { pattern: "wayfair", matchType: "prefix", category: "shopping_online", priority: 10 },
   { pattern: "chewy", matchType: "prefix", category: "shopping_online", priority: 10 },
 
+  // ── Drugstores ──
+  { pattern: "cvs", matchType: "prefix", category: "drugstores", priority: 10 },
+  { pattern: "walgreens", matchType: "prefix", category: "drugstores", priority: 10 },
+
+  // ── Home Improvement ──
+  { pattern: "home depot", matchType: "prefix", category: "home_improvement", priority: 10 },
+  { pattern: "lowes", matchType: "prefix", category: "home_improvement", priority: 10 },
+  { pattern: "ikea", matchType: "prefix", category: "home_improvement", priority: 10 },
+
   // ── Shopping In-Store ──
   { pattern: "target", matchType: "prefix", category: "shopping_instore", priority: 5 },
   { pattern: "walmart", matchType: "prefix", category: "shopping_instore", priority: 5 },
   { pattern: "best buy", matchType: "prefix", category: "shopping_instore", priority: 10 },
-  { pattern: "home depot", matchType: "prefix", category: "shopping_instore", priority: 10 },
-  { pattern: "lowes", matchType: "prefix", category: "shopping_instore", priority: 10 },
-  { pattern: "ikea", matchType: "prefix", category: "shopping_instore", priority: 10 },
   { pattern: "apple store", matchType: "prefix", category: "shopping_instore", priority: 10 },
   { pattern: "nordstrom", matchType: "prefix", category: "shopping_instore", priority: 10 },
   { pattern: "tj maxx", matchType: "prefix", category: "shopping_instore", priority: 10 },
   { pattern: "marshalls", matchType: "prefix", category: "shopping_instore", priority: 10 },
   { pattern: "ross ", matchType: "prefix", category: "shopping_instore", priority: 10 },
-  { pattern: "cvs", matchType: "prefix", category: "shopping_instore", priority: 10 },
-  { pattern: "walgreens", matchType: "prefix", category: "shopping_instore", priority: 10 },
+
+  // ── Phone Services ──
+  { pattern: "verizon", matchType: "prefix", category: "phone_services", priority: 10 },
+  { pattern: "at&t", matchType: "prefix", category: "phone_services", priority: 10 },
+  { pattern: "t-mobile", matchType: "prefix", category: "phone_services", priority: 10 },
 
   // ── Bills & Utilities ──
-  { pattern: "verizon", matchType: "prefix", category: "bills_utilities", priority: 10 },
-  { pattern: "at&t", matchType: "prefix", category: "bills_utilities", priority: 10 },
-  { pattern: "t-mobile", matchType: "prefix", category: "bills_utilities", priority: 10 },
   { pattern: "comcast", matchType: "prefix", category: "bills_utilities", priority: 10 },
   { pattern: "xfinity", matchType: "prefix", category: "bills_utilities", priority: 10 },
   { pattern: "spectrum", matchType: "prefix", category: "bills_utilities", priority: 10 },

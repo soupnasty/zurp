@@ -12,7 +12,7 @@ export const amexGoldEarnConfig: EarnConfig = {
       label: "Dining",
     },
     {
-      categories: ["grocery", "grocery_online"],
+      categories: ["groceries", "grocery_online"],
       earnRate: 4,
       label: "US supermarkets",
     },
@@ -25,7 +25,7 @@ export const amexGoldEarnConfig: EarnConfig = {
   caps: [
     {
       capId: "gold_grocery_25k",
-      categories: ["grocery", "grocery_online"],
+      categories: ["groceries", "grocery_online"],
       maxSpend: 25000,
       period: "calendar_year",
     },

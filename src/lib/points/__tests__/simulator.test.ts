@@ -43,7 +43,7 @@ describe("runSimulation", () => {
   it("simulates 3 cards and produces rankings", () => {
     const transactions = [
       makeTx("t1", "2025-01-15", "CHIPOTLE", 15, "dining"),
-      makeTx("t2", "2025-02-01", "WHOLE FOODS", 200, "grocery"),
+      makeTx("t2", "2025-02-01", "WHOLE FOODS", 200, "groceries"),
       makeTx("t3", "2025-03-01", "UNITED AIR", 500, "travel_flights"),
       makeTx("t4", "2025-04-01", "NETFLIX", 15.99, "streaming"),
       makeTx("t5", "2025-05-01", "LYFT RIDE", 25, "rideshare"),
@@ -97,7 +97,7 @@ describe("runSimulation", () => {
     const transactions = [];
     for (let i = 0; i < 10; i++) {
       transactions.push(
-        makeTx(`g${i}`, `2025-${String(i + 1).padStart(2, "0")}-01`, "WHOLE FOODS", 2600, "grocery")
+        makeTx(`g${i}`, `2025-${String(i + 1).padStart(2, "0")}-01`, "WHOLE FOODS", 2600, "groceries")
       );
     }
     // Total grocery: $26,000 → $25K at 4x, $1K at 1x

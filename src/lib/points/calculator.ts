@@ -110,8 +110,10 @@ function matchesConditions(
       if (!matchesTimeWindow(dayOfWeek, hour, tw)) return false;
     } else if (date) {
       // Fallback: day-of-week only from date (can't check hour).
-      // Use UTC day since transaction dates are calendar dates (no time component).
-      const dayOfWeek = date.getUTCDay();
+      // Use local day: neon-http returns timestamp dates at UTC midnight of
+      // the NEXT day, so getUTCDay() is shifted +1. getDay() matches the
+      // correct calendar day-of-week.
+      const dayOfWeek = date.getDay();
       // Check if this day is a start day for the window
       if (tw.days.includes(dayOfWeek)) return true;
       // For overnight windows, also match the NEXT day (the endHour portion)

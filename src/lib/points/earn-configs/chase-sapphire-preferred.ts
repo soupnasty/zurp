@@ -22,7 +22,7 @@ export const cspEarnConfig: EarnConfig = {
       label: "Online grocery",
     },
     {
-      categories: ["travel_flights", "travel_hotels", "travel_other", "transit"],
+      categories: ["travel_flights", "travel_hotels", "travel_other", "car_rentals", "transit"],
       earnRate: 2,
       label: "Direct travel",
     },

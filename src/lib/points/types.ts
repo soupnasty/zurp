@@ -1,8 +1,8 @@
-// ── Earn Categories (19-category taxonomy for points engine) ──
+// ── Earn Categories (26-category taxonomy for points engine) ──
 
 export type EarnCategory =
   | "dining"
-  | "grocery"
+  | "groceries"
   | "grocery_online"
   | "food_delivery"
   | "coffee"
@@ -12,12 +12,18 @@ export type EarnCategory =
   | "travel_hotels"
   | "travel_portal"
   | "travel_other"
+  | "car_rentals"
+  | "parking"
   | "transit"
-  | "gas"
+  | "gas_stations"
+  | "entertainment"
   | "fitness"
-  | "events"
   | "shopping_online"
   | "shopping_instore"
+  | "drugstores"
+  | "home_improvement"
+  | "wholesale_clubs"
+  | "phone_services"
   | "bills_utilities"
   | "insurance"
   | "other";

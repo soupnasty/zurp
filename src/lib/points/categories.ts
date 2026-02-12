@@ -17,42 +17,42 @@ const PLAID_CATEGORY_MAP: Record<string, EarnCategory> = {
   FOOD_AND_DRINK_COFFEE: "coffee",
 
   // Grocery
-  FOOD_AND_DRINK_GROCERIES: "grocery",
-  SHOPS_SUPERMARKETS_AND_GROCERIES: "grocery",
+  FOOD_AND_DRINK_GROCERIES: "groceries",
+  SHOPS_SUPERMARKETS_AND_GROCERIES: "groceries",
 
   // Travel
   TRANSPORTATION_AIRLINES_AND_AVIATION_SERVICES: "travel_flights",
   TRAVEL_FLIGHTS: "travel_flights",
   TRAVEL_LODGING: "travel_hotels",
-  TRANSPORTATION_CAR_RENTALS: "travel_other",
-  TRANSPORTATION_PARKING: "travel_other",
-  TRANSPORTATION_TOLLS: "travel_other",
-  TRAVEL_CAR_AND_TRUCK_RENTALS: "travel_other",
+  TRANSPORTATION_CAR_RENTALS: "car_rentals",
+  TRANSPORTATION_PARKING: "parking",
+  TRANSPORTATION_TOLLS: "parking",
+  TRAVEL_CAR_AND_TRUCK_RENTALS: "car_rentals",
 
   // Transit
   TRANSPORTATION_PUBLIC_TRANSIT: "transit",
   TRANSPORTATION_TAXIS_AND_RIDE_SHARES: "rideshare",
 
   // Gas
-  TRANSPORTATION_GAS: "gas",
-  TRANSPORTATION_GAS_STATIONS: "gas",
+  TRANSPORTATION_GAS: "gas_stations",
+  TRANSPORTATION_GAS_STATIONS: "gas_stations",
 
   // Streaming / Entertainment
   ENTERTAINMENT_MUSIC: "streaming",
   ENTERTAINMENT_TV_AND_MOVIES: "streaming",
   ENTERTAINMENT_VIDEO: "streaming",
 
-  // Events
-  ENTERTAINMENT_SPORTING_EVENTS_AMUSEMENT_PARKS_AND_MUSEUMS: "events",
-  ENTERTAINMENT_EVENTS: "events",
+  // Entertainment (events, movies, etc.)
+  ENTERTAINMENT_SPORTING_EVENTS_AMUSEMENT_PARKS_AND_MUSEUMS: "entertainment",
+  ENTERTAINMENT_EVENTS: "entertainment",
 
   // Shopping
   SHOPS_ELECTRONICS: "shopping_instore",
   SHOPS_CLOTHING_AND_ACCESSORIES: "shopping_instore",
-  SHOPS_HARDWARE_STORE: "shopping_instore",
+  SHOPS_HARDWARE_STORE: "home_improvement",
   SHOPS_DEPARTMENT_STORES: "shopping_instore",
   SHOPS_DISCOUNT_STORES: "shopping_instore",
-  SHOPS_PHARMACIES: "shopping_instore",
+  SHOPS_PHARMACIES: "drugstores",
   SHOPS_PET_SUPPLIES: "shopping_instore",
   SHOPS_SPORTING_GOODS: "shopping_instore",
   SHOPS_BOOKS_AND_NEWSPAPERS: "shopping_online",
@@ -64,7 +64,7 @@ const PLAID_CATEGORY_MAP: Record<string, EarnCategory> = {
 
   // Bills
   SERVICE_UTILITIES: "bills_utilities",
-  SERVICE_TELECOMMUNICATION_SERVICES: "bills_utilities",
+  SERVICE_TELECOMMUNICATION_SERVICES: "phone_services",
   SERVICE_INTERNET_AND_CABLE: "bills_utilities",
 
   // Insurance
@@ -132,50 +132,5 @@ export function classifyForPoints(
   };
 }
 
-// ── Display labels and icons for categories ──
-
-export const EARN_CATEGORY_LABELS: Record<EarnCategory, string> = {
-  dining: "Dining",
-  grocery: "Groceries",
-  grocery_online: "Online Grocery",
-  food_delivery: "Food Delivery",
-  coffee: "Coffee",
-  streaming: "Streaming",
-  rideshare: "Rideshare",
-  travel_flights: "Flights",
-  travel_hotels: "Hotels",
-  travel_portal: "Travel Portal",
-  travel_other: "Other Travel",
-  transit: "Transit",
-  gas: "Gas",
-  fitness: "Fitness",
-  events: "Events",
-  shopping_online: "Online Shopping",
-  shopping_instore: "In-Store Shopping",
-  bills_utilities: "Bills & Utilities",
-  insurance: "Insurance",
-  other: "Other",
-};
-
-export const EARN_CATEGORY_ICONS: Record<EarnCategory, string> = {
-  dining: "utensils",
-  grocery: "shopping-cart",
-  grocery_online: "shopping-basket",
-  food_delivery: "truck",
-  coffee: "coffee",
-  streaming: "tv",
-  rideshare: "car",
-  travel_flights: "plane",
-  travel_hotels: "building",
-  travel_portal: "globe",
-  travel_other: "map",
-  transit: "train-front",
-  gas: "fuel",
-  fitness: "dumbbell",
-  events: "ticket",
-  shopping_online: "package",
-  shopping_instore: "store",
-  bills_utilities: "zap",
-  insurance: "shield",
-  other: "circle-dot",
-};
+// Re-export display labels and icons from shared module (no server-only)
+export { EARN_CATEGORY_LABELS, EARN_CATEGORY_ICONS } from "./category-labels";

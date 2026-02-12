@@ -1,4 +1,5 @@
 import "server-only";
+import { readComparison } from "./comparison-reader";
 import { getCompareTransactions, getTransactionPeriod } from "./queries";
 import { classifyForPoints } from "./categories";
 import { getAllEarnConfigs } from "./earn-configs";
@@ -12,6 +13,7 @@ export type { PerkSection, CardReferenceLinks } from "./perk-matrix";
 
 /**
  * Main orchestrator: compute a full card comparison for a user.
+ * Tries precomputed DB data first, falls back to on-demand computation.
  * Returns null if insufficient data (< 1 month).
  */
 export async function computeComparison(
@@ -20,6 +22,21 @@ export async function computeComparison(
 ): Promise<ComparisonOutput | null> {
   const portalMode = options?.portalMode ?? false;
 
+  // Try precomputed simulations first (fast path)
+  const precomputed = await readComparison(userId, portalMode);
+  if (precomputed) return precomputed;
+
+  // Fall back to on-demand computation (first visit before sync)
+  return computeComparisonOnDemand(userId, portalMode);
+}
+
+/**
+ * On-demand fallback: full computation without precomputed data.
+ */
+async function computeComparisonOnDemand(
+  userId: string,
+  portalMode: boolean
+): Promise<ComparisonOutput | null> {
   // 1. Get transaction period
   const period = await getTransactionPeriod(userId);
   if (!period || period.monthCount < 1) return null;

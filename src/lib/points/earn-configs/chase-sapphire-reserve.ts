@@ -12,7 +12,7 @@ export const csrEarnConfig: EarnConfig = {
       label: "Dining",
     },
     {
-      categories: ["travel_flights", "travel_hotels", "travel_other", "transit"],
+      categories: ["travel_flights", "travel_hotels", "travel_other", "car_rentals", "transit"],
       earnRate: 4,
       label: "Direct travel",
     },

@@ -34,15 +34,45 @@ describe("classifyForPoints", () => {
       expect(result.confidence).toBe("high");
     });
 
-    it("maps TICKETMASTER to events", () => {
+    it("maps TICKETMASTER to entertainment", () => {
       const result = classifyForPoints("TICKETMASTER*CONCERT", null, null);
-      expect(result.category).toBe("events");
+      expect(result.category).toBe("entertainment");
       expect(result.confidence).toBe("high");
     });
 
-    it("maps WHOLE FOODS to grocery", () => {
+    it("maps WHOLE FOODS to groceries", () => {
       const result = classifyForPoints("WHOLE FOODS MARKET #123", null, null);
-      expect(result.category).toBe("grocery");
+      expect(result.category).toBe("groceries");
+      expect(result.confidence).toBe("high");
+    });
+
+    it("maps CVS to drugstores", () => {
+      const result = classifyForPoints("CVS/PHARMACY #1234", null, null);
+      expect(result.category).toBe("drugstores");
+      expect(result.confidence).toBe("high");
+    });
+
+    it("maps HOME DEPOT to home_improvement", () => {
+      const result = classifyForPoints("HOME DEPOT #5678", null, null);
+      expect(result.category).toBe("home_improvement");
+      expect(result.confidence).toBe("high");
+    });
+
+    it("maps HERTZ to car_rentals", () => {
+      const result = classifyForPoints("HERTZ RENT-A-CAR", null, null);
+      expect(result.category).toBe("car_rentals");
+      expect(result.confidence).toBe("high");
+    });
+
+    it("maps COSTCO to wholesale_clubs", () => {
+      const result = classifyForPoints("COSTCO WHSE #1234", null, null);
+      expect(result.category).toBe("wholesale_clubs");
+      expect(result.confidence).toBe("high");
+    });
+
+    it("maps VERIZON to phone_services", () => {
+      const result = classifyForPoints("VERIZON WIRELESS", null, null);
+      expect(result.category).toBe("phone_services");
       expect(result.confidence).toBe("high");
     });
 
@@ -123,7 +153,7 @@ describe("classifyForPoints", () => {
         null,
         "FOOD_AND_DRINK_GROCERIES"
       );
-      expect(result.category).toBe("grocery");
+      expect(result.category).toBe("groceries");
       expect(result.confidence).toBe("medium");
     });
 
@@ -143,7 +173,17 @@ describe("classifyForPoints", () => {
         "TRANSPORTATION_GAS",
         "UNKNOWN_DETAILED"
       );
-      expect(result.category).toBe("gas");
+      expect(result.category).toBe("gas_stations");
+      expect(result.confidence).toBe("medium");
+    });
+
+    it("maps Plaid parking to parking", () => {
+      const result = classifyForPoints(
+        "PARKING GARAGE",
+        null,
+        "TRANSPORTATION_PARKING"
+      );
+      expect(result.category).toBe("parking");
       expect(result.confidence).toBe("medium");
     });
   });
