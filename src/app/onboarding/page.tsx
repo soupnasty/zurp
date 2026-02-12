@@ -10,7 +10,7 @@ export default async function OnboardingPage() {
   const cards = getAllCardDefinitions();
 
   return (
-    <div className="flex h-dvh items-center justify-center overflow-hidden px-4 md:min-h-screen md:h-auto md:overflow-visible">
+    <div className="flex min-h-dvh items-center justify-center overflow-y-auto px-4 py-6">
       <div className="w-full max-w-lg">
         <OnboardingWizard
           userId={user.id!}

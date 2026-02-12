@@ -475,3 +475,31 @@ summary {
 .mock-active .mock-net {
   animation: mock-net-reveal 0.5s ease var(--delay, 0s) forwards;
 }
+
+/* ── Compare card row grid ── */
+
+.compare-row-grid {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 28px 1fr;
+  gap: 12px;
+  padding: 16px 12px;
+}
+@media (min-width: 640px) {
+  .compare-row-grid {
+    grid-template-columns: 32px 1fr 90px;
+    gap: 20px;
+    padding: 20px 16px;
+  }
+}
+
+/* ── Processing → Reveal animations ── */
+
+@keyframes pr-fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pr-scale-in {
+  from { opacity: 0; transform: scale(0.95) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}

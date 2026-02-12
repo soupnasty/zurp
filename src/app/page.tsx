@@ -177,7 +177,7 @@ export default function Home() {
   return (
     <div className="min-h-screen overflow-x-hidden">
       {/* ════════ NAV ════════ */}
-      <nav className="fixed top-0 left-0 right-0 z-[100] bg-[var(--bg-primary)]/80 backdrop-blur-[20px] border-b border-[var(--border-default)]/50">
+      <nav className="fixed top-0 left-0 right-0 z-[100] bg-[var(--bg-primary)] sm:bg-[var(--bg-primary)]/80 backdrop-blur-[20px] border-b border-[var(--border-default)]/50">
         <div className="mx-auto flex max-w-[1080px] items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-2.5 no-underline">
             <svg width="32" height="24" viewBox="0 0 46 36" fill="none">
@@ -374,16 +374,16 @@ export default function Home() {
             </p>
           </ScrollReveal>
 
-          <AnimatedMockup className="relative mx-auto max-w-[900px] overflow-hidden rounded-[20px] border border-[rgba(255,255,255,0.06)] bg-[#111827] p-5 sm:p-8">
+          <AnimatedMockup className="relative mx-auto max-w-[900px] overflow-hidden rounded-[20px] border border-[rgba(255,255,255,0.06)] bg-[#111827] px-3 py-5 sm:p-8">
             {/* Top edge glow */}
             <div className="absolute top-0 left-0 right-0 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(52,211,153,0.3), rgba(96,165,250,0.3), transparent)" }} />
 
             {/* Personalized header */}
             <div
-              className="mb-6 pb-5 border-b border-[rgba(255,255,255,0.06)]"
+              className="mb-6 pb-5 px-2 sm:px-0 border-b border-[rgba(255,255,255,0.06)]"
               style={{ opacity: 0, animation: "mock-fade-in 0.6s ease forwards", animationDelay: "0.2s", animationPlayState: "var(--play)" }}
             >
-              <h3 className="text-[22px] font-bold mb-1.5" style={{ letterSpacing: "-0.5px" }}>
+              <h3 className="text-[18px] sm:text-[22px] font-bold mb-1.5" style={{ letterSpacing: "-0.5px" }}>
                 The <span className="text-white">Robinhood Gold Card</span> could save you{" "}
                 <CountUp target={755} prefix="$" delay={2800} duration={1400} style={{ color: "#34d399" }} />/yr
               </h3>
@@ -403,13 +403,8 @@ export default function Home() {
                 return (
                   <div
                     key={card.rank}
-                    className="rounded-[14px] transition-colors"
+                    className="compare-row-grid rounded-[14px] transition-colors"
                     style={{
-                      display: "grid",
-                      gridTemplateColumns: "32px 1fr 90px",
-                      alignItems: "center",
-                      gap: 20,
-                      padding: "20px 16px",
                       opacity: card.locked ? 0.3 : 0,
                       animation: card.locked ? undefined : "mock-row-enter 0.5s ease forwards",
                       animationDelay: card.locked ? undefined : `${rowDelay}s`,
