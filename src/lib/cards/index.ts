@@ -4,6 +4,7 @@ import { chaseSapphirePreferred } from "./chase-sapphire-preferred";
 import { chaseFreedomFlex } from "./chase-freedom-flex";
 import { chaseFreedomUnlimited } from "./chase-freedom-unlimited";
 import { amexGold } from "./amex-gold";
+import { amexBlueCashPreferred } from "./amex-blue-cash-preferred";
 import { amexPlatinum } from "./amex-platinum";
 import { citiStrataElite } from "./citi-strata-elite";
 import { citiStrataPremier } from "./citi-strata-premier";
@@ -18,6 +19,7 @@ export const cardRegistry: CardDefinition[] = [
   chaseFreedomFlex,
   chaseFreedomUnlimited,
   amexGold,
+  amexBlueCashPreferred,
   amexPlatinum,
   citiStrataElite,
   citiStrataPremier,

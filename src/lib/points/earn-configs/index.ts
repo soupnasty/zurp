@@ -4,6 +4,7 @@ import { cspEarnConfig } from "./chase-sapphire-preferred";
 import { cffEarnConfig } from "./chase-freedom-flex";
 import { cfuEarnConfig } from "./chase-freedom-unlimited";
 import { amexGoldEarnConfig } from "./amex-gold";
+import { amexBcpEarnConfig } from "./amex-blue-cash-preferred";
 import { amexPlatinumEarnConfig } from "./amex-platinum";
 import { citiStrataEliteEarnConfig } from "./citi-strata-elite";
 import { citiStrataPremierEarnConfig } from "./citi-strata-premier";
@@ -18,6 +19,7 @@ const allConfigs: EarnConfig[] = [
   cffEarnConfig,
   cfuEarnConfig,
   amexGoldEarnConfig,
+  amexBcpEarnConfig,
   amexPlatinumEarnConfig,
   citiStrataEliteEarnConfig,
   citiStrataPremierEarnConfig,
