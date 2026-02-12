@@ -1,6 +1,8 @@
 import type { EarnConfig } from "../types";
 import { csrEarnConfig } from "./chase-sapphire-reserve";
 import { cspEarnConfig } from "./chase-sapphire-preferred";
+import { cffEarnConfig } from "./chase-freedom-flex";
+import { cfuEarnConfig } from "./chase-freedom-unlimited";
 import { amexGoldEarnConfig } from "./amex-gold";
 import { amexPlatinumEarnConfig } from "./amex-platinum";
 import { citiStrataEliteEarnConfig } from "./citi-strata-elite";
@@ -13,6 +15,8 @@ import { biltPalladiumEarnConfig } from "./bilt-palladium";
 const allConfigs: EarnConfig[] = [
   csrEarnConfig,
   cspEarnConfig,
+  cffEarnConfig,
+  cfuEarnConfig,
   amexGoldEarnConfig,
   amexPlatinumEarnConfig,
   citiStrataEliteEarnConfig,

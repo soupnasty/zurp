@@ -1,6 +1,8 @@
 import type { CardDefinition } from "@/lib/types";
 import { chaseSapphireReserve } from "./chase-sapphire-reserve";
 import { chaseSapphirePreferred } from "./chase-sapphire-preferred";
+import { chaseFreedomFlex } from "./chase-freedom-flex";
+import { chaseFreedomUnlimited } from "./chase-freedom-unlimited";
 import { amexGold } from "./amex-gold";
 import { amexPlatinum } from "./amex-platinum";
 import { citiStrataElite } from "./citi-strata-elite";
@@ -13,6 +15,8 @@ import { biltPalladium } from "./bilt-palladium";
 export const cardRegistry: CardDefinition[] = [
   chaseSapphireReserve,
   chaseSapphirePreferred,
+  chaseFreedomFlex,
+  chaseFreedomUnlimited,
   amexGold,
   amexPlatinum,
   citiStrataElite,

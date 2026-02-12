@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-A credit card benefits tracker that syncs transactions via Plaid, matches them against card-specific benefit rulesets, and shows users which credits they've used, which are expiring, and whether each card is paying for itself. Supports Chase Sapphire Reserve, Chase Sapphire Preferred, Amex Gold, Amex Platinum, Citi Strata Elite, Citi Strata Premier, Capital One Venture X, Capital One Venture, Robinhood Gold, and Bilt Palladium.
+A credit card benefits tracker that syncs transactions via Plaid, matches them against card-specific benefit rulesets, and shows users which credits they've used, which are expiring, and whether each card is paying for itself. Supports Chase Sapphire Reserve, Chase Sapphire Preferred, Chase Freedom Flex, Chase Freedom Unlimited, Amex Gold, Amex Platinum, Citi Strata Elite, Citi Strata Premier, Capital One Venture X, Capital One Venture, Robinhood Gold, and Bilt Palladium.
 
 ## Tech Stack
 
@@ -113,10 +113,10 @@ On-demand simulation engine that answers "which card earns the most for your act
 
 - **Category mapper** (`categories.ts`): 3-tier classification — merchant name match → Plaid category fallback → `other`. Uses 26-category taxonomy separate from the 8-category spending system.
 - **Merchant map** (`merchant-map.ts`): ~200 static merchant→category entries with priority-based matching.
-- **Earn configs** (`earn-configs/`): Per-card earn rate definitions (bonus categories, caps, conditions, point valuations). Files: `chase-sapphire-reserve.ts`, `chase-sapphire-preferred.ts`, `amex-gold.ts`, `amex-platinum.ts`, `citi-strata-elite.ts`, `citi-strata-premier.ts`, `capital-one-venture-x.ts`, `capital-one-venture.ts`, `robinhood-gold.ts`, `bilt-palladium.ts`.
+- **Earn configs** (`earn-configs/`): Per-card earn rate definitions (bonus categories, caps, conditions, point valuations). Files: `chase-sapphire-reserve.ts`, `chase-sapphire-preferred.ts`, `chase-freedom-flex.ts`, `chase-freedom-unlimited.ts`, `amex-gold.ts`, `amex-platinum.ts`, `citi-strata-elite.ts`, `citi-strata-premier.ts`, `capital-one-venture-x.ts`, `capital-one-venture.ts`, `robinhood-gold.ts`, `bilt-palladium.ts`.
 - **Calculator** (`calculator.ts`): Per-transaction points calculation with cap tracking. Supports `time_window` conditions for time-based earn rates (e.g., Citi Nights).
 - **Simulator** (`simulator.ts`): Full pipeline — classify → calculate per card → aggregate → compute net value (points + benefits - fee). Supports `portalMode` to reclassify travel as `travel_portal`.
-- **Perk matrix** (`perk-matrix.ts`): Static benefit comparison data for the Benefits & Perks tab (10 cards).
+- **Perk matrix** (`perk-matrix.ts`): Static benefit comparison data for the Benefits & Perks tab (12 cards).
 - **Queries** (`queries.ts`): Server-only DB queries for transaction data (includes `datetime` for time-window matching).
 - **Orchestrator** (`index.ts`): `computeComparison(userId, options?)` — main entry point called from the compare page. Accepts `{ portalMode?: boolean }`.
 
@@ -126,7 +126,11 @@ No new DB tables — computed on-demand from existing transaction data.
 
 Card definitions live in `src/lib/cards/`. Each card file exports a `CardDefinition` with all benefits. The registry at `src/lib/cards/index.ts` aggregates them. `detect.ts` auto-detects card type from Plaid account metadata. To add a new card, create a new file in `src/lib/cards/` and register it in `index.ts`.
 
-10 cards: CSR, CSP, Amex Gold, Amex Platinum, Citi Strata Elite, Citi Strata Premier, Capital One Venture X, Capital One Venture, Robinhood Gold, Bilt Palladium.
+12 cards: CSR, CSP, CFF, CFU, Amex Gold, Amex Platinum, Citi Strata Elite, Citi Strata Premier, Capital One Venture X, Capital One Venture, Robinhood Gold, Bilt Palladium.
+
+The Chase Freedom Flex (`chase-freedom-flex.ts`) has 1 benefit (DashPass subscription). $0 annual fee, Mastercard network. 1x base rate with 5% rotating quarterly categories (not modeled — changes each quarter), 3x dining/drugstores, 5x Chase Travel portal. Earns Chase UR points poolable with CSR/CSP. Points valued at 1.0-2.0cpp (via CSR/CSP transfer partners). Cell phone protection ($800/claim, 2 claims/yr).
+
+The Chase Freedom Unlimited (`chase-freedom-unlimited.ts`) has 1 benefit (DashPass subscription). $0 annual fee, Visa network. 1.5x flat base rate (highest non-rotating Chase rate), 3x dining/drugstores, 5x Chase Travel portal. Earns Chase UR points poolable with CSR/CSP. Points valued at 1.0-2.0cpp (via CSR/CSP transfer partners).
 
 The Amex Platinum (`amex-platinum.ts`) has 21 benefits across 5 period types including quarterly (a new cycle type). It uses `activeMonths` gating for Uber Cash month-specific credits ($15 Jan-Nov, $35 Dec).
 
@@ -204,6 +208,8 @@ src/
 - [x] Phase 13: Bilt Palladium — 4 benefits (hotel credit x2, Bilt Cash annual, No FTF), 2x base rate, 23 transfer partners, 8-card comparison, 10 competitor map entries
 - [x] Phase 14: Capital One Venture — 3 benefits (travel credit, Global Entry, No FTF), 2x base rate, 5x portal hotels/rentals, 9-card comparison, 10 competitor map entries
 - [x] Phase 15: Citi Strata Premier — 2 benefits (hotel credit, No FTF), 1x base rate, 3x flights/dining/groceries/gas, 10x portal hotels, 10-card comparison, 10 competitor map entries
+- [x] Phase 16: Chase Freedom Flex — 1 benefit (DashPass), 1x base rate, 3x dining/drugstores, 5x portal, $0 fee, Mastercard, cell phone protection, 12-card comparison
+- [x] Phase 17: Chase Freedom Unlimited — 1 benefit (DashPass), 1.5x base rate, 3x dining/drugstores, 5x portal, $0 fee, Visa, 12-card comparison
 
 ### Sync Architecture
 
