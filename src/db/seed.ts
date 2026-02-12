@@ -272,6 +272,19 @@ async function seed() {
     { cardType: "capital_one_venture_x", benefitKey: "vx_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "National", plaidMerchantPattern: "national car", category: "rental_cars", insightType: "A1" },
     { cardType: "capital_one_venture_x", benefitKey: "vx_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Avis", plaidMerchantPattern: "avis", category: "rental_cars", insightType: "A1" },
     { cardType: "capital_one_venture_x", benefitKey: "vx_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Budget", plaidMerchantPattern: "budget rent", category: "rental_cars", insightType: "A1" },
+
+    // ── Robinhood Gold entries ──
+    // OTA → Robinhood Travel (A1 — portal redirect for 5x vs 3x)
+    { cardType: "robinhood_gold", benefitKey: "rh_gold_no_ftf", benefitPartner: "Robinhood Travel", competitorMerchant: "Expedia", plaidMerchantPattern: "expedia", category: "travel", insightType: "A1" },
+    { cardType: "robinhood_gold", benefitKey: "rh_gold_no_ftf", benefitPartner: "Robinhood Travel", competitorMerchant: "Hotels.com", plaidMerchantPattern: "hotels.com", category: "travel", insightType: "A1" },
+    { cardType: "robinhood_gold", benefitKey: "rh_gold_no_ftf", benefitPartner: "Robinhood Travel", competitorMerchant: "Booking.com", plaidMerchantPattern: "booking.com", category: "travel", insightType: "A1" },
+    { cardType: "robinhood_gold", benefitKey: "rh_gold_no_ftf", benefitPartner: "Robinhood Travel", competitorMerchant: "Priceline", plaidMerchantPattern: "priceline", category: "travel", insightType: "A1" },
+    { cardType: "robinhood_gold", benefitKey: "rh_gold_no_ftf", benefitPartner: "Robinhood Travel", competitorMerchant: "United", plaidMerchantPattern: "united", category: "flights", insightType: "A1" },
+    { cardType: "robinhood_gold", benefitKey: "rh_gold_no_ftf", benefitPartner: "Robinhood Travel", competitorMerchant: "American Airlines", plaidMerchantPattern: "american air", category: "flights", insightType: "A1" },
+    { cardType: "robinhood_gold", benefitKey: "rh_gold_no_ftf", benefitPartner: "Robinhood Travel", competitorMerchant: "Southwest", plaidMerchantPattern: "southwest", category: "flights", insightType: "A1" },
+    { cardType: "robinhood_gold", benefitKey: "rh_gold_no_ftf", benefitPartner: "Robinhood Travel", competitorMerchant: "Delta", plaidMerchantPattern: "delta", category: "flights", insightType: "A1" },
+    { cardType: "robinhood_gold", benefitKey: "rh_gold_no_ftf", benefitPartner: "Robinhood Travel", competitorMerchant: "JetBlue", plaidMerchantPattern: "jetblue", category: "flights", insightType: "A1" },
+    { cardType: "robinhood_gold", benefitKey: "rh_gold_no_ftf", benefitPartner: "Robinhood Travel", competitorMerchant: "Alaska Airlines", plaidMerchantPattern: "alaska air", category: "flights", insightType: "A1" },
   ];
 
   for (const entry of competitorEntries) {
