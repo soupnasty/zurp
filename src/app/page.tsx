@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { MobileNav } from "./_components/MobileNav";
 import { ScrollReveal } from "./_components/ScrollReveal";
-import { CardChip, MARQUEE_CARDS } from "./_components/CardChip";
+import { CardChip, MARQUEE_CARDS, MARQUEE_CARDS_T2 } from "./_components/CardChip";
 import { AnimatedMockup } from "./_components/AnimatedMockup";
 import { CountUp } from "./_components/CountUp";
 
@@ -106,7 +106,7 @@ const compareCards = [
     feePct: 24,
     feeLabel: "-$325",
     net: "+$635",
-    netColor: "#fbbf24",
+    netColor: "#7a8ba8",
     rowBg: undefined,
     detailedLabels: {
       points: "Points $656",
@@ -126,8 +126,8 @@ const compareCards = [
     feePct: 44,
     feeLabel: "-$795",
     net: "+$118",
-    netColor: "#6b7280",
-    rowBg: "rgba(88,166,255,0.03)",
+    netColor: "#7a8ba8",
+    rowBg: "rgba(96,165,250,0.03)",
     detailedLabels: {
       points: "Points $838",
       benefits: "$75 captured of $2,628",
@@ -139,22 +139,22 @@ const compareCards = [
 /* ── Insight examples ── */
 const insightCards = [
   {
-    accentColor: "#58A6FF",
-    iconBg: "rgba(88,166,255,0.1)",
+    accentColor: "#22d3ee",
+    iconBg: "rgba(34,211,238,0.1)",
     icon: "\u2197",
     typeLabel: "Redirect spending",
-    typeColor: "#58A6FF",
+    typeColor: "#22d3ee",
     body: (
       <>
         You spent{" "}
         <strong className="font-semibold text-white">$87 on Uber</strong> last
         month but only used{" "}
-        <span className="ins-hl-blue font-bold" style={{ color: "#58A6FF" }}>
+        <span className="ins-hl-blue font-bold" style={{ color: "#22d3ee" }}>
           $10
         </span>{" "}
         of your monthly Lyft credit. Switch your rides to Lyft to capture the
         full{" "}
-        <span className="ins-hl-blue font-bold" style={{ color: "#58A6FF" }}>
+        <span className="ins-hl-blue font-bold" style={{ color: "#22d3ee" }}>
           $120/yr
         </span>
         .
@@ -227,45 +227,28 @@ export default function Home() {
       <nav className="fixed top-0 left-0 right-0 z-[100] bg-[var(--bg-primary)]/80 backdrop-blur-[20px] border-b border-[var(--border-default)]/50">
         <div className="mx-auto flex max-w-[1080px] items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-2.5 no-underline">
-            <svg width="32" height="22" viewBox="0 0 50 34" fill="none">
-              <rect
-                x="0"
-                y="0"
-                width="50"
-                height="34"
-                rx="5"
-                stroke="var(--accent)"
-                strokeWidth="3"
-                opacity="0.55"
-              />
-              <line
-                x1="0"
-                y1="12"
-                x2="50"
-                y2="12"
-                stroke="var(--accent)"
-                strokeWidth="1.5"
-                opacity="0.3"
-              />
-              <circle cx="12" cy="24" r="2.5" fill="var(--accent)" />
-              <circle
-                cx="21"
-                cy="24"
-                r="2.5"
-                fill="var(--accent)"
-                opacity="0.55"
-              />
-              <circle
-                cx="30"
-                cy="24"
-                r="2.5"
-                fill="var(--accent)"
-                opacity="0.2"
-              />
+            <svg width="32" height="24" viewBox="0 0 46 36" fill="none">
+              <rect x="2" y="2" width="42" height="30" rx="5" fill="#0a0e17" stroke="#22d3ee" strokeWidth="1.5"/>
+              <clipPath id="lp-t">
+                <rect x="8" y="9" width="30" height="6" rx="3"/>
+              </clipPath>
+              <g clipPath="url(#lp-t)">
+                <rect x="8" y="9" width="18" height="6" fill="#60a5fa"/>
+                <rect x="26" y="9" width="6.5" height="6" fill="#a78bfa"/>
+                <rect x="32.5" y="9" width="5.5" height="6" fill="#f87171"/>
+              </g>
+              <clipPath id="lp-b">
+                <rect x="8" y="19" width="30" height="6" rx="3"/>
+              </clipPath>
+              <g clipPath="url(#lp-b)">
+                <rect x="8" y="19" width="5.5" height="6" fill="#f87171" opacity="0.5"/>
+                <rect x="13.5" y="19" width="6.5" height="6" fill="#a78bfa" opacity="0.5"/>
+                <rect x="20" y="19" width="18" height="6" fill="#60a5fa" opacity="0.5"/>
+              </g>
             </svg>
             <span
-              className="text-xl font-bold tracking-tight text-[var(--text-primary)]"
-              style={{ letterSpacing: "-0.5px" }}
+              className="text-xl font-bold text-[var(--text-primary)]"
+              style={{ fontFamily: "var(--font-space-mono)", letterSpacing: "0" }}
             >
               zurp
             </span>
@@ -299,7 +282,12 @@ export default function Home() {
             </a>
             <Link
               href="/login"
-              className="rounded-lg bg-[var(--accent)] px-5 py-2 text-sm font-semibold text-[var(--bg-primary)] transition-opacity hover:opacity-90"
+              className="rounded-lg px-[18px] py-2 text-sm font-semibold transition-all"
+              style={{
+                background: "rgba(34,211,238,0.1)",
+                color: "#22d3ee",
+                border: "1px solid rgba(34,211,238,0.2)",
+              }}
             >
               Get started
             </Link>
@@ -313,33 +301,57 @@ export default function Home() {
       {/* ════════ HERO ════════ */}
       <section className="relative pt-40 pb-24 text-center">
         {/* Ambient glow */}
-        <div className="pointer-events-none absolute top-[-200px] left-1/2 h-[600px] w-[800px] -translate-x-1/2 bg-[radial-gradient(ellipse,rgba(88,166,255,0.06)_0%,transparent_70%)]" />
+        <div className="pointer-events-none absolute top-[-200px] left-1/2 h-[600px] w-[800px] -translate-x-1/2 bg-[radial-gradient(ellipse,rgba(96,165,250,0.08)_0%,transparent_70%)]" />
 
         <div className="mx-auto max-w-[1080px] px-6">
           <h1
-            className="mx-auto mb-6 text-[clamp(40px,6vw,68px)] font-bold leading-[1.08] animate-[fadeUp_0.6s_ease_0.1s_both]"
+            className="mx-auto mb-6 text-[clamp(40px,6vw,68px)] font-bold leading-[1.08] animate-[fadeUp_0.6s_ease_0.15s_both]"
             style={{ letterSpacing: "-2px" }}
           >
             Know what your
             <br />
             card is{" "}
-            <span className="bg-gradient-to-r from-[#58A6FF] to-[#3FB950] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#60a5fa] via-[#22d3ee] to-[#34d399] bg-clip-text text-transparent">
               actually
             </span>{" "}
             worth
+            <span
+              className="block mt-2 font-medium text-[var(--text-secondary)]"
+              style={{ fontSize: "0.65em", letterSpacing: "-1px" }}
+            >
+              &mdash; and which card beats it.
+            </span>
           </h1>
 
-          <p className="mx-auto mb-10 max-w-[520px] text-lg leading-relaxed text-[var(--text-secondary)] animate-[fadeUp_0.6s_ease_0.2s_both]">
-            Your card comes with $2,000+ in benefits. Zurp makes sure you
-            actually use them.
+          <p className="mx-auto mb-10 max-w-[600px] text-lg leading-relaxed text-[var(--text-secondary)] animate-[fadeUp_0.6s_ease_0.3s_both]">
+            Zurp simulates your real spending across{" "}
+            <strong className="font-medium text-[var(--text-primary)]">
+              30 top cards
+            </strong>{" "}
+            &mdash; factoring in points, perks, and fees &mdash; to find your
+            best fit.
           </p>
 
-          <div className="mb-3 flex flex-col items-center justify-center gap-4 sm:flex-row animate-[fadeUp_0.6s_ease_0.3s_both]">
+          <div className="mb-3 flex flex-col items-center justify-center gap-4 sm:flex-row animate-[fadeUp_0.6s_ease_0.4s_both]">
             <Link
               href="/login"
-              className="inline-flex items-center gap-2 rounded-[10px] bg-[var(--accent)] px-8 py-3.5 text-base font-semibold text-[var(--bg-primary)] transition-all hover:-translate-y-px hover:shadow-[var(--shadow-glow)] hover:opacity-90"
+              className="group relative inline-flex items-center gap-2.5 overflow-hidden rounded-[14px] px-9 py-4 text-base font-semibold transition-all hover:-translate-y-px"
+              style={{
+                background: "linear-gradient(135deg, #60a5fa, #22d3ee)",
+                color: "#0a0e17",
+              }}
             >
-              zurp your card &rarr;
+              <span className="relative z-[1]">zurp your card</span>
+              <span className="relative z-[1] transition-transform group-hover:translate-x-[3px]">
+                &rarr;
+              </span>
+              {/* Hover gradient overlay */}
+              <span
+                className="absolute inset-0 rounded-[14px] opacity-0 transition-opacity group-hover:opacity-100"
+                style={{
+                  background: "linear-gradient(135deg, #22d3ee, #34d399)",
+                }}
+              />
             </Link>
           </div>
 
@@ -358,15 +370,24 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ════════ CARD MARQUEE STRIP ════════ */}
+      {/* ════════ CARD MARQUEE STRIPS ════════ */}
       <div className="relative overflow-hidden py-10">
         {/* Fade edges */}
         <div className="pointer-events-none absolute top-0 bottom-0 left-0 z-[2] w-20 bg-gradient-to-r from-[var(--bg-primary)] to-transparent" />
         <div className="pointer-events-none absolute top-0 bottom-0 right-0 z-[2] w-20 bg-gradient-to-l from-[var(--bg-primary)] to-transparent" />
 
+        {/* Tier 1 — left to right */}
         <div className="marquee-track flex w-max items-center">
-          {/* Render cards twice for seamless loop — use per-item margin instead of gap so each half is exactly 50% */}
           {[...MARQUEE_CARDS, ...MARQUEE_CARDS].map((cardId, i) => (
+            <div key={i} className="mr-6">
+              <CardChip cardId={cardId} />
+            </div>
+          ))}
+        </div>
+
+        {/* Tier 2 — right to left */}
+        <div className="marquee-track-reverse mt-6 flex w-max items-center">
+          {[...MARQUEE_CARDS_T2, ...MARQUEE_CARDS_T2].map((cardId, i) => (
             <div key={i} className="mr-6">
               <CardChip cardId={cardId} />
             </div>
@@ -673,7 +694,7 @@ export default function Home() {
                           )}
                           {card.badge === "current" && (
                             <span
-                              className="inline-flex items-center rounded px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.06em] bg-[rgba(88,166,255,0.15)] text-[#58A6FF]"
+                              className="inline-flex items-center rounded px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.06em] bg-[rgba(34,211,238,0.15)] text-[#22d3ee]"
                               style={{
                                 opacity: 0,
                                 transform: "scale(0.7)",
@@ -720,7 +741,7 @@ export default function Home() {
                             style={
                               {
                                 width: 0,
-                                background: "rgba(52,211,153,0.5)",
+                                background: "rgba(167,139,250,0.5)",
                                 animation:
                                   "mock-fill-bar 0.6s cubic-bezier(0.25,0.46,0.45,0.94) forwards",
                                 animationDelay: `${barBase + 0.4}s`,
@@ -765,7 +786,7 @@ export default function Home() {
                             {dl ? dl.points : "Points"}
                           </span>
                           <span className="flex items-center gap-1">
-                            <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#34d399]" />
+                            <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#a78bfa]" />
                             {dl ? dl.benefits : "Benefits"}
                           </span>
                           <span className="flex items-center gap-1">
@@ -825,7 +846,7 @@ export default function Home() {
                           style={
                             {
                               width: 0,
-                              background: "rgba(52,211,153,0.5)",
+                              background: "rgba(167,139,250,0.5)",
                               animation:
                                 "mock-fill-bar 0.6s cubic-bezier(0.25,0.46,0.45,0.94) forwards",
                               animationDelay: `${barBase + 0.4}s`,
@@ -870,7 +891,7 @@ export default function Home() {
                           {dl ? dl.points : "Points"}
                         </span>
                         <span className="flex items-center gap-1">
-                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#34d399]" />
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#a78bfa]" />
                           {dl ? dl.benefits : "Benefits"}
                         </span>
                         <span className="flex items-center gap-1">
@@ -990,7 +1011,7 @@ export default function Home() {
                             style={{
                               width: "30%",
                               background:
-                                "linear-gradient(90deg, transparent, #58A6FF, transparent)",
+                                "linear-gradient(90deg, transparent, #22d3ee, transparent)",
                               animation:
                                 "hiw-pulse-slide 3.5s ease-in-out infinite",
                             }}
@@ -1020,8 +1041,8 @@ export default function Home() {
                           >
                             <path
                               d="M24 2L4 12V28C4 40 14 50 24 54C34 50 44 40 44 28V12L24 2Z"
-                              fill="rgba(88,166,255,0.08)"
-                              stroke="rgba(88,166,255,0.3)"
+                              fill="rgba(34,211,238,0.08)"
+                              stroke="rgba(34,211,238,0.3)"
                               strokeWidth="1.5"
                             />
                           </svg>
@@ -1042,7 +1063,7 @@ export default function Home() {
                             >
                               <path
                                 d="M5 10L9 14L15 6"
-                                stroke="#58A6FF"
+                                stroke="#22d3ee"
                                 strokeWidth="2.5"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
@@ -1145,9 +1166,9 @@ export default function Home() {
                         className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px]"
                         style={{
                           background: row.match
-                            ? "rgba(88,166,255,0.15)"
+                            ? "rgba(34,211,238,0.15)"
                             : "rgba(255,255,255,0.04)",
-                          color: row.match ? "#58A6FF" : "#4b5563",
+                          color: row.match ? "#22d3ee" : "#4b5563",
                           opacity: 0,
                           animation: `${
                             row.match ? "hiw-match-pop" : "hiw-nomatch-pop"
@@ -1212,7 +1233,7 @@ export default function Home() {
                         $87 on Uber
                       </strong>{" "}
                       last month. Your{" "}
-                      <span className="font-bold" style={{ color: "#58A6FF" }}>
+                      <span className="font-bold" style={{ color: "#22d3ee" }}>
                         $10/mo Lyft credit
                       </span>{" "}
                       is sitting unused.
@@ -1222,7 +1243,7 @@ export default function Home() {
                         className="font-data font-bold leading-none"
                         style={{
                           fontSize: 28,
-                          color: "#58A6FF",
+                          color: "#22d3ee",
                           letterSpacing: "-0.02em",
                           fontVariantNumeric: "tabular-nums",
                           opacity: 0,
@@ -1382,9 +1403,22 @@ export default function Home() {
             <div className="mb-3 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
                 href="/login"
-                className="inline-flex items-center gap-2 rounded-[10px] bg-[var(--accent)] px-8 py-3.5 text-base font-semibold text-[var(--bg-primary)] transition-all hover:-translate-y-px hover:shadow-[var(--shadow-glow)] hover:opacity-90"
+                className="group relative inline-flex items-center gap-2.5 overflow-hidden rounded-[14px] px-9 py-4 text-base font-semibold transition-all hover:-translate-y-px"
+                style={{
+                  background: "linear-gradient(135deg, #60a5fa, #22d3ee)",
+                  color: "#0a0e17",
+                }}
               >
-                zurp your card &rarr;
+                <span className="relative z-[1]">zurp your card</span>
+                <span className="relative z-[1] transition-transform group-hover:translate-x-[3px]">
+                  &rarr;
+                </span>
+                <span
+                  className="absolute inset-0 rounded-[14px] opacity-0 transition-opacity group-hover:opacity-100"
+                  style={{
+                    background: "linear-gradient(135deg, #22d3ee, #34d399)",
+                  }}
+                />
               </Link>
             </div>
           </ScrollReveal>

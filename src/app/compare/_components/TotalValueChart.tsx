@@ -2,12 +2,12 @@ import type { CardSimulation } from "@/lib/points/types";
 
 // Universal bar colors matching the homepage compare section
 const POINTS_COLOR = "linear-gradient(90deg, #3b82f6, #2563eb)";
-const BENEFITS_COLOR = "rgba(52, 211, 153, 0.5)";
+const BENEFITS_COLOR = "rgba(167, 139, 250, 0.5)";
 const FEE_COLOR = "rgba(239, 68, 68, 0.25)";
 
 // Legend dot colors
 const POINTS_DOT = "#3b82f6";
-const BENEFITS_DOT = "#34d399";
+const BENEFITS_DOT = "#a78bfa";
 const FEE_DOT = "#ef4444";
 
 function formatDollars(amount: number): string {
@@ -76,12 +76,12 @@ export function TotalValueChart({
                 {card.cardName}
               </span>
               {card.isUsersCard && (
-                <span className="inline-flex items-center rounded px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#34D399] bg-[rgba(52,211,153,0.1)]">
+                <span className="inline-flex items-center rounded px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#22d3ee] bg-[rgba(34,211,238,0.1)]">
                   Your card
                 </span>
               )}
               {card.cardId === bestCardId && (
-                <span className="inline-flex items-center rounded px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#FBBF24] bg-[rgba(251,191,36,0.1)]">
+                <span className="inline-flex items-center rounded px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#34d399] bg-[rgba(52,211,153,0.1)]">
                   Best value
                 </span>
               )}
@@ -95,7 +95,7 @@ export function TotalValueChart({
               className="font-data font-bold leading-none"
               style={{
                 fontSize: 24,
-                color: card.netActual > 0 ? "#34D399" : "#F87171",
+                color: card.cardId === bestCardId && card.netActual > 0 ? "#34d399" : card.netActual > 0 ? "#7a8ba8" : "#f87171",
               }}
             >
               {formatDollars(card.netActual)}

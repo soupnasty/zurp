@@ -1,28 +1,33 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" width="400" height="200">
-  
   <!-- Background -->
-  <rect width="400" height="200" fill="#0D1117"/>
-  
-  <!-- Icon -->
-  <g transform="translate(32, 62)">
-    <!-- Card shape -->
-    <rect x="0" y="8" width="50" height="34" rx="5" fill="none" stroke="#58A6FF" stroke-width="2.5" opacity="0.4"/>
-    
-    <!-- Card stripe detail -->
-    <line x1="0" y1="20" x2="50" y2="20" stroke="#58A6FF" stroke-width="1.2" opacity="0.2"/>
-    
-    <!-- Progress dots -->
-    <circle cx="12" cy="32" r="2.5" fill="#58A6FF"/>
-    <circle cx="21" cy="32" r="2.5" fill="#58A6FF" opacity="0.55"/>
-    <circle cx="30" cy="32" r="2.5" fill="#58A6FF" opacity="0.2"/>
+  <rect width="400" height="200" fill="#0a0e17"/>
+
+  <!-- Card -->
+  <g transform="translate(40, 72)">
+    <rect x="2" y="2" width="42" height="30" rx="5" fill="#0a0e17" stroke="#22d3ee" stroke-width="1.5"/>
+    <!-- Top bar: blue → purple → red -->
+    <clipPath id="og-t">
+      <rect x="8" y="9" width="30" height="6" rx="3"/>
+    </clipPath>
+    <g clip-path="url(#og-t)">
+      <rect x="8" y="9" width="18" height="6" fill="#60a5fa"/>
+      <rect x="26" y="9" width="6.5" height="6" fill="#a78bfa"/>
+      <rect x="32.5" y="9" width="5.5" height="6" fill="#f87171"/>
+    </g>
+    <!-- Bottom bar: red → purple → blue (flipped for Z) -->
+    <clipPath id="og-b">
+      <rect x="8" y="19" width="30" height="6" rx="3"/>
+    </clipPath>
+    <g clip-path="url(#og-b)">
+      <rect x="8" y="19" width="5.5" height="6" fill="#f87171" opacity="0.5"/>
+      <rect x="13.5" y="19" width="6.5" height="6" fill="#a78bfa" opacity="0.5"/>
+      <rect x="20" y="19" width="18" height="6" fill="#60a5fa" opacity="0.5"/>
+    </g>
   </g>
-  
+
   <!-- Wordmark -->
-  <text x="100" y="100" font-family="'SF Pro Display', 'Helvetica Neue', Helvetica, sans-serif" font-weight="600" font-size="62" fill="#E6EDF3" letter-spacing="-1.5">zurp</text>
-  
-  <!-- Subtle divider -->
-  <line x1="100" y1="115" x2="148" y2="115" stroke="#58A6FF" stroke-width="2" opacity="0.6"/>
-  
+  <text x="108" y="100" font-family="'Space Mono', monospace" font-weight="700" font-size="48" fill="#f0f2f5">zurp</text>
+
   <!-- Tagline -->
-  <text x="100" y="135" font-family="'SF Pro Display', 'Helvetica Neue', Helvetica, sans-serif" font-weight="400" font-size="12" fill="#484F58" letter-spacing="2">YOUR CARD BENEFITS</text>
+  <text x="108" y="125" font-family="'Space Mono', monospace" font-weight="400" font-size="11" fill="#4a5568" letter-spacing="2">YOUR CARD BENEFITS</text>
 </svg>

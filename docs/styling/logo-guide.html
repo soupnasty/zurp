@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zurp — Logo & Animation Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #0a0e17;
+    --bg-card: #111827;
+    --bg-card-hover: #1a2236;
+    --bg-elevated: #1e293b;
+    --text-primary: #f0f2f5;
+    --text-secondary: #7a8ba8;
+    --text-dim: #4a5568;
+    --accent-cyan: #22d3ee;
+    --accent-blue: #60a5fa;
+    --accent-green: #34d399;
+    --accent-purple: #a78bfa;
+    --accent-red: #f87171;
+    --border-subtle: rgba(255,255,255,0.06);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  .guide {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 80px 40px 120px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .guide-header {
+    margin-bottom: 80px;
+    padding-bottom: 48px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .guide-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+  }
+  .guide-header p {
+    color: var(--text-secondary);
+    font-size: 16px;
+    max-width: 480px;
+  }
+  .guide-version {
+    display: inline-block;
+    margin-top: 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    padding: 4px 10px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+  }
+
+  /* Section */
+  .section {
+    margin-bottom: 72px;
+  }
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--accent-cyan);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+  }
+  .section-desc {
+    color: var(--text-secondary);
+    font-size: 15px;
+    margin-bottom: 36px;
+    max-width: 560px;
+  }
+
+  /* Cards / panels */
+  .panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 16px;
+  }
+  .panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(34,211,238,0.15), transparent);
+  }
+  .panel-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 56px 40px;
+  }
+  .panel-body {
+    padding: 24px;
+  }
+  .panel-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--accent-cyan);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 12px;
+  }
+  .panel-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+  .panel-text strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  /* Sub-label */
+  .sub-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'Space Mono', monospace;
+    margin-top: 28px;
+    margin-bottom: 12px;
+  }
+  .sub-label:first-child { margin-top: 0; }
+
+  /* Tables */
+  .spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+  .spec-table th {
+    text-align: left;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .spec-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+  }
+  .spec-table td:first-child {
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+  .spec-table .mono {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+  }
+  .spec-table .swatch {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+
+  /* Inline code */
+  code {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    background: rgba(255,255,255,0.04);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--accent-cyan);
+  }
+
+  /* Grid layouts */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+
+  /* Sizing row */
+  .size-row {
+    display: flex;
+    align-items: end;
+    justify-content: center;
+    gap: 40px;
+    padding: 48px 40px;
+  }
+  .size-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .size-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-deep);
+    border-radius: 12px;
+    border: 1px solid var(--border-subtle);
+  }
+  .size-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    text-align: center;
+  }
+
+  /* Context row */
+  .context-row {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    padding: 40px;
+  }
+  .context-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 36px 48px;
+    border-radius: 14px;
+    flex: 1;
+    max-width: 380px;
+  }
+  .context-dark {
+    background: var(--bg-deep);
+    border: 1px solid var(--border-subtle);
+  }
+  .context-light {
+    background: #f0f2f5;
+  }
+
+  /* Z diagram */
+  .z-diagram {
+    padding: 20px 24px;
+    background: var(--bg-deep);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    display: inline-block;
+    margin-bottom: 20px;
+  }
+  .z-diagram pre {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+  .z-diagram .c-b { color: var(--accent-blue); }
+  .z-diagram .c-p { color: var(--accent-purple); }
+  .z-diagram .c-r { color: var(--accent-red); }
+  .z-diagram .c-z { color: var(--accent-cyan); font-weight: 700; }
+
+  /* Do/Don't */
+  .rules-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .rule-card {
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-card);
+  }
+  .rule-card h4 {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .rule-do h4 { color: var(--accent-green); }
+  .rule-dont h4 { color: var(--accent-red); }
+  .rule-card ul {
+    list-style: none;
+    padding: 0;
+  }
+  .rule-card li {
+    font-size: 13px;
+    color: var(--text-secondary);
+    padding: 4px 0;
+    padding-left: 16px;
+    position: relative;
+  }
+  .rule-do li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--accent-green);
+    font-weight: 700;
+    font-size: 11px;
+  }
+  .rule-dont li::before {
+    content: '✗';
+    position: absolute;
+    left: 0;
+    color: var(--accent-red);
+    font-weight: 700;
+    font-size: 11px;
+  }
+
+  /* Animation classes for A2 */
+  .a2-t-blue   { animation: a2-zfill 2.4s ease-in-out infinite; }
+  .a2-t-purple { animation: a2-zfill 2.4s ease-in-out infinite; animation-delay: 0.24s; }
+  .a2-t-red    { animation: a2-zfill 2.4s ease-in-out infinite; animation-delay: 0.48s; }
+  .a2-b-red    { animation: a2-zfill 2.4s ease-in-out infinite; animation-delay: 0.72s; }
+  .a2-b-purple { animation: a2-zfill 2.4s ease-in-out infinite; animation-delay: 0.96s; }
+  .a2-b-blue   { animation: a2-zfill 2.4s ease-in-out infinite; animation-delay: 1.2s; }
+
+  @keyframes a2-zfill {
+    0%, 100% { opacity: 0; }
+    15%, 85% { opacity: 1; }
+  }
+
+  /* Timeline visual */
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 16px;
+  }
+  .timeline-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .timeline-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    width: 80px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .timeline-bar-track {
+    flex: 1;
+    height: 16px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+  }
+  .timeline-bar-fill {
+    position: absolute;
+    top: 2px;
+    bottom: 2px;
+    border-radius: 3px;
+    opacity: 0.8;
+  }
+  .timeline-time {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    width: 50px;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 768px) {
+    .guide { padding: 40px 20px 80px; }
+    .grid-2, .rules-grid { grid-template-columns: 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+    .size-row { flex-wrap: wrap; gap: 24px; }
+    .context-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="guide">
+
+  <header class="guide-header">
+    <div class="guide-logo">zurp</div>
+    <p>Logo & animation specifications. Construction, colors, sizing, animation timing, and usage rules.</p>
+    <div class="guide-version">Logo Guide v1.0 · Feb 2026</div>
+  </header>
+
+  <!-- ======== 01 CONCEPT ======== -->
+  <div class="section">
+    <div class="section-label">01</div>
+    <div class="section-title">The logomark</div>
+    <div class="section-desc">A credit card containing two stacked bars. The color segments mirror — forming a hidden Z through the blue diagonal.</div>
+
+    <div class="panel">
+      <div class="panel-display" style="padding:64px 40px;">
+        <svg width="280" height="68" viewBox="0 0 240 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="10" width="42" height="30" rx="5" fill="#0a0e17" stroke="#22d3ee" stroke-width="1.5"/>
+          <clipPath id="c1t"><rect x="8" y="17" width="30" height="6" rx="3"/></clipPath>
+          <g clip-path="url(#c1t)"><rect x="8" y="17" width="18" height="6" fill="#60a5fa"/><rect x="26" y="17" width="6.5" height="6" fill="#a78bfa"/><rect x="32.5" y="17" width="5.5" height="6" fill="#f87171"/></g>
+          <clipPath id="c1b"><rect x="8" y="27" width="30" height="6" rx="3"/></clipPath>
+          <g clip-path="url(#c1b)"><rect x="8" y="27" width="5.5" height="6" fill="#f87171" opacity="0.5"/><rect x="13.5" y="27" width="6.5" height="6" fill="#a78bfa" opacity="0.5"/><rect x="20" y="27" width="18" height="6" fill="#60a5fa" opacity="0.5"/></g>
+          <text x="60" y="35" font-family="Space Mono, monospace" font-size="28" font-weight="700" fill="#f0f2f5">zurp</text>
+        </svg>
+      </div>
+      <div class="panel-body">
+        <div class="panel-label">What it communicates</div>
+        <div class="panel-text">
+          <strong>Credit card</strong> — the rounded rectangle outline.
+          <strong>Comparison</strong> — two bars, one wins (bright), one loses (dim).
+          <strong>The formula</strong> — blue (points) + purple (benefits) − red (fees).
+          <strong>The brand initial</strong> — Z traced through the blue diagonal.
+        </div>
+      </div>
+    </div>
+
+    <div class="z-diagram">
+<pre><span class="c-z">Z reads through blue:</span>
+  <span class="c-b">████████████████</span><span class="c-p">██████</span><span class="c-r">██████</span>   blue anchors top-left
+                  <span class="c-z">╲</span>
+  <span class="c-r">██████</span><span class="c-p">██████</span><span class="c-b">████████████████</span>   blue anchors bottom-right</pre>
+    </div>
+  </div>
+
+  <!-- ======== 02 CONSTRUCTION ======== -->
+  <div class="section">
+    <div class="section-label">02</div>
+    <div class="section-title">Construction</div>
+    <div class="section-desc">Exact proportions, segment positions, and SVG structure for the F3 primary variant.</div>
+
+    <div class="sub-label">Card frame (46×36 viewBox)</div>
+    <table class="spec-table">
+      <tr><th>Element</th><th>x</th><th>y</th><th>width</th><th>height</th><th>rx</th></tr>
+      <tr><td>Card outline</td><td class="mono">2</td><td class="mono">2</td><td class="mono">42</td><td class="mono">30</td><td class="mono">5</td></tr>
+      <tr><td>Top bar clip</td><td class="mono">8</td><td class="mono">9</td><td class="mono">30</td><td class="mono">6</td><td class="mono">3</td></tr>
+      <tr><td>Bottom bar clip</td><td class="mono">8</td><td class="mono">19</td><td class="mono">30</td><td class="mono">6</td><td class="mono">3</td></tr>
+    </table>
+
+    <div class="sub-label">Top bar segments (left → right)</div>
+    <table class="spec-table">
+      <tr><th>Segment</th><th>x</th><th>width</th><th>color</th><th>opacity</th></tr>
+      <tr><td><span class="swatch" style="background:#60a5fa;"></span>Blue (points)</td><td class="mono">8</td><td class="mono">18</td><td class="mono">#60a5fa</td><td class="mono">1.0</td></tr>
+      <tr><td><span class="swatch" style="background:#a78bfa;"></span>Purple (benefits)</td><td class="mono">26</td><td class="mono">6.5</td><td class="mono">#a78bfa</td><td class="mono">1.0</td></tr>
+      <tr><td><span class="swatch" style="background:#f87171;"></span>Red (fees)</td><td class="mono">32.5</td><td class="mono">5.5</td><td class="mono">#f87171</td><td class="mono">1.0</td></tr>
+    </table>
+
+    <div class="sub-label">Bottom bar segments (left → right — flipped)</div>
+    <table class="spec-table">
+      <tr><th>Segment</th><th>x</th><th>width</th><th>color</th><th>opacity</th></tr>
+      <tr><td><span class="swatch" style="background:#f87171;"></span>Red (fees)</td><td class="mono">8</td><td class="mono">5.5</td><td class="mono">#f87171</td><td class="mono">0.5</td></tr>
+      <tr><td><span class="swatch" style="background:#a78bfa;"></span>Purple (benefits)</td><td class="mono">13.5</td><td class="mono">6.5</td><td class="mono">#a78bfa</td><td class="mono">0.5</td></tr>
+      <tr><td><span class="swatch" style="background:#60a5fa;"></span>Blue (points)</td><td class="mono">20</td><td class="mono">18</td><td class="mono">#60a5fa</td><td class="mono">0.5</td></tr>
+    </table>
+
+    <div class="sub-label">Construction rules</div>
+    <div class="panel">
+      <div class="panel-body">
+        <div class="panel-text">
+          <strong>Bars are seamless</strong> — no gaps between segments. Clipped to a single rounded rect.<br>
+          <strong>Bottom bar at 50% opacity</strong> — the "losing" card is dimmer.<br>
+          <strong>Blue segments are equal width</strong> (18px each) — symmetry makes the Z readable.<br>
+          <strong>Bar gap = 4px</strong> — top ends at y=15, bottom starts at y=19.<br>
+          <strong>Card fill = <code>#0a0e17</code></strong> — not transparent. Bars float on dark interior.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== 03 COLORS ======== -->
+  <div class="section">
+    <div class="section-label">03</div>
+    <div class="section-title">Colors</div>
+    <div class="section-desc">Logo colors for dark and light contexts.</div>
+
+    <div class="sub-label">Dark mode (primary)</div>
+    <table class="spec-table">
+      <tr><th>Element</th><th>Hex</th><th>CSS Variable</th></tr>
+      <tr><td><span class="swatch" style="background:#22d3ee;"></span>Card stroke</td><td class="mono">#22d3ee</td><td class="mono">--accent-cyan</td></tr>
+      <tr><td><span class="swatch" style="background:#0a0e17;border:1px solid rgba(255,255,255,0.1);"></span>Card fill</td><td class="mono">#0a0e17</td><td class="mono">--bg-deep</td></tr>
+      <tr><td><span class="swatch" style="background:#60a5fa;"></span>Blue segments</td><td class="mono">#60a5fa</td><td class="mono">--accent-blue</td></tr>
+      <tr><td><span class="swatch" style="background:#a78bfa;"></span>Purple segments</td><td class="mono">#a78bfa</td><td class="mono">--accent-purple</td></tr>
+      <tr><td><span class="swatch" style="background:#f87171;"></span>Red segments</td><td class="mono">#f87171</td><td class="mono">--accent-red</td></tr>
+      <tr><td>Wordmark</td><td class="mono">#f0f2f5</td><td class="mono">--text-primary</td></tr>
+    </table>
+
+    <div class="sub-label">Light mode</div>
+    <table class="spec-table">
+      <tr><th>Element</th><th>Dark</th><th>Light</th></tr>
+      <tr><td>Card stroke</td><td class="mono">#22d3ee</td><td class="mono">#0891b2</td></tr>
+      <tr><td>Card fill</td><td class="mono">#0a0e17</td><td class="mono">#f0f2f5</td></tr>
+      <tr><td>Blue</td><td class="mono">#60a5fa</td><td class="mono">#3b82f6</td></tr>
+      <tr><td>Purple</td><td class="mono">#a78bfa</td><td class="mono">#8b5cf6</td></tr>
+      <tr><td>Red</td><td class="mono">#f87171</td><td class="mono">#ef4444</td></tr>
+      <tr><td>Bottom opacity</td><td class="mono">0.5</td><td class="mono">0.55</td></tr>
+      <tr><td>Wordmark</td><td class="mono">#f0f2f5</td><td class="mono">#0a0e17</td></tr>
+    </table>
+
+    <div class="panel">
+      <div class="context-row">
+        <div class="context-box context-dark">
+          <svg width="160" height="40" viewBox="0 0 240 56" fill="none">
+            <rect x="2" y="10" width="42" height="30" rx="5" fill="#0a0e17" stroke="#22d3ee" stroke-width="1.5"/>
+            <clipPath id="cdt"><rect x="8" y="17" width="30" height="6" rx="3"/></clipPath>
+            <g clip-path="url(#cdt)"><rect x="8" y="17" width="18" height="6" fill="#60a5fa"/><rect x="26" y="17" width="6.5" height="6" fill="#a78bfa"/><rect x="32.5" y="17" width="5.5" height="6" fill="#f87171"/></g>
+            <clipPath id="cdb"><rect x="8" y="27" width="30" height="6" rx="3"/></clipPath>
+            <g clip-path="url(#cdb)"><rect x="8" y="27" width="5.5" height="6" fill="#f87171" opacity="0.5"/><rect x="13.5" y="27" width="6.5" height="6" fill="#a78bfa" opacity="0.5"/><rect x="20" y="27" width="18" height="6" fill="#60a5fa" opacity="0.5"/></g>
+            <text x="60" y="35" font-family="Space Mono, monospace" font-size="28" font-weight="700" fill="#f0f2f5">zurp</text>
+          </svg>
+        </div>
+        <div class="context-box context-light">
+          <svg width="160" height="40" viewBox="0 0 240 56" fill="none">
+            <rect x="2" y="10" width="42" height="30" rx="5" fill="#f0f2f5" stroke="#0891b2" stroke-width="1.5"/>
+            <clipPath id="clt"><rect x="8" y="17" width="30" height="6" rx="3"/></clipPath>
+            <g clip-path="url(#clt)"><rect x="8" y="17" width="18" height="6" fill="#3b82f6"/><rect x="26" y="17" width="6.5" height="6" fill="#8b5cf6"/><rect x="32.5" y="17" width="5.5" height="6" fill="#ef4444"/></g>
+            <clipPath id="clb"><rect x="8" y="27" width="30" height="6" rx="3"/></clipPath>
+            <g clip-path="url(#clb)"><rect x="8" y="27" width="5.5" height="6" fill="#ef4444" opacity="0.55"/><rect x="13.5" y="27" width="6.5" height="6" fill="#8b5cf6" opacity="0.55"/><rect x="20" y="27" width="18" height="6" fill="#3b82f6" opacity="0.55"/></g>
+            <text x="60" y="35" font-family="Space Mono, monospace" font-size="28" font-weight="700" fill="#0a0e17">zurp</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== 04 WORDMARK ======== -->
+  <div class="section">
+    <div class="section-label">04</div>
+    <div class="section-title">Wordmark</div>
+    <div class="section-desc">Space Mono Bold, lowercase. Sits to the right of the mark with 14px gap (at default scale).</div>
+
+    <table class="spec-table">
+      <tr><th>Property</th><th>Value</th></tr>
+      <tr><td>Font family</td><td class="mono">Space Mono</td></tr>
+      <tr><td>Weight</td><td class="mono">700 (Bold)</td></tr>
+      <tr><td>Case</td><td>Lowercase — <code>zurp</code></td></tr>
+      <tr><td>Size</td><td class="mono">28px (at default mark size)</td></tr>
+      <tr><td>Tracking</td><td class="mono">0 (default)</td></tr>
+      <tr><td>Lockup gap</td><td class="mono">14px between mark and wordmark</td></tr>
+      <tr><td>Alignment</td><td>Wordmark vertically centered to card</td></tr>
+    </table>
+  </div>
+
+  <!-- ======== 05 SIZING ======== -->
+  <div class="section">
+    <div class="section-label">05</div>
+    <div class="section-title">Sizing & clear space</div>
+    <div class="section-desc">Minimum sizes and scaling behavior across contexts.</div>
+
+    <div class="panel">
+      <div class="size-row">
+        <div class="size-item">
+          <div class="size-box" style="width:96px;height:96px;">
+            <svg width="60" height="44" viewBox="0 0 46 36" fill="none">
+              <rect x="2" y="2" width="42" height="30" rx="5" fill="#0a0e17" stroke="#22d3ee" stroke-width="1.5"/>
+              <clipPath id="s1t"><rect x="8" y="9" width="30" height="6" rx="3"/></clipPath>
+              <g clip-path="url(#s1t)"><rect x="8" y="9" width="18" height="6" fill="#60a5fa"/><rect x="26" y="9" width="6.5" height="6" fill="#a78bfa"/><rect x="32.5" y="9" width="5.5" height="6" fill="#f87171"/></g>
+              <clipPath id="s1b"><rect x="8" y="19" width="30" height="6" rx="3"/></clipPath>
+              <g clip-path="url(#s1b)"><rect x="8" y="19" width="5.5" height="6" fill="#f87171" opacity="0.5"/><rect x="13.5" y="19" width="6.5" height="6" fill="#a78bfa" opacity="0.5"/><rect x="20" y="19" width="18" height="6" fill="#60a5fa" opacity="0.5"/></g>
+            </svg>
+          </div>
+          <div class="size-label">60px<br>Default</div>
+        </div>
+        <div class="size-item">
+          <div class="size-box" style="width:64px;height:64px;">
+            <svg width="40" height="30" viewBox="0 0 46 36" fill="none">
+              <rect x="2" y="2" width="42" height="30" rx="5" fill="#0a0e17" stroke="#22d3ee" stroke-width="2"/>
+              <clipPath id="s2t"><rect x="8" y="9" width="30" height="6" rx="3"/></clipPath>
+              <g clip-path="url(#s2t)"><rect x="8" y="9" width="18" height="6" fill="#60a5fa"/><rect x="26" y="9" width="6.5" height="6" fill="#a78bfa"/><rect x="32.5" y="9" width="5.5" height="6" fill="#f87171"/></g>
+              <clipPath id="s2b"><rect x="8" y="19" width="30" height="6" rx="3"/></clipPath>
+              <g clip-path="url(#s2b)"><rect x="8" y="19" width="5.5" height="6" fill="#f87171" opacity="0.5"/><rect x="13.5" y="19" width="6.5" height="6" fill="#a78bfa" opacity="0.5"/><rect x="20" y="19" width="18" height="6" fill="#60a5fa" opacity="0.5"/></g>
+            </svg>
+          </div>
+          <div class="size-label">40px<br>App icon</div>
+        </div>
+        <div class="size-item">
+          <div class="size-box" style="width:44px;height:44px;">
+            <svg width="24" height="18" viewBox="0 0 46 36" fill="none">
+              <rect x="2" y="2" width="42" height="30" rx="6" fill="#0a0e17" stroke="#22d3ee" stroke-width="3"/>
+              <clipPath id="s3t"><rect x="8" y="9" width="30" height="7" rx="3.5"/></clipPath>
+              <g clip-path="url(#s3t)"><rect x="8" y="9" width="18" height="7" fill="#60a5fa"/><rect x="26" y="9" width="6.5" height="7" fill="#a78bfa"/><rect x="32.5" y="9" width="5.5" height="7" fill="#f87171"/></g>
+              <clipPath id="s3b"><rect x="8" y="19" width="30" height="7" rx="3.5"/></clipPath>
+              <g clip-path="url(#s3b)"><rect x="8" y="19" width="5.5" height="7" fill="#f87171" opacity="0.5"/><rect x="13.5" y="19" width="6.5" height="7" fill="#a78bfa" opacity="0.5"/><rect x="20" y="19" width="18" height="7" fill="#60a5fa" opacity="0.5"/></g>
+            </svg>
+          </div>
+          <div class="size-label">24px<br>Min mark</div>
+        </div>
+        <div class="size-item">
+          <div class="size-box" style="width:28px;height:28px;">
+            <svg width="16" height="12" viewBox="0 0 46 36" fill="none">
+              <rect x="2" y="2" width="42" height="30" rx="7" fill="#0a0e17" stroke="#22d3ee" stroke-width="4"/>
+              <clipPath id="s4t"><rect x="8" y="9" width="30" height="8" rx="4"/></clipPath>
+              <g clip-path="url(#s4t)"><rect x="8" y="9" width="18" height="8" fill="#60a5fa"/><rect x="26" y="9" width="6.5" height="8" fill="#a78bfa"/><rect x="32.5" y="9" width="5.5" height="8" fill="#f87171"/></g>
+              <clipPath id="s4b"><rect x="8" y="20" width="30" height="7" rx="3.5"/></clipPath>
+              <g clip-path="url(#s4b)"><rect x="8" y="20" width="5.5" height="7" fill="#f87171" opacity="0.5"/><rect x="13.5" y="20" width="6.5" height="7" fill="#a78bfa" opacity="0.5"/><rect x="20" y="20" width="18" height="7" fill="#60a5fa" opacity="0.5"/></g>
+            </svg>
+          </div>
+          <div class="size-label">16px<br>Favicon</div>
+        </div>
+      </div>
+    </div>
+
+    <table class="spec-table">
+      <tr><th>Context</th><th>Min height</th><th>Notes</th></tr>
+      <tr><td>Full lockup</td><td class="mono">28px mark</td><td>Wordmark stays legible</td></tr>
+      <tr><td>Mark only</td><td class="mono">22px</td><td>Below this, bars merge</td></tr>
+      <tr><td>Favicon</td><td class="mono">16px</td><td>Increase stroke-width, bar height</td></tr>
+    </table>
+
+    <div class="sub-label">Clear space</div>
+    <div class="panel">
+      <div class="panel-body">
+        <div class="panel-text">
+          Minimum clear space = <strong>half the card height</strong> on all sides. At default 30px card height (in viewBox), clear space = 15px.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== 06 ANIMATION ======== -->
+  <div class="section">
+    <div class="section-label">06</div>
+    <div class="section-title">Loading animation (A2)</div>
+    <div class="section-desc">Segments fade in sequentially tracing the Z path. The eye follows the blue diagonal every cycle.</div>
+
+    <div class="panel">
+      <div class="panel-display" style="padding:72px 40px;">
+        <svg width="72" height="54" viewBox="0 0 46 36" fill="none">
+          <rect x="2" y="2" width="42" height="30" rx="5" fill="#0a0e17" stroke="#22d3ee" stroke-width="1.5"/>
+          <clipPath id="at"><rect x="8" y="9" width="30" height="6" rx="3"/></clipPath>
+          <g clip-path="url(#at)">
+            <rect class="a2-t-blue" x="8" y="9" width="18" height="6" fill="#60a5fa"/>
+            <rect class="a2-t-purple" x="26" y="9" width="6.5" height="6" fill="#a78bfa"/>
+            <rect class="a2-t-red" x="32.5" y="9" width="5.5" height="6" fill="#f87171"/>
+          </g>
+          <clipPath id="ab"><rect x="8" y="19" width="30" height="6" rx="3"/></clipPath>
+          <g clip-path="url(#ab)">
+            <rect class="a2-b-red" x="8" y="19" width="5.5" height="6" fill="#f87171" opacity="0.5"/>
+            <rect class="a2-b-purple" x="13.5" y="19" width="6.5" height="6" fill="#a78bfa" opacity="0.5"/>
+            <rect class="a2-b-blue" x="20" y="19" width="18" height="6" fill="#60a5fa" opacity="0.5"/>
+          </g>
+        </svg>
+      </div>
+      <div class="panel-body">
+        <div class="panel-label">Timing</div>
+        <table class="spec-table">
+          <tr><th>Segment</th><th>Position</th><th>Delay</th><th>Max opacity</th></tr>
+          <tr><td><span class="swatch" style="background:#60a5fa;"></span>Top blue</td><td>Top-left</td><td class="mono">0ms</td><td class="mono">1.0</td></tr>
+          <tr><td><span class="swatch" style="background:#a78bfa;"></span>Top purple</td><td>Top-mid</td><td class="mono">240ms</td><td class="mono">1.0</td></tr>
+          <tr><td><span class="swatch" style="background:#f87171;"></span>Top red</td><td>Top-right</td><td class="mono">480ms</td><td class="mono">1.0</td></tr>
+          <tr><td><span class="swatch" style="background:#f87171;opacity:0.5;"></span>Bot red</td><td>Bot-left</td><td class="mono">720ms</td><td class="mono">0.5</td></tr>
+          <tr><td><span class="swatch" style="background:#a78bfa;opacity:0.5;"></span>Bot purple</td><td>Bot-mid</td><td class="mono">960ms</td><td class="mono">0.5</td></tr>
+          <tr><td><span class="swatch" style="background:#60a5fa;opacity:0.5;"></span>Bot blue</td><td>Bot-right</td><td class="mono">1200ms</td><td class="mono">0.5</td></tr>
+        </table>
+
+        <div class="panel-label" style="margin-top:20px;">Sequence visualization</div>
+        <div class="timeline">
+          <div class="timeline-row">
+            <div class="timeline-label">Top blue</div>
+            <div class="timeline-bar-track"><div class="timeline-bar-fill" style="left:0%;width:70%;background:#60a5fa;"></div></div>
+            <div class="timeline-time">0ms</div>
+          </div>
+          <div class="timeline-row">
+            <div class="timeline-label">Top purple</div>
+            <div class="timeline-bar-track"><div class="timeline-bar-fill" style="left:10%;width:55%;background:#a78bfa;"></div></div>
+            <div class="timeline-time">240ms</div>
+          </div>
+          <div class="timeline-row">
+            <div class="timeline-label">Top red</div>
+            <div class="timeline-bar-track"><div class="timeline-bar-fill" style="left:20%;width:40%;background:#f87171;"></div></div>
+            <div class="timeline-time">480ms</div>
+          </div>
+          <div class="timeline-row">
+            <div class="timeline-label">Bot red</div>
+            <div class="timeline-bar-track"><div class="timeline-bar-fill" style="left:30%;width:30%;background:#f87171;opacity:0.5;"></div></div>
+            <div class="timeline-time">720ms</div>
+          </div>
+          <div class="timeline-row">
+            <div class="timeline-label">Bot purple</div>
+            <div class="timeline-bar-track"><div class="timeline-bar-fill" style="left:40%;width:20%;background:#a78bfa;opacity:0.5;"></div></div>
+            <div class="timeline-time">960ms</div>
+          </div>
+          <div class="timeline-row">
+            <div class="timeline-label">Bot blue</div>
+            <div class="timeline-bar-track"><div class="timeline-bar-fill" style="left:50%;width:35%;background:#60a5fa;opacity:0.5;"></div></div>
+            <div class="timeline-time">1200ms</div>
+          </div>
+        </div>
+
+        <div class="panel-text" style="margin-top:20px;">
+          <strong>Cycle:</strong> 2.4s &nbsp; <strong>Easing:</strong> ease-in-out &nbsp; <strong>Loop:</strong> infinite<br>
+          Card outline remains static throughout. Bottom segments animate to 0.5 max opacity.
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:16px;">
+      <div class="panel">
+        <div class="panel-body">
+          <div class="panel-label">When to use</div>
+          <div class="panel-text">
+            Loading states (API wait, data processing)<br>
+            Skeleton screens while simulation computes<br>
+            App splash screen (2–3 cycles before content)
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-body">
+          <div class="panel-label">When NOT to animate</div>
+          <div class="panel-text">
+            Static contexts (print, social, email)<br>
+            In-context UI (nav logo, footer)<br>
+            Alongside page entry animations
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== 07 USAGE RULES ======== -->
+  <div class="section">
+    <div class="section-label">07</div>
+    <div class="section-title">Usage rules</div>
+    <div class="section-desc">Guidelines for consistent use across all contexts.</div>
+
+    <div class="rules-grid">
+      <div class="rule-card rule-do">
+        <h4>Do</h4>
+        <ul>
+          <li>Use F3 (dark fill, seamless) as the primary mark</li>
+          <li>Maintain the Z — bottom bar stays flipped</li>
+          <li>Scale proportionally, never stretch</li>
+          <li>Use full lockup when space allows</li>
+          <li>Use mark alone for app icons and favicons</li>
+          <li>Increase stroke-width at small sizes</li>
+        </ul>
+      </div>
+      <div class="rule-card rule-dont">
+        <h4>Don't</h4>
+        <ul>
+          <li>Rearrange segment colors or proportions</li>
+          <li>Use without dark card fill on dark backgrounds</li>
+          <li>Add drop shadows or outer glows</li>
+          <li>Animate the nav or footer logo</li>
+          <li>Place on busy or photographic backgrounds</li>
+          <li>Lock up wordmark above or below the mark</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sub-label" style="margin-top:28px;">Monochrome fallback</div>
+    <table class="spec-table">
+      <tr><th>Segment</th><th>Top bar opacity</th><th>Bottom bar opacity</th></tr>
+      <tr><td>Blue equivalent</td><td class="mono">1.0</td><td class="mono">0.4</td></tr>
+      <tr><td>Purple equivalent</td><td class="mono">0.5</td><td class="mono">0.2</td></tr>
+      <tr><td>Red equivalent</td><td class="mono">0.25</td><td class="mono">0.12</td></tr>
+    </table>
+    <div class="panel-text" style="font-size:13px;color:var(--text-dim);margin-top:8px;">
+      For single-color contexts (print, embroidery, watermarks). Use cyan (<code>#22d3ee</code>) as the single color with opacity steps.
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

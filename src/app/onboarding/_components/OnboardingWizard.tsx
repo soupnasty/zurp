@@ -36,67 +36,46 @@ async function syncConnection(connectionId: string) {
 function ZurpLoader() {
   return (
     <div className="flex items-center justify-center gap-4 py-10">
-      {/* Animated logo mark */}
+      {/* Animated F3 logomark — A2 Z-path fill */}
       <svg
-        width="80"
-        height="56"
-        viewBox="0 0 50 42"
+        width="72"
+        height="54"
+        viewBox="0 0 46 36"
         fill="none"
-        xmlns="http://www.w3.org/2000/svg"
         aria-hidden="true"
       >
-        {/* Card outline */}
-        <rect
-          x="0"
-          y="8"
-          width="50"
-          height="34"
-          rx="5"
-          stroke="#58A6FF"
-          strokeWidth="3"
-          opacity="0.55"
-        />
-        {/* Card stripe */}
-        <line
-          x1="0"
-          y1="20"
-          x2="50"
-          y2="20"
-          stroke="#58A6FF"
-          strokeWidth="1.5"
-          opacity="0.3"
-        />
-        {/* Animated progress dots */}
-        <circle cx="12" cy="32" r="2.5" fill="#58A6FF">
-          <animate
-            attributeName="opacity"
-            values="1;0.2;0.2;1"
-            dur="1.2s"
-            repeatCount="indefinite"
-            begin="0s"
-          />
-        </circle>
-        <circle cx="21" cy="32" r="2.5" fill="#58A6FF">
-          <animate
-            attributeName="opacity"
-            values="0.2;1;0.2;0.2"
-            dur="1.2s"
-            repeatCount="indefinite"
-            begin="0s"
-          />
-        </circle>
-        <circle cx="30" cy="32" r="2.5" fill="#58A6FF">
-          <animate
-            attributeName="opacity"
-            values="0.2;0.2;1;0.2"
-            dur="1.2s"
-            repeatCount="indefinite"
-            begin="0s"
-          />
-        </circle>
+        {/* Card outline (static) */}
+        <rect x="2" y="2" width="42" height="30" rx="5" fill="#0a0e17" stroke="#22d3ee" strokeWidth="1.5"/>
+        {/* Top bar */}
+        <clipPath id="zl-t">
+          <rect x="8" y="9" width="30" height="6" rx="3"/>
+        </clipPath>
+        <g clipPath="url(#zl-t)">
+          <rect x="8" y="9" width="18" height="6" fill="#60a5fa"
+            style={{ animation: "z-fill 2.4s ease-in-out infinite", animationDelay: "0s" }}/>
+          <rect x="26" y="9" width="6.5" height="6" fill="#a78bfa"
+            style={{ animation: "z-fill 2.4s ease-in-out infinite", animationDelay: "0.24s" }}/>
+          <rect x="32.5" y="9" width="5.5" height="6" fill="#f87171"
+            style={{ animation: "z-fill 2.4s ease-in-out infinite", animationDelay: "0.48s" }}/>
+        </g>
+        {/* Bottom bar */}
+        <clipPath id="zl-b">
+          <rect x="8" y="19" width="30" height="6" rx="3"/>
+        </clipPath>
+        <g clipPath="url(#zl-b)">
+          <rect x="8" y="19" width="5.5" height="6" fill="#f87171"
+            style={{ animation: "z-fill-dim 2.4s ease-in-out infinite", animationDelay: "0.72s" }}/>
+          <rect x="13.5" y="19" width="6.5" height="6" fill="#a78bfa"
+            style={{ animation: "z-fill-dim 2.4s ease-in-out infinite", animationDelay: "0.96s" }}/>
+          <rect x="20" y="19" width="18" height="6" fill="#60a5fa"
+            style={{ animation: "z-fill-dim 2.4s ease-in-out infinite", animationDelay: "1.2s" }}/>
+        </g>
       </svg>
 
-      <p className="text-3xl font-semibold tracking-tight text-[var(--text-primary)]">
+      <p
+        className="text-3xl font-bold text-[var(--text-primary)]"
+        style={{ fontFamily: "var(--font-space-mono)" }}
+      >
         zurping...
       </p>
     </div>

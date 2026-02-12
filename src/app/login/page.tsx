@@ -7,12 +7,24 @@ export default function LoginPage() {
         <div className="mb-8 text-center">
           {/* Logo icon */}
           <div className="mb-4 flex justify-center">
-            <svg width="50" height="34" viewBox="0 0 50 34" fill="none">
-              <rect x="0" y="0" width="50" height="34" rx="5" stroke="var(--accent)" strokeWidth="3" opacity="0.55" />
-              <line x1="0" y1="12" x2="50" y2="12" stroke="var(--accent)" strokeWidth="1.5" opacity="0.3" />
-              <circle cx="12" cy="24" r="2.5" fill="var(--accent)" />
-              <circle cx="21" cy="24" r="2.5" fill="var(--accent)" opacity="0.55" />
-              <circle cx="30" cy="24" r="2.5" fill="var(--accent)" opacity="0.2" />
+            <svg width="50" height="38" viewBox="0 0 46 36" fill="none">
+              <rect x="2" y="2" width="42" height="30" rx="5" fill="#0a0e17" stroke="#22d3ee" strokeWidth="1.5"/>
+              <clipPath id="login-t">
+                <rect x="8" y="9" width="30" height="6" rx="3"/>
+              </clipPath>
+              <g clipPath="url(#login-t)">
+                <rect x="8" y="9" width="18" height="6" fill="#60a5fa"/>
+                <rect x="26" y="9" width="6.5" height="6" fill="#a78bfa"/>
+                <rect x="32.5" y="9" width="5.5" height="6" fill="#f87171"/>
+              </g>
+              <clipPath id="login-b">
+                <rect x="8" y="19" width="30" height="6" rx="3"/>
+              </clipPath>
+              <g clipPath="url(#login-b)">
+                <rect x="8" y="19" width="5.5" height="6" fill="#f87171" opacity="0.5"/>
+                <rect x="13.5" y="19" width="6.5" height="6" fill="#a78bfa" opacity="0.5"/>
+                <rect x="20" y="19" width="18" height="6" fill="#60a5fa" opacity="0.5"/>
+              </g>
             </svg>
           </div>
           <h1 className="text-h2 font-semibold tracking-tight">Welcome to zurp</h1>

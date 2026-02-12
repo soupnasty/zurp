@@ -33,15 +33,84 @@ npm run db:studio    # Open Drizzle Studio
 
 Tailwind v4 uses CSS-based config via `@theme inline` in `src/app/globals.css` — there is NO `tailwind.config.ts`. All design tokens (colors, typography, spacing, shadows, motion) are CSS custom properties defined in `globals.css`.
 
-Brand palette is dark-first:
-- Void `#0D1117` (background), Surface `#161B22` (cards), Border `#30363D`
-- Frost `#E6EDF3` (text), Muted `#484F58` (secondary text)
-- Signal `#58A6FF` (accent), semantic colors for success/warning/danger/info
-- Typography: Inter (body) + JetBrains Mono (data/numbers via `.font-data` class)
-- Uppercase labels: `.label-caps` utility class
-- 4px base spacing unit, glow shadows, `ease-out-expo` easing
+See `docs/styling/style-guide.md` for full brand reference and `docs/styling/logo-guide.md` for logomark specs.
 
-See `docs/styling/style-guide.md` for full brand reference.
+#### Color Palette
+
+Dark-first. Never pure black or pure white.
+
+**Backgrounds**: Deep `#0a0e17` (page bg), Card `#111827` (surfaces), Card Hover `#1a2236`, Elevated `#1e293b` (modals/dropdowns)
+
+**Text**: Primary `#f0f2f5` (headlines, key values), Secondary `#7a8ba8` (body, descriptions), Dim `#4a5568` (captions, fees)
+
+**Accents** — each color has a strict semantic role:
+- Cyan `#22d3ee` — CTAs, links, interactive elements, brand. If it's clickable, use cyan.
+- Blue `#60a5fa` — Points earned, data values, earning rates. If it's a number, use blue.
+- Green `#34d399` — Net positive (#1 card ONLY), "Best fit" tag, success. Green means "this is your best option" — loses meaning if every row is green.
+- Purple `#a78bfa` — Benefits value, perks, credits, benefit bar segments.
+- Red `#f87171` — Fees, costs, negative values, fee bar segments.
+
+**Borders**: Subtle `rgba(255,255,255,0.06)`, Medium `rgba(255,255,255,0.10)`. Glows: Blue `rgba(96,165,250,0.15)`, Cyan `rgba(34,211,238,0.10)`.
+
+**Formula color mapping** (stacked bars): Points (blue) + Benefits (purple) − Fees (red) = Net (green on #1 only)
+
+**Color rules**:
+1. Green net value → #1 card only. All other rows use `--text-secondary`.
+2. Card names in headlines → white (`--text-primary`). Only the savings amount gets green.
+3. Cyan for interactive, blue for data. Never swap them.
+
+#### Gradients
+
+- **Primary**: `linear-gradient(135deg, #22d3ee, #60a5fa)` — CTAs, brand highlights
+- **Hero**: `linear-gradient(135deg, #60a5fa 0%, #22d3ee 50%, #34d399 100%)` — headline gradient text
+- **Success**: `linear-gradient(135deg, #34d399, #22d3ee)` — button hover, positive confirmations
+- **Top Bar**: `linear-gradient(90deg, transparent, rgba(52,211,153,0.3), rgba(96,165,250,0.3), transparent)` — 1px card top edge glow
+
+#### Typography
+
+Two fonts: **DM Sans** (display + body) and **Space Mono** (data + labels + logo).
+
+| Role | Font | Weights |
+|------|------|---------|
+| Display + Body | DM Sans | 300, 400, 500, 600, 700 |
+| Data + Labels | Space Mono | 400, 700 |
+
+**DM Sans weights**: 400 body, 500 nav/buttons, 600 card names/labels, 700 headlines
+
+**Space Mono usage**: All dollar values (`$1,273`), percentages (`3%`), section labels (`COMPARE` — 11px, 700, uppercase, 2.5px tracking), brand logo (`zurp`), sub-labels (`net / year`, `$95/yr fee`), bar segment labels, footnotes.
+
+**Type scale**: Hero headline `clamp(42px, 5.5vw, 76px)` 700, Section title `clamp(32px, 4vw, 52px)` 700, Personalized headline 22px 700, Body 19px 400, Card name 15px 600, Nav/button 14px 500, Caption 12-13px, Data values 17px Space Mono 700, Data cells 11-13px Space Mono 700, Mono label 10-11px Space Mono 700
+
+#### Components
+
+**Buttons**: Primary = gradient bg (cyan→blue), dark text, 16px 36px padding, 14px radius, 600 weight. Secondary = `rgba(34,211,238,0.1)` bg, cyan border, cyan text, 10px radius. Ghost = transparent, medium border, secondary text, 10px radius.
+
+**Badges**: Pill (`border-radius: 100px`), `5px 14px` padding, 12px DM Sans 500. Variants: cyan/green/purple/red with 0.08-0.1 bg opacity, 0.12-0.15 border opacity.
+
+**Tags**: Compact inline labels. `2px 8px` padding, 5px radius, 9-10px 700 uppercase 0.8px tracking. Green = "BEST FIT", Cyan = "YOUR CARD".
+
+**Cards**: `--bg-card` bg, subtle border, 16px radius (containers 20px), 1px top edge gradient, 24-32px padding.
+
+**Stacked Bars**: 30px height, 7px radius, flex segments proportional to amounts. Space Mono 11px 700. Fee segment uses white text on red.
+
+**Simulation Row**: 3-col grid `32px 1fr 90px`. 20px 16px padding, 14px radius. #1 card: green tinted bg `rgba(52,211,153,0.035)` + green border. Others: subtle row dividers. Locked: `opacity: 0.3`, blur(5px) text.
+
+#### Effects
+
+- **Noise overlay**: SVG fractalNoise `opacity: 0.03`, fixed, `z-index: 1000`, `pointer-events: none`
+- **Ambient glow**: Two radial gradients — top-left blue `rgba(96,165,250,0.08)`, bottom-right cyan `rgba(34,211,238,0.06)`, 800px, blur(120px)
+- **Nav blur**: `rgba(10,14,23,0.8)` bg, `backdrop-filter: blur(20px)`, subtle bottom border
+- **Top edge glow**: 1px `--gradient-top-bar` pseudo-element on card top
+- **Entry animation**: `fadeUp` 0.7s ease, stagger 0.1-0.15s per element
+- **Pulse dot**: Status indicator breathing, 2s infinite
+
+#### Voice & Copy
+
+- Terse data labels (Space Mono): `net / year`, `$95/yr fee`, `~$170 simulated`
+- Confident, not salesy. Let math speak. Technical but scannable.
+- Personalized headline: card name in white, savings amount in green only
+- CTA: `zurp your card →` (lowercase brand, action verb)
+- Methodology footnotes: 12px dim, always present for trust
 
 ### Lazy Initialization Patterns
 

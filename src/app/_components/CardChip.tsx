@@ -127,12 +127,30 @@ export function CardChip({ cardId }: { cardId: CardVisualId }) {
   );
 }
 
-/** All card IDs in marquee order */
+/** All tier-1 card IDs in marquee order — no same issuer adjacent (including wrap) */
 export const MARQUEE_CARDS: CardVisualId[] = [
   "chase_sapphire_reserve",
-  "chase_sapphire_preferred",
-  "amex_gold",
   "amex_platinum",
-  "capital_one_venture_x",
   "citi_strata_elite",
+  "capital_one_venture_x",
+  "chase_sapphire_preferred",
+  "robinhood_gold",
+  "amex_gold",
+  "chase_freedom_flex",
+  "bilt_palladium",
+  "capital_one_venture",
+  "chase_freedom_unlimited",
+  "amex_blue_cash_preferred",
+  "citi_strata_premier",
+];
+
+/** Tier-2 card IDs — reverse marquee, no same issuer adjacent (including wrap) */
+export const MARQUEE_CARDS_T2: CardVisualId[] = [
+  "wells_fargo_autograph_journey",
+  "citi_double_cash",
+  "amex_blue_cash_everyday",
+  "us_bank_altitude_connect",
+  "wells_fargo_active_cash",
+  "discover_it",
+  "citi_custom_cash",
 ];

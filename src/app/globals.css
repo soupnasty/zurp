@@ -1,27 +1,38 @@
 @import "tailwindcss";
 
-/* ── Design System Tokens (from zurp-style-guide.md) ── */
+/* ── Design System Tokens (v1.1 — from style-guide.md) ── */
 
 @theme inline {
   /* Brand colors */
-  --color-void: #0D1117;
-  --color-surface: #161B22;
-  --color-border: #21262D;
-  --color-frost: #E6EDF3;
-  --color-muted: #8B949E;
-  --color-signal: #58A6FF;
-  --color-ghost: rgba(88, 166, 255, 0.2);
+  --color-void: #0a0e17;
+  --color-surface: #111827;
+  --color-border: #1e293b;
+  --color-frost: #f0f2f5;
+  --color-muted: #7a8ba8;
+  --color-signal: #22d3ee;
+  --color-ghost: rgba(34, 211, 238, 0.2);
 
   /* Semantic */
-  --color-success: #3FB950;
+  --color-success: #34d399;
   --color-warning: #D29922;
-  --color-danger: #F85149;
-  --color-info: #58A6FF;
+  --color-danger: #f87171;
+  --color-info: #60a5fa;
+
+  /* Extended palette */
+  --color-card-hover: #1a2236;
+  --color-elevated: #1e293b;
+  --color-dim: #4a5568;
+  --color-accent-blue: #60a5fa;
+  --color-accent-purple: #a78bfa;
+  --color-accent-cyan: #22d3ee;
+  --color-glow-blue: rgba(96, 165, 250, 0.15);
+  --color-glow-cyan: rgba(34, 211, 238, 0.10);
+  --color-border-medium: rgba(255, 255, 255, 0.10);
 
   /* Typography */
-  --font-display: "Inter", "Helvetica Neue", Helvetica, sans-serif;
-  --font-body: "Inter", "Helvetica Neue", Helvetica, sans-serif;
-  --font-mono: "JetBrains Mono", "Fira Code", "Consolas", monospace;
+  --font-display: "DM Sans", "Helvetica Neue", Helvetica, sans-serif;
+  --font-body: "DM Sans", "Helvetica Neue", Helvetica, sans-serif;
+  --font-mono: "Space Mono", "Fira Code", "Consolas", monospace;
 
   --text-display: 62px;
   --text-h1: 36px;
@@ -47,10 +58,10 @@
   --radius-xl: 16px;
 
   /* Shadows — dark mode uses subtle glows */
-  --shadow-sm: 0 0 0 1px rgba(88, 166, 255, 0.1);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(88, 166, 255, 0.08);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(88, 166, 255, 0.06);
-  --shadow-glow: 0 0 16px rgba(88, 166, 255, 0.15);
+  --shadow-sm: 0 0 0 1px rgba(34, 211, 238, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(96, 165, 250, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(96, 165, 250, 0.06);
+  --shadow-glow: 0 0 16px rgba(34, 211, 238, 0.15);
 
   /* Motion */
   --duration-fast: 150ms;
@@ -65,15 +76,26 @@
   --bg-primary: var(--color-void);
   --bg-secondary: var(--color-surface);
   --bg-tertiary: var(--color-border);
+  --bg-card-hover: var(--color-card-hover);
+  --bg-elevated: var(--color-elevated);
   --text-primary: var(--color-frost);
   --text-secondary: var(--color-muted);
   --text-tertiary: var(--color-border);
+  --text-dim: var(--color-dim);
   --border-default: var(--color-border);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-medium: rgba(255, 255, 255, 0.10);
   --border-strong: var(--color-muted);
   --accent: var(--color-signal);
   --accent-ghost: var(--color-ghost);
   --benefit-icon-color: white;
   --benefit-icon-invert: none;
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #22d3ee, #60a5fa);
+  --gradient-hero: linear-gradient(135deg, #60a5fa 0%, #22d3ee 50%, #34d399 100%);
+  --gradient-success: linear-gradient(135deg, #34d399, #22d3ee);
+  --gradient-top-bar: linear-gradient(90deg, transparent, rgba(52, 211, 153, 0.3), rgba(96, 165, 250, 0.3), transparent);
 }
 
 /* ── Base styles ── */
@@ -91,6 +113,20 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Noise overlay ── */
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
 }
 
 /* ── Transitions on theme toggle ── */
@@ -144,17 +180,30 @@ summary {
 .font-data {
   font-family: var(--font-mono);
   font-size: var(--text-mono);
-  font-weight: 500;
+  font-weight: 700;
 }
 
 /* ── Utility: caption labels ── */
 
 .label-caps {
-  font-size: var(--text-caption);
-  font-weight: 400;
-  letter-spacing: 2px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
   text-transform: uppercase;
   color: var(--text-secondary);
+}
+
+/* ── Z-path fill loading animation (A2 — logo guide) ── */
+
+@keyframes z-fill {
+  0%, 100% { opacity: 0; }
+  15%, 85% { opacity: 1; }
+}
+
+@keyframes z-fill-dim {
+  0%, 100% { opacity: 0; }
+  15%, 85% { opacity: 0.5; }
 }
 
 /* ── Landing page animations ── */
@@ -178,6 +227,18 @@ summary {
   animation: marquee 30s linear infinite;
 }
 .marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes marquee-reverse {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+.marquee-track-reverse {
+  animation: marquee-reverse 35s linear infinite;
+}
+.marquee-track-reverse:hover {
   animation-play-state: paused;
 }
 
@@ -216,8 +277,8 @@ summary {
 @keyframes hiw-scan-row-match {
   0%, 5% { opacity: 0; transform: translateY(8px); background: transparent; }
   15% { opacity: 1; transform: translateY(0); background: transparent; }
-  25% { background: rgba(88,166,255,0.06); }
-  60% { background: rgba(88,166,255,0.06); }
+  25% { background: rgba(34,211,238,0.06); }
+  60% { background: rgba(34,211,238,0.06); }
   75% { opacity: 1; background: transparent; }
   90%, 100% { opacity: 0; transform: translateY(-4px); }
 }
@@ -269,7 +330,7 @@ summary {
 
 @keyframes ins-glow-blue {
   0%, 20% { text-shadow: none; }
-  40% { text-shadow: 0 0 12px rgba(88,166,255,0.6); }
+  40% { text-shadow: 0 0 12px rgba(34,211,238,0.6); }
   70%, 100% { text-shadow: none; }
 }
 
@@ -287,7 +348,7 @@ summary {
 
 @keyframes ins-border-blue {
   0%, 20% { border-color: rgba(255,255,255,0.06); }
-  40% { border-color: rgba(88,166,255,0.4); }
+  40% { border-color: rgba(34,211,238,0.4); }
   70%, 100% { border-color: rgba(255,255,255,0.06); }
 }
 

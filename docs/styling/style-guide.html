@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zurp — Style Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Backgrounds */
+    --bg-deep: #0a0e17;
+    --bg-card: #111827;
+    --bg-card-hover: #1a2236;
+    --bg-elevated: #1e293b;
+
+    /* Text */
+    --text-primary: #f0f2f5;
+    --text-secondary: #7a8ba8;
+    --text-dim: #4a5568;
+
+    /* Accents — blue=data, cyan=interactive */
+    --accent-blue: #60a5fa;
+    --accent-cyan: #22d3ee;
+    --accent-green: #34d399;
+    --accent-purple: #a78bfa;
+    --accent-red: #f87171;
+
+    /* Surfaces */
+    --border-subtle: rgba(255,255,255,0.06);
+    --border-medium: rgba(255,255,255,0.1);
+    --glow-blue: rgba(96,165,250,0.15);
+    --glow-cyan: rgba(34,211,238,0.1);
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, #22d3ee, #60a5fa);
+    --gradient-hero: linear-gradient(135deg, #60a5fa 0%, #22d3ee 50%, #34d399 100%);
+    --gradient-success: linear-gradient(135deg, #34d399, #22d3ee);
+    --gradient-top-bar: linear-gradient(90deg, transparent, rgba(52,211,153,0.3), rgba(96,165,250,0.3), transparent);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  .guide {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 80px 40px 120px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Page header */
+  .guide-header {
+    margin-bottom: 80px;
+    padding-bottom: 48px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .guide-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 32px;
+    font-weight: 700;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+  }
+  .guide-header p {
+    color: var(--text-secondary);
+    font-size: 16px;
+    max-width: 480px;
+  }
+  .guide-version {
+    display: inline-block;
+    margin-top: 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    padding: 4px 10px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+  }
+
+  /* Section */
+  .section {
+    margin-bottom: 72px;
+  }
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--accent-cyan);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+  }
+  .section-desc {
+    color: var(--text-secondary);
+    font-size: 15px;
+    margin-bottom: 36px;
+    max-width: 560px;
+  }
+
+  /* Color grid */
+  .color-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+  }
+  .color-card {
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-card);
+  }
+  .color-swatch {
+    height: 80px;
+  }
+  .color-info {
+    padding: 14px 16px;
+  }
+  .color-name {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .color-value {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+  .color-var {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    opacity: 0.7;
+  }
+
+  .color-group-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 28px;
+    margin-bottom: 12px;
+    font-family: 'Space Mono', monospace;
+  }
+  .color-group-label:first-child { margin-top: 0; }
+
+  /* Typography */
+  .type-specimen {
+    margin-bottom: 40px;
+    padding: 32px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    background: var(--bg-card);
+  }
+  .type-meta {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .type-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(34,211,238,0.1);
+    color: var(--accent-cyan);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+  .type-details {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+  .type-sample-hero {
+    font-size: clamp(36px, 5vw, 60px);
+    font-weight: 700;
+    letter-spacing: -2px;
+    line-height: 1.05;
+    margin-top: 8px;
+  }
+  .type-sample-hero .gradient-word {
+    background: var(--gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .type-sample-hero .line2 {
+    display: block;
+    font-size: 0.65em;
+    font-weight: 500;
+    letter-spacing: -1px;
+    color: var(--text-secondary);
+    -webkit-text-fill-color: var(--text-secondary);
+    margin-top: 4px;
+  }
+  .type-sample-mono {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+  .type-sample-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+  .weight-strip {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-subtle);
+  }
+  .weight-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .weight-sample {
+    font-size: 22px;
+    letter-spacing: -0.5px;
+  }
+  .weight-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+
+  /* Gradient strips */
+  .gradient-strips {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .gradient-strip {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-card);
+  }
+  .gradient-preview {
+    width: 120px;
+    height: 40px;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+  .gradient-meta { flex: 1; }
+  .gradient-name {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .gradient-css {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    word-break: break-all;
+  }
+  .gradient-use {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+
+  /* Semantic colors */
+  .semantic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .semantic-item {
+    padding: 16px;
+    border-radius: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+  }
+  .semantic-label {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .semantic-desc {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+  .semantic-example {
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  /* Components */
+  .component-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    margin-bottom: 24px;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 36px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--bg-deep);
+    background: var(--gradient-primary);
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--gradient-success);
+    opacity: 0;
+    transition: opacity 0.3s;
+    border-radius: 14px;
+  }
+  .btn-primary:hover::after { opacity: 1; }
+  .btn-primary span { position: relative; z-index: 1; }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--accent-cyan);
+    background: rgba(34,211,238,0.1);
+    border: 1px solid rgba(34,211,238,0.2);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover {
+    background: rgba(34,211,238,0.18);
+    border-color: rgba(34,211,238,0.35);
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid var(--border-medium);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-ghost:hover {
+    border-color: rgba(255,255,255,0.2);
+    color: var(--text-primary);
+  }
+
+  .badge-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .badge-cyan {
+    background: rgba(34,211,238,0.1);
+    border: 1px solid rgba(34,211,238,0.15);
+    color: var(--accent-cyan);
+  }
+  .badge-green {
+    background: rgba(52,211,153,0.08);
+    border: 1px solid rgba(52,211,153,0.12);
+    color: var(--accent-green);
+  }
+  .badge-purple {
+    background: rgba(167,139,250,0.08);
+    border: 1px solid rgba(167,139,250,0.12);
+    color: var(--accent-purple);
+  }
+  .badge-red {
+    background: rgba(248,113,113,0.08);
+    border: 1px solid rgba(248,113,113,0.12);
+    color: var(--accent-red);
+  }
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  .tag {
+    display: inline-flex;
+    padding: 2px 8px;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+  .tag-green {
+    background: rgba(52,211,153,0.1);
+    color: var(--accent-green);
+  }
+  .tag-cyan {
+    background: rgba(34,211,238,0.1);
+    color: var(--accent-cyan);
+  }
+
+  .card-demo {
+    padding: 24px;
+    border-radius: 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    position: relative;
+    overflow: hidden;
+    flex: 1;
+    min-width: 260px;
+  }
+  .card-demo::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: var(--gradient-top-bar);
+  }
+  .card-demo-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .card-demo-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+  }
+  .card-demo-stat {
+    font-family: 'Space Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent-green);
+  }
+  .card-demo-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-top: 4px;
+  }
+
+  /* Spacing */
+  .spacing-scale {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .spacing-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .spacing-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    width: 40px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .spacing-bar {
+    height: 10px;
+    background: rgba(34,211,238,0.15);
+    border-radius: 3px;
+    border: 1px solid rgba(34,211,238,0.2);
+  }
+  .spacing-px {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    width: 50px;
+  }
+
+  .radius-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-items: end;
+  }
+  .radius-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .radius-box {
+    width: 64px;
+    height: 64px;
+    border: 2px solid rgba(34,211,238,0.3);
+    background: rgba(34,211,238,0.05);
+  }
+  .radius-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    text-align: center;
+  }
+
+  @media (max-width: 768px) {
+    .guide { padding: 40px 20px 80px; }
+    .section { margin-bottom: 56px; }
+    .type-sample-hero { font-size: 32px; letter-spacing: -1px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="guide">
+
+  <header class="guide-header">
+    <div class="guide-logo">zurp</div>
+    <p>Design system and style guide for the Zurp brand. Colors, typography, components, and patterns for building consistent interfaces.</p>
+    <div class="guide-version">v1.1 · Feb 2026</div>
+  </header>
+
+  <!-- ======== COLORS ======== -->
+  <div class="section">
+    <div class="section-label">01</div>
+    <div class="section-title">Color palette</div>
+    <div class="section-desc">Dark-first palette. Deep navy backgrounds with high-contrast accents. Never pure black or pure white.</div>
+
+    <div class="color-group-label">Backgrounds</div>
+    <div class="color-grid">
+      <div class="color-card">
+        <div class="color-swatch" style="background: #0a0e17;"></div>
+        <div class="color-info">
+          <div class="color-name">Deep</div>
+          <div class="color-value">#0a0e17</div>
+          <div class="color-var">--bg-deep</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #111827;"></div>
+        <div class="color-info">
+          <div class="color-name">Card</div>
+          <div class="color-value">#111827</div>
+          <div class="color-var">--bg-card</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #1a2236;"></div>
+        <div class="color-info">
+          <div class="color-name">Card Hover</div>
+          <div class="color-value">#1a2236</div>
+          <div class="color-var">--bg-card-hover</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #1e293b;"></div>
+        <div class="color-info">
+          <div class="color-name">Elevated</div>
+          <div class="color-value">#1e293b</div>
+          <div class="color-var">--bg-elevated</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="color-group-label">Text</div>
+    <div class="color-grid">
+      <div class="color-card">
+        <div class="color-swatch" style="background: #f0f2f5;"></div>
+        <div class="color-info">
+          <div class="color-name">Primary</div>
+          <div class="color-value">#f0f2f5</div>
+          <div class="color-var">--text-primary</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #7a8ba8;"></div>
+        <div class="color-info">
+          <div class="color-name">Secondary</div>
+          <div class="color-value">#7a8ba8</div>
+          <div class="color-var">--text-secondary</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #4a5568;"></div>
+        <div class="color-info">
+          <div class="color-name">Dim</div>
+          <div class="color-value">#4a5568</div>
+          <div class="color-var">--text-dim</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="color-group-label">Accents</div>
+    <div class="color-grid">
+      <div class="color-card">
+        <div class="color-swatch" style="background: #22d3ee;"></div>
+        <div class="color-info">
+          <div class="color-name">Cyan</div>
+          <div class="color-value">#22d3ee</div>
+          <div class="color-var">--accent-cyan</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #60a5fa;"></div>
+        <div class="color-info">
+          <div class="color-name">Blue</div>
+          <div class="color-value">#60a5fa</div>
+          <div class="color-var">--accent-blue</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #34d399;"></div>
+        <div class="color-info">
+          <div class="color-name">Green</div>
+          <div class="color-value">#34d399</div>
+          <div class="color-var">--accent-green</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #a78bfa;"></div>
+        <div class="color-info">
+          <div class="color-name">Purple</div>
+          <div class="color-value">#a78bfa</div>
+          <div class="color-var">--accent-purple</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #f87171;"></div>
+        <div class="color-info">
+          <div class="color-name">Red</div>
+          <div class="color-value">#f87171</div>
+          <div class="color-var">--accent-red</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== SEMANTIC COLORS ======== -->
+  <div class="section">
+    <div class="section-label">02</div>
+    <div class="section-title">Semantic usage</div>
+    <div class="section-desc">Each accent color has a specific meaning in the simulation engine. Follow these consistently.</div>
+
+    <div class="semantic-grid">
+      <div class="semantic-item">
+        <div class="semantic-label" style="color: var(--accent-cyan);">Cyan — Interactive / Brand</div>
+        <div class="semantic-desc">CTAs, links, navigation, brand logo, badges, section labels</div>
+        <div class="semantic-example" style="color: var(--accent-cyan);">zurp your card →</div>
+      </div>
+      <div class="semantic-item">
+        <div class="semantic-label" style="color: var(--accent-blue);">Blue — Points / Data</div>
+        <div class="semantic-desc">Point multipliers, earning rates, point values, data visualization</div>
+        <div class="semantic-example" style="color: var(--accent-blue);">$1,273</div>
+      </div>
+      <div class="semantic-item">
+        <div class="semantic-label" style="color: var(--accent-purple);">Purple — Benefits value</div>
+        <div class="semantic-desc">Credits, lounge access, insurance, perks</div>
+        <div class="semantic-example" style="color: var(--accent-purple);">$475</div>
+      </div>
+      <div class="semantic-item">
+        <div class="semantic-label" style="color: var(--accent-red);">Red — Fees & costs</div>
+        <div class="semantic-desc">Annual fees, negative values, losses</div>
+        <div class="semantic-example" style="color: var(--accent-red);">−$795</div>
+      </div>
+      <div class="semantic-item">
+        <div class="semantic-label" style="color: var(--accent-green);">Green — Net positive / Best</div>
+        <div class="semantic-desc">Best fit card (#1 only), net value of top card, success states, savings callout</div>
+        <div class="semantic-example" style="color: var(--accent-green);">+$1,273</div>
+      </div>
+    </div>
+
+    <div class="color-group-label" style="margin-top: 28px;">Color rules</div>
+    <div class="semantic-grid">
+      <div class="semantic-item">
+        <div class="semantic-label" style="color: var(--accent-green);">Green net value</div>
+        <div class="semantic-desc">Only the #1 ranked card gets green on its net value. All other rows use text-secondary.</div>
+      </div>
+      <div class="semantic-item">
+        <div class="semantic-label" style="color: var(--text-primary);">Card names in headlines</div>
+        <div class="semantic-desc">Card names use text-primary (white) in personalized headlines. Only the savings amount gets green.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== GRADIENTS ======== -->
+  <div class="section">
+    <div class="section-label">03</div>
+    <div class="section-title">Gradients</div>
+    <div class="section-desc">Core gradients. Use sparingly — reserved for high-emphasis moments.</div>
+
+    <div class="gradient-strips">
+      <div class="gradient-strip">
+        <div class="gradient-preview" style="background: linear-gradient(135deg, #22d3ee, #60a5fa);"></div>
+        <div class="gradient-meta">
+          <div class="gradient-name">Primary</div>
+          <div class="gradient-use">CTAs, brand logo, interactive highlights</div>
+          <div class="gradient-css">linear-gradient(135deg, #22d3ee, #60a5fa)</div>
+        </div>
+      </div>
+      <div class="gradient-strip">
+        <div class="gradient-preview" style="background: linear-gradient(135deg, #60a5fa 0%, #22d3ee 50%, #34d399 100%);"></div>
+        <div class="gradient-meta">
+          <div class="gradient-name">Hero</div>
+          <div class="gradient-use">Headline gradient text, hero accents</div>
+          <div class="gradient-css">linear-gradient(135deg, #60a5fa 0%, #22d3ee 50%, #34d399 100%)</div>
+        </div>
+      </div>
+      <div class="gradient-strip">
+        <div class="gradient-preview" style="background: linear-gradient(135deg, #34d399, #22d3ee);"></div>
+        <div class="gradient-meta">
+          <div class="gradient-name">Success</div>
+          <div class="gradient-use">Button hover state, positive confirmations</div>
+          <div class="gradient-css">linear-gradient(135deg, #34d399, #22d3ee)</div>
+        </div>
+      </div>
+      <div class="gradient-strip">
+        <div class="gradient-preview" style="background: linear-gradient(90deg, transparent, rgba(52,211,153,0.3), rgba(96,165,250,0.3), transparent);"></div>
+        <div class="gradient-meta">
+          <div class="gradient-name">Top Bar</div>
+          <div class="gradient-use">Card top edge glow, section dividers</div>
+          <div class="gradient-css">linear-gradient(90deg, transparent, rgba(52,211,153,0.3), rgba(96,165,250,0.3), transparent)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== TYPOGRAPHY ======== -->
+  <div class="section">
+    <div class="section-label">04</div>
+    <div class="section-title">Typography</div>
+    <div class="section-desc">Two fonts. DM Sans for all UI and display text. Space Mono for data, labels, and the logo.</div>
+
+    <div class="type-specimen">
+      <div class="type-meta">
+        <span class="type-tag">Display + Body</span>
+        <span class="type-details">DM Sans · Google Fonts · Variable weight 300–700</span>
+      </div>
+      <div class="type-sample-hero">
+        Know what your card is <span class="gradient-word">actually</span> worth
+        <span class="line2">— and which card beats it.</span>
+      </div>
+      <div class="weight-strip">
+        <div class="weight-item">
+          <span class="weight-sample" style="font-weight:300;">Light 300</span>
+          <span class="weight-label">300 · Light</span>
+        </div>
+        <div class="weight-item">
+          <span class="weight-sample" style="font-weight:400;">Regular 400</span>
+          <span class="weight-label">400 · Regular</span>
+        </div>
+        <div class="weight-item">
+          <span class="weight-sample" style="font-weight:500;">Medium 500</span>
+          <span class="weight-label">500 · Medium</span>
+        </div>
+        <div class="weight-item">
+          <span class="weight-sample" style="font-weight:600;">Semi 600</span>
+          <span class="weight-label">600 · Semibold</span>
+        </div>
+        <div class="weight-item">
+          <span class="weight-sample" style="font-weight:700;">Bold 700</span>
+          <span class="weight-label">700 · Bold</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-meta">
+        <span class="type-tag">Data + Labels</span>
+        <span class="type-details">Space Mono · Google Fonts · 400, 700</span>
+      </div>
+      <div class="type-sample-mono">
+        $1,273 net value / yr<br>
+        3% flat cashback · $0/yr fee<br>
+        Based on $47,411 in spending
+      </div>
+      <div style="margin-top: 20px;">
+        <div class="type-sample-label" style="margin-bottom: 8px;">YOUR SIMULATION</div>
+        <div class="type-sample-label" style="color: var(--accent-cyan);">COMPARE</div>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-meta">
+        <span class="type-tag">Type scale</span>
+        <span class="type-details">Key sizes used across the interface</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px;margin-top:8px;">
+        <div>
+          <span style="font-size:clamp(42px,5.5vw,76px);font-weight:700;letter-spacing:-2.5px;line-height:1;">Hero headline</span>
+          <div class="type-details" style="margin-top:4px;">clamp(42px, 5.5vw, 76px) · 700 · -2.5px tracking</div>
+        </div>
+        <div>
+          <span style="font-size:28px;font-weight:700;letter-spacing:-1px;">Section title</span>
+          <div class="type-details" style="margin-top:4px;">28px · 700 · -1px tracking</div>
+        </div>
+        <div>
+          <span style="font-size:22px;font-weight:700;letter-spacing:-0.5px;">Personalized headline</span>
+          <div class="type-details" style="margin-top:4px;">22px · 700 · -0.5px tracking</div>
+        </div>
+        <div>
+          <span style="font-size:19px;color:var(--text-secondary);font-weight:400;">Body large — subheader text</span>
+          <div class="type-details" style="margin-top:4px;">19px · 400 · 1.65 line-height</div>
+        </div>
+        <div>
+          <span style="font-size:15px;font-weight:600;">Card name</span>
+          <div class="type-details" style="margin-top:4px;">15px · 600</div>
+        </div>
+        <div>
+          <span style="font-size:14px;font-weight:500;color:var(--text-secondary);">Nav / button label</span>
+          <div class="type-details" style="margin-top:4px;">14px · 500</div>
+        </div>
+        <div>
+          <span style="font-size:13px;color:var(--text-dim);">Caption / helper text</span>
+          <div class="type-details" style="margin-top:4px;">12–13px · 400</div>
+        </div>
+        <div>
+          <span class="type-sample-label">MONO LABEL</span>
+          <div class="type-details" style="margin-top:4px;">Space Mono · 10–11px · 700 · uppercase · 1.2–2.5px tracking</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== COMPONENTS ======== -->
+  <div class="section">
+    <div class="section-label">05</div>
+    <div class="section-title">Components</div>
+    <div class="section-desc">Core UI elements. All components use 14px border-radius for large elements, 10px for medium, 5px for small.</div>
+
+    <div class="color-group-label">Buttons</div>
+    <div class="component-row">
+      <button class="btn-primary"><span>zurp your card</span> <span>→</span></button>
+      <button class="btn-secondary">Get started</button>
+      <button class="btn-ghost">Learn more</button>
+    </div>
+
+    <div class="color-group-label">Badges</div>
+    <div class="badge-row">
+      <span class="badge badge-cyan"><span class="badge-dot" style="background:var(--accent-green);"></span> 25 cards supported</span>
+      <span class="badge badge-green">Connected</span>
+      <span class="badge badge-purple">Premium</span>
+      <span class="badge badge-red">Fee increase</span>
+    </div>
+
+    <div class="color-group-label">Tags</div>
+    <div class="component-row" style="gap:10px;">
+      <span class="tag tag-green">Best fit</span>
+      <span class="tag tag-cyan">Your card</span>
+    </div>
+
+    <div class="color-group-label">Cards</div>
+    <div class="component-row">
+      <div class="card-demo">
+        <div class="card-demo-title">Net value</div>
+        <div class="card-demo-desc">Robinhood Gold · Your best fit</div>
+        <div class="card-demo-stat">$1,273</div>
+        <div class="card-demo-label">per year</div>
+      </div>
+      <div class="card-demo">
+        <div class="card-demo-title">Points earned</div>
+        <div class="card-demo-desc">3% flat cashback · $0 annual fee</div>
+        <div class="card-demo-stat" style="color: var(--accent-blue);">$1,273</div>
+        <div class="card-demo-label">3% on all spend</div>
+      </div>
+      <div class="card-demo">
+        <div class="card-demo-title">Benefits value</div>
+        <div class="card-demo-desc">Priority Pass, credits, insurance</div>
+        <div class="card-demo-stat" style="color: var(--accent-purple);">$475</div>
+        <div class="card-demo-label">captured of $2,628</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== SPACING & RADIUS ======== -->
+  <div class="section">
+    <div class="section-label">06</div>
+    <div class="section-title">Spacing & radius</div>
+    <div class="section-desc">Consistent spacing scale and border radii used throughout the system.</div>
+
+    <div class="color-group-label">Spacing scale</div>
+    <div class="spacing-scale">
+      <div class="spacing-row"><span class="spacing-label">4px</span><div class="spacing-bar" style="width:16px;"></div><span class="spacing-px">Tight</span></div>
+      <div class="spacing-row"><span class="spacing-label">8px</span><div class="spacing-bar" style="width:32px;"></div><span class="spacing-px">Compact</span></div>
+      <div class="spacing-row"><span class="spacing-label">12px</span><div class="spacing-bar" style="width:48px;"></div><span class="spacing-px">Snug</span></div>
+      <div class="spacing-row"><span class="spacing-label">16px</span><div class="spacing-bar" style="width:64px;"></div><span class="spacing-px">Base</span></div>
+      <div class="spacing-row"><span class="spacing-label">24px</span><div class="spacing-bar" style="width:96px;"></div><span class="spacing-px">Medium</span></div>
+      <div class="spacing-row"><span class="spacing-label">32px</span><div class="spacing-bar" style="width:128px;"></div><span class="spacing-px">Large</span></div>
+      <div class="spacing-row"><span class="spacing-label">48px</span><div class="spacing-bar" style="width:192px;"></div><span class="spacing-px">XL</span></div>
+      <div class="spacing-row"><span class="spacing-label">72px</span><div class="spacing-bar" style="width:288px;"></div><span class="spacing-px">Section</span></div>
+    </div>
+
+    <div class="color-group-label" style="margin-top:36px;">Border radius</div>
+    <div class="radius-row">
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:5px;"></div>
+        <span class="radius-label">5px<br>Tags</span>
+      </div>
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:7px;"></div>
+        <span class="radius-label">7px<br>Bars</span>
+      </div>
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:8px;"></div>
+        <span class="radius-label">8px<br>Nav CTA</span>
+      </div>
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:10px;"></div>
+        <span class="radius-label">10px<br>Buttons</span>
+      </div>
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:14px;"></div>
+        <span class="radius-label">14px<br>Primary CTA<br>Sim rows</span>
+      </div>
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:16px;"></div>
+        <span class="radius-label">16px<br>Cards</span>
+      </div>
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:20px;"></div>
+        <span class="radius-label">20px<br>Containers</span>
+      </div>
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:50px;"></div>
+        <span class="radius-label">100px<br>Badges</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== EFFECTS ======== -->
+  <div class="section">
+    <div class="section-label">07</div>
+    <div class="section-title">Effects & texture</div>
+    <div class="section-desc">Subtle layering that gives the interface depth without distraction.</div>
+
+    <div class="semantic-grid">
+      <div class="semantic-item">
+        <div class="semantic-label">Noise overlay</div>
+        <div class="semantic-desc">SVG fractalNoise at 0.03 opacity, fixed position, covers entire viewport. Adds tactile grain.</div>
+      </div>
+      <div class="semantic-item">
+        <div class="semantic-label">Ambient glow</div>
+        <div class="semantic-desc">800px radial gradients at ~0.4 opacity, blur(120px). Blue top-left, cyan bottom-right.</div>
+      </div>
+      <div class="semantic-item">
+        <div class="semantic-label">Nav blur</div>
+        <div class="semantic-desc">backdrop-filter: blur(20px) with rgba(10,14,23,0.8) background on fixed nav.</div>
+      </div>
+      <div class="semantic-item">
+        <div class="semantic-label">Top edge glow</div>
+        <div class="semantic-desc">1px gradient bar on card top edge. Creates a subtle light source effect.</div>
+      </div>
+      <div class="semantic-item">
+        <div class="semantic-label">Locked blur</div>
+        <div class="semantic-desc">opacity: 0.3 on row, filter: blur(5px) on text, user-select: none. For gated content.</div>
+      </div>
+      <div class="semantic-item">
+        <div class="semantic-label">Entry animation</div>
+        <div class="semantic-desc">fadeUp: translateY(20px) → 0 with staggered delays (0.1s increments). Ease timing.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
