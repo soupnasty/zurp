@@ -107,6 +107,12 @@ export interface CardSummary {
   yearProgressPct: number;
   daysUntilNextExpiry: number | null;
   valueAtRisk: number;
+  // Points earning data (from points_earning_summary)
+  pointsEarned: number | null;
+  pointsValueConservative: number | null;
+  pointsValueUpside: number | null;
+  conservativeCpp: number | null;
+  netValue: number | null;
 }
 
 export interface BenefitUsageSummary {

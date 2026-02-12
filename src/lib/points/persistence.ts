@@ -1,0 +1,201 @@
+import "server-only";
+import { db } from "@/db";
+import { eq, and, notInArray } from "drizzle-orm";
+import * as schema from "@/db/schema";
+import { classifyForPoints } from "./categories";
+import { calculatePointsForTransaction } from "./calculator";
+import { getEarnConfig } from "./earn-configs";
+import { getCurrentCycleBounds } from "@/lib/engine/cycle-utils";
+import type { CapState, EarnCategory } from "./types";
+
+const EXCLUDED_CATEGORIES = [
+  "INCOME",
+  "TRANSFER_IN",
+  "LOAN_PAYMENTS",
+  "BANK_FEES",
+];
+
+/**
+ * Compute points earning summary for a card profile and persist to DB.
+ * Called after transaction matching in the sync pipeline.
+ */
+export async function computeAndPersistPointsSummary(
+  userId: string,
+  cardProfileId: string,
+  cardType: string,
+  anniversaryDate: Date | null
+) {
+  // Look up the connection for this card profile
+  const cardProfile = await db.query.cardProfiles.findFirst({
+    where: eq(schema.cardProfiles.id, cardProfileId),
+    columns: { plaidConnectionId: true },
+  });
+  if (!cardProfile) return;
+
+  const config = getEarnConfig(cardType);
+  if (!config) return;
+
+  // Fetch qualifying transactions for this connection
+  const txs = await db.query.transactions.findMany({
+    where: and(
+      eq(schema.transactions.plaidConnectionId, cardProfile.plaidConnectionId),
+      eq(schema.transactions.pending, false),
+      eq(schema.transactions.isAnnualFee, false),
+      notInArray(schema.transactions.plaidCategoryPrimary, EXCLUDED_CATEGORIES)
+    ),
+    orderBy: (t, { asc }) => [asc(t.date)],
+    columns: {
+      id: true,
+      date: true,
+      datetime: true,
+      merchantName: true,
+      amount: true,
+      plaidCategoryPrimary: true,
+      plaidCategoryDetailed: true,
+    },
+  });
+
+  if (txs.length === 0) return;
+
+  // Compute anniversary year period bounds
+  const now = new Date();
+  const bounds = getCurrentCycleBounds(
+    "annual_anniversary",
+    now,
+    anniversaryDate
+  );
+
+  // Filter to transactions within the anniversary year
+  const yearTxs = txs.filter(
+    (tx) => tx.date >= bounds.cycleStart && tx.date < bounds.cycleEnd
+  );
+
+  if (yearTxs.length === 0) return;
+
+  // Calculate points per transaction
+  const capState: CapState = {};
+  let totalSpend = 0;
+  let totalPoints = 0;
+  const categoryAccum = new Map<
+    EarnCategory,
+    { spend: number; points: number; rateSpendProduct: number }
+  >();
+
+  for (const tx of yearTxs) {
+    const absAmount = Math.abs(tx.amount);
+    const isRefund = tx.amount < 0;
+
+    const classification = classifyForPoints(
+      tx.merchantName,
+      tx.plaidCategoryPrimary,
+      tx.plaidCategoryDetailed
+    );
+
+    const result = calculatePointsForTransaction(
+      {
+        id: tx.id,
+        merchantName: tx.merchantName,
+        amount: absAmount,
+        category: classification.category,
+        confidence: classification.confidence,
+        date: tx.date,
+        datetime: tx.datetime,
+      },
+      config,
+      capState
+    );
+
+    // Handle refunds: negative amount means subtract
+    const effectivePoints = isRefund ? -Math.abs(result.points) : result.points;
+    const effectiveSpend = isRefund ? -absAmount : absAmount;
+
+    totalSpend += effectiveSpend;
+    totalPoints += effectivePoints;
+
+    const accum = categoryAccum.get(classification.category) ?? {
+      spend: 0,
+      points: 0,
+      rateSpendProduct: 0,
+    };
+    accum.spend += effectiveSpend;
+    accum.points += effectivePoints;
+    accum.rateSpendProduct += result.earnRate * effectiveSpend;
+    categoryAccum.set(classification.category, accum);
+  }
+
+  // Apply anniversary bonus if applicable (e.g. CSP 10%)
+  if (config.anniversaryBonus && totalPoints > 0) {
+    const bonusPoints = Math.round(totalPoints * config.anniversaryBonus);
+    totalPoints += bonusPoints;
+  }
+
+  // Compute dollar values
+  const valueConservative = Math.round(
+    (totalPoints * config.valuation.conservativeCpp) / 100
+  );
+  const valueUpside = Math.round(
+    (totalPoints * config.valuation.upsideCpp) / 100
+  );
+
+  // Build category breakdown sorted by spend desc
+  const categoryBreakdown = Array.from(categoryAccum.entries())
+    .filter(([, v]) => v.spend > 0)
+    .map(([category, v]) => ({
+      category,
+      spend: Math.round(v.spend * 100) / 100,
+      points: v.points,
+      earnRate:
+        v.spend > 0 ? Math.round((v.rateSpendProduct / v.spend) * 10) / 10 : 0,
+      valueConservative: Math.round(
+        (v.points * config.valuation.conservativeCpp) / 100
+      ),
+    }))
+    .sort((a, b) => b.spend - a.spend);
+
+  const lastTx = yearTxs[yearTxs.length - 1];
+
+  // Upsert into points_earning_summary
+  await db
+    .insert(schema.pointsEarningSummary)
+    .values({
+      userId,
+      cardProfileId,
+      cardId: config.cardId,
+      periodType: "anniversary_year",
+      periodStart: bounds.cycleStart,
+      periodEnd: bounds.cycleEnd,
+      totalSpend: Math.round(totalSpend * 100) / 100,
+      totalPoints,
+      valueConservative,
+      valueUpside,
+      categoryBreakdown,
+      lastTransactionDate: lastTx?.date ?? null,
+      updatedAt: new Date(),
+    })
+    .onConflictDoUpdate({
+      target: [
+        schema.pointsEarningSummary.cardProfileId,
+        schema.pointsEarningSummary.periodType,
+        schema.pointsEarningSummary.periodStart,
+      ],
+      set: {
+        totalSpend: Math.round(totalSpend * 100) / 100,
+        totalPoints,
+        valueConservative,
+        valueUpside,
+        categoryBreakdown,
+        lastTransactionDate: lastTx?.date ?? null,
+        updatedAt: new Date(),
+      },
+    });
+}
+
+/**
+ * Clear all points earning summaries for a card profile.
+ * Called during reprocessing (card type change, etc).
+ */
+export async function clearPointsSummary(cardProfileId: string) {
+  await db
+    .delete(schema.pointsEarningSummary)
+    .where(eq(schema.pointsEarningSummary.cardProfileId, cardProfileId));
+}

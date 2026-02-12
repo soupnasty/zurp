@@ -389,6 +389,56 @@ export const competitorMap = pgTable(
   ]
 );
 
+// ── Points Earning Summary ──
+
+export const pointsEarningSummary = pgTable(
+  "points_earning_summary",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    cardProfileId: text("card_profile_id")
+      .notNull()
+      .references(() => cardProfiles.id, { onDelete: "cascade" }),
+    cardId: text("card_id").notNull(), // denormalized from earn config
+    periodType: text("period_type").notNull(), // "anniversary_year"
+    periodStart: timestamp("period_start", { mode: "date" }).notNull(),
+    periodEnd: timestamp("period_end", { mode: "date" }).notNull(),
+    totalSpend: real("total_spend").notNull().default(0),
+    totalPoints: integer("total_points").notNull().default(0),
+    valueConservative: real("value_conservative").notNull().default(0),
+    valueUpside: real("value_upside").notNull().default(0),
+    categoryBreakdown: jsonb("category_breakdown")
+      .notNull()
+      .$type<
+        Array<{
+          category: string;
+          spend: number;
+          points: number;
+          earnRate: number;
+          valueConservative: number;
+        }>
+      >()
+      .default([]),
+    lastTransactionDate: timestamp("last_transaction_date", { mode: "date" }),
+    updatedAt: timestamp("updated_at", { mode: "date" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => [
+    unique("points_earning_summary_unique").on(
+      table.cardProfileId,
+      table.periodType,
+      table.periodStart
+    ),
+    index("points_earning_summary_user_idx").on(table.userId),
+    index("points_earning_summary_card_profile_idx").on(table.cardProfileId),
+  ]
+);
+
 // ── Benefit Overrides (durable manual redemption intent) ──
 
 export const benefitOverrides = pgTable(
@@ -421,6 +471,68 @@ export const benefitOverrides = pgTable(
   ]
 );
 
+// ── Card Simulations (precomputed comparison data) ──
+
+export const cardSimulations = pgTable(
+  "card_simulations",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    cardProfileId: text("card_profile_id")
+      .notNull()
+      .references(() => cardProfiles.id, { onDelete: "cascade" }),
+    simulatedCardId: text("simulated_card_id").notNull(), // e.g. "chase_sapphire_reserve"
+    portalMode: boolean("portal_mode").notNull().default(false),
+    annualFee: integer("annual_fee").notNull(),
+    totalPoints: integer("total_points").notNull().default(0),
+    bonusPoints: integer("bonus_points").notNull().default(0),
+    pointsValueConservative: real("points_value_conservative").notNull().default(0),
+    pointsValueUpside: real("points_value_upside").notNull().default(0),
+    benefitsSimulated: real("benefits_simulated").notNull().default(0),
+    benefitsValue: real("benefits_value").notNull().default(0),
+    netFloor: real("net_floor").notNull().default(0),
+    netCeiling: real("net_ceiling").notNull().default(0),
+    netActual: real("net_actual").notNull().default(0),
+    categoryBreakdown: jsonb("category_breakdown")
+      .notNull()
+      .$type<
+        Array<{
+          category: string;
+          label: string;
+          icon: string;
+          totalSpend: number;
+          transactionCount: number;
+          earnRate: number;
+          points: number;
+          valueConservative: number;
+          capNote: string | null;
+        }>
+      >()
+      .default([]),
+    analysisPeriodStart: timestamp("analysis_period_start", { mode: "date" }).notNull(),
+    analysisPeriodEnd: timestamp("analysis_period_end", { mode: "date" }).notNull(),
+    monthCount: integer("month_count").notNull().default(0),
+    totalSpend: real("total_spend").notNull().default(0),
+    totalTransactions: integer("total_transactions").notNull().default(0),
+    updatedAt: timestamp("updated_at", { mode: "date" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => [
+    unique("card_simulations_unique").on(
+      table.cardProfileId,
+      table.simulatedCardId,
+      table.portalMode
+    ),
+    index("card_simulations_user_idx").on(table.userId),
+    index("card_simulations_card_profile_idx").on(table.cardProfileId),
+  ]
+);
+
 // ── Relations ──
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -433,6 +545,8 @@ export const usersRelations = relations(users, ({ many }) => ({
   transactionFlags: many(transactionFlags),
   insights: many(insights),
   benefitOverrides: many(benefitOverrides),
+  pointsEarningSummary: many(pointsEarningSummary),
+  cardSimulations: many(cardSimulations),
 }));
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -486,6 +600,22 @@ export const cardProfilesRelations = relations(
     }),
     benefitUsage: many(benefitUsage),
     insights: many(insights),
+    pointsEarningSummary: many(pointsEarningSummary),
+    cardSimulations: many(cardSimulations),
+  })
+);
+
+export const cardSimulationsRelations = relations(
+  cardSimulations,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [cardSimulations.userId],
+      references: [users.id],
+    }),
+    cardProfile: one(cardProfiles, {
+      fields: [cardSimulations.cardProfileId],
+      references: [cardProfiles.id],
+    }),
   })
 );
 
@@ -578,6 +708,20 @@ export const insightImpressionsRelations = relations(
     insight: one(insights, {
       fields: [insightImpressions.insightId],
       references: [insights.id],
+    }),
+  })
+);
+
+export const pointsEarningSummaryRelations = relations(
+  pointsEarningSummary,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [pointsEarningSummary.userId],
+      references: [users.id],
+    }),
+    cardProfile: one(cardProfiles, {
+      fields: [pointsEarningSummary.cardProfileId],
+      references: [cardProfiles.id],
     }),
   })
 );

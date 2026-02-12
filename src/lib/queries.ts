@@ -1,9 +1,10 @@
 import "server-only";
 import { db } from "@/db";
-import { eq, desc, asc, and, gte, lt } from "drizzle-orm";
+import { eq, desc, and, gte, lt } from "drizzle-orm";
 import * as schema from "@/db/schema";
 import { getCardDefinition } from "@/lib/cards";
 import { getCurrentCycleBounds, daysRemainingInCycle } from "@/lib/engine/cycle-utils";
+import { getEarnConfig } from "@/lib/points/earn-configs";
 import type {
   CardSummary,
   BenefitUsageSummary,
@@ -157,6 +158,25 @@ export async function getCardSummary(
   const yearElapsed = now.getTime() - cardYearBounds.cycleStart.getTime();
   const yearProgressPct = yearTotal > 0 ? Math.round((yearElapsed / yearTotal) * 100) : 0;
 
+  // Fetch points earning summary
+  const pointsSummary = await db.query.pointsEarningSummary.findFirst({
+    where: and(
+      eq(schema.pointsEarningSummary.userId, userId),
+      eq(schema.pointsEarningSummary.cardProfileId, cardProfile.id),
+      eq(schema.pointsEarningSummary.periodType, "anniversary_year")
+    ),
+  });
+
+  const earnConfig = getEarnConfig(cardProfile.cardType);
+  const pointsEarned = pointsSummary?.totalPoints ?? null;
+  const pointsValueConservative = pointsSummary?.valueConservative ?? null;
+  const pointsValueUpside = pointsSummary?.valueUpside ?? null;
+  const conservativeCpp = earnConfig?.valuation.conservativeCpp ?? null;
+  const netValue =
+    pointsValueConservative !== null
+      ? creditsUsed + pointsValueConservative - cardDef.annualFee
+      : creditsUsed - cardDef.annualFee;
+
   return {
     cardId: cardDef.id,
     cardName: cardDef.name,
@@ -169,83 +189,11 @@ export async function getCardSummary(
     yearProgressPct,
     daysUntilNextExpiry: nearestExpiry,
     valueAtRisk,
-  };
-}
-
-export interface CreditsDebugRow {
-  benefitId: string;
-  benefitName: string;
-  cycle: string;
-  periodKey: string;
-  amountUsed: number;
-  creditAmount: number;
-  cycleStart: string;
-  cycleEnd: string;
-  inCardYear: boolean;
-}
-
-export interface CreditsDebugData {
-  cardYearStart: string;
-  cardYearEnd: string;
-  rows: CreditsDebugRow[];
-  creditsUsedTotal: number;
-}
-
-export async function getCreditsDebugBreakdown(
-  userId: string,
-  cardProfileId?: string
-): Promise<CreditsDebugData | null> {
-  const cardProfile = await getActiveCardProfile(userId, cardProfileId);
-  if (!cardProfile) return null;
-
-  const cardDef = getCardDefinition(cardProfile.cardType);
-  if (!cardDef) return null;
-
-  const usageRecords = await db.query.benefitUsage.findMany({
-    where: and(
-      eq(schema.benefitUsage.userId, userId),
-      eq(schema.benefitUsage.cardProfileId, cardProfile.id)
-    ),
-  });
-
-  const now = new Date();
-  const cardYearBounds = getCurrentCycleBounds(
-    "annual_anniversary",
-    now,
-    cardProfile.anniversaryDate
-  );
-
-  let creditsUsedTotal = 0;
-  const rows: CreditsDebugRow[] = [];
-
-  for (const usage of usageRecords) {
-    const benefit = cardDef.benefits.find((b) => b.id === usage.benefitId);
-    const inCardYear = isUsageInCardYear(usage, cardYearBounds);
-
-    if (inCardYear) {
-      creditsUsedTotal += usage.amountUsed;
-    }
-
-    rows.push({
-      benefitId: usage.benefitId,
-      benefitName: benefit?.name ?? usage.benefitId,
-      cycle: benefit?.cycle ?? "unknown",
-      periodKey: usage.periodKey,
-      amountUsed: usage.amountUsed,
-      creditAmount: benefit?.creditAmount ?? 0,
-      cycleStart: usage.cycleStart.toISOString(),
-      cycleEnd: usage.cycleEnd.toISOString(),
-      inCardYear,
-    });
-  }
-
-  rows.sort((a, b) => a.benefitName.localeCompare(b.benefitName) || a.periodKey.localeCompare(b.periodKey));
-
-  return {
-    cardYearStart: cardYearBounds.cycleStart.toISOString(),
-    cardYearEnd: cardYearBounds.cycleEnd.toISOString(),
-    rows,
-    creditsUsedTotal,
+    pointsEarned,
+    pointsValueConservative,
+    pointsValueUpside,
+    conservativeCpp,
+    netValue,
   };
 }
 
@@ -517,67 +465,6 @@ export async function getBenefitTransactions(
 
   results.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   return results;
-}
-
-export interface DebugTransactionRow {
-  id: string;
-  date: string;
-  merchantName: string | null;
-  amount: number;
-  matchedStatus: string;
-  matchedBenefitName: string | null;
-  creditApplied: number | null;
-  matchConfidence: string | null;
-  matchMethod: string | null;
-  plaidCategoryPrimary: string | null;
-}
-
-export async function getDebugTransactions(
-  userId: string,
-  cardProfileId?: string
-): Promise<DebugTransactionRow[] | null> {
-  const cardProfile = await getActiveCardProfile(userId, cardProfileId);
-  if (!cardProfile) return null;
-
-  const cardYearBounds = getCurrentCycleBounds(
-    "annual_anniversary",
-    new Date(),
-    cardProfile.anniversaryDate
-  );
-
-  const txs = await db.query.transactions.findMany({
-    where: and(
-      eq(schema.transactions.userId, userId),
-      eq(schema.transactions.plaidConnectionId, cardProfile.plaidConnectionId),
-      gte(schema.transactions.date, cardYearBounds.cycleStart)
-    ),
-    orderBy: asc(schema.transactions.date),
-    with: {
-      matches: {
-        with: {
-          benefitUsage: {
-            with: { benefit: true },
-          },
-        },
-      },
-    },
-  });
-
-  return txs.map((tx) => {
-    const match = tx.matches[0];
-    return {
-      id: tx.id,
-      date: tx.date.toISOString(),
-      merchantName: tx.merchantName,
-      amount: tx.amount,
-      matchedStatus: tx.matchedStatus,
-      matchedBenefitName: match?.benefitUsage?.benefit?.name ?? null,
-      creditApplied: match?.creditApplied ?? null,
-      matchConfidence: match?.matchConfidence ?? null,
-      matchMethod: match?.matchMethod ?? null,
-      plaidCategoryPrimary: tx.plaidCategoryPrimary,
-    };
-  });
 }
 
 export async function getPlaidConnectionStatus(userId: string, cardProfileId?: string) {

@@ -6,6 +6,7 @@ import { eq, and } from "drizzle-orm";
 import { requireAuth } from "@/lib/auth-helpers";
 import { revalidatePath } from "next/cache";
 import { reprocessAllTransactions } from "@/lib/engine/orchestrator";
+import { getCardDefinition } from "@/lib/cards";
 
 export async function removeCardProfile(cardProfileId: string) {
   const user = await requireAuth();
@@ -42,6 +43,9 @@ export async function updateCardType(cardProfileId: string, newCardType: string)
 
   if (cardProfile.cardType === newCardType) return;
 
+  // Ensure the new card and its benefits exist in the DB (FK target for benefit_usage)
+  await ensureCardSeeded(newCardType);
+
   // Update card type
   await db
     .update(schema.cardProfiles)
@@ -54,4 +58,80 @@ export async function updateCardType(cardProfileId: string, newCardType: string)
   revalidatePath("/settings");
   revalidatePath("/benefits");
   revalidatePath("/spending");
+  revalidatePath("/compare");
+}
+
+/**
+ * Ensure a card and its benefits exist in the DB.
+ * Prevents FK violations when benefit_usage references benefits that haven't been seeded.
+ */
+async function ensureCardSeeded(cardType: string) {
+  const cardDef = getCardDefinition(cardType);
+  if (!cardDef) return;
+
+  // Upsert card
+  await db
+    .insert(schema.cards)
+    .values({
+      id: cardDef.id,
+      name: cardDef.name,
+      issuer: cardDef.issuer,
+      network: cardDef.network,
+      annualFee: cardDef.annualFee,
+      feeDescriptor: cardDef.feeDescriptor,
+      imageUrl: cardDef.imageUrl,
+      isActive: cardDef.isActive,
+    })
+    .onConflictDoUpdate({
+      target: schema.cards.id,
+      set: {
+        name: cardDef.name,
+        annualFee: cardDef.annualFee,
+        isActive: cardDef.isActive,
+      },
+    });
+
+  // Upsert benefits
+  for (const benefit of cardDef.benefits) {
+    await db
+      .insert(schema.benefits)
+      .values({
+        id: benefit.id,
+        cardId: benefit.cardId,
+        name: benefit.name,
+        icon: benefit.icon,
+        category: benefit.category,
+        type: benefit.type,
+        creditAmount: benefit.creditAmount,
+        cycle: benefit.cycle,
+        carriesOver: benefit.carriesOver,
+        maxCarryoverPeriods: benefit.maxCarryoverPeriods,
+        maxAccrued: benefit.maxAccrued,
+        merchantPatterns: benefit.merchantPatterns,
+        plaidCategories: benefit.plaidCategories,
+        autoMatchable: benefit.autoMatchable,
+        requiresActivation: benefit.requiresActivation,
+        priority: benefit.priority,
+        description: benefit.description,
+        notes: benefit.notes,
+        sunsetDate: benefit.sunsetDate,
+        sourceUrl: benefit.sourceUrl,
+        displayGroup: benefit.displayGroup,
+        displayGroupName: benefit.displayGroupName,
+        displayGroupIcon: benefit.displayGroupIcon,
+      })
+      .onConflictDoUpdate({
+        target: schema.benefits.id,
+        set: {
+          name: benefit.name,
+          creditAmount: benefit.creditAmount,
+          cycle: benefit.cycle,
+          merchantPatterns: benefit.merchantPatterns,
+          autoMatchable: benefit.autoMatchable,
+          requiresActivation: benefit.requiresActivation,
+          priority: benefit.priority,
+          description: benefit.description,
+        },
+      });
+  }
 }

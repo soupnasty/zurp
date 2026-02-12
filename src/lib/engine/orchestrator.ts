@@ -7,6 +7,8 @@ import { detectAnniversary } from "./anniversary-detector";
 import { getCurrentCycleBounds } from "./cycle-utils";
 import { getCardDefinition } from "@/lib/cards";
 import { generateAndPersistInsights } from "@/lib/insights/orchestrator";
+import { computeAndPersistPointsSummary, clearPointsSummary } from "@/lib/points/persistence";
+import { computeAndPersistSimulations, clearSimulations } from "@/lib/points/simulation-persistence";
 
 /**
  * Process new transactions for a Plaid connection.
@@ -420,12 +422,45 @@ export async function processTransactionsForConnection(
     }
   }
 
+  // Compute and persist points earning summary
+  try {
+    await computeAndPersistPointsSummary(
+      connection.userId,
+      cardProfile.id,
+      cardProfile.cardType,
+      cardProfile.anniversaryDate
+    );
+  } catch (err) {
+    console.error("Points summary failed:", err);
+  }
+
+  // Precompute card simulations (6 cards × 2 portal modes)
+  try {
+    await computeAndPersistSimulations(
+      connection.userId,
+      cardProfile.id,
+      cardProfile.anniversaryDate
+    );
+  } catch (err) {
+    console.error("Card simulations failed:", err);
+  }
+
   // Generate insights after all matches are written
   try {
     await generateAndPersistInsights(connection.userId);
   } catch (err) {
     console.error("Insight generation failed:", err);
     // Non-fatal: don't block transaction processing
+  }
+
+  // Write debug transaction report (dev only, tree-shaken in production)
+  if (process.env.NODE_ENV === "development") {
+    try {
+      const { writeDebugReport } = await import("./debug-report");
+      await writeDebugReport(plaidConnectionId);
+    } catch (err) {
+      console.error("Debug report failed:", err);
+    }
   }
 }
 
@@ -516,6 +551,10 @@ export async function reprocessAllTransactions(cardProfileId: string) {
   if (!cardProfile) return;
 
   const connectionId = cardProfile.plaidConnectionId;
+
+  // Clear points summary and simulations for this card profile
+  await clearPointsSummary(cardProfileId);
+  await clearSimulations(cardProfileId);
 
   // Reset all matched transactions to unmatched
   await db
