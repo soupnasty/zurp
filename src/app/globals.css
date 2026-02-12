@@ -191,7 +191,7 @@ summary {
   font-weight: 700;
   letter-spacing: 2.5px;
   text-transform: uppercase;
-  color: var(--text-secondary);
+  color: var(--text-dim);
 }
 
 /* ── Z-path fill loading animation (A2 — logo guide) ── */
@@ -319,6 +319,48 @@ summary {
   0%, 30% { opacity: 0; }
   40%, 72% { opacity: 1; }
   88%, 100% { opacity: 0; }
+}
+
+/* ── How it works — one-shot entrance animations ── */
+
+@keyframes hiw-slide-right {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes hiw-slide-left {
+  from { opacity: 0; transform: translateX(12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes hiw-draw-check {
+  from { stroke-dashoffset: 20; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes hiw-bar-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes hiw-fade-dim {
+  from { opacity: 0; }
+  to { opacity: 0.35; }
+}
+@keyframes hiw-fill-bar {
+  from { width: 0%; }
+  to { width: var(--fill-to); }
+}
+@keyframes hiw-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ── Track section one-shot animations ── */
+
+@keyframes tracker-fill {
+  from { width: 0%; }
+  to { width: 37%; }
+}
+@keyframes benefit-fill {
+  from { width: 0%; }
+  to { width: var(--fill-to); }
 }
 
 /* ── Insights section animations ── */

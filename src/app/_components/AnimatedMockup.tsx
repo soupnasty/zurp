@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, type ReactNode } from "react";
+import React, { useRef, useEffect, type ReactNode } from "react";
 
 /**
  * Wrapper that adds a `.mock-active` CSS class when the element scrolls
@@ -10,9 +10,11 @@ import { useRef, useEffect, type ReactNode } from "react";
 export function AnimatedMockup({
   children,
   className = "",
+  style,
 }: {
   children: ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -35,7 +37,7 @@ export function AnimatedMockup({
   }, []);
 
   return (
-    <div ref={ref} className={`mock-container ${className}`}>
+    <div ref={ref} className={`mock-container ${className}`} style={style}>
       {children}
     </div>
   );
