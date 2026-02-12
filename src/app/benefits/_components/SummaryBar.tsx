@@ -8,11 +8,13 @@ function FlipCard({
   label,
   tooltip,
   color,
+  subText,
   children,
 }: {
   label: string;
   tooltip: string;
   color: string;
+  subText?: string;
   children: React.ReactNode;
 }) {
   const [flipped, setFlipped] = useState(false);
@@ -34,7 +36,10 @@ function FlipCard({
         style={{ transform: flipped ? "rotateY(180deg)" : "none" }}
       >
         {/* Front */}
-        <div className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-secondary)] p-[var(--space-md)] shadow-sm [backface-visibility:hidden]">
+        <div
+          className="flex flex-col rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-secondary)] p-[var(--space-md)] shadow-sm [backface-visibility:hidden]"
+          style={{ minHeight: "6.5rem" }}
+        >
           <p className="label-caps flex items-center gap-1.5">
             {label}
             <Info size={14} className="text-[var(--text-secondary)]" />
@@ -44,6 +49,12 @@ function FlipCard({
             style={{ color }}
           >
             {children}
+          </p>
+          <p
+            className="mt-0.5 text-[var(--text-caption)] text-[var(--text-secondary)]"
+            style={{ minHeight: "1.25rem" }}
+          >
+            {subText ?? "\u00A0"}
           </p>
         </div>
 
@@ -58,60 +69,66 @@ function FlipCard({
   );
 }
 
-/**
- * ROI color based on pace: compare ROI% against how far through the card year we are.
- * Green = on track or ahead, Warning = falling behind, Danger = significantly behind.
- */
-function getRoiColor(roiPct: number, yearProgressPct: number): string {
-  if (roiPct >= 100) return "var(--color-success)";
-
-  // Expected ROI at this point in the year (linear pace to break even)
-  const expectedPct = yearProgressPct;
-
-  if (roiPct >= expectedPct * 0.5) return "var(--color-success)";
-  if (roiPct >= expectedPct * 0.25) return "var(--color-warning)";
-  return "var(--color-danger)";
-}
-
 interface SummaryBarProps {
   summary: CardSummary;
   capturedLabel: string;
 }
 
 export function SummaryBar({ summary, capturedLabel }: SummaryBarProps) {
+  const hasPoints = summary.pointsEarned !== null && summary.pointsEarned > 0;
+  const cppLabel = summary.conservativeCpp
+    ? `${summary.conservativeCpp}¢ each`
+    : "";
+
   const stats = [
     {
-      label: "Credits Used",
+      label: "Points Earned",
+      tooltip: hasPoints
+        ? `${summary.pointsEarned!.toLocaleString()} points valued at ${cppLabel} (conservative). Transfer partners may yield more.`
+        : "Connect your card and make purchases to start earning points",
+      value: hasPoints
+        ? `$${summary.pointsValueConservative!.toLocaleString()}`
+        : "$0",
+      subText: hasPoints
+        ? `from ${summary.pointsEarned!.toLocaleString()} pts`
+        : "no transactions yet",
+      color: hasPoints ? "var(--accent)" : "var(--text-primary)",
+    },
+    {
+      label: "Benefits Used",
       tooltip: `Credits captured ${capturedLabel}`,
-      value: summary.creditsUsed,
-      format: "dollar" as const,
-      color: summary.creditsUsed > 0 ? "var(--color-success)" : "var(--text-primary)",
+      value: `$${Math.abs(summary.creditsUsed).toLocaleString()}`,
+      subText: `of $${summary.creditsAvailable.toLocaleString()} available`,
+      color:
+        summary.creditsUsed > 0
+          ? "var(--color-success)"
+          : "var(--text-primary)",
     },
     {
-      label: "Net Cost",
-      tooltip: "Your annual fee after benefits. Green means it's paid off.",
-      value: summary.effectiveFee,
-      format: "dollar" as const,
-      color: summary.effectiveFee <= 0 ? "var(--color-success)" : "var(--color-danger)",
-    },
-    {
-      label: "ROI",
-      tooltip: "Percentage of the annual fee recovered",
-      value: summary.roiPercent,
-      format: "percent" as const,
-      color: getRoiColor(summary.roiPercent, summary.yearProgressPct),
+      label: "Net Value",
+      tooltip:
+        "Credits + points value - annual fee. Green means your card is paying for itself.",
+      value: `${
+        summary.netValue !== null && summary.netValue >= 0 ? "+" : ""
+      }$${Math.abs(
+        summary.netValue ?? summary.creditsUsed - summary.annualFee
+      ).toLocaleString()}`,
+      subText: `against $${summary.annualFee.toLocaleString()} fee`,
+      color:
+        (summary.netValue ?? summary.creditsUsed - summary.annualFee) >= 0
+          ? "var(--color-success)"
+          : "var(--color-danger)",
     },
     {
       label: "Expiring Soon",
-      tooltip: "Unused credits that reset within 14 days — use them or lose them",
-      value: summary.valueAtRisk,
-      format: "dollar" as const,
+      tooltip:
+        "Unused credits that reset within 14 days — use them or lose them",
+      value: `$${Math.abs(summary.valueAtRisk).toLocaleString()}`,
+      subText: "within 14 days",
       color:
         summary.valueAtRisk === 0
-          ? "var(--color-success)"
-          : summary.valueAtRisk >= 50
-            ? "var(--color-danger)"
-            : "var(--color-warning)",
+          ? "var(--text-secondary)"
+          : "var(--color-warning)",
     },
   ];
 
@@ -123,10 +140,9 @@ export function SummaryBar({ summary, capturedLabel }: SummaryBarProps) {
           label={stat.label}
           tooltip={stat.tooltip}
           color={stat.color}
+          subText={stat.subText}
         >
-          {stat.format === "dollar"
-            ? `$${Math.abs(stat.value).toLocaleString()}`
-            : `${stat.value}%`}
+          {stat.value}
         </FlipCard>
       ))}
     </div>

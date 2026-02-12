@@ -7,7 +7,7 @@ import { BenefitDetailModal } from "./BenefitDetailModal";
 import { BenefitIcon } from "@/components/ui/BenefitIcon";
 import type { BenefitGroup } from "../page";
 
-export function BenefitCard({ group, capturedLabel = "this year" }: { group: BenefitGroup; capturedLabel?: string }) {
+export function BenefitCard({ group, capturedLabel = "this year", simulated = false }: { group: BenefitGroup; capturedLabel?: string; simulated?: boolean }) {
   const [modalOpen, setModalOpen] = useState(false);
 
   const used = group.totalUsed;
@@ -37,7 +37,7 @@ export function BenefitCard({ group, capturedLabel = "this year" }: { group: Ben
             </div>
 
             <span className="rounded-[var(--radius-md)] border border-[var(--accent)]/30 px-2.5 py-1 text-[var(--text-caption)] font-medium text-[var(--accent)] transition-colors hover:bg-[var(--accent)]/10">
-              view
+              {simulated ? "estimated" : "view"}
             </span>
           </div>
 
@@ -161,6 +161,7 @@ export function BenefitCard({ group, capturedLabel = "this year" }: { group: Ben
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         group={group}
+        readOnly={simulated}
       />
     </>
   );

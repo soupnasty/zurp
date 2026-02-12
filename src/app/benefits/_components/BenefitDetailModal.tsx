@@ -38,12 +38,14 @@ interface BenefitDetailModalProps {
   open: boolean;
   onClose: () => void;
   group: BenefitGroup;
+  readOnly?: boolean;
 }
 
 export function BenefitDetailModal({
   open,
   onClose,
   group,
+  readOnly = false,
 }: BenefitDetailModalProps) {
   const details = group.details;
   const matchedTransactions = group.benefitTransactions;
@@ -171,7 +173,7 @@ export function BenefitDetailModal({
       )}
 
       {/* Subscription activation panel */}
-      {isSubscription && (
+      {isSubscription && !readOnly && (
         <div className="mb-[var(--space-lg)] rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-primary)] p-[var(--space-md)]">
           <div className="flex items-baseline justify-between">
             <span className="font-data text-h3 font-semibold text-[var(--accent)]">
@@ -278,8 +280,15 @@ export function BenefitDetailModal({
         </div>
       )}
 
+      {/* Estimated note for simulated mode */}
+      {readOnly && (
+        <p className="mt-[var(--space-sm)] text-[var(--text-caption)] text-[var(--text-secondary)] italic">
+          Estimated from your spending history
+        </p>
+      )}
+
       {/* Matched transactions */}
-      {matchedTransactions.length > 0 && (
+      {!readOnly && matchedTransactions.length > 0 && (
         <div className="mt-[var(--space-md)] border-t border-[var(--border-default)] pt-[var(--space-md)]">
           <h3 className="label-caps mb-[var(--space-sm)]">
             Matched Transactions
