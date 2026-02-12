@@ -5,6 +5,7 @@ import { amexGoldEarnConfig } from "./amex-gold";
 import { amexPlatinumEarnConfig } from "./amex-platinum";
 import { citiStrataEliteEarnConfig } from "./citi-strata-elite";
 import { ventureXEarnConfig } from "./capital-one-venture-x";
+import { capitalOneVentureEarnConfig } from "./capital-one-venture";
 import { robinhoodGoldEarnConfig } from "./robinhood-gold";
 import { biltPalladiumEarnConfig } from "./bilt-palladium";
 
@@ -15,6 +16,7 @@ const allConfigs: EarnConfig[] = [
   amexPlatinumEarnConfig,
   citiStrataEliteEarnConfig,
   ventureXEarnConfig,
+  capitalOneVentureEarnConfig,
   robinhoodGoldEarnConfig,
   biltPalladiumEarnConfig,
 ];

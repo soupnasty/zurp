@@ -286,6 +286,19 @@ async function seed() {
     { cardType: "robinhood_gold", benefitKey: "rh_gold_no_ftf", benefitPartner: "Robinhood Travel", competitorMerchant: "JetBlue", plaidMerchantPattern: "jetblue", category: "flights", insightType: "A1" },
     { cardType: "robinhood_gold", benefitKey: "rh_gold_no_ftf", benefitPartner: "Robinhood Travel", competitorMerchant: "Alaska Airlines", plaidMerchantPattern: "alaska air", category: "flights", insightType: "A1" },
 
+    // ── Capital One Venture entries ──
+    // Hotels (OTA/direct) → Capital One Travel (A1 — portal redirect for 5x vs 2x)
+    { cardType: "capital_one_venture", benefitKey: "cov_annual_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Hotels.com", plaidMerchantPattern: "hotels.com", category: "hotels", insightType: "A1" },
+    { cardType: "capital_one_venture", benefitKey: "cov_annual_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Booking.com", plaidMerchantPattern: "booking.com", category: "hotels", insightType: "A1" },
+    { cardType: "capital_one_venture", benefitKey: "cov_annual_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Expedia", plaidMerchantPattern: "expedia", category: "hotels", insightType: "A1" },
+    { cardType: "capital_one_venture", benefitKey: "cov_annual_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Priceline", plaidMerchantPattern: "priceline", category: "hotels", insightType: "A1" },
+    { cardType: "capital_one_venture", benefitKey: "cov_annual_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Marriott", plaidMerchantPattern: "marriott", category: "hotels", insightType: "A1" },
+    { cardType: "capital_one_venture", benefitKey: "cov_annual_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Hilton", plaidMerchantPattern: "hilton", category: "hotels", insightType: "A1" },
+    { cardType: "capital_one_venture", benefitKey: "cov_annual_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Hyatt", plaidMerchantPattern: "hyatt", category: "hotels", insightType: "A1" },
+    { cardType: "capital_one_venture", benefitKey: "cov_annual_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "IHG", plaidMerchantPattern: "ihg", category: "hotels", insightType: "A1" },
+    { cardType: "capital_one_venture", benefitKey: "cov_annual_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Airbnb", plaidMerchantPattern: "airbnb", category: "hotels", insightType: "A1" },
+    { cardType: "capital_one_venture", benefitKey: "cov_annual_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "VRBO", plaidMerchantPattern: "vrbo", category: "hotels", insightType: "A1" },
+
     // ── Bilt Palladium entries ──
     // Hotels (OTA/direct) → Bilt Travel (A1 — hotel credit redirect)
     { cardType: "bilt_palladium", benefitKey: "bilt_hotel_credit_h1", benefitPartner: "Bilt Travel", competitorMerchant: "Hotels.com", plaidMerchantPattern: "hotels.com", category: "hotels", insightType: "A1" },

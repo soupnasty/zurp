@@ -5,6 +5,7 @@ import { amexGold } from "./amex-gold";
 import { amexPlatinum } from "./amex-platinum";
 import { citiStrataElite } from "./citi-strata-elite";
 import { capitalOneVentureX } from "./capital-one-venture-x";
+import { capitalOneVenture } from "./capital-one-venture";
 import { robinhoodGold } from "./robinhood-gold";
 import { biltPalladium } from "./bilt-palladium";
 
@@ -15,6 +16,7 @@ export const cardRegistry: CardDefinition[] = [
   amexPlatinum,
   citiStrataElite,
   capitalOneVentureX,
+  capitalOneVenture,
   robinhoodGold,
   biltPalladium,
 ];

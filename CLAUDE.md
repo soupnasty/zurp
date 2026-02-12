@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-A credit card benefits tracker that syncs transactions via Plaid, matches them against card-specific benefit rulesets, and shows users which credits they've used, which are expiring, and whether each card is paying for itself. Supports Chase Sapphire Reserve, Chase Sapphire Preferred, Amex Gold, Amex Platinum, Citi Strata Elite, Capital One Venture X, Robinhood Gold, and Bilt Palladium.
+A credit card benefits tracker that syncs transactions via Plaid, matches them against card-specific benefit rulesets, and shows users which credits they've used, which are expiring, and whether each card is paying for itself. Supports Chase Sapphire Reserve, Chase Sapphire Preferred, Amex Gold, Amex Platinum, Citi Strata Elite, Capital One Venture X, Capital One Venture, Robinhood Gold, and Bilt Palladium.
 
 ## Tech Stack
 
@@ -113,10 +113,10 @@ On-demand simulation engine that answers "which card earns the most for your act
 
 - **Category mapper** (`categories.ts`): 3-tier classification — merchant name match → Plaid category fallback → `other`. Uses 26-category taxonomy separate from the 8-category spending system.
 - **Merchant map** (`merchant-map.ts`): ~200 static merchant→category entries with priority-based matching.
-- **Earn configs** (`earn-configs/`): Per-card earn rate definitions (bonus categories, caps, conditions, point valuations). Files: `chase-sapphire-reserve.ts`, `chase-sapphire-preferred.ts`, `amex-gold.ts`, `amex-platinum.ts`, `citi-strata-elite.ts`, `capital-one-venture-x.ts`, `robinhood-gold.ts`, `bilt-palladium.ts`.
+- **Earn configs** (`earn-configs/`): Per-card earn rate definitions (bonus categories, caps, conditions, point valuations). Files: `chase-sapphire-reserve.ts`, `chase-sapphire-preferred.ts`, `amex-gold.ts`, `amex-platinum.ts`, `citi-strata-elite.ts`, `capital-one-venture-x.ts`, `capital-one-venture.ts`, `robinhood-gold.ts`, `bilt-palladium.ts`.
 - **Calculator** (`calculator.ts`): Per-transaction points calculation with cap tracking. Supports `time_window` conditions for time-based earn rates (e.g., Citi Nights).
 - **Simulator** (`simulator.ts`): Full pipeline — classify → calculate per card → aggregate → compute net value (points + benefits - fee). Supports `portalMode` to reclassify travel as `travel_portal`.
-- **Perk matrix** (`perk-matrix.ts`): Static benefit comparison data for the Benefits & Perks tab (8 cards).
+- **Perk matrix** (`perk-matrix.ts`): Static benefit comparison data for the Benefits & Perks tab (9 cards).
 - **Queries** (`queries.ts`): Server-only DB queries for transaction data (includes `datetime` for time-window matching).
 - **Orchestrator** (`index.ts`): `computeComparison(userId, options?)` — main entry point called from the compare page. Accepts `{ portalMode?: boolean }`.
 
@@ -126,13 +126,15 @@ No new DB tables — computed on-demand from existing transaction data.
 
 Card definitions live in `src/lib/cards/`. Each card file exports a `CardDefinition` with all benefits. The registry at `src/lib/cards/index.ts` aggregates them. `detect.ts` auto-detects card type from Plaid account metadata. To add a new card, create a new file in `src/lib/cards/` and register it in `index.ts`.
 
-8 cards: CSR, CSP, Amex Gold, Amex Platinum, Citi Strata Elite, Capital One Venture X, Robinhood Gold, Bilt Palladium.
+9 cards: CSR, CSP, Amex Gold, Amex Platinum, Citi Strata Elite, Capital One Venture X, Capital One Venture, Robinhood Gold, Bilt Palladium.
 
 The Amex Platinum (`amex-platinum.ts`) has 21 benefits across 5 period types including quarterly (a new cycle type). It uses `activeMonths` gating for Uber Cash month-specific credits ($15 Jan-Nov, $35 Dec).
 
 The Citi Strata Elite (`citi-strata-elite.ts`) has 2 benefits (hotel collection credit, Global Entry/TSA PreCheck). Its primary value is in earning rates via the points engine, not statement credits.
 
 The Capital One Venture X (`capital-one-venture-x.ts`) has 3 benefits ($300 travel credit, 10K anniversary miles, Global Entry). Simplest premium card — 2x base rate on everything, 10x/5x portal hotels/flights, no monthly/quarterly credits.
+
+The Capital One Venture (`capital-one-venture.ts`) has 3 benefits ($250 annual travel credit, $120 Global Entry/TSA PreCheck every 4 years, No FTF). Mid-tier sibling to Venture X — flat 2x base rate, 5x portal hotels/rentals (NOT flights — those stay 2x). $95/yr fee. Same Capital One miles pool. Points valued at 1.0-1.5cpp. Issuer is "capital_one" (same as Venture X).
 
 The Robinhood Gold (`robinhood-gold.ts`) has 1 benefit (No FTF). Its value is entirely in its 3x flat earning rate (highest base rate of any card). 5x on Robinhood Travel portal with $3,500/yr cap. $50/yr fee (Robinhood Gold membership). Points valued at 0.7-1.0cpp (brokerage transfer). No transfer partners, no lounges, no statement credits.
 
@@ -198,6 +200,7 @@ src/
 - [x] Phase 11: Capital One Venture X — 3 benefits, 2x base rate, 10x/5x portal earn config, 6-card comparison, 18 competitor map entries
 - [x] Phase 12: Robinhood Gold — 1 benefit (No FTF), 3x base rate, 5x portal with $3,500/yr cap, 7-card comparison, 10 competitor map entries
 - [x] Phase 13: Bilt Palladium — 4 benefits (hotel credit x2, Bilt Cash annual, No FTF), 2x base rate, 23 transfer partners, 8-card comparison, 10 competitor map entries
+- [x] Phase 14: Capital One Venture — 3 benefits (travel credit, Global Entry, No FTF), 2x base rate, 5x portal hotels/rentals, 9-card comparison, 10 competitor map entries
 
 ### Sync Architecture
 
