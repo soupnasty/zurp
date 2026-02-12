@@ -1,55 +1,5 @@
-const CARDS = {
-  csr: {
-    issuer: "Chase",
-    name: "Sapphire Reserve",
-    bg: "linear-gradient(145deg, #1a1f3a 0%, #0d1129 40%, #1e2651 100%)",
-    glow: "rgba(90,100,200,0.15)",
-    issuerColor: "#c5cbe8",
-    nameColor: "#e0e4f5",
-  },
-  csp: {
-    issuer: "Chase",
-    name: "Sapphire Preferred",
-    bg: "linear-gradient(145deg, #0f2a4a 0%, #0a1c33 40%, #143d5e 100%)",
-    glow: "rgba(40,120,200,0.12)",
-    issuerColor: "#a0c4e0",
-    nameColor: "#c8dff0",
-  },
-  gold: {
-    issuer: "American Express",
-    name: "Gold Card",
-    bg: "linear-gradient(145deg, #3d3520 0%, #2a2415 40%, #4a4028 100%)",
-    glow: "rgba(200,170,80,0.12)",
-    issuerColor: "#c4b07a",
-    nameColor: "#e0d0a0",
-  },
-  plat: {
-    issuer: "American Express",
-    name: "Platinum Card",
-    bg: "linear-gradient(145deg, #2e2e34 0%, #1c1c22 40%, #3a3a42 100%)",
-    glow: "rgba(180,180,200,0.1)",
-    issuerColor: "#b0b0b8",
-    nameColor: "#d4d4dc",
-  },
-  ventx: {
-    issuer: "Capital One",
-    name: "Venture X",
-    bg: "linear-gradient(145deg, #1a1a1a 0%, #0d0d0d 40%, #262626 100%)",
-    glow: "rgba(255,255,255,0.06)",
-    issuerColor: "#a0a0a0",
-    nameColor: "#d0d0d0",
-  },
-  strata: {
-    issuer: "Citi",
-    name: "Strata Elite",
-    bg: "linear-gradient(145deg, #0a2a3d 0%, #061c2a 40%, #103850 100%)",
-    glow: "rgba(60,160,220,0.1)",
-    issuerColor: "#7ab8d8",
-    nameColor: "#a0d4ee",
-  },
-} as const;
-
-export type CardChipId = keyof typeof CARDS;
+import { CARD_VISUALS, type CardVisualId } from "@/lib/card-visuals";
+import { ISSUER_LOGOS } from "@/components/issuer-logos";
 
 /** EMV chip icon — shared across all card chips */
 function EmvChip() {
@@ -100,8 +50,11 @@ function EmvChip() {
   );
 }
 
-export function CardChip({ cardId }: { cardId: CardChipId }) {
-  const card = CARDS[cardId];
+export { type CardVisualId };
+
+export function CardChip({ cardId }: { cardId: CardVisualId }) {
+  const card = CARD_VISUALS[cardId];
+  const LogoComponent = ISSUER_LOGOS[card.issuer];
 
   return (
     <div
@@ -129,6 +82,23 @@ export function CardChip({ cardId }: { cardId: CardChipId }) {
 
       <EmvChip />
 
+      {/* Issuer logo */}
+      {LogoComponent && (
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            top: 8,
+            right: 10,
+            width: 32,
+            height: 32,
+            color: card.issuerColor,
+            opacity: 0.15,
+          }}
+        >
+          <LogoComponent />
+        </div>
+      )}
+
       <div
         style={{
           fontSize: 10,
@@ -140,7 +110,7 @@ export function CardChip({ cardId }: { cardId: CardChipId }) {
           marginBottom: 2,
         }}
       >
-        {card.issuer}
+        {card.issuerLabel}
       </div>
       <div
         style={{
@@ -158,11 +128,11 @@ export function CardChip({ cardId }: { cardId: CardChipId }) {
 }
 
 /** All card IDs in marquee order */
-export const MARQUEE_CARDS: CardChipId[] = [
-  "csr",
-  "csp",
-  "gold",
-  "plat",
-  "ventx",
-  "strata",
+export const MARQUEE_CARDS: CardVisualId[] = [
+  "chase_sapphire_reserve",
+  "chase_sapphire_preferred",
+  "amex_gold",
+  "amex_platinum",
+  "capital_one_venture_x",
+  "citi_strata_elite",
 ];
