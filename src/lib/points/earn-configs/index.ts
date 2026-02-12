@@ -6,6 +6,7 @@ import { amexPlatinumEarnConfig } from "./amex-platinum";
 import { citiStrataEliteEarnConfig } from "./citi-strata-elite";
 import { ventureXEarnConfig } from "./capital-one-venture-x";
 import { robinhoodGoldEarnConfig } from "./robinhood-gold";
+import { biltPalladiumEarnConfig } from "./bilt-palladium";
 
 const allConfigs: EarnConfig[] = [
   csrEarnConfig,
@@ -15,6 +16,7 @@ const allConfigs: EarnConfig[] = [
   citiStrataEliteEarnConfig,
   ventureXEarnConfig,
   robinhoodGoldEarnConfig,
+  biltPalladiumEarnConfig,
 ];
 
 export function getAllEarnConfigs(): EarnConfig[] {

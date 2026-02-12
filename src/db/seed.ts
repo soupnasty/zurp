@@ -285,6 +285,19 @@ async function seed() {
     { cardType: "robinhood_gold", benefitKey: "rh_gold_no_ftf", benefitPartner: "Robinhood Travel", competitorMerchant: "Delta", plaidMerchantPattern: "delta", category: "flights", insightType: "A1" },
     { cardType: "robinhood_gold", benefitKey: "rh_gold_no_ftf", benefitPartner: "Robinhood Travel", competitorMerchant: "JetBlue", plaidMerchantPattern: "jetblue", category: "flights", insightType: "A1" },
     { cardType: "robinhood_gold", benefitKey: "rh_gold_no_ftf", benefitPartner: "Robinhood Travel", competitorMerchant: "Alaska Airlines", plaidMerchantPattern: "alaska air", category: "flights", insightType: "A1" },
+
+    // ── Bilt Palladium entries ──
+    // Hotels (OTA/direct) → Bilt Travel (A1 — hotel credit redirect)
+    { cardType: "bilt_palladium", benefitKey: "bilt_hotel_credit_h1", benefitPartner: "Bilt Travel", competitorMerchant: "Hotels.com", plaidMerchantPattern: "hotels.com", category: "hotels", insightType: "A1" },
+    { cardType: "bilt_palladium", benefitKey: "bilt_hotel_credit_h1", benefitPartner: "Bilt Travel", competitorMerchant: "Booking.com", plaidMerchantPattern: "booking.com", category: "hotels", insightType: "A1" },
+    { cardType: "bilt_palladium", benefitKey: "bilt_hotel_credit_h1", benefitPartner: "Bilt Travel", competitorMerchant: "Expedia", plaidMerchantPattern: "expedia", category: "hotels", insightType: "A1" },
+    { cardType: "bilt_palladium", benefitKey: "bilt_hotel_credit_h1", benefitPartner: "Bilt Travel", competitorMerchant: "Priceline", plaidMerchantPattern: "priceline", category: "hotels", insightType: "A1" },
+    { cardType: "bilt_palladium", benefitKey: "bilt_hotel_credit_h1", benefitPartner: "Bilt Travel", competitorMerchant: "Marriott", plaidMerchantPattern: "marriott", category: "hotels", insightType: "A1" },
+    { cardType: "bilt_palladium", benefitKey: "bilt_hotel_credit_h1", benefitPartner: "Bilt Travel", competitorMerchant: "Hilton", plaidMerchantPattern: "hilton", category: "hotels", insightType: "A1" },
+    { cardType: "bilt_palladium", benefitKey: "bilt_hotel_credit_h1", benefitPartner: "Bilt Travel", competitorMerchant: "Hyatt", plaidMerchantPattern: "hyatt", category: "hotels", insightType: "A1" },
+    { cardType: "bilt_palladium", benefitKey: "bilt_hotel_credit_h1", benefitPartner: "Bilt Travel", competitorMerchant: "IHG", plaidMerchantPattern: "ihg", category: "hotels", insightType: "A1" },
+    { cardType: "bilt_palladium", benefitKey: "bilt_hotel_credit_h1", benefitPartner: "Bilt Travel", competitorMerchant: "Airbnb", plaidMerchantPattern: "airbnb", category: "hotels", insightType: "A1" },
+    { cardType: "bilt_palladium", benefitKey: "bilt_hotel_credit_h1", benefitPartner: "Bilt Travel", competitorMerchant: "VRBO", plaidMerchantPattern: "vrbo", category: "hotels", insightType: "A1" },
   ];
 
   for (const entry of competitorEntries) {

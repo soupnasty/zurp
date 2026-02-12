@@ -6,6 +6,7 @@ import { amexPlatinum } from "./amex-platinum";
 import { citiStrataElite } from "./citi-strata-elite";
 import { capitalOneVentureX } from "./capital-one-venture-x";
 import { robinhoodGold } from "./robinhood-gold";
+import { biltPalladium } from "./bilt-palladium";
 
 export const cardRegistry: CardDefinition[] = [
   chaseSapphireReserve,
@@ -15,6 +16,7 @@ export const cardRegistry: CardDefinition[] = [
   citiStrataElite,
   capitalOneVentureX,
   robinhoodGold,
+  biltPalladium,
 ];
 
 export function getCardDefinition(cardId: string): CardDefinition | undefined {
