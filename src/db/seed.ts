@@ -299,6 +299,19 @@ async function seed() {
     { cardType: "capital_one_venture", benefitKey: "cov_annual_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Airbnb", plaidMerchantPattern: "airbnb", category: "hotels", insightType: "A1" },
     { cardType: "capital_one_venture", benefitKey: "cov_annual_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "VRBO", plaidMerchantPattern: "vrbo", category: "hotels", insightType: "A1" },
 
+    // ── Citi Strata Premier entries ──
+    // Hotels (OTA/direct) → Citi Travel (A1 — hotel credit redirect for 10x portal)
+    { cardType: "citi_strata_premier", benefitKey: "citip_annual_hotel_credit", benefitPartner: "Citi Travel", competitorMerchant: "Hotels.com", plaidMerchantPattern: "hotels.com", category: "hotels", insightType: "A1" },
+    { cardType: "citi_strata_premier", benefitKey: "citip_annual_hotel_credit", benefitPartner: "Citi Travel", competitorMerchant: "Booking.com", plaidMerchantPattern: "booking.com", category: "hotels", insightType: "A1" },
+    { cardType: "citi_strata_premier", benefitKey: "citip_annual_hotel_credit", benefitPartner: "Citi Travel", competitorMerchant: "Expedia", plaidMerchantPattern: "expedia", category: "hotels", insightType: "A1" },
+    { cardType: "citi_strata_premier", benefitKey: "citip_annual_hotel_credit", benefitPartner: "Citi Travel", competitorMerchant: "Priceline", plaidMerchantPattern: "priceline", category: "hotels", insightType: "A1" },
+    { cardType: "citi_strata_premier", benefitKey: "citip_annual_hotel_credit", benefitPartner: "Citi Travel", competitorMerchant: "Marriott", plaidMerchantPattern: "marriott", category: "hotels", insightType: "A1" },
+    { cardType: "citi_strata_premier", benefitKey: "citip_annual_hotel_credit", benefitPartner: "Citi Travel", competitorMerchant: "Hilton", plaidMerchantPattern: "hilton", category: "hotels", insightType: "A1" },
+    { cardType: "citi_strata_premier", benefitKey: "citip_annual_hotel_credit", benefitPartner: "Citi Travel", competitorMerchant: "Hyatt", plaidMerchantPattern: "hyatt", category: "hotels", insightType: "A1" },
+    { cardType: "citi_strata_premier", benefitKey: "citip_annual_hotel_credit", benefitPartner: "Citi Travel", competitorMerchant: "IHG", plaidMerchantPattern: "ihg", category: "hotels", insightType: "A1" },
+    { cardType: "citi_strata_premier", benefitKey: "citip_annual_hotel_credit", benefitPartner: "Citi Travel", competitorMerchant: "Airbnb", plaidMerchantPattern: "airbnb", category: "hotels", insightType: "A1" },
+    { cardType: "citi_strata_premier", benefitKey: "citip_annual_hotel_credit", benefitPartner: "Citi Travel", competitorMerchant: "VRBO", plaidMerchantPattern: "vrbo", category: "hotels", insightType: "A1" },
+
     // ── Bilt Palladium entries ──
     // Hotels (OTA/direct) → Bilt Travel (A1 — hotel credit redirect)
     { cardType: "bilt_palladium", benefitKey: "bilt_hotel_credit_h1", benefitPartner: "Bilt Travel", competitorMerchant: "Hotels.com", plaidMerchantPattern: "hotels.com", category: "hotels", insightType: "A1" },
