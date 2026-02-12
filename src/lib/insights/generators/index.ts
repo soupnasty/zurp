@@ -8,16 +8,20 @@ import { generateB3 } from "./b3-underused-credit";
 import { generateC0 } from "./c0-value-snapshot";
 import { generateC1 } from "./c1-benefit-maxed";
 import { generateC2 } from "./c2-roi-milestone";
+import { generateP1 } from "./p1-points-highlight";
+import { generateP2 } from "./p2-missed-bonus";
 
 const generators: InsightGenerator[] = [
   generateA1,
   generateA2,
+  generateP2,
   generateB1,
   generateB2,
   generateB3,
   generateC0,
   generateC1,
   generateC2,
+  generateP1,
 ];
 
 /**

@@ -15,6 +15,21 @@ export interface GeneratorContext {
   totalBenefitsCaptured: number;
   /** Existing ROI milestone dedup keys that have already been generated. */
   existingMilestoneKeys: string[];
+  /** Points earning data (null if no summary exists). */
+  pointsData?: {
+    totalPoints: number;
+    valueConservative: number;
+    conservativeCpp: number;
+    cardId: string;
+    baseRate: number;
+    categories: Array<{
+      category: string;
+      spend: number;
+      points: number;
+      earnRate: number;
+      valueConservative: number;
+    }>;
+  } | null;
 }
 
 export interface CompetitorMapEntry {

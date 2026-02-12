@@ -1,6 +1,6 @@
 // ── Insights Engine v2 types ──
 
-export type InsightCategory = "A1" | "A2" | "B1" | "B2" | "B3" | "C0" | "C1" | "C2";
+export type InsightCategory = "A1" | "A2" | "P2" | "B1" | "B2" | "B3" | "C0" | "C1" | "C2" | "P1";
 
 export type InsightState = "pending" | "shown" | "expired" | "superseded" | "dismissed";
 
@@ -72,6 +72,8 @@ export interface InsightImpressionHistory {
 }
 
 export function insightGroup(category: InsightCategory): InsightGroup {
+  if (category === "P2") return "A"; // Missed bonus → redirect group
+  if (category === "P1") return "C"; // Points highlight → celebrate group
   if (category.startsWith("A")) return "A";
   if (category.startsWith("B")) return "B";
   return "C";

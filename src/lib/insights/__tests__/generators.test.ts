@@ -5,6 +5,10 @@ import { generateA2 } from "../generators/a2-subscription-swap";
 import { generateB1 } from "../generators/b1-unused-credit";
 import { generateB3 } from "../generators/b3-underused-credit";
 import { generateC1 } from "../generators/c1-benefit-maxed";
+import { generateC0 } from "../generators/c0-value-snapshot";
+import { generateC2 } from "../generators/c2-roi-milestone";
+import { generateP1 } from "../generators/p1-points-highlight";
+import { generateP2 } from "../generators/p2-missed-bonus";
 import type { GeneratorContext, CompetitorMapEntry } from "../generators/types";
 import type { BenefitUsageSummary } from "@/lib/types";
 import type { CategorizedTransaction } from "@/lib/spending/types";
@@ -373,6 +377,253 @@ describe("C1: Benefit Maxed", () => {
     });
 
     expect(generateC1(ctx)).toHaveLength(0);
+  });
+});
+
+describe("C2: ROI Milestone with Points", () => {
+  it("includes points in total value for milestone calculation", () => {
+    const ctx = makeCtx({
+      annualFee: 550,
+      cardType: "amex_platinum",
+      totalBenefitsCaptured: 200,
+      // Pre-fill lower milestones so it reaches the 100% check
+      existingMilestoneKeys: [
+        "c2:amex_platinum:50pct",
+        "c2:amex_platinum:75pct",
+      ],
+      pointsData: {
+        totalPoints: 20000,
+        valueConservative: 400,
+        conservativeCpp: 2.0,
+        cardId: "amex_platinum",
+        baseRate: 1,
+        categories: [],
+      },
+    });
+
+    // total = 200 + 400 = 600, fee = 550 → 109% → break even
+    const results = generateC2(ctx);
+    expect(results.length).toBe(1);
+    expect(results[0].templateKey).toBe("c2_break_even_with_points");
+    expect(results[0].templateVars.credits).toBe(200);
+    expect(results[0].templateVars.points_value).toBe(400);
+  });
+
+  it("uses card-specific dedup keys", () => {
+    const ctx = makeCtx({
+      annualFee: 400,
+      cardType: "citi_strata_elite",
+      totalBenefitsCaptured: 250,
+      existingMilestoneKeys: [],
+      pointsData: null,
+    });
+
+    const results = generateC2(ctx);
+    expect(results.length).toBe(1);
+    expect(results[0].dedupKey).toBe("c2:citi_strata_elite:50pct");
+  });
+
+  it("falls back to credit-only when no points data", () => {
+    const ctx = makeCtx({
+      annualFee: 550,
+      cardType: "amex_gold",
+      totalBenefitsCaptured: 550,
+      existingMilestoneKeys: [
+        "c2:amex_gold:50pct",
+        "c2:amex_gold:75pct",
+      ],
+    });
+
+    const results = generateC2(ctx);
+    expect(results.length).toBe(1);
+    expect(results[0].templateKey).toBe("c2_break_even");
+  });
+});
+
+describe("C0: Value Snapshot with Points", () => {
+  it("uses points_dominant template when points >> credits", () => {
+    const ctx = makeCtx({
+      annualFee: 550,
+      totalBenefitsCaptured: 50,
+      benefitUsages: [makeUsage({ periodKey: "2025-01" })],
+      pointsData: {
+        totalPoints: 15000,
+        valueConservative: 300,
+        conservativeCpp: 2.0,
+        cardId: "amex_platinum",
+        baseRate: 1,
+        categories: [],
+      },
+    });
+
+    const results = generateC0(ctx);
+    expect(results.length).toBe(1);
+    expect(results[0].templateKey).toBe("c0_points_dominant");
+    expect(results[0].templateVars.points_value).toBe(300);
+  });
+
+  it("uses _with_points suffix when points present but not dominant", () => {
+    const ctx = makeCtx({
+      annualFee: 550,
+      totalBenefitsCaptured: 300,
+      benefitUsages: [
+        makeUsage({ periodKey: "2025-01" }),
+        makeUsage({ periodKey: "2025-02" }),
+        makeUsage({ periodKey: "2025-03" }),
+      ],
+      pointsData: {
+        totalPoints: 5000,
+        valueConservative: 100,
+        conservativeCpp: 2.0,
+        cardId: "amex_platinum",
+        baseRate: 1,
+        categories: [],
+      },
+    });
+
+    const results = generateC0(ctx);
+    expect(results.length).toBe(1);
+    expect(results[0].templateKey).toBe("c0_strong_with_points");
+    expect(results[0].templateVars.total).toBe(400);
+  });
+});
+
+describe("P1: Points Earning Highlight", () => {
+  it("generates for bonus category with extra value >= $50", () => {
+    const ctx = makeCtx({
+      cardType: "chase_sapphire_reserve",
+      pointsData: {
+        totalPoints: 10000,
+        valueConservative: 200,
+        conservativeCpp: 2.0,
+        cardId: "chase_sapphire_reserve",
+        baseRate: 1,
+        categories: [
+          { category: "dining", spend: 2000, points: 6000, earnRate: 3, valueConservative: 120 },
+          { category: "other", spend: 1000, points: 1000, earnRate: 1, valueConservative: 20 },
+        ],
+      },
+    });
+
+    const results = generateP1(ctx);
+    expect(results.length).toBe(1);
+    expect(results[0].category).toBe("P1");
+    // Extra: 6000 - (2000*1) = 4000 pts → $80 at 2cpp
+    expect(results[0].templateVars.extra_value).toBe(80);
+    expect(results[0].templateKey).toBe("p1_standard");
+  });
+
+  it("skips categories at base rate", () => {
+    const ctx = makeCtx({
+      pointsData: {
+        totalPoints: 1000,
+        valueConservative: 20,
+        conservativeCpp: 2.0,
+        cardId: "csr",
+        baseRate: 1,
+        categories: [
+          { category: "other", spend: 1000, points: 1000, earnRate: 1, valueConservative: 20 },
+        ],
+      },
+    });
+
+    expect(generateP1(ctx)).toHaveLength(0);
+  });
+
+  it("uses high_value template for >= $200 extra", () => {
+    const ctx = makeCtx({
+      cardType: "chase_sapphire_reserve",
+      pointsData: {
+        totalPoints: 30000,
+        valueConservative: 600,
+        conservativeCpp: 2.0,
+        cardId: "chase_sapphire_reserve",
+        baseRate: 1,
+        categories: [
+          { category: "dining", spend: 8000, points: 24000, earnRate: 3, valueConservative: 480 },
+        ],
+      },
+    });
+
+    const results = generateP1(ctx);
+    expect(results.length).toBe(1);
+    // Extra: 24000 - 8000 = 16000 pts → $320
+    expect(results[0].templateKey).toBe("p1_high_value");
+  });
+
+  it("returns empty when no points data", () => {
+    const ctx = makeCtx({ pointsData: null });
+    expect(generateP1(ctx)).toHaveLength(0);
+  });
+});
+
+describe("P2: Missed Bonus Opportunity", () => {
+  it("generates for Uber spending on CSR (rideshare scenario)", () => {
+    const ctx = makeCtx({
+      cardType: "chase_sapphire_reserve",
+      transactions: [
+        makeTx({ id: "tx-1", merchantName: "Uber", amount: 80 }),
+        makeTx({ id: "tx-2", merchantName: "UBER *EATS", amount: 30 }),
+      ],
+      pointsData: {
+        totalPoints: 5000,
+        valueConservative: 100,
+        conservativeCpp: 2.0,
+        cardId: "chase_sapphire_reserve",
+        baseRate: 1,
+        categories: [],
+      },
+    });
+
+    const results = generateP2(ctx);
+    expect(results.length).toBe(1);
+    expect(results[0].category).toBe("P2");
+    expect(results[0].templateKey).toBe("p2_rideshare");
+    expect(results[0].templateVars.redirect_to).toBe("Lyft");
+  });
+
+  it("generates portal redirect for hotels on CSR", () => {
+    const ctx = makeCtx({
+      cardType: "chase_sapphire_reserve",
+      transactions: [],
+      pointsData: {
+        totalPoints: 5000,
+        valueConservative: 100,
+        conservativeCpp: 2.0,
+        cardId: "chase_sapphire_reserve",
+        baseRate: 1,
+        categories: [
+          { category: "travel_hotels", spend: 500, points: 1500, earnRate: 3, valueConservative: 30 },
+        ],
+      },
+    });
+
+    const results = generateP2(ctx);
+    expect(results.length).toBe(1);
+    expect(results[0].templateKey).toBe("p2_portal");
+    expect(results[0].templateVars.redirect_to).toBe("Chase Travel Portal");
+  });
+
+  it("skips when no points data", () => {
+    const ctx = makeCtx({ cardType: "chase_sapphire_reserve" });
+    expect(generateP2(ctx)).toHaveLength(0);
+  });
+
+  it("skips when spend is below $50 threshold", () => {
+    const ctx = makeCtx({
+      cardType: "chase_sapphire_reserve",
+      transactions: [makeTx({ merchantName: "Uber", amount: 20 })],
+      pointsData: {
+        totalPoints: 1000,
+        valueConservative: 20,
+        conservativeCpp: 2.0,
+        cardId: "chase_sapphire_reserve",
+        baseRate: 1,
+        categories: [],
+      },
+    });
+
+    expect(generateP2(ctx)).toHaveLength(0);
   });
 });
 

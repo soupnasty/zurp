@@ -12,9 +12,11 @@ import {
   getTotalBenefitsCaptured,
   getActiveInsights,
   getCycleTransactions,
+  getPointsSummaryForInsights,
 } from "./queries";
 import { getBenefitUsageSummaries, getCardProfiles } from "@/lib/queries";
 import { getCardDefinition } from "@/lib/cards";
+import { getEarnConfig } from "@/lib/points/earn-configs";
 import { getCurrentCycleBounds } from "@/lib/engine/cycle-utils";
 import { insightGroup } from "./types";
 import type { ScoredInsight, InsightCandidate } from "./types";
@@ -71,9 +73,10 @@ export async function generateAndPersistInsights(userId: string) {
     milestoneKeys,
     totalCaptured,
     impressionHistory,
+    pointsSummaryRow,
   ] = await Promise.all([
     getCompetitorMap(activeCard.cardType),
-    getRoiMilestonesReached(userId),
+    getRoiMilestonesReached(userId, cardDef.id),
     getTotalBenefitsCaptured(
       userId,
       activeCard.id,
@@ -81,7 +84,21 @@ export async function generateAndPersistInsights(userId: string) {
       cardYearBounds.cycleEnd
     ),
     getImpressionHistory(userId),
+    getPointsSummaryForInsights(userId, activeCard.id),
   ]);
+
+  // Build points data context
+  const earnConfig = getEarnConfig(activeCard.cardType);
+  const pointsData = pointsSummaryRow && earnConfig
+    ? {
+        totalPoints: pointsSummaryRow.totalPoints,
+        valueConservative: pointsSummaryRow.valueConservative,
+        conservativeCpp: earnConfig.valuation.conservativeCpp,
+        cardId: earnConfig.cardId,
+        baseRate: earnConfig.baseRate,
+        categories: pointsSummaryRow.categoryBreakdown,
+      }
+    : null;
 
   const ctx: GeneratorContext = {
     userId,
@@ -92,6 +109,7 @@ export async function generateAndPersistInsights(userId: string) {
     competitorEntries,
     totalBenefitsCaptured: totalCaptured,
     existingMilestoneKeys: milestoneKeys,
+    pointsData,
   };
 
   const candidates = runAllGenerators(ctx);
@@ -229,6 +247,21 @@ export async function getInsightsForDisplay(
 
   // Rule 4: Filter out insights below score threshold (unless floor override)
   insights = insights.filter((i) => i.totalScore >= 30 || i.floorOverride);
+
+  // A1/P2 mutual exclusion: if A1 exists for a merchant, filter out P2 for same merchant
+  const a1Merchants = new Set(
+    insights
+      .filter((i) => i.category === "A1")
+      .map((i) => String(i.templateVars.merchant ?? "").toLowerCase())
+      .filter(Boolean)
+  );
+  if (a1Merchants.size > 0) {
+    insights = insights.filter((i) => {
+      if (i.category !== "P2") return true;
+      const merchant = String(i.templateVars.merchant ?? "").toLowerCase();
+      return !a1Merchants.has(merchant);
+    });
+  }
 
   // Rule 2: Max 1 insight per benefit
   const seenBenefits = new Set<string>();

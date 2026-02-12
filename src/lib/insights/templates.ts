@@ -113,6 +113,59 @@ const TEMPLATES: Record<string, Template> = {
     title: "$${total} in benefits used this year",
     body: "That's ${multiplier}x your annual fee.",
   },
+
+  c2_milestone_with_points: {
+    title: "$${total} in value earned this year",
+    body: "$${points_value} in points + $${credits} in credits — ${pct_of_fee}% of your $${fee} fee covered.",
+  },
+
+  // ── C2: ROI Milestone (with points) ──
+  c2_break_even_with_points: {
+    title: "Your card just paid for itself",
+    body: "$${credits} in credits + $${points_value} in points = $${total} against your $${fee} fee.",
+  },
+  c2_profitable_with_points: {
+    title: "You've earned $${total} in total value",
+    body: "$${credits} in credits + $${points_value} in points — that's $${surplus} beyond your annual fee.",
+  },
+
+  // ── C0: Value Snapshot (with points) ──
+  c0_standard_with_points: {
+    title: "You've captured $${total} in total value",
+    body: "$${credits} in credits + $${points_value} in points — ${pct_of_fee}% of your fee.",
+  },
+  c0_strong_with_points: {
+    title: "Your card is ${pct_of_fee}% paid off",
+    body: "$${credits} in credits + $${points_value} in points value so far.",
+  },
+  c0_low_history_with_points: {
+    title: "$${total} in value captured recently",
+    body: "$${credits} in credits + $${points_value} from points in the last ${months} months.",
+  },
+  c0_points_dominant: {
+    title: "Your points are doing the heavy lifting",
+    body: "$${points_value} in points value + $${credits} in credits = $${total} total. That's ${pct_of_fee}% of your fee.",
+  },
+
+  // ── P1: Points Earning Highlight ──
+  p1_standard: {
+    title: "Your ${category} spending earned $${extra_value} extra",
+    body: "${earn_rate}x earn rate on $${spend} — that's $${extra_value} more than the ${base_rate}x base rate.",
+  },
+  p1_high_value: {
+    title: "$${extra_value} extra from ${category} bonus",
+    body: "${points} points at ${earn_rate}x on $${spend} in spending. Your bonus category is paying off.",
+  },
+
+  // ── P2: Missed Bonus Opportunity ──
+  p2_rideshare: {
+    title: "You spent $${spend} on ${merchant}",
+    body: "Switch to ${redirect_to} to earn ${bonus_rate}x instead of ${current_rate}x — that's ~$${extra_value} more.",
+  },
+  p2_portal: {
+    title: "$${spend} in ${merchant} booked direct",
+    body: "Book through ${redirect_to} for ${bonus_rate}x instead of ${current_rate}x — ~$${extra_value} more value.",
+  },
 };
 
 /**

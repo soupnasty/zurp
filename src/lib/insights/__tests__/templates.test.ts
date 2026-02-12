@@ -123,10 +123,71 @@ describe("renderTemplate", () => {
     expect(result.title).toBe("Insight");
     expect(result.body).toBe("");
   });
+
+  it("renders c2_break_even_with_points", () => {
+    const result = renderTemplate("c2_break_even_with_points", {
+      credits: 300,
+      points_value: 250,
+      total: 550,
+      fee: 550,
+    });
+    expect(result.title).toBe("Your card just paid for itself");
+    expect(result.body).toContain("$300 in credits");
+    expect(result.body).toContain("$250 in points");
+  });
+
+  it("renders c0_points_dominant", () => {
+    const result = renderTemplate("c0_points_dominant", {
+      points_value: 400,
+      credits: 50,
+      total: 450,
+      pct_of_fee: 82,
+    });
+    expect(result.title).toBe("Your points are doing the heavy lifting");
+    expect(result.body).toContain("$400 in points value");
+  });
+
+  it("renders p1_standard", () => {
+    const result = renderTemplate("p1_standard", {
+      category: "dining",
+      spend: 2000,
+      extra_value: 80,
+      earn_rate: 3,
+      base_rate: 1,
+    });
+    expect(result.title).toContain("dining spending earned $80 extra");
+    expect(result.body).toContain("3x earn rate");
+  });
+
+  it("renders p2_rideshare", () => {
+    const result = renderTemplate("p2_rideshare", {
+      spend: 150,
+      merchant: "Uber",
+      redirect_to: "Lyft",
+      bonus_rate: 10,
+      current_rate: 3,
+      extra_value: 45,
+    });
+    expect(result.title).toBe("You spent $150 on Uber");
+    expect(result.body).toContain("Lyft");
+  });
+
+  it("renders p2_portal", () => {
+    const result = renderTemplate("p2_portal", {
+      spend: 500,
+      merchant: "hotels",
+      redirect_to: "Chase Travel Portal",
+      bonus_rate: 10,
+      current_rate: 3,
+      extra_value: 70,
+    });
+    expect(result.title).toBe("$500 in hotels booked direct");
+    expect(result.body).toContain("Chase Travel Portal");
+  });
 });
 
 describe("getTemplateKeys", () => {
-  it("returns all known keys", () => {
+  it("returns all known keys including new points templates", () => {
     const keys = getTemplateKeys();
     expect(keys).toContain("a1_standard");
     expect(keys).toContain("a2_free");
@@ -136,6 +197,15 @@ describe("getTemplateKeys", () => {
     expect(keys).toContain("c0_standard");
     expect(keys).toContain("c1_standard");
     expect(keys).toContain("c2_break_even");
-    expect(keys.length).toBeGreaterThanOrEqual(17);
+    // New points templates
+    expect(keys).toContain("c2_break_even_with_points");
+    expect(keys).toContain("c2_profitable_with_points");
+    expect(keys).toContain("c0_standard_with_points");
+    expect(keys).toContain("c0_points_dominant");
+    expect(keys).toContain("p1_standard");
+    expect(keys).toContain("p1_high_value");
+    expect(keys).toContain("p2_rideshare");
+    expect(keys).toContain("p2_portal");
+    expect(keys.length).toBeGreaterThanOrEqual(27);
   });
 });

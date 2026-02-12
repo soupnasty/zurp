@@ -45,19 +45,35 @@ export async function getExistingInsight(userId: string, dedupKey: string) {
   });
 }
 
-/** Get all existing ROI milestone dedup keys for a user. */
+/** Get all existing ROI milestone dedup keys for a user (optionally scoped to a card). */
 export async function getRoiMilestonesReached(
-  userId: string
+  userId: string,
+  cardId?: string
 ): Promise<string[]> {
+  const pattern = cardId ? `c2:${cardId}:%` : "c2:%";
   const milestones = await db.query.insights.findMany({
     where: and(
       eq(schema.insights.userId, userId),
-      sql`${schema.insights.dedupKey} LIKE 'c2:%'`
+      sql`${schema.insights.dedupKey} LIKE ${pattern}`
     ),
     columns: { dedupKey: true },
   });
 
   return milestones.map((m) => m.dedupKey);
+}
+
+/** Get the points earning summary for the insights context. */
+export async function getPointsSummaryForInsights(
+  userId: string,
+  cardProfileId: string
+) {
+  return db.query.pointsEarningSummary.findFirst({
+    where: and(
+      eq(schema.pointsEarningSummary.userId, userId),
+      eq(schema.pointsEarningSummary.cardProfileId, cardProfileId),
+      eq(schema.pointsEarningSummary.periodType, "anniversary_year")
+    ),
+  });
 }
 
 /** Get competitor map entries for a card type. */
