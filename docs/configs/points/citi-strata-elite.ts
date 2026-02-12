@@ -1,0 +1,66 @@
+import type { EarnConfig } from "./types";
+
+export const citiStrataEliteEarnConfig: EarnConfig = {
+  cardId: "citi_strata_elite",
+  cardName: "Citi Strata Elite",
+  pointsCurrency: "citi_tp",
+  baseRate: 1.5,
+  bonusCategories: [
+    // Citi Nights: 6x dining Fri/Sat 6PM-6AM ET
+    {
+      categories: ["dining", "coffee", "food_delivery"],
+      earnRate: 6,
+      label: "Citi Nights (Fri/Sat 6PM\u20136AM ET)",
+      conditions: {
+        time_window: {
+          timezone: "America/New_York",
+          days: [5, 6], // Fri, Sat
+          startHour: 18,
+          endHour: 6,
+        },
+      },
+    },
+    // Regular dining: 3x (all other times)
+    {
+      categories: ["dining", "coffee", "food_delivery"],
+      earnRate: 3,
+      label: "Dining",
+    },
+    // Portal flights: 6x (match airline merchants)
+    {
+      categories: ["travel_portal"],
+      earnRate: 6,
+      label: "Citi Travel flights",
+      conditions: {
+        merchant_match: [
+          "united",
+          "delta",
+          "american air",
+          "southwest",
+          "jetblue",
+          "alaska air",
+          "spirit",
+          "frontier",
+          "air france",
+          "british air",
+          "emirates",
+          "singapore air",
+        ],
+      },
+    },
+    // Portal hotels/other: 12x (everything else through portal)
+    {
+      categories: ["travel_portal"],
+      earnRate: 12,
+      label: "Citi Travel hotels & more",
+    },
+    // Direct travel: 1.5x (base rate, no bonus)
+  ],
+  caps: [],
+  annualFee: 595,
+  valuation: {
+    conservativeCpp: 1.0,
+    upsideCpp: 1.9,
+    upsideLabel: "Transfer partners (AA, Choice 1:2)",
+  },
+};

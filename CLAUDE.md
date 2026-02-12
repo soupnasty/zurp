@@ -21,7 +21,7 @@ A credit card benefits tracker that syncs transactions via Plaid, matches them a
 ```bash
 npm run dev          # Start dev server
 npm run build        # Production build
-npm run test:run     # Run all tests (226 tests across 12 files)
+npm run test:run     # Run all tests (257 tests across 13 files)
 npm run db:push      # Push schema to Neon
 npm run db:seed      # Seed cards + benefits + competitor map from registry
 npm run db:studio    # Open Drizzle Studio
@@ -111,7 +111,7 @@ src/lib/insights/
 
 On-demand simulation engine that answers "which card earns the most for your actual spending?"
 
-- **Category mapper** (`categories.ts`): 3-tier classification — merchant name match → Plaid category fallback → `other`. Uses 19-category taxonomy separate from the 8-category spending system.
+- **Category mapper** (`categories.ts`): 3-tier classification — merchant name match → Plaid category fallback → `other`. Uses 26-category taxonomy separate from the 8-category spending system.
 - **Merchant map** (`merchant-map.ts`): ~200 static merchant→category entries with priority-based matching.
 - **Earn configs** (`earn-configs/`): Per-card earn rate definitions (bonus categories, caps, conditions, point valuations). Files: `chase-sapphire-reserve.ts`, `chase-sapphire-preferred.ts`, `amex-gold.ts`, `amex-platinum.ts`, `citi-strata-elite.ts`, `capital-one-venture-x.ts`.
 - **Calculator** (`calculator.ts`): Per-transaction points calculation with cap tracking. Supports `time_window` conditions for time-based earn rates (e.g., Citi Nights).
@@ -188,7 +188,7 @@ src/
 - [x] Phase 5: Dashboard UI
 - [x] Phase 6: Polish, webhooks, cron, deployment
 - [x] Phase 7: Insights Engine v2 — 8 categories, DB persistence, 5-factor scoring, lifecycle, competitor map
-- [x] Phase 8: Compare Page + Points Earn Model — 19-category mapper, 4 card earn configs, simulator, perk matrix, tabbed UI
+- [x] Phase 8: Compare Page + Points Earn Model — category mapper, 4 card earn configs, simulator, perk matrix, tabbed UI
 - [x] Phase 9: Amex Platinum — 21 benefits, quarterly cycle types, activeMonths gating, earn config, A2 swap templates, competitor map
 - [x] Phase 10: Citi Strata Elite — time-window conditions (Citi Nights 6x), portal mode toggle, 5-card comparison, datetime from Plaid
 - [x] Phase 11: Capital One Venture X — 3 benefits, 2x base rate, 10x/5x portal earn config, 6-card comparison, 18 competitor map entries
@@ -215,6 +215,6 @@ Connection health alerts (`src/lib/notifications.ts`) surface stale/reauth/disco
 - `docs/engines/insights-engine.md` — Insights Engine v2 spec (categories, scoring, templates, display rules)
 - `docs/engines/points-engine.md` — Points earn model spec (category taxonomy, earn rates, caps)
 - `docs/styling/style-guide.md` — Brand colors, typography, spacing, motion
-- `docs/catalogs/` — Card benefit catalogs (CSR, CSP, Amex Gold, Amex Platinum)
+- `docs/catalogs/` — Card benefit catalogs organized by tier (tier-1, tier-2, tier-3) covering 30 cards
 - `docs/terms/` — Privacy policy, terms of service, security documentation
 - `public/zurp-logo.svg` — Logo

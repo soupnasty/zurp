@@ -19,7 +19,7 @@ interface AppShellProps {
 }
 
 const navItems = [
-  { href: "/benefits", label: "Benefits", icon: CircleDollarSign },
+  { href: "/benefits", label: "Card Value", icon: CircleDollarSign },
   { href: "/spending", label: "Spending", icon: Wallet },
   { href: "/compare", label: "Compare", icon: Scale },
   { href: "/settings", label: "Settings", icon: Settings },
