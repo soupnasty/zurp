@@ -102,6 +102,16 @@ function matchesConditions(
   if (cond.amount_gte !== undefined && amount < cond.amount_gte) return false;
   if (cond.amount_lt !== undefined && amount >= cond.amount_lt) return false;
 
+  if (cond.date_range) {
+    // Check if transaction falls within the date range (e.g., CFF rotating quarter)
+    const txDate = (datetime ?? date);
+    if (txDate) {
+      const txDateStr = txDate.toISOString().split("T")[0]; // "YYYY-MM-DD"
+      if (txDateStr < cond.date_range.start || txDateStr > cond.date_range.end) return false;
+    }
+    // If no date available, skip check (backward compat)
+  }
+
   if (cond.time_window) {
     const tw = cond.time_window;
     if (datetime) {
@@ -200,9 +210,21 @@ export function calculatePointsForTransaction(
 
   // Cap tracking
   if (!capState[cap.capId]) {
-    capState[cap.capId] = { spendToDate: 0, maxSpend: cap.maxSpend };
+    capState[cap.capId] = {
+      spendToDate: 0,
+      maxSpend: cap.maxSpend,
+      currentYear: tx.date?.getFullYear(),
+    };
   }
   const state = capState[cap.capId];
+
+  // Calendar year cap reset: if transaction is in a new year, reset accumulator.
+  // Caps with period "calendar_year" reset each Jan 1 (e.g., Gold $25K grocery).
+  const txYear = tx.date?.getFullYear();
+  if (txYear && state.currentYear !== undefined && state.currentYear !== txYear) {
+    state.spendToDate = 0;
+    state.currentYear = txYear;
+  }
 
   if (isRefund) {
     // Refunds reduce spend toward cap and subtract bonus points

@@ -49,10 +49,9 @@ export async function getCompareTransactions(
     },
   });
 
-  return txs.map((tx) => ({
-    ...tx,
-    amount: Math.abs(tx.amount), // Normalize to positive (refunds tracked separately)
-  }));
+  // Preserve original sign: negative = refund, positive = purchase.
+  // Downstream code (simulator.ts, calculator.ts) handles both correctly.
+  return txs;
 }
 
 export interface PointsEarningSummaryRow {

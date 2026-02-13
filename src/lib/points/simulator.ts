@@ -42,12 +42,13 @@ const TRAVEL_CATEGORIES: EarnCategory[] = [
   "travel_flights",
   "travel_hotels",
   "travel_other",
+  "car_rentals",
 ];
 
 /**
  * Run a full comparison simulation across all card configs.
  */
-export function runSimulation(input: SimulationInput): ComparisonOutput {
+export function runSimulation(input: SimulationInput): ComparisonOutput | null {
   const {
     transactions,
     configs,
@@ -100,7 +101,7 @@ export function runSimulation(input: SimulationInput): ComparisonOutput {
       const simulated = simulateBenefitsForCard(sim.cardId, sortedTxns);
       sim.benefitsSimulated = simulated;
       sim.netActual = round2(
-        sim.pointsValueConservative + simulated - sim.annualFee
+        sim.pointsValueConservative + simulated + sim.parallelValue - sim.annualFee
       );
     }
   }
@@ -112,7 +113,8 @@ export function runSimulation(input: SimulationInput): ComparisonOutput {
   });
 
   // Order: user's card first, then top 2 alternatives by netFloor
-  const usersCard = simulations.find((s) => s.isUsersCard)!;
+  const usersCard = simulations.find((s) => s.isUsersCard);
+  if (!usersCard) return null; // User's card not in config set
   const alternatives = ranked
     .filter((s) => !s.isUsersCard)
     .slice(0, 2);
@@ -216,11 +218,22 @@ function simulateCard(
   const values = valuatePoints(totalPoints, config);
   const benefitsValue = computeBenefitsValue(config.cardId);
 
+  // Parallel earnings (e.g., Bilt Cash 4% on all non-rent purchases)
+  let parallelValue = 0;
+  if (config.parallelEarnings) {
+    // Sum spend from category map (accounts for refunds correctly)
+    const cardTotalSpend = Array.from(categoryMap.values()).reduce(
+      (sum, entry) => sum + entry.spend,
+      0
+    );
+    parallelValue = round2(cardTotalSpend * (config.parallelEarnings.ratePercent / 100));
+  }
+
   // Range-based net values (apples-to-apples for all cards)
   const netFloor = round2(values.conservative - config.annualFee);
-  const netCeiling = round2(values.conservative + benefitsValue - config.annualFee);
+  const netCeiling = round2(values.conservative + benefitsValue + parallelValue - config.annualFee);
   const netActual = isUsersCard && benefitsCaptured !== null
-    ? round2(values.conservative + benefitsCaptured - config.annualFee)
+    ? round2(values.conservative + benefitsCaptured + parallelValue - config.annualFee)
     : netCeiling;
 
   // Build category summaries
@@ -264,6 +277,7 @@ function simulateCard(
     pointsValueConservative: values.conservative,
     pointsValueUpside: values.upside,
     benefitsValue,
+    parallelValue,
     benefitsCaptured: isUsersCard ? benefitsCaptured : null,
     benefitsSimulated: null,
     netFloor,

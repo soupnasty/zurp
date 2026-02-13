@@ -54,7 +54,9 @@ export async function processTransactionsForConnection(
 
   const txForDetection: MatcherTransaction[] = allTransactions.map(txToMatcherTx);
 
-  if (cardProfile.anniversarySource === "pending") {
+  // Only attempt anniversary detection for cards with annual fees.
+  // $0-fee cards (CFF, CFU) never charge a fee, so there's nothing to detect.
+  if (cardProfile.anniversarySource === "pending" && cardDef.annualFee > 0) {
     const detection = detectAnniversary(
       txForDetection,
       cardDef.annualFee,
@@ -141,27 +143,17 @@ export async function processTransactionsForConnection(
     await Promise.all(overrideUpdates);
   }
 
-  const usageMap = new Map<string, { amountUsed: number; creditAmount: number }>();
+  // Build usage map keyed by "benefitId:periodKey" — includes ALL periods
+  // so cross-month transaction batches resolve against correct usage data
+  const usageMap = new Map<string, number>();
   for (const usage of usageRecords) {
-    const benefit = cardDef.benefits.find((b) => b.id === usage.benefitId);
-    if (benefit) {
-      // Only include current period usage
-      const currentBounds = getCurrentCycleBounds(
-        benefit.cycle as any,
-        new Date(),
-        cardProfile.anniversaryDate
-      );
-      if (usage.periodKey === currentBounds.periodKey) {
-        usageMap.set(benefit.id, {
-          amountUsed: usage.amountUsed,
-          creditAmount: benefit.creditAmount,
-        });
-      }
-    }
+    usageMap.set(`${usage.benefitId}:${usage.periodKey}`, usage.amountUsed);
   }
 
-  // Run matcher
-  const matcherTx: MatcherTransaction[] = rawTransactions.map(txToMatcherTx);
+  // Run matcher — sort transactions by date so older ones match first
+  const matcherTx: MatcherTransaction[] = rawTransactions
+    .map(txToMatcherTx)
+    .sort((a, b) => a.date.getTime() - b.date.getTime());
 
   const result = runMatcher(matcherTx, {
     benefits: cardDef.benefits,

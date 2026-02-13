@@ -57,12 +57,11 @@ function makeTx(
 
 function makeConfig(
   benefits: BenefitDefinition[],
-  usageEntries: Record<string, { amountUsed: number; creditAmount: number }> = {}
+  usageEntries: Record<string, number> = {}
 ): MatcherConfig {
-  const usageMap = new Map(Object.entries(usageEntries));
   return {
     benefits,
-    usageMap,
+    usageMap: new Map(Object.entries(usageEntries)),
     anniversaryDate: null,
     referenceDate: new Date(2026, 0, 15),
   };
@@ -117,7 +116,7 @@ describe("runMatcher", () => {
     const benefit = makeBenefit({ creditAmount: 25 });
     const tx = makeTx({ amount: 20 });
     const config = makeConfig([benefit], {
-      test_benefit: { amountUsed: 20, creditAmount: 25 },
+      "test_benefit:2026-01": 20,
     });
 
     const result = runMatcher([tx], config);
@@ -129,7 +128,7 @@ describe("runMatcher", () => {
     const benefit = makeBenefit({ creditAmount: 25 });
     const tx = makeTx({ amount: 20 });
     const config = makeConfig([benefit], {
-      test_benefit: { amountUsed: 25, creditAmount: 25 },
+      "test_benefit:2026-01": 25,
     });
 
     const result = runMatcher([tx], config);
@@ -385,5 +384,123 @@ describe("runMatcher", () => {
     const result = runMatcher([tx], config);
 
     expect(result.matches[0].creditApplied).toBe(12); // Up to maxAccrued (15)
+  });
+
+  it("category fallback yields to merchant-specific benefit", () => {
+    const travelCredit = makeBenefit({
+      id: "travel",
+      priority: 30,
+      isCategoryFallback: true,
+      merchantPatterns: ["airline", "hotel"],
+      plaidCategories: ["TRAVEL"],
+    });
+    const globalEntry = makeBenefit({
+      id: "global_entry",
+      priority: 20,
+      creditAmount: 120,
+      merchantPatterns: ["global entry", "tsa"],
+    });
+    const tx = makeTx({
+      merchantName: "GLOBAL ENTRY FEE",
+      amount: 120,
+      plaidCategoryPrimary: "TRAVEL",
+    });
+    const config = makeConfig([travelCredit, globalEntry]);
+
+    const result = runMatcher([tx], config);
+
+    expect(result.matches).toHaveLength(1);
+    expect(result.matches[0].benefitId).toBe("global_entry");
+  });
+
+  it("category fallback still matches when no specific benefit competes", () => {
+    const travelCredit = makeBenefit({
+      id: "travel",
+      priority: 30,
+      isCategoryFallback: true,
+      merchantPatterns: ["airline", "hotel"],
+      plaidCategories: ["TRAVEL"],
+    });
+    const tx = makeTx({
+      merchantName: "RANDOM TRAVEL AGENCY",
+      amount: 50,
+      plaidCategoryPrimary: "TRAVEL",
+    });
+    const config = makeConfig([travelCredit]);
+
+    const result = runMatcher([tx], config);
+
+    expect(result.matches).toHaveLength(1);
+    expect(result.matches[0].benefitId).toBe("travel");
+  });
+
+  it("non-fallback benefits compete normally by priority", () => {
+    const specific = makeBenefit({
+      id: "specific",
+      priority: 10,
+      merchantPatterns: ["doordash"],
+    });
+    const general = makeBenefit({
+      id: "general",
+      priority: 20,
+      merchantPatterns: ["doordash"],
+    });
+    const tx = makeTx({ merchantName: "DOORDASH" });
+    const config = makeConfig([specific, general]);
+
+    const result = runMatcher([tx], config);
+
+    expect(result.matches).toHaveLength(1);
+    expect(result.matches[0].benefitId).toBe("specific");
+  });
+
+  it("skips benefit when transaction is after sunsetDate", () => {
+    const benefit = makeBenefit({
+      sunsetDate: "2025-12-31",
+      merchantPatterns: ["doordash"],
+    });
+    const tx = makeTx({
+      date: new Date(2026, 0, 15), // Jan 15, 2026 — after sunset
+      merchantName: "DOORDASH",
+    });
+    const config = makeConfig([benefit]);
+
+    const result = runMatcher([tx], config);
+
+    expect(result.matches).toHaveLength(0);
+    expect(result.unmatchedTransactionIds).toContain("tx_1");
+  });
+
+  it("matches benefit when transaction is before sunsetDate", () => {
+    const benefit = makeBenefit({
+      sunsetDate: "2027-12-31",
+      merchantPatterns: ["doordash"],
+    });
+    const tx = makeTx({
+      date: new Date(2026, 0, 15), // Jan 15, 2026 — before sunset
+      merchantName: "DOORDASH",
+    });
+    const config = makeConfig([benefit]);
+
+    const result = runMatcher([tx], config);
+
+    expect(result.matches).toHaveLength(1);
+    expect(result.matches[0].benefitId).toBe("test_benefit");
+  });
+
+  it("matches benefit with null sunsetDate regardless of date", () => {
+    const benefit = makeBenefit({
+      sunsetDate: null,
+      merchantPatterns: ["doordash"],
+    });
+    const tx = makeTx({
+      date: new Date(2030, 5, 1), // Far future
+      merchantName: "DOORDASH",
+    });
+    const config = makeConfig([benefit]);
+
+    const result = runMatcher([tx], config);
+
+    expect(result.matches).toHaveLength(1);
   });
 });

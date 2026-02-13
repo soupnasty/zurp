@@ -340,6 +340,7 @@ export const amexPlatinum: CardDefinition = {
       merchantPatterns: [],
       plaidCategories: ["TRAVEL_FLIGHTS"],
       autoMatchable: false, requiresActivation: true, priority: 30,
+      isCategoryFallback: true,
       description: "Up to $200/year for incidental airline fees on your selected airline.",
       notes: "Must select one airline per calendar year. Covers bags, seat upgrades, in-flight purchases \u2014 NOT airfare.",
       details: airlineFeeCreditDetails,

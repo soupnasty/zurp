@@ -135,6 +135,7 @@ export const plaidConnections = pgTable("plaid_connections", {
   status: text("status").notNull().default("active"), // "active" | "needs_reauth" | "disconnected"
   lastSyncCursor: text("last_sync_cursor"),
   lastSyncedAt: timestamp("last_synced_at", { mode: "date" }),
+  syncLockedUntil: timestamp("sync_locked_until", { mode: "date" }), // Prevents concurrent syncs (5-min TTL)
   createdAt: timestamp("created_at", { mode: "date" })
     .notNull()
     .$defaultFn(() => new Date()),
@@ -494,6 +495,7 @@ export const cardSimulations = pgTable(
     pointsValueUpside: real("points_value_upside").notNull().default(0),
     benefitsSimulated: real("benefits_simulated").notNull().default(0),
     benefitsValue: real("benefits_value").notNull().default(0),
+    parallelValue: real("parallel_value").notNull().default(0),
     netFloor: real("net_floor").notNull().default(0),
     netCeiling: real("net_ceiling").notNull().default(0),
     netActual: real("net_actual").notNull().default(0),

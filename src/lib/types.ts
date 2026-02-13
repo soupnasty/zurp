@@ -91,6 +91,7 @@ export interface BenefitDefinition {
   details: BenefitDetails | null;
   activeMonths?: number[]; // 0=Jan, 11=Dec. If set, benefit only matches in these months.
   brandSlug?: string; // Simple Icons CDN slug for brand logo (e.g. "doordash", "uber")
+  isCategoryFallback?: boolean; // If true, this benefit only matches by category when no merchant-specific benefit also matches.
 }
 
 // ── Computed summaries ──
@@ -180,7 +181,8 @@ export interface AnniversaryDetectionResult {
 
 export interface MatcherConfig {
   benefits: BenefitDefinition[];
-  usageMap: Map<string, { amountUsed: number; creditAmount: number }>;
+  /** Usage map keyed by "benefitId:periodKey", value is amountUsed. */
+  usageMap: Map<string, number>;
   anniversaryDate: Date | null;
   referenceDate?: Date;
 }

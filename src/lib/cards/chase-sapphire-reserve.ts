@@ -147,6 +147,7 @@ export const chaseSapphireReserve: CardDefinition = {
       ],
       plaidCategories: ["TRAVEL"],
       autoMatchable: true, requiresActivation: false, priority: 30,
+      isCategoryFallback: true,
       description: "Up to $300 in statement credits for travel purchases each cardmember anniversary year.",
       notes: "Accumulates until $300 is reached. Broad travel category including hotels, flights, car rentals, tolls, parking, transit.",
       details: {

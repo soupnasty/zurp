@@ -33,6 +33,30 @@ describe("normalizeMerchantName", () => {
   it("normalizes multiple spaces", () => {
     expect(normalizeMerchantName("UBER   EATS")).toBe("uber eats");
   });
+
+  it("strips Square POS prefix", () => {
+    expect(normalizeMerchantName("SQ *DOORDASH")).toBe("doordash");
+  });
+
+  it("strips Toast POS prefix", () => {
+    expect(normalizeMerchantName("TST* Blue Bottle Coffee")).toBe("blue bottle coffee");
+  });
+
+  it("strips PayPal POS prefix", () => {
+    expect(normalizeMerchantName("PP*SPOTIFY")).toBe("spotify");
+  });
+
+  it("strips Clover POS prefix", () => {
+    expect(normalizeMerchantName("CKE*RESTAURANT NAME")).toBe("restaurant name");
+  });
+
+  it("strips Shopify POS prefix", () => {
+    expect(normalizeMerchantName("SP * ONLINE STORE")).toBe("online store");
+  });
+
+  it("does not strip mid-name SQ", () => {
+    expect(normalizeMerchantName("BASQUE RESTAURANT")).toBe("basque restaurant");
+  });
 });
 
 describe("matchesMerchantPattern", () => {

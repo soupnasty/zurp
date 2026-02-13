@@ -2,6 +2,7 @@
  * Normalize a merchant name for matching purposes.
  *
  * - Lowercases
+ * - Strips POS terminal prefixes (SQ *, TST*, PP*, etc.)
  * - Strips order numbers, suffixes like *ORDER, #1234
  * - Trims whitespace
  */
@@ -10,6 +11,7 @@ export function normalizeMerchantName(raw: string | null): string {
 
   return raw
     .toLowerCase()
+    .replace(/^(sq|tst|pp|cke|sp|wf|ck|par)\s*\*\s*/i, "") // Strip POS terminal prefixes
     .replace(/[*#]\s*\d+/g, "") // Remove *12345 or #12345
     .replace(/\s*\*\s*/g, " ") // Clean up asterisks
     .replace(/\s*-\s*order\s*$/i, "") // Remove trailing " - ORDER"

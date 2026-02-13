@@ -7,7 +7,7 @@ import type {
   MatchConfidence,
 } from "@/lib/types";
 import { normalizeMerchantName, matchesMerchantPattern } from "./normalize";
-import { getCurrentCycleBounds, isDateInCycle } from "./cycle-utils";
+import { getCurrentCycleBounds } from "./cycle-utils";
 
 /**
  * Core matching engine — pure function, no DB calls.
@@ -27,16 +27,8 @@ export function runMatcher(
 ): MatcherOutput {
   const { benefits, anniversaryDate, referenceDate = new Date() } = config;
 
-  // Clone usage map to track running totals, keyed by benefitId:periodKey
-  // so monthly benefits get independent budgets per period
-  const usageMap = new Map<string, number>();
-  for (const [benefitId, val] of config.usageMap) {
-    const benefit = benefits.find((b) => b.id === benefitId);
-    if (benefit) {
-      const bounds = getCurrentCycleBounds(benefit.cycle as any, referenceDate, anniversaryDate);
-      usageMap.set(`${benefitId}:${bounds.periodKey}`, val.amountUsed);
-    }
-  }
+  // Clone usage map (already keyed by benefitId:periodKey from orchestrator)
+  const usageMap = new Map<string, number>(config.usageMap);
 
   const matches: MatchResult[] = [];
   const ambiguousTransactions: string[] = [];
@@ -64,16 +56,17 @@ export function runMatcher(
     }> = [];
 
     for (const benefit of sortedBenefits) {
-      // Check if cycle is active for this transaction date
-      if (
-        benefit.cycle !== "subscription" &&
-        !isDateInCycle(tx.date, benefit.cycle, tx.date, anniversaryDate)
-      ) {
-        continue;
-      }
+      // Cycle correctness is enforced by getCurrentCycleBounds below, which
+      // computes the period key from tx.date. Month gating uses activeMonths.
+      // Temporal validity uses sunsetDate.
 
       // Check if benefit is active in this month
       if (benefit.activeMonths && !benefit.activeMonths.includes(tx.date.getMonth())) {
+        continue;
+      }
+
+      // Check if benefit has expired (sunset)
+      if (benefit.sunsetDate && tx.date > new Date(benefit.sunsetDate)) {
         continue;
       }
 
@@ -90,7 +83,9 @@ export function runMatcher(
         benefit.merchantPatterns
       );
 
-      // Check plaid category match
+      // Check plaid category match.
+      // Plaid categories are hierarchical (e.g., TRAVEL → TRAVEL_FLIGHTS).
+      // We use .includes() intentionally so "TRAVEL" matches "TRAVEL_FLIGHTS".
       const categoryMatch =
         benefit.plaidCategories.length > 0 &&
         (benefit.plaidCategories.some(
@@ -112,13 +107,13 @@ export function runMatcher(
         confidence = "low";
       }
 
-      // For travel credit (negative matching): skip if a more specific benefit matched
-      if (benefit.priority >= 30 && !merchantMatch && categoryMatch) {
-        // Only match on category if no merchant-specific benefit would match
-        const hasSpecificMatch = eligibleBenefits.some(
-          (eb) => eb.benefit.priority < 30
+      // Category fallback benefits (e.g., broad travel credit) only match by
+      // category if no merchant-specific (non-fallback) benefit also matched.
+      if (benefit.isCategoryFallback && !merchantMatch && categoryMatch) {
+        const hasMerchantMatch = eligibleBenefits.some(
+          (eb) => !eb.benefit.isCategoryFallback
         );
-        if (hasSpecificMatch) continue;
+        if (hasMerchantMatch) continue;
       }
 
       eligibleBenefits.push({ benefit, confidence, usageKey });

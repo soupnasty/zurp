@@ -140,10 +140,10 @@ export async function computeAndPersistSimulations(
 
       const netFloor = round2(simResult.pointsValueConservative - config.annualFee);
       const netCeiling = round2(
-        simResult.pointsValueConservative + benefitsValue - config.annualFee
+        simResult.pointsValueConservative + benefitsValue + simResult.parallelValue - config.annualFee
       );
       const netActual = round2(
-        simResult.pointsValueConservative + benefitsSimulated - config.annualFee
+        simResult.pointsValueConservative + benefitsSimulated + simResult.parallelValue - config.annualFee
       );
 
       upserts.push({
@@ -158,6 +158,7 @@ export async function computeAndPersistSimulations(
         pointsValueUpside: simResult.pointsValueUpside,
         benefitsSimulated,
         benefitsValue,
+        parallelValue: simResult.parallelValue,
         netFloor,
         netCeiling,
         netActual,
@@ -191,6 +192,7 @@ export async function computeAndPersistSimulations(
           pointsValueUpside: row.pointsValueUpside,
           benefitsSimulated: row.benefitsSimulated,
           benefitsValue: row.benefitsValue,
+          parallelValue: row.parallelValue,
           netFloor: row.netFloor,
           netCeiling: row.netCeiling,
           netActual: row.netActual,
@@ -236,6 +238,7 @@ function simulatePointsForCard(
   bonusPoints: number;
   pointsValueConservative: number;
   pointsValueUpside: number;
+  parallelValue: number;
   categories: CategoryEarnSummary[];
 } {
   const capState: CapState = {};
@@ -311,6 +314,16 @@ function simulatePointsForCard(
 
   const values = valuatePoints(totalPoints, config);
 
+  // Parallel earnings (e.g., Bilt Cash 4% on all non-rent purchases)
+  let parallelValue = 0;
+  if (config.parallelEarnings) {
+    const cardTotalSpend = Array.from(categoryMap.values()).reduce(
+      (sum, entry) => sum + entry.spend,
+      0
+    );
+    parallelValue = round2(cardTotalSpend * (config.parallelEarnings.ratePercent / 100));
+  }
+
   // Build category summaries
   const categories: CategoryEarnSummary[] = [];
   for (const [cat, data] of categoryMap) {
@@ -345,6 +358,7 @@ function simulatePointsForCard(
     bonusPoints,
     pointsValueConservative: values.conservative,
     pointsValueUpside: values.upside,
+    parallelValue,
     categories,
   };
 }

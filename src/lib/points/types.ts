@@ -53,6 +53,10 @@ export interface EarnCondition {
   amount_gte?: number;
   amount_lt?: number;
   time_window?: TimeWindow;
+  date_range?: {
+    start: string; // ISO date "YYYY-MM-DD"
+    end: string;   // ISO date "YYYY-MM-DD"
+  };
 }
 
 export interface EarnCap {
@@ -84,6 +88,12 @@ export interface EarnConfig {
   caps: EarnCap[];
   annualFee: number;
   anniversaryBonus?: number; // e.g. 0.10 for CSP 10%
+  /** Optional secondary earnings stream (e.g., Bilt Cash 4% on all non-rent purchases). */
+  parallelEarnings?: {
+    label: string;       // e.g. "Bilt Cash (4%)"
+    ratePercent: number; // e.g. 4.0
+    currency: string;    // e.g. "bilt_cash"
+  };
   valuation: PointsValuation;
 }
 
@@ -104,6 +114,8 @@ export interface CapState {
   [capId: string]: {
     spendToDate: number;
     maxSpend: number;
+    /** Tracks the calendar year for annual cap resets. */
+    currentYear?: number;
   };
 }
 
@@ -131,6 +143,8 @@ export interface CardSimulation {
   pointsValueConservative: number;
   pointsValueUpside: number;
   benefitsValue: number;
+  /** Dollar value from secondary earnings stream (e.g., Bilt Cash 4%). */
+  parallelValue: number;
   benefitsCaptured: number | null;
   /** For non-user cards: simulated benefit capture from matcher. Null for user's card. */
   benefitsSimulated: number | null;

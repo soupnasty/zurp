@@ -63,6 +63,7 @@ export async function readComparison(
       pointsValueConservative: row.pointsValueConservative,
       pointsValueUpside: row.pointsValueUpside,
       benefitsValue: row.benefitsValue,
+      parallelValue: row.parallelValue ?? 0,
       benefitsCaptured: actualBenefitsCaptured,
       benefitsSimulated: isUsersCard ? null : row.benefitsSimulated,
       netFloor: row.netFloor,
@@ -80,7 +81,8 @@ export async function readComparison(
   });
 
   // Order: user's card first, then top 2 alternatives by netFloor
-  const usersCard = simulations.find((s) => s.isUsersCard)!;
+  const usersCard = simulations.find((s) => s.isUsersCard);
+  if (!usersCard) return null; // User's card not in simulation set
   const alternatives = ranked.filter((s) => !s.isUsersCard).slice(0, 2);
   const orderedCards = [usersCard, ...alternatives];
 

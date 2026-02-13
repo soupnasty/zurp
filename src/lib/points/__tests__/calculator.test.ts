@@ -2,9 +2,12 @@ import { describe, it, expect } from "vitest";
 import { calculatePointsForTransaction, getDatePartsInTimezone, matchesTimeWindow } from "../calculator";
 import { csrEarnConfig } from "../earn-configs/chase-sapphire-reserve";
 import { cspEarnConfig } from "../earn-configs/chase-sapphire-preferred";
+import { cffEarnConfig } from "../earn-configs/chase-freedom-flex";
 import { amexGoldEarnConfig } from "../earn-configs/amex-gold";
+import { amexBcpEarnConfig } from "../earn-configs/amex-blue-cash-preferred";
 import { citiStrataEliteEarnConfig } from "../earn-configs/citi-strata-elite";
 import { ventureXEarnConfig } from "../earn-configs/capital-one-venture-x";
+import { robinhoodGoldEarnConfig } from "../earn-configs/robinhood-gold";
 import type { CapState, TimeWindow } from "../types";
 
 describe("calculatePointsForTransaction", () => {
@@ -542,5 +545,313 @@ describe("matchesTimeWindow", () => {
 
   it("does not match Monday 1AM (not adjacent to window)", () => {
     expect(matchesTimeWindow(1, 1, citiNights)).toBe(false);
+  });
+});
+
+// ── Fix #1: Calendar year cap reset ──
+describe("calendar year cap reset", () => {
+  it("resets Amex Gold grocery cap at year boundary", () => {
+    const capState: CapState = {};
+
+    // Spend $15K in 2024 (within $25K cap)
+    const result2024 = calculatePointsForTransaction(
+      {
+        id: "yr1",
+        merchantName: "WHOLE FOODS",
+        amount: 15000,
+        category: "groceries",
+        confidence: "high",
+        date: new Date("2024-06-15"),
+      },
+      amexGoldEarnConfig,
+      capState
+    );
+    expect(result2024.earnRate).toBe(4);
+    expect(result2024.points).toBe(60000);
+    expect(result2024.capApplied).toBe(false);
+    expect(capState.gold_grocery_25k.spendToDate).toBe(15000);
+
+    // Spend $15K in 2025 — should reset cap, still earn 4x
+    const result2025 = calculatePointsForTransaction(
+      {
+        id: "yr2",
+        merchantName: "WHOLE FOODS",
+        amount: 15000,
+        category: "groceries",
+        confidence: "high",
+        date: new Date("2025-02-01"),
+      },
+      amexGoldEarnConfig,
+      capState
+    );
+    expect(result2025.earnRate).toBe(4);
+    expect(result2025.points).toBe(60000);
+    expect(result2025.capApplied).toBe(false);
+    // Cap should be tracking 2025 now
+    expect(capState.gold_grocery_25k.spendToDate).toBe(15000);
+    expect(capState.gold_grocery_25k.currentYear).toBe(2025);
+  });
+
+  it("resets BCP grocery cap at year boundary", () => {
+    const capState: CapState = {};
+
+    // Spend $5K in 2024 (within $6K cap)
+    calculatePointsForTransaction(
+      {
+        id: "bcp1",
+        merchantName: "TRADER JOES",
+        amount: 5000,
+        category: "groceries",
+        confidence: "high",
+        date: new Date("2024-11-01"),
+      },
+      amexBcpEarnConfig,
+      capState
+    );
+    expect(capState.bcp_grocery_6k.spendToDate).toBe(5000);
+
+    // Spend $5K in 2025 — cap resets, should still earn 6x
+    const result = calculatePointsForTransaction(
+      {
+        id: "bcp2",
+        merchantName: "TRADER JOES",
+        amount: 5000,
+        category: "groceries",
+        confidence: "high",
+        date: new Date("2025-01-15"),
+      },
+      amexBcpEarnConfig,
+      capState
+    );
+    expect(result.earnRate).toBe(6);
+    expect(result.points).toBe(30000);
+    expect(result.capApplied).toBe(false);
+    expect(capState.bcp_grocery_6k.currentYear).toBe(2025);
+  });
+
+  it("resets Robinhood portal cap at year boundary", () => {
+    const capState: CapState = {};
+
+    // Hit the $3,500 cap in 2024
+    calculatePointsForTransaction(
+      {
+        id: "rh1",
+        merchantName: "MARRIOTT",
+        amount: 3500,
+        category: "travel_portal",
+        confidence: "high",
+        date: new Date("2024-09-01"),
+      },
+      robinhoodGoldEarnConfig,
+      capState
+    );
+    expect(capState.rh_travel_portal_3500.spendToDate).toBe(3500);
+
+    // Over-cap in 2024
+    const overCap = calculatePointsForTransaction(
+      {
+        id: "rh2",
+        merchantName: "HILTON",
+        amount: 500,
+        category: "travel_portal",
+        confidence: "high",
+        date: new Date("2024-10-01"),
+      },
+      robinhoodGoldEarnConfig,
+      capState
+    );
+    expect(overCap.earnRate).toBe(3); // Falls to base rate
+    expect(overCap.capApplied).toBe(true);
+
+    // 2025: cap resets, back to 5x
+    const fresh = calculatePointsForTransaction(
+      {
+        id: "rh3",
+        merchantName: "MARRIOTT",
+        amount: 1000,
+        category: "travel_portal",
+        confidence: "high",
+        date: new Date("2025-01-15"),
+      },
+      robinhoodGoldEarnConfig,
+      capState
+    );
+    expect(fresh.earnRate).toBe(5);
+    expect(fresh.points).toBe(5000);
+    expect(fresh.capApplied).toBe(false);
+    expect(capState.rh_travel_portal_3500.currentYear).toBe(2025);
+  });
+});
+
+// ── Fix #5: CFF rotating quarterly categories ──
+describe("CFF rotating quarterly categories", () => {
+  it("earns 5x on Q1 grocery (rotating match)", () => {
+    const capState: CapState = {};
+    const result = calculatePointsForTransaction(
+      {
+        id: "cff_q1",
+        merchantName: "WHOLE FOODS",
+        amount: 100,
+        category: "groceries",
+        confidence: "high",
+        date: new Date("2025-02-15"),
+      },
+      cffEarnConfig,
+      capState
+    );
+    expect(result.earnRate).toBe(5);
+    expect(result.points).toBe(500);
+    expect(result.bonusLabel).toContain("Rotating");
+  });
+
+  it("earns 1x on Q2 grocery (no rotating match, not in permanent bonus)", () => {
+    const capState: CapState = {};
+    const result = calculatePointsForTransaction(
+      {
+        id: "cff_q2_groc",
+        merchantName: "WHOLE FOODS",
+        amount: 100,
+        category: "groceries",
+        confidence: "high",
+        date: new Date("2025-05-15"),
+      },
+      cffEarnConfig,
+      capState
+    );
+    // Grocery is not in CFF's permanent bonus categories — only in Q1 rotating
+    expect(result.earnRate).toBe(1);
+    expect(result.points).toBe(100);
+  });
+
+  it("earns 5x on Q3 dining (rotating beats permanent 3x)", () => {
+    const capState: CapState = {};
+    const result = calculatePointsForTransaction(
+      {
+        id: "cff_q3_dine",
+        merchantName: "CHIPOTLE",
+        amount: 50,
+        category: "dining",
+        confidence: "high",
+        date: new Date("2025-08-15"),
+      },
+      cffEarnConfig,
+      capState
+    );
+    // Q3 has dining as rotating → 5x (first-match-wins over permanent 3x)
+    expect(result.earnRate).toBe(5);
+    expect(result.points).toBe(250);
+  });
+
+  it("earns 3x on non-Q3 dining (permanent bonus)", () => {
+    const capState: CapState = {};
+    const result = calculatePointsForTransaction(
+      {
+        id: "cff_dine_perm",
+        merchantName: "CHIPOTLE",
+        amount: 50,
+        category: "dining",
+        confidence: "high",
+        date: new Date("2025-02-15"),
+      },
+      cffEarnConfig,
+      capState
+    );
+    // Q1 rotating is groceries not dining, so falls through to permanent 3x dining
+    expect(result.earnRate).toBe(3);
+    expect(result.points).toBe(150);
+  });
+
+  it("caps Q1 rotating at $1,500 spend", () => {
+    const capState: CapState = {};
+
+    // First $1,500 at 5x
+    const first = calculatePointsForTransaction(
+      {
+        id: "cff_cap1",
+        merchantName: "WHOLE FOODS",
+        amount: 1500,
+        category: "groceries",
+        confidence: "high",
+        date: new Date("2025-01-10"),
+      },
+      cffEarnConfig,
+      capState
+    );
+    expect(first.earnRate).toBe(5);
+    expect(first.points).toBe(7500);
+    expect(first.capApplied).toBe(false);
+
+    // Next $100 — cap hit, falls to 1x base
+    const over = calculatePointsForTransaction(
+      {
+        id: "cff_cap2",
+        merchantName: "WHOLE FOODS",
+        amount: 100,
+        category: "groceries",
+        confidence: "high",
+        date: new Date("2025-02-01"),
+      },
+      cffEarnConfig,
+      capState
+    );
+    expect(over.earnRate).toBe(1);
+    expect(over.points).toBe(100);
+    expect(over.capApplied).toBe(true);
+  });
+
+  it("splits transaction at Q1 cap boundary", () => {
+    const capState: CapState = {};
+
+    // $1,600 grocery in Q1: first $1,500 at 5x, last $100 at 1x
+    const result = calculatePointsForTransaction(
+      {
+        id: "cff_split",
+        merchantName: "COSTCO",
+        amount: 1600,
+        category: "groceries",
+        confidence: "high",
+        date: new Date("2025-03-01"),
+      },
+      cffEarnConfig,
+      capState
+    );
+    // $1,500 * 5 = 7,500 + $100 * 1 = 100 = 7,600
+    expect(result.points).toBe(7600);
+    expect(result.capApplied).toBe(true);
+  });
+
+  it("tracks Q1 and Q2 caps independently", () => {
+    const capState: CapState = {};
+
+    // Max out Q1 grocery cap
+    calculatePointsForTransaction(
+      {
+        id: "cff_ind1",
+        merchantName: "WHOLE FOODS",
+        amount: 1500,
+        category: "groceries",
+        confidence: "high",
+        date: new Date("2025-02-01"),
+      },
+      cffEarnConfig,
+      capState
+    );
+
+    // Q2 gas station — should have fresh $1,500 cap
+    const q2 = calculatePointsForTransaction(
+      {
+        id: "cff_ind2",
+        merchantName: "SHELL",
+        amount: 200,
+        category: "gas_stations",
+        confidence: "high",
+        date: new Date("2025-05-01"),
+      },
+      cffEarnConfig,
+      capState
+    );
+    expect(q2.earnRate).toBe(5);
+    expect(q2.points).toBe(1000);
+    expect(q2.capApplied).toBe(false);
   });
 });
