@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { db } from "@/db";
 import { eq, desc, and, gte, lt } from "drizzle-orm";
 import * as schema from "@/db/schema";
@@ -507,7 +508,7 @@ export async function getPlaidConnectionStatus(userId: string, cardProfileId?: s
   }));
 }
 
-export async function getCardProfiles(userId: string) {
+export const getCardProfiles = cache(async function getCardProfiles(userId: string) {
   const profiles = await db.query.cardProfiles.findMany({
     where: eq(schema.cardProfiles.userId, userId),
     with: { plaidConnection: true },
@@ -524,6 +525,8 @@ export async function getCardProfiles(userId: string) {
       annualFee: cardDef?.annualFee ?? 0,
       isActive: cp.isActive,
       connectionId: cp.plaidConnectionId,
+      connectionStatus: cp.plaidConnection?.status ?? null,
+      lastSyncedAt: cp.plaidConnection?.lastSyncedAt ?? null,
       institutionName: cp.plaidConnection.institutionName,
       accountMask: cp.plaidConnection.accountMask,
       createdAt: cp.createdAt,
@@ -531,7 +534,7 @@ export async function getCardProfiles(userId: string) {
       anniversarySource: cp.anniversarySource,
     };
   });
-}
+});
 
 export async function getUserAnniversaryStatus(userId: string, cardProfileId?: string) {
   const cardProfile = await getActiveCardProfile(userId, cardProfileId);

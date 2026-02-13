@@ -1,11 +1,13 @@
+import { redirect } from "next/navigation";
 import { requireAuth } from "@/lib/auth-helpers";
 import { getCardProfiles } from "@/lib/queries";
 import { hasUnseenInsights } from "@/lib/insights/queries";
 import { AppShell } from "@/components/AppShell";
+import { SyncFooter } from "./_components/SyncFooter";
 
 export const dynamic = "force-dynamic";
 
-export default async function SettingsLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -17,7 +19,11 @@ export default async function SettingsLayout({
     hasUnseenInsights(user.id!),
   ]);
 
-  // Serialize dates for client components
+  if (cardProfilesList.length === 0) {
+    redirect("/onboarding");
+  }
+
+  // Serialize dates to strings for client components
   const cardProfiles = cardProfilesList.map((c) => ({
     id: c.id,
     cardType: c.cardType,
@@ -33,7 +39,10 @@ export default async function SettingsLayout({
       userEmail={user.email ?? undefined}
       dashboardNav={{ hasNewInsights: hasNew, cardProfiles }}
     >
-      {children}
+      <div className="mx-auto max-w-[960px] px-4 pt-8 pb-32 md:px-8">
+        {children}
+      </div>
+      <SyncFooter cardProfiles={cardProfiles} />
     </AppShell>
   );
 }

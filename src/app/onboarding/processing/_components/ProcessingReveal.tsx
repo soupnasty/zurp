@@ -3,12 +3,13 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { getRevealData } from "../../actions";
 import type { RevealData, RevealLeaderboardRow } from "../../actions";
+import { CardChip } from "@/app/_components/CardChip";
+import type { CardVisualId } from "@/app/_components/CardChip";
 
 interface Props {
   userId: string;
   connectionId: string;
-  cardName: string;
-  cardAnnualFee: number;
+  cardType: string;
   benefitCount: number;
   totalCards: number;
 }
@@ -17,10 +18,10 @@ type Phase = "processing" | "transitioning" | "reveal";
 type StepStatus = "pending" | "active" | "resolved";
 
 const STEP_CONFIG = [
-  { duration: 1200, progress: 25 },
-  { duration: 1800, progress: 55 },
-  { duration: 1200, progress: 80 },
-  { duration: 800, progress: 100 },
+  { duration: 2000, progress: 25 },
+  { duration: 2800, progress: 55 },
+  { duration: 2000, progress: 80 },
+  { duration: 1400, progress: 100 },
 ];
 
 const STEP_TASKS = [
@@ -37,8 +38,8 @@ const DEFAULT_RESULTS = [
   "Done",
 ];
 
-const STEP_GAP = 200;
-const INITIAL_DELAY = 400;
+const STEP_GAP = 400;
+const INITIAL_DELAY = 600;
 
 function formatDollars(n: number): string {
   const abs = Math.abs(Math.round(n));
@@ -156,7 +157,9 @@ function MiniLeaderboard({
   belowCount: number;
 }) {
   // Find the max absolute net value for proportional bar widths
-  const maxNet = Math.max(...rows.map((r) => Math.abs(r.pointsValue + r.benefitsValue)));
+  const maxNet = Math.max(
+    ...rows.map((r) => Math.abs(r.pointsValue + r.benefitsValue))
+  );
 
   return (
     <div
@@ -178,99 +181,166 @@ function MiniLeaderboard({
         const benW = maxNet > 0 ? (row.benefitsValue / maxNet) * 100 : 0;
         const feeW = maxNet > 0 ? (row.annualFee / maxNet) * 100 : 0;
 
-        return (
-          <div
-            key={row.rank}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              padding: isYou ? "8px 8px" : "8px 0",
-              borderTop: i > 0 && !isYou ? "1px solid var(--border-subtle)" : "none",
-              background: isYou ? "rgba(34,211,238,0.04)" : "transparent",
-              margin: isYou ? "0 -8px" : 0,
-              borderRadius: isYou ? 8 : 0,
-            }}
-          >
-            {/* Rank */}
-            <span
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 11,
-                fontWeight: 700,
-                width: 18,
-                textAlign: "center",
-                flexShrink: 0,
-                color: isTop
-                  ? "var(--color-success)"
-                  : isYou
-                    ? "var(--accent)"
-                    : "var(--text-dim)",
-                opacity: isDim ? 0.4 : 1,
-              }}
-            >
-              {row.rank}
-            </span>
+        // Show gap indicator if rank jumps by more than 1
+        const prevRank = i > 0 ? rows[i - 1].rank : 0;
+        const rankGap = row.rank - prevRank;
+        const showGap = i > 0 && rankGap > 1;
 
-            {/* Bar */}
-            <div
-              style={{
-                flex: 1,
-                height: 10,
-                borderRadius: 3,
-                overflow: "hidden",
-                display: "flex",
-                background: "rgba(255,255,255,0.02)",
-              }}
-            >
+        return (
+          <div key={row.rank}>
+            {/* Gap indicator */}
+            {showGap && (
               <div
                 style={{
-                  flex: ptsW,
-                  background: "#60a5fa",
-                  borderRadius: "3px 0 0 3px",
-                  opacity: isDim ? 0.2 : 1,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  padding: "6px 0",
                 }}
-              />
-              {benW > 0 && (
+              >
+                <span
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 9,
+                    width: 18,
+                    textAlign: "center",
+                    flexShrink: 0,
+                    color: "var(--text-dim)",
+                    opacity: 0.3,
+                  }}
+                >
+                  ···
+                </span>
                 <div
                   style={{
-                    flex: benW,
-                    background: "#a78bfa",
-                    opacity: isDim ? 0.2 : 1,
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 3,
                   }}
-                />
-              )}
-              {feeW > 0 && (
-                <div
+                >
+                  {[0, 1].map((j) => (
+                    <div
+                      key={j}
+                      style={{
+                        height: 4,
+                        borderRadius: 2,
+                        background: "rgba(255,255,255,0.03)",
+                      }}
+                    />
+                  ))}
+                </div>
+                <span
                   style={{
-                    flex: feeW,
-                    background: "#f87171",
-                    borderRadius: "0 3px 3px 0",
-                    opacity: isDim ? 0.2 : 1,
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 9,
+                    width: 72,
+                    textAlign: "right",
+                    flexShrink: 0,
+                    color: "var(--text-dim)",
+                    opacity: 0.3,
                   }}
-                />
-              )}
-            </div>
+                >
+                  {rankGap - 1} more
+                </span>
+              </div>
+            )}
 
-            {/* Net label */}
-            <span
+            <div
               style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 10,
-                width: 72,
-                textAlign: "right",
-                flexShrink: 0,
-                whiteSpace: "nowrap",
-                color: isTop
-                  ? "var(--color-success)"
-                  : isYou
-                    ? "var(--accent)"
-                    : "var(--text-dim)",
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                padding: isYou ? "8px 8px" : "8px 0",
+                borderTop:
+                  i > 0 && !isYou && !showGap
+                    ? "1px solid var(--border-subtle)"
+                    : "none",
+                background: isYou ? "rgba(34,211,238,0.04)" : "transparent",
+                margin: isYou ? "0 -8px" : 0,
+                borderRadius: isYou ? 8 : 0,
               }}
             >
-              {formatDollars(row.netValue)}
-              {isYou && " \u2190 you"}
-            </span>
+              {/* Rank */}
+              <span
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 11,
+                  fontWeight: 700,
+                  width: 18,
+                  textAlign: "center",
+                  flexShrink: 0,
+                  color: isTop
+                    ? "var(--color-success)"
+                    : isYou
+                    ? "var(--accent)"
+                    : "var(--text-dim)",
+                  opacity: isDim ? 0.4 : 1,
+                }}
+              >
+                {row.rank}
+              </span>
+
+              {/* Bar */}
+              <div
+                style={{
+                  flex: 1,
+                  height: 10,
+                  borderRadius: 3,
+                  overflow: "hidden",
+                  display: "flex",
+                  background: "rgba(255,255,255,0.02)",
+                }}
+              >
+                <div
+                  style={{
+                    flex: ptsW,
+                    background: "#60a5fa",
+                    borderRadius: "3px 0 0 3px",
+                    opacity: isDim ? 0.2 : 1,
+                  }}
+                />
+                {benW > 0 && (
+                  <div
+                    style={{
+                      flex: benW,
+                      background: "#a78bfa",
+                      opacity: isDim ? 0.2 : 1,
+                    }}
+                  />
+                )}
+                {feeW > 0 && (
+                  <div
+                    style={{
+                      flex: feeW,
+                      background: "#f87171",
+                      borderRadius: "0 3px 3px 0",
+                      opacity: isDim ? 0.2 : 1,
+                    }}
+                  />
+                )}
+              </div>
+
+              {/* Net label */}
+              <span
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 10,
+                  width: 72,
+                  textAlign: "right",
+                  flexShrink: 0,
+                  whiteSpace: "nowrap",
+                  color: isTop
+                    ? "var(--color-success)"
+                    : isYou
+                    ? "var(--accent)"
+                    : "var(--text-dim)",
+                }}
+              >
+                {formatDollars(row.netValue)}
+                {isYou && " \u2190 you"}
+              </span>
+            </div>
           </div>
         );
       })}
@@ -300,8 +370,7 @@ function MiniLeaderboard({
 export function ProcessingReveal({
   userId,
   connectionId,
-  cardName,
-  cardAnnualFee,
+  cardType,
   benefitCount,
   totalCards,
 }: Props) {
@@ -342,7 +411,9 @@ export function ProcessingReveal({
   // Update a specific step's result text, showing "Earn rates tracked" for 0 benefits
   const getStep3Result = useCallback(() => {
     return benefitCount > 0
-      ? `${benefitCount} benefit${benefitCount !== 1 ? "s" : ""} found on your card`
+      ? `${benefitCount} benefit${
+          benefitCount !== 1 ? "s" : ""
+        } found on your card`
       : "Earn rates tracked";
   }, [benefitCount]);
 
@@ -352,7 +423,9 @@ export function ProcessingReveal({
       if (syncData && syncData.added > 0) {
         setStepResults((prev) => {
           const next = [...prev];
-          next[0] = `${syncData.added} transaction${syncData.added !== 1 ? "s" : ""} synced`;
+          next[0] = `${syncData.added} transaction${
+            syncData.added !== 1 ? "s" : ""
+          } synced`;
           return next;
         });
       }
@@ -545,13 +618,14 @@ export function ProcessingReveal({
                   alignItems: "center",
                   gap: 6,
                   marginBottom: status === "resolved" ? 12 : 20,
-                  opacity: status === "pending" ? 0 : status === "resolved" ? 0.3 : 1,
+                  opacity:
+                    status === "pending" ? 0 : status === "resolved" ? 0.3 : 1,
                   transform:
                     status === "pending"
                       ? "translateY(8px)"
                       : status === "resolved"
-                        ? "translateY(-4px)"
-                        : "translateY(0)",
+                      ? "translateY(-4px)"
+                      : "translateY(0)",
                   transition: "opacity 0.4s ease, transform 0.4s ease",
                 }}
               >
@@ -568,7 +642,9 @@ export function ProcessingReveal({
                   }}
                 >
                   {status === "resolved" ? (
-                    <span style={{ color: "var(--color-success)", fontSize: 14 }}>
+                    <span
+                      style={{ color: "var(--color-success)", fontSize: 14 }}
+                    >
                       ✓
                     </span>
                   ) : status === "active" ? (
@@ -646,22 +722,11 @@ export function ProcessingReveal({
       >
         {revealData ? (
           <>
-            {/* Card outline */}
+            {/* Card visual */}
             <div
               style={{
-                width: 280,
-                height: 170,
-                background: "var(--bg-secondary)",
-                border: "1px solid var(--border-subtle)",
-                borderRadius: 20,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 8,
                 position: "relative",
-                overflow: "hidden",
-                marginBottom: 36,
+                marginBottom: 48,
                 opacity: revealStage >= 1 ? 1 : 0,
                 transform:
                   revealStage >= 1
@@ -670,94 +735,10 @@ export function ProcessingReveal({
                 transition: "opacity 0.6s ease, transform 0.6s ease",
               }}
             >
-              {/* Top edge glow */}
               <div
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: 1,
-                  background:
-                    "linear-gradient(90deg, transparent, rgba(34,211,238,0.2), transparent)",
-                }}
-              />
-
-              {/* Card name */}
-              <div
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: "var(--text-primary)",
-                  textTransform: "uppercase",
-                  letterSpacing: "1.2px",
-                  textAlign: "center",
-                  padding: "0 20px",
-                }}
+                style={{ transform: "scale(1.4)", transformOrigin: "center" }}
               >
-                {revealData.cardName}
-              </div>
-
-              {/* Fee */}
-              <div
-                style={{
-                  fontSize: 13,
-                  color: "var(--text-dim)",
-                }}
-              >
-                {cardAnnualFee > 0
-                  ? `$${cardAnnualFee}/yr annual fee`
-                  : "No annual fee"}
-              </div>
-
-              {/* Rank badge */}
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: -1,
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  background: "var(--bg-elevated)",
-                  border: "1px solid var(--border-subtle)",
-                  borderBottom: "none",
-                  borderRadius: "12px 12px 0 0",
-                  padding: "6px 20px",
-                  display: "flex",
-                  alignItems: "baseline",
-                  gap: 4,
-                  opacity: revealStage >= 1 ? 1 : 0,
-                  transition: "opacity 0.5s ease 0.3s",
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: 11,
-                    color: "var(--text-dim)",
-                  }}
-                >
-                  #
-                </span>
-                <span
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: 20,
-                    fontWeight: 700,
-                    color: "var(--accent)",
-                  }}
-                >
-                  {revealData.rank}
-                </span>
-                <span
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: 11,
-                    color: "var(--text-dim)",
-                  }}
-                >
-                  of {revealData.totalCards}
-                </span>
+                <CardChip cardId={cardType as CardVisualId} />
               </div>
             </div>
 
@@ -775,9 +756,11 @@ export function ProcessingReveal({
                 transition: "opacity 0.5s ease, transform 0.5s ease",
               }}
             >
-              {isWin
-                ? `Your card is #1 out of ${revealData.totalCards}`
-                : `Your card ranks #${revealData.rank} out of ${revealData.totalCards}`}
+              {isWin ? (
+                <>Your card is <span style={{ color: "var(--accent)" }}>#1</span> out of {revealData.totalCards}</>
+              ) : (
+                <>Your card ranks <span style={{ color: "var(--accent)" }}>#{revealData.rank}</span> out of {revealData.totalCards}</>
+              )}
             </div>
 
             {/* Gap / value section */}
@@ -867,7 +850,7 @@ export function ProcessingReveal({
             {/* CTA */}
             <button
               onClick={() => {
-                window.location.href = "/benefits";
+                window.location.href = "/dashboard";
               }}
               style={{
                 display: "inline-flex",
@@ -917,21 +900,9 @@ export function ProcessingReveal({
         ) : (
           /* ── Fallback: No comparison data ── */
           <>
-            {/* Card outline (no rank badge) */}
+            {/* Card visual (no rank badge) */}
             <div
               style={{
-                width: 280,
-                height: 170,
-                background: "var(--bg-secondary)",
-                border: "1px solid var(--border-subtle)",
-                borderRadius: 20,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 8,
-                position: "relative",
-                overflow: "hidden",
                 marginBottom: 36,
                 opacity: revealStage >= 1 ? 1 : 0,
                 transform:
@@ -942,34 +913,9 @@ export function ProcessingReveal({
               }}
             >
               <div
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: 1,
-                  background:
-                    "linear-gradient(90deg, transparent, rgba(34,211,238,0.2), transparent)",
-                }}
-              />
-              <div
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: "var(--text-primary)",
-                  textTransform: "uppercase",
-                  letterSpacing: "1.2px",
-                  textAlign: "center",
-                  padding: "0 20px",
-                }}
+                style={{ transform: "scale(1.4)", transformOrigin: "center" }}
               >
-                {cardName}
-              </div>
-              <div style={{ fontSize: 13, color: "var(--text-dim)" }}>
-                {cardAnnualFee > 0
-                  ? `$${cardAnnualFee}/yr annual fee`
-                  : "No annual fee"}
+                <CardChip cardId={cardType as CardVisualId} />
               </div>
             </div>
 
@@ -1004,14 +950,14 @@ export function ProcessingReveal({
                 transition: "opacity 0.5s ease, transform 0.5s ease",
               }}
             >
-              We&apos;re tracking your benefits. Check back as transactions
-              come in.
+              We&apos;re tracking your benefits. Check back as transactions come
+              in.
             </div>
 
             {/* CTA */}
             <button
               onClick={() => {
-                window.location.href = "/benefits";
+                window.location.href = "/dashboard";
               }}
               style={{
                 display: "inline-flex",

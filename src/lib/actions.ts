@@ -26,8 +26,7 @@ export async function removeCardProfile(cardProfileId: string) {
     .where(eq(schema.plaidConnections.id, cardProfile.plaidConnectionId));
 
   revalidatePath("/settings");
-  revalidatePath("/benefits");
-  revalidatePath("/spending");
+  revalidatePath("/dashboard");
 }
 
 export async function updateCardType(cardProfileId: string, newCardType: string) {
@@ -56,9 +55,7 @@ export async function updateCardType(cardProfileId: string, newCardType: string)
   await reprocessAllTransactions(cardProfileId);
 
   revalidatePath("/settings");
-  revalidatePath("/benefits");
-  revalidatePath("/spending");
-  revalidatePath("/compare");
+  revalidatePath("/dashboard");
 }
 
 /**

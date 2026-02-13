@@ -7,7 +7,7 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Badge } from "@/components/ui/Badge";
 import { ExternalLink } from "lucide-react";
 import { BenefitIcon } from "@/components/ui/BenefitIcon";
-import type { BenefitGroup } from "../page";
+import type { BenefitGroup } from "@/lib/benefit-grouping";
 
 function formatCycleEnd(endIso: string): string {
   const end = new Date(endIso);

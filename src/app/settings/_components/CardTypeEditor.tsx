@@ -30,54 +30,63 @@ export function CardTypeEditor({
 
   if (!editing) {
     return (
-      <div className="mt-2 flex items-center gap-2">
-        <p className="text-[var(--text-caption)] text-[var(--text-secondary)]">
-          Card type:{" "}
-          <span className="text-[var(--text-primary)]">{currentCardName}</span>
-        </p>
+      <div className="flex items-center gap-1.5">
+        <span
+          className="text-[11px] text-[var(--text-secondary)]"
+          style={{ fontFamily: "var(--font-mono)" }}
+        >
+          Type:
+        </span>
+        <span
+          className="text-[11px] font-bold text-[var(--text-primary)]"
+          style={{ fontFamily: "var(--font-mono)" }}
+        >
+          {currentCardName}
+        </span>
         <button
           onClick={() => setEditing(true)}
-          className="rounded-[var(--radius-md)] p-1.5 text-[var(--text-secondary)] transition-colors hover:bg-[var(--accent)]/10 hover:text-[var(--accent)]"
+          className="rounded p-1 text-[var(--text-secondary)] transition-colors hover:bg-[rgba(34,211,238,0.08)] hover:text-[var(--color-accent-cyan)]"
           title="Change card type"
         >
-          <Pencil size={14} strokeWidth={1.75} />
+          <Pencil size={12} strokeWidth={1.75} />
         </button>
       </div>
     );
   }
 
   return (
-    <div className="mt-2">
-      <div className="flex items-center gap-2">
-        <select
-          value={selected}
-          onChange={(e) => setSelected(e.target.value)}
-          className="rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-primary)] px-2.5 py-1.5 text-[var(--text-caption)] text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none"
-        >
-          {allCardTypes.map((card) => (
-            <option key={card.id} value={card.id}>
-              {card.name}
-            </option>
-          ))}
-        </select>
-        <button
-          onClick={handleSave}
-          disabled={isPending}
-          className="rounded-[var(--radius-md)] bg-[var(--accent)] px-3 py-1.5 text-[var(--text-caption)] font-medium text-[var(--color-void)] transition-opacity hover:opacity-90 disabled:opacity-50"
-        >
-          {isPending ? "Saving..." : "Save"}
-        </button>
-        <button
-          onClick={() => {
-            setSelected(currentCardType);
-            setEditing(false);
-          }}
-          disabled={isPending}
-          className="text-[var(--text-caption)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors disabled:opacity-50"
-        >
-          Cancel
-        </button>
-      </div>
+    <div className="flex items-center gap-2">
+      <select
+        value={selected}
+        onChange={(e) => setSelected(e.target.value)}
+        className="rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--bg-primary)] px-2 py-1 text-[11px] text-[var(--text-primary)] focus:border-[var(--color-accent-cyan)] focus:outline-none"
+        style={{ fontFamily: "var(--font-mono)" }}
+      >
+        {allCardTypes.map((card) => (
+          <option key={card.id} value={card.id}>
+            {card.name}
+          </option>
+        ))}
+      </select>
+      <button
+        onClick={handleSave}
+        disabled={isPending}
+        className="rounded-[var(--radius-md)] px-2.5 py-1 text-[11px] font-bold text-[var(--color-accent-cyan)] transition-colors hover:bg-[rgba(34,211,238,0.08)] disabled:opacity-50"
+        style={{ fontFamily: "var(--font-mono)" }}
+      >
+        {isPending ? "..." : "Save"}
+      </button>
+      <button
+        onClick={() => {
+          setSelected(currentCardType);
+          setEditing(false);
+        }}
+        disabled={isPending}
+        className="text-[11px] text-[var(--text-dim)] transition-colors hover:text-[var(--text-secondary)] disabled:opacity-50"
+        style={{ fontFamily: "var(--font-mono)" }}
+      >
+        Cancel
+      </button>
     </div>
   );
 }

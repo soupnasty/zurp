@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/Badge";
 import { BenefitCard } from "./BenefitCard";
-import type { BenefitGroup } from "../page";
+import type { BenefitGroup } from "@/lib/benefit-grouping";
 
 export function UpcomingBenefits({ benefits, capturedLabel }: { benefits: BenefitGroup[]; capturedLabel?: string }) {
   if (benefits.length === 0) return null;

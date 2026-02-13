@@ -19,10 +19,10 @@ export default function NotFoundPage() {
           The page you&apos;re looking for doesn&apos;t exist or has been moved.
         </p>
         <Link
-          href="/benefits"
+          href="/dashboard"
           className="mt-6 inline-block rounded-[var(--radius-md)] bg-[var(--accent)] px-6 py-2.5 text-[var(--text-body)] font-medium text-[var(--color-void)] transition-opacity duration-[var(--duration-fast)] hover:opacity-90"
         >
-          Back to Benefits
+          Back to Dashboard
         </Link>
       </div>
     </div>

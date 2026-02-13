@@ -101,6 +101,7 @@ export async function readComparison(
     monthCount: firstRow.monthCount,
     totalTransactions: firstRow.totalTransactions,
     totalSpend: firstRow.totalSpend,
+    totalCards: ranked.length,
     portalMode,
     cards: orderedCards,
     categoryBreakdown,

@@ -33,7 +33,7 @@ export default async function ProcessingPage({
 
   // Already-synced guard: skip processing if sync already ran
   if (connection.lastSyncedAt) {
-    redirect("/benefits");
+    redirect("/dashboard");
   }
 
   // Get card metadata
@@ -48,8 +48,7 @@ export default async function ProcessingPage({
     <ProcessingReveal
       userId={user.id!}
       connectionId={connectionId}
-      cardName={card.name}
-      cardAnnualFee={card.annualFee}
+      cardType={cardType}
       benefitCount={card.benefits.length}
       totalCards={totalCards}
     />

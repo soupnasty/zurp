@@ -29,14 +29,21 @@ export function UnlinkButton({ connectionId, institutionName }: UnlinkButtonProp
         <button
           onClick={handleRemove}
           disabled={removing}
-          className="rounded-[var(--radius-md)] bg-[var(--color-danger)] px-3 py-1.5 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+          className="rounded-[var(--radius-md)] border px-2.5 py-1 text-[11px] font-bold transition-colors disabled:opacity-50"
+          style={{
+            fontFamily: "var(--font-mono)",
+            color: "var(--color-danger)",
+            background: "rgba(248,113,113,0.1)",
+            borderColor: "rgba(248,113,113,0.2)",
+          }}
         >
-          {removing ? "Unlinking..." : "Confirm"}
+          {removing ? "..." : "Confirm"}
         </button>
         <button
           onClick={() => setConfirming(false)}
           disabled={removing}
-          className="rounded-[var(--radius-md)] px-3 py-1.5 text-sm text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
+          className="text-[11px] text-[var(--text-dim)] transition-colors hover:text-[var(--text-secondary)]"
+          style={{ fontFamily: "var(--font-mono)" }}
         >
           Cancel
         </button>
@@ -47,10 +54,10 @@ export function UnlinkButton({ connectionId, institutionName }: UnlinkButtonProp
   return (
     <button
       onClick={() => setConfirming(true)}
-      className="rounded-[var(--radius-md)] p-2 text-[var(--text-secondary)] transition-colors hover:bg-[var(--color-danger)]/10 hover:text-[var(--color-danger)]"
+      className="rounded p-1.5 text-[var(--text-dim)] transition-colors hover:bg-[rgba(248,113,113,0.08)] hover:text-[var(--color-danger)]"
       title={`Unlink ${institutionName}`}
     >
-      <Trash2 size={18} strokeWidth={1.75} />
+      <Trash2 size={16} strokeWidth={1.75} />
     </button>
   );
 }

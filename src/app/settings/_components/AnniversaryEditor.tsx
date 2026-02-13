@@ -11,8 +11,8 @@ interface AnniversaryEditorProps {
 }
 
 const MONTHS = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ];
 
 export function AnniversaryEditor({
@@ -32,7 +32,7 @@ export function AnniversaryEditor({
 
   const displayDate = parsed
     ? parsed.toLocaleDateString("en-US", {
-        month: "long",
+        month: "short",
         year: "numeric",
         timeZone: "UTC",
       })
@@ -40,10 +40,10 @@ export function AnniversaryEditor({
 
   const sourceLabel =
     source === "auto_detected"
-      ? "Auto-detected"
+      ? "auto"
       : source === "user_provided"
-        ? "Set manually"
-        : "Not set";
+        ? "manual"
+        : null;
 
   function handleSave() {
     startTransition(async () => {
@@ -61,78 +61,95 @@ export function AnniversaryEditor({
 
   if (!editing) {
     return (
-      <div className="mt-2 flex items-center gap-2">
-        <p className="text-[var(--text-caption)] text-[var(--text-secondary)]">
-          Anniversary:{" "}
-          {displayDate ? (
-            <span className="text-[var(--text-primary)]">{displayDate}</span>
-          ) : (
-            <span className="text-[var(--text-muted)]">Not set</span>
-          )}
-          {displayDate && (
-            <span className="ml-1 text-[var(--text-muted)]">
-              ({sourceLabel})
+      <div className="flex items-center gap-1.5">
+        <span
+          className="text-[11px] text-[var(--text-secondary)]"
+          style={{ fontFamily: "var(--font-mono)" }}
+        >
+          Anniversary:
+        </span>
+        {displayDate ? (
+          <>
+            <span
+              className="text-[11px] font-bold text-[var(--text-primary)]"
+              style={{ fontFamily: "var(--font-mono)" }}
+            >
+              {displayDate}
             </span>
-          )}
-        </p>
+            {sourceLabel && (
+              <span
+                className="text-[10px] text-[var(--text-secondary)]"
+                style={{ fontFamily: "var(--font-mono)" }}
+              >
+                ({sourceLabel})
+              </span>
+            )}
+          </>
+        ) : (
+          <span
+            className="text-[11px] text-[var(--text-secondary)]"
+            style={{ fontFamily: "var(--font-mono)" }}
+          >
+            Not set
+          </span>
+        )}
         <button
           onClick={() => setEditing(true)}
-          className="rounded-[var(--radius-md)] p-1.5 text-[var(--text-secondary)] transition-colors hover:bg-[var(--accent)]/10 hover:text-[var(--accent)]"
+          className="rounded p-1 text-[var(--text-secondary)] transition-colors hover:bg-[rgba(34,211,238,0.08)] hover:text-[var(--color-accent-cyan)]"
           title={displayDate ? "Edit anniversary" : "Set anniversary"}
         >
-          <Pencil size={14} strokeWidth={1.75} />
+          <Pencil size={12} strokeWidth={1.75} />
         </button>
       </div>
     );
   }
 
   return (
-    <div className="mt-2">
-      <p className="text-[var(--text-caption)] text-[var(--text-secondary)] mb-1.5">
-        Anniversary month (when your annual fee posts)
-      </p>
-      <div className="flex items-center gap-2">
-        <select
-          value={month}
-          onChange={(e) => setMonth(Number(e.target.value))}
-          className="rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-primary)] px-2.5 py-1.5 text-[var(--text-caption)] text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none"
-        >
-          {MONTHS.map((name, i) => (
-            <option key={i} value={i + 1}>
-              {name}
-            </option>
-          ))}
-        </select>
-        <select
-          value={year}
-          onChange={(e) => setYear(Number(e.target.value))}
-          className="rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-primary)] px-2.5 py-1.5 text-[var(--text-caption)] text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none"
-        >
-          {yearOptions.map((y) => (
-            <option key={y} value={y}>
-              {y}
-            </option>
-          ))}
-        </select>
-        <button
-          onClick={handleSave}
-          disabled={isPending}
-          className="rounded-[var(--radius-md)] bg-[var(--accent)] px-3 py-1.5 text-[var(--text-caption)] font-medium text-[var(--color-void)] transition-opacity hover:opacity-90 disabled:opacity-50"
-        >
-          {isPending ? "Saving..." : "Save"}
-        </button>
-        <button
-          onClick={() => {
-            setMonth(currentMonth);
-            setYear(currentYear);
-            setEditing(false);
-          }}
-          disabled={isPending}
-          className="text-[var(--text-caption)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors disabled:opacity-50"
-        >
-          Cancel
-        </button>
-      </div>
+    <div className="flex items-center gap-2">
+      <select
+        value={month}
+        onChange={(e) => setMonth(Number(e.target.value))}
+        className="rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--bg-primary)] px-2 py-1 text-[11px] text-[var(--text-primary)] focus:border-[var(--color-accent-cyan)] focus:outline-none"
+        style={{ fontFamily: "var(--font-mono)" }}
+      >
+        {MONTHS.map((name, i) => (
+          <option key={i} value={i + 1}>
+            {name}
+          </option>
+        ))}
+      </select>
+      <select
+        value={year}
+        onChange={(e) => setYear(Number(e.target.value))}
+        className="rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--bg-primary)] px-2 py-1 text-[11px] text-[var(--text-primary)] focus:border-[var(--color-accent-cyan)] focus:outline-none"
+        style={{ fontFamily: "var(--font-mono)" }}
+      >
+        {yearOptions.map((y) => (
+          <option key={y} value={y}>
+            {y}
+          </option>
+        ))}
+      </select>
+      <button
+        onClick={handleSave}
+        disabled={isPending}
+        className="rounded-[var(--radius-md)] px-2.5 py-1 text-[11px] font-bold text-[var(--color-accent-cyan)] transition-colors hover:bg-[rgba(34,211,238,0.08)] disabled:opacity-50"
+        style={{ fontFamily: "var(--font-mono)" }}
+      >
+        {isPending ? "..." : "Save"}
+      </button>
+      <button
+        onClick={() => {
+          setMonth(currentMonth);
+          setYear(currentYear);
+          setEditing(false);
+        }}
+        disabled={isPending}
+        className="text-[11px] text-[var(--text-dim)] transition-colors hover:text-[var(--text-secondary)] disabled:opacity-50"
+        style={{ fontFamily: "var(--font-mono)" }}
+      >
+        Cancel
+      </button>
     </div>
   );
 }

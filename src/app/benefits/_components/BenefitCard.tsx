@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/Card";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { BenefitDetailModal } from "./BenefitDetailModal";
 import { BenefitIcon } from "@/components/ui/BenefitIcon";
-import type { BenefitGroup } from "../page";
+import type { BenefitGroup } from "@/lib/benefit-grouping";
 
 export function BenefitCard({ group, capturedLabel = "this year", simulated = false }: { group: BenefitGroup; capturedLabel?: string; simulated?: boolean }) {
   const [modalOpen, setModalOpen] = useState(false);

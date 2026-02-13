@@ -116,6 +116,18 @@ export async function getTotalBenefitsCaptured(
   return Number(result[0]?.total ?? 0);
 }
 
+/** Lightweight check: does the user have any pending insights? */
+export async function hasUnseenInsights(userId: string): Promise<boolean> {
+  const result = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(schema.insights)
+    .where(
+      and(eq(schema.insights.userId, userId), eq(schema.insights.state, "pending"))
+    )
+    .limit(1);
+  return (result[0]?.count ?? 0) > 0;
+}
+
 /** Get insights for display, ordered by score. */
 export async function getActiveInsights(userId: string) {
   return db.query.insights.findMany({

@@ -1,0 +1,95 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { RefreshCw, Check } from "lucide-react";
+
+interface CardProfile {
+  id: string;
+  connectionId: string | null;
+  connectionStatus: string | null;
+  lastSyncedAt: string | null;
+}
+
+interface SyncFooterProps {
+  cardProfiles: CardProfile[];
+}
+
+function relativeTime(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+
+export function SyncFooter({ cardProfiles }: SyncFooterProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [syncing, setSyncing] = useState(false);
+  const [synced, setSynced] = useState(false);
+
+  // Derive active card's connection from searchParams
+  const cardParam = searchParams.get("card");
+  const activeProfile =
+    cardProfiles.find((c) => c.id === cardParam) ?? cardProfiles[0];
+  const connectionId = activeProfile?.connectionId ?? null;
+  const lastSyncedAt = activeProfile?.lastSyncedAt ?? null;
+
+  async function handleSync() {
+    if (!connectionId || syncing) return;
+    setSyncing(true);
+    setSynced(false);
+
+    try {
+      const res = await fetch("/api/plaid/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ connectionId }),
+      });
+
+      if (res.ok) {
+        setSynced(true);
+        router.refresh();
+        setTimeout(() => setSynced(false), 3000);
+      }
+    } catch {
+      // Silently fail
+    } finally {
+      setSyncing(false);
+    }
+  }
+
+  if (!connectionId) return null;
+
+  return (
+    <div className="fixed bottom-16 inset-x-0 z-30 flex items-center justify-center py-4 pointer-events-none md:hidden">
+      <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[rgba(10,14,23,0.9)] px-5 py-2.5 backdrop-blur-md shadow-lg">
+        {synced ? (
+          <>
+            <Check size={14} strokeWidth={2} className="text-[var(--color-success)]" />
+            <span className="text-xs text-[var(--text-secondary)]">Updated just now</span>
+          </>
+        ) : (
+          <>
+            <span className="text-xs text-[var(--text-dim)]">
+              Updated {lastSyncedAt ? relativeTime(lastSyncedAt) : "never"}
+            </span>
+            <span className="text-[var(--text-dim)]">&middot;</span>
+            <button
+              onClick={handleSync}
+              disabled={syncing}
+              className="flex items-center gap-1.5 text-xs font-semibold text-[var(--color-accent-cyan)] transition-colors hover:text-[var(--text-primary)] disabled:opacity-50"
+            >
+              <RefreshCw size={12} strokeWidth={2} className={syncing ? "animate-spin" : ""} />
+              {syncing ? "Syncing..." : "Sync now"}
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}

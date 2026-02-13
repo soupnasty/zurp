@@ -39,8 +39,7 @@ export async function updateAnniversaryDate(
   await reprocessAllTransactions(cardProfileId);
 
   revalidatePath("/settings");
-  revalidatePath("/benefits");
-  revalidatePath("/spending");
+  revalidatePath("/dashboard");
 }
 
 export async function unlinkConnection(connectionId: string) {

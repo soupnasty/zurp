@@ -133,6 +133,7 @@ export function runSimulation(input: SimulationInput): ComparisonOutput {
     monthCount,
     totalTransactions: transactions.length,
     totalSpend: Math.round(totalSpend * 100) / 100,
+    totalCards: ranked.length,
     portalMode,
     cards: orderedCards,
     categoryBreakdown,

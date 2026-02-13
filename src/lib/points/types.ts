@@ -176,6 +176,7 @@ export interface ComparisonOutput {
   monthCount: number;
   totalTransactions: number;
   totalSpend: number;
+  totalCards: number;
   portalMode: boolean;
   cards: CardSimulation[];
   categoryBreakdown: CategoryWinner[];
