@@ -81,7 +81,7 @@ export function InsightCardV2({ insight, displayGroup }: InsightCardV2Props) {
     >
       {/* Left edge bar */}
       <div
-        className="absolute left-0 top-4 bottom-4 w-[3px] rounded-full"
+        className="absolute left-0 top-3 bottom-3 md:top-4 md:bottom-4 w-[3px] rounded-full"
         style={{ background: config.color }}
       />
 
@@ -93,34 +93,34 @@ export function InsightCardV2({ insight, displayGroup }: InsightCardV2Props) {
         }}
       />
 
-      <div className="pl-6 pr-4 py-5">
+      <div className="pl-4 pr-3 py-3 md:pl-6 md:pr-4 md:py-5">
         {/* Header */}
-        <div className="flex items-start gap-3 mb-3">
+        <div className="flex items-start gap-2 md:gap-3 mb-2 md:mb-3">
           <div
             className="flex items-center justify-center rounded-lg shrink-0"
             style={{
-              width: 32,
-              height: 32,
+              width: 28,
+              height: 28,
               background: `color-mix(in srgb, ${config.color} 8%, transparent)`,
             }}
           >
-            <Icon size={16} strokeWidth={1.75} style={{ color: config.color }} />
+            <Icon size={14} strokeWidth={1.75} style={{ color: config.color }} />
           </div>
           <div className="flex-1 min-w-0">
             <span
-              className="text-[10px] font-bold uppercase tracking-[1.5px]"
+              className="text-[9px] md:text-[10px] font-bold uppercase tracking-[1.5px] line-clamp-2"
               style={{ fontFamily: "var(--font-mono)", color: config.color }}
             >
               {insight.renderedTitle}
             </span>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <span className="text-[11px] text-[var(--text-secondary)]">
+          <div className="flex items-center gap-1.5 md:gap-2 shrink-0">
+            <span className="text-[10px] md:text-[11px] text-[var(--text-secondary)]">
               {relativeTime(insight.generatedAt)}
             </span>
             <button
               onClick={handleDismiss}
-              className="rounded p-1 text-[var(--text-dim)] transition-colors hover:bg-[rgba(255,255,255,0.04)] hover:text-[var(--text-secondary)]"
+              className="rounded p-0.5 md:p-1 text-[var(--text-dim)] transition-colors hover:bg-[rgba(255,255,255,0.04)] hover:text-[var(--text-secondary)]"
               title="Dismiss"
             >
               <X size={14} strokeWidth={2} />
@@ -129,21 +129,21 @@ export function InsightCardV2({ insight, displayGroup }: InsightCardV2Props) {
         </div>
 
         {/* Body */}
-        <p className="text-[15px] leading-relaxed text-[var(--text-secondary)] mb-4">
+        <p className="text-[13px] md:text-[15px] leading-relaxed text-[var(--text-secondary)] mb-2.5 md:mb-4">
           {insight.renderedBody}
         </p>
 
         {/* Bottom row */}
         {Number(dollarAmount) > 0 && (
-          <div className="flex items-center justify-between border-t border-[var(--border-subtle)] pt-3">
-            <div className="flex items-baseline gap-2">
+          <div className="flex items-center justify-between border-t border-[var(--border-subtle)] pt-2 md:pt-3">
+            <div className="flex items-baseline gap-1.5 md:gap-2">
               <span
-                className="text-[22px] font-bold"
+                className="text-[17px] md:text-[22px] font-bold"
                 style={{ fontFamily: "var(--font-mono)", color: config.color }}
               >
                 ${Math.round(Number(dollarAmount)).toLocaleString()}
               </span>
-              <span className="text-xs text-[var(--text-secondary)]">{config.savingsLabel}</span>
+              <span className="text-[11px] md:text-xs text-[var(--text-secondary)]">{config.savingsLabel}</span>
             </div>
           </div>
         )}

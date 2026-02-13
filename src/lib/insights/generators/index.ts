@@ -5,6 +5,7 @@ import { generateA2 } from "./a2-subscription-swap";
 import { generateB1 } from "./b1-unused-credit";
 import { generateB2 } from "./b2-nearly-maxed";
 import { generateB3 } from "./b3-underused-credit";
+import { generateB4 } from "./b4-benefit-renewal";
 import { generateC0 } from "./c0-value-snapshot";
 import { generateC1 } from "./c1-benefit-maxed";
 import { generateC2 } from "./c2-roi-milestone";
@@ -18,6 +19,7 @@ const generators: InsightGenerator[] = [
   generateB1,
   generateB2,
   generateB3,
+  generateB4,
   generateC0,
   generateC1,
   generateC2,

@@ -870,7 +870,7 @@ export default function Home() {
 
             {/* Footer */}
             <div
-              className="flex items-start justify-between gap-6 pt-4 mt-5 border-t border-[rgba(255,255,255,0.06)]"
+              className="flex items-start justify-center md:justify-between gap-6 pt-4 mt-5 border-t border-[rgba(255,255,255,0.06)]"
               style={{
                 opacity: 0,
                 animation: "mock-fade-in 0.5s ease forwards",
@@ -879,7 +879,7 @@ export default function Home() {
               }}
             >
               <div
-                className="text-[12px] leading-relaxed max-w-[580px]"
+                className="hidden md:block text-[12px] leading-relaxed max-w-[580px]"
                 style={{ color: "#4a5568" }}
               >
                 Points valued conservatively. Transfer partner redemptions can
@@ -1709,9 +1709,9 @@ export default function Home() {
               })}
             </div>
 
-            {/* Footer */}
+            {/* Footer — desktop: full row, mobile: centered link only */}
             <div
-              className="flex items-center justify-between border-t border-[rgba(255,255,255,0.06)] px-7 py-4"
+              className="hidden md:flex items-center justify-between border-t border-[rgba(255,255,255,0.06)] px-7 py-4"
               style={{
                 opacity: 0,
                 animation: "mock-fade-in 0.4s ease forwards",
@@ -1722,6 +1722,23 @@ export default function Home() {
               <span className="text-[12px]" style={{ color: "#4a5568" }}>
                 6 of 12 benefits tracked &middot; Updated today
               </span>
+              <Link
+                href="/login"
+                className="text-[12px] font-semibold"
+                style={{ color: "#22d3ee" }}
+              >
+                See all 12 benefits &rarr;
+              </Link>
+            </div>
+            <div
+              className="flex md:hidden items-center justify-center border-t border-[rgba(255,255,255,0.06)] px-7 py-4"
+              style={{
+                opacity: 0,
+                animation: "mock-fade-in 0.4s ease forwards",
+                animationDelay: "2.1s",
+                animationPlayState: "var(--play)",
+              }}
+            >
               <Link
                 href="/login"
                 className="text-[12px] font-semibold"

@@ -49,10 +49,11 @@ export function generateB2(ctx: GeneratorContext): InsightCandidate[] {
       const used = Math.round(totalUsed);
       const max = Math.round(totalCredit);
 
+      const closeThreshold = Math.round(totalCredit * 0.2);
       insights.push({
         category: "B2",
         benefitId: usage.benefitId,
-        templateKey: remaining <= 5 ? "b2_close" : "b2_standard",
+        templateKey: remaining <= closeThreshold ? "b2_close" : "b2_standard",
         templateVars: {
           used,
           max,
@@ -87,10 +88,11 @@ export function generateB2(ctx: GeneratorContext): InsightCandidate[] {
     const used = Math.round(usage.amountUsed);
     const max = Math.round(usage.creditAmount);
 
+    const closeThreshold = Math.round(usage.creditAmount * 0.2);
     insights.push({
       category: "B2",
       benefitId: usage.benefitId,
-      templateKey: remaining <= 25 ? "b2_close" : "b2_standard",
+      templateKey: remaining <= closeThreshold ? "b2_close" : "b2_standard",
       templateVars: {
         used,
         max,

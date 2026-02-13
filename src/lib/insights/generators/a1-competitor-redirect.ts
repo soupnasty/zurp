@@ -94,7 +94,7 @@ export function generateA1(ctx: GeneratorContext): InsightCandidate[] {
       triggeredByTransactionId: null,
       periodStart: usage.cycleStart,
       periodEnd: usage.cycleEnd,
-      dollarAmount: amount,
+      dollarAmount: Math.min(amount, remaining),
       daysRemaining: usage.daysRemaining,
       actionability: "switch_platform",
       confidence: "exact_confirmed",

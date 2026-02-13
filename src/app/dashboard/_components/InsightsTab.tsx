@@ -33,9 +33,11 @@ const GROUP_ORDER: DisplayGroup[] = ["expiring", "redirect", "unused", "mileston
 interface InsightsTabProps {
   insights: SerializedInsight[];
   activeCardName: string;
+  monthCount: number | null;
+  totalTransactions: number | null;
 }
 
-export function InsightsTab({ insights, activeCardName }: InsightsTabProps) {
+export function InsightsTab({ insights, activeCardName, monthCount, totalTransactions }: InsightsTabProps) {
   // Group insights by display group
   const grouped: Record<DisplayGroup, SerializedInsight[]> = {
     expiring: [],
@@ -80,9 +82,32 @@ export function InsightsTab({ insights, activeCardName }: InsightsTabProps) {
     },
   ];
 
+  const cardHeader = (
+    <div className="mb-5">
+      <span
+        className="text-[10px] font-bold uppercase tracking-[2.5px] text-[var(--text-secondary)]"
+        style={{ fontFamily: "var(--font-mono)" }}
+      >
+        Your card
+      </span>
+      <h1 className="mt-1 text-xl md:text-2xl font-bold text-[var(--text-primary)]">
+        {activeCardName}
+      </h1>
+      {monthCount && totalTransactions && (
+        <span
+          className="text-[12px] text-[var(--text-dim)]"
+          style={{ fontFamily: "var(--font-mono)" }}
+        >
+          {monthCount} {monthCount === 1 ? "month" : "months"} of data · {totalTransactions.toLocaleString()} transactions
+        </span>
+      )}
+    </div>
+  );
+
   if (insights.length === 0) {
     return (
       <div>
+        {cardHeader}
         <SummaryStrip items={summaryItems} />
         <div className="mt-12 flex flex-col items-center justify-center">
           <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] px-8 py-10 text-center max-w-md">
@@ -97,6 +122,7 @@ export function InsightsTab({ insights, activeCardName }: InsightsTabProps) {
 
   return (
     <div>
+      {cardHeader}
       <SummaryStrip items={summaryItems} />
 
       <div className="mt-8">

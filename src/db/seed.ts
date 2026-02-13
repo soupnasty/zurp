@@ -324,6 +324,56 @@ async function seed() {
     { cardType: "bilt_palladium", benefitKey: "bilt_hotel_credit_h1", benefitPartner: "Bilt Travel", competitorMerchant: "IHG", plaidMerchantPattern: "ihg", category: "hotels", insightType: "A1" },
     { cardType: "bilt_palladium", benefitKey: "bilt_hotel_credit_h1", benefitPartner: "Bilt Travel", competitorMerchant: "Airbnb", plaidMerchantPattern: "airbnb", category: "hotels", insightType: "A1" },
     { cardType: "bilt_palladium", benefitKey: "bilt_hotel_credit_h1", benefitPartner: "Bilt Travel", competitorMerchant: "VRBO", plaidMerchantPattern: "vrbo", category: "hotels", insightType: "A1" },
+
+    // ── Amex Blue Cash Everyday entries ──
+    // Streaming → Disney Bundle (A2 — subscription swap)
+    { cardType: "amex_blue_cash_everyday", benefitKey: "bce_disney_bundle", benefitPartner: "Disney Bundle", competitorMerchant: "Netflix", plaidMerchantPattern: "netflix", category: "streaming", insightType: "A2" },
+    { cardType: "amex_blue_cash_everyday", benefitKey: "bce_disney_bundle", benefitPartner: "Disney Bundle", competitorMerchant: "Paramount+", plaidMerchantPattern: "paramount", category: "streaming", insightType: "A2" },
+    { cardType: "amex_blue_cash_everyday", benefitKey: "bce_disney_bundle", benefitPartner: "Disney Bundle", competitorMerchant: "Peacock", plaidMerchantPattern: "peacock", category: "streaming", insightType: "A2" },
+    { cardType: "amex_blue_cash_everyday", benefitKey: "bce_disney_bundle", benefitPartner: "Disney Bundle", competitorMerchant: "YouTube Premium", plaidMerchantPattern: "youtube", category: "streaming", insightType: "A2" },
+    { cardType: "amex_blue_cash_everyday", benefitKey: "bce_disney_bundle", benefitPartner: "Disney Bundle", competitorMerchant: "Apple TV+", plaidMerchantPattern: "apple.com/bill", category: "streaming", insightType: "A2" },
+    { cardType: "amex_blue_cash_everyday", benefitKey: "bce_disney_bundle", benefitPartner: "Disney Bundle", competitorMerchant: "Max", plaidMerchantPattern: "max", category: "streaming", insightType: "A2" },
+    { cardType: "amex_blue_cash_everyday", benefitKey: "bce_disney_bundle", benefitPartner: "Disney Bundle", competitorMerchant: "Amazon Prime Video", plaidMerchantPattern: "amazon prime", category: "streaming", insightType: "A2" },
+
+    // ── US Bank Altitude Connect entries ──
+    // Global Entry (A1 — one-time redirect, minimal since any TSA/GE charge triggers it)
+    { cardType: "us_bank_altitude_connect", benefitKey: "altitude_connect_global_entry", benefitPartner: "Global Entry", competitorMerchant: "TSA PreCheck", plaidMerchantPattern: "tsa", category: "travel", insightType: "A1" },
+    { cardType: "us_bank_altitude_connect", benefitKey: "altitude_connect_global_entry", benefitPartner: "Global Entry", competitorMerchant: "GOES Payment", plaidMerchantPattern: "goes", category: "travel", insightType: "A1" },
+
+    // ── Wells Fargo Autograph Journey entries ──
+    // Airline credit (A1 — any $50+ airline charge triggers it, broad redirect)
+    { cardType: "wells_fargo_autograph_journey", benefitKey: "autograph_journey_airline_credit", benefitPartner: "Airlines", competitorMerchant: "Hotels.com", plaidMerchantPattern: "hotels.com", category: "travel", insightType: "A1", notes: "Redirect hotel spend to airline booking" },
+    { cardType: "wells_fargo_autograph_journey", benefitKey: "autograph_journey_airline_credit", benefitPartner: "Airlines", competitorMerchant: "Expedia", plaidMerchantPattern: "expedia", category: "travel", insightType: "A1", notes: "Redirect OTA spend to airline booking" },
+
+    // ── Tier-3 Cards ──
+
+    // Amex Business Platinum — Dell credit (A2 swap) + CLEAR (A1 redirect)
+    { cardType: "amex_business_platinum", benefitKey: "biz_plat_dell_credit", benefitPartner: "Dell", competitorMerchant: "Best Buy", plaidMerchantPattern: "best buy", category: "shopping", insightType: "A1" },
+    { cardType: "amex_business_platinum", benefitKey: "biz_plat_dell_credit", benefitPartner: "Dell", competitorMerchant: "Amazon", plaidMerchantPattern: "amazon", category: "shopping", insightType: "A1" },
+    { cardType: "amex_business_platinum", benefitKey: "biz_plat_dell_credit", benefitPartner: "Dell", competitorMerchant: "Newegg", plaidMerchantPattern: "newegg", category: "shopping", insightType: "A1" },
+
+    // Delta Platinum — flight credit redirect + Uber One swap
+    { cardType: "delta_platinum", benefitKey: "delta_flight_credit", benefitPartner: "Delta", competitorMerchant: "United Airlines", plaidMerchantPattern: "united", category: "travel_flights", insightType: "A1" },
+    { cardType: "delta_platinum", benefitKey: "delta_flight_credit", benefitPartner: "Delta", competitorMerchant: "Southwest Airlines", plaidMerchantPattern: "southwest", category: "travel_flights", insightType: "A1" },
+    { cardType: "delta_platinum", benefitKey: "delta_flight_credit", benefitPartner: "Delta", competitorMerchant: "American Airlines", plaidMerchantPattern: "american air", category: "travel_flights", insightType: "A1" },
+    { cardType: "delta_platinum", benefitKey: "delta_uber_one", benefitPartner: "Uber One", competitorMerchant: "Lyft", plaidMerchantPattern: "lyft", category: "rideshare", insightType: "A1" },
+
+    // Hilton Aspire — resort credit redirect + airline fee redirect
+    { cardType: "hilton_aspire", benefitKey: "hilton_resort_h1", benefitPartner: "Hilton", competitorMerchant: "Marriott", plaidMerchantPattern: "marriott", category: "travel", insightType: "A1" },
+    { cardType: "hilton_aspire", benefitKey: "hilton_resort_h1", benefitPartner: "Hilton", competitorMerchant: "Hyatt", plaidMerchantPattern: "hyatt", category: "travel", insightType: "A1" },
+    { cardType: "hilton_aspire", benefitKey: "hilton_resort_h1", benefitPartner: "Hilton", competitorMerchant: "IHG", plaidMerchantPattern: "ihg", category: "travel", insightType: "A1" },
+
+    // Southwest Priority — travel credit redirect
+    { cardType: "southwest_priority", benefitKey: "southwest_travel_credit", benefitPartner: "Southwest", competitorMerchant: "United Airlines", plaidMerchantPattern: "united", category: "travel_flights", insightType: "A1" },
+    { cardType: "southwest_priority", benefitKey: "southwest_travel_credit", benefitPartner: "Southwest", competitorMerchant: "Delta Air Lines", plaidMerchantPattern: "delta", category: "travel_flights", insightType: "A1" },
+    { cardType: "southwest_priority", benefitKey: "southwest_travel_credit", benefitPartner: "Southwest", competitorMerchant: "American Airlines", plaidMerchantPattern: "american air", category: "travel_flights", insightType: "A1" },
+
+    // United Explorer — flight credit + rideshare + Instacart redirect
+    { cardType: "united_explorer", benefitKey: "united_travel_credit", benefitPartner: "United", competitorMerchant: "Delta Air Lines", plaidMerchantPattern: "delta", category: "travel_flights", insightType: "A1" },
+    { cardType: "united_explorer", benefitKey: "united_travel_credit", benefitPartner: "United", competitorMerchant: "Southwest Airlines", plaidMerchantPattern: "southwest", category: "travel_flights", insightType: "A1" },
+    { cardType: "united_explorer", benefitKey: "united_rideshare_credit", benefitPartner: "Uber/Lyft", competitorMerchant: "Lyft", plaidMerchantPattern: "lyft", category: "rideshare", insightType: "A1" },
+    { cardType: "united_explorer", benefitKey: "united_instacart_credit", benefitPartner: "Instacart", competitorMerchant: "Amazon Fresh", plaidMerchantPattern: "amazon fresh", category: "food_delivery", insightType: "A1" },
+    { cardType: "united_explorer", benefitKey: "united_instacart_credit", benefitPartner: "Instacart", competitorMerchant: "Walmart Grocery", plaidMerchantPattern: "walmart", category: "food_delivery", insightType: "A1" },
   ];
 
   for (const entry of competitorEntries) {

@@ -40,6 +40,23 @@ const resyCreditDetails: BenefitDetails = {
   ],
 };
 
+const uberCashDetails: BenefitDetails = {
+  description:
+    "Up to $10/month ($120/year) in Uber Cash for Uber rides and Uber Eats orders in the U.S. Credits are automatically added to your linked Uber account at the start of each month. Unused Uber Cash expires at the end of each month and does not roll over. An Amex card must be selected as the payment method to redeem Uber Cash.",
+  howToUse: [
+    "Open the Uber app and go to Wallet",
+    "Add your Gold Card as a payment method",
+    "Uber Cash is automatically added at the start of each month",
+    "Make sure Uber Cash is toggled on before requesting a ride or placing an order",
+    "Use for Uber rides or Uber Eats orders in the U.S.",
+  ],
+  links: [
+    { label: "Amex Gold Uber Benefit", url: "https://www.uber.com/us/en/u/amex/" },
+    { label: "Uber", url: "https://www.uber.com" },
+    { label: "Learn More", url: "https://www.americanexpress.com/us/credit-cards/card/gold-card/" },
+  ],
+};
+
 const dunkinCreditDetails: BenefitDetails = {
   description:
     "Up to $7/month in statement credits for purchases at U.S. Dunkin' locations (in-store or via the Dunkin' app with Gold Card as payment). Tip: load $7 onto Dunkin' app balance to bank the credit even without a store visit.",
@@ -93,6 +110,19 @@ export const amexGold: CardDefinition = {
       { id: "gold_resy_credit_h1", cycle: "biannual_h1", description: "Up to $50 in statement credits for Resy dining experiences (Jan-Jun)." },
       { id: "gold_resy_credit_h2", cycle: "biannual_h2", description: "Up to $50 in statement credits for Resy dining experiences (Jul-Dec)." },
     ]),
+
+    // ── Monthly Uber Cash ($10/mo) ──
+    b({
+      id: "gold_uber_cash",
+      name: "Uber Cash", icon: "Car",
+      category: "transport", type: "credit", creditAmount: 10, cycle: "monthly",
+      merchantPatterns: ["uber"],
+      autoMatchable: true, requiresActivation: false, priority: 20,
+      description: "Up to $10/month in Uber Cash for Uber rides and Uber Eats.",
+      notes: "Uber Cash auto-deposits monthly. Use-it-or-lose-it — expires at end of month. U.S. only. Must have Amex card selected as payment method.",
+      details: uberCashDetails,
+      brandSlug: "uber",
+    }),
 
     // ── Monthly Dunkin' Credit ($7/mo) ──
     b({

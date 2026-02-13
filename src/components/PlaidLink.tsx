@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { usePlaidLink } from "react-plaid-link";
 
 interface DetectedCard {
@@ -25,6 +25,7 @@ export function PlaidLinkButton({
 }: PlaidLinkProps) {
   const [linkToken, setLinkToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const hasOpened = useRef(false);
 
   const fetchLinkToken = useCallback(async () => {
     setLoading(true);
@@ -37,6 +38,7 @@ export function PlaidLinkButton({
       const data = await res.json();
       if (data.linkToken) {
         setLinkToken(data.linkToken);
+        sessionStorage.setItem("plaid_link_token", data.linkToken);
       } else {
         onError?.("Failed to get link token");
       }
@@ -76,6 +78,7 @@ export function PlaidLinkButton({
 
         const data = await res.json();
         if (data.connectionId) {
+          sessionStorage.removeItem("plaid_link_token");
           onSuccess({
             connectionId: data.connectionId,
             cardProfileId: data.cardProfileId || null,
@@ -89,24 +92,29 @@ export function PlaidLinkButton({
       }
     },
     onExit: (err) => {
+      hasOpened.current = false;
       if (err) {
         onError?.(err.display_message || "Plaid Link exited with error");
       }
     },
   });
 
+  // Auto-open Plaid Link once token is ready (fires only once)
+  useEffect(() => {
+    if (linkToken && ready && !hasOpened.current) {
+      hasOpened.current = true;
+      open();
+    }
+  }, [linkToken, ready, open]);
+
   const handleClick = async () => {
     if (linkToken && ready) {
+      hasOpened.current = true;
       open();
     } else {
       await fetchLinkToken();
     }
   };
-
-  // Open Plaid Link once token is ready
-  if (linkToken && ready) {
-    open();
-  }
 
   return (
     <button

@@ -112,7 +112,9 @@ export async function processTransactionsForConnection(
     ),
   });
 
-  const overrideUpdates: Promise<any>[] = [];
+  // Collect override updates and execute sequentially to avoid
+  // parallel HTTP request storms on Neon's HTTP driver
+  const overrideIds: { id: string; creditAmount: number }[] = [];
   for (const override of overrides) {
     const benefitDef = cardDef.benefits.find((b) => b.id === override.benefitId);
     if (!benefitDef) continue;
@@ -125,22 +127,20 @@ export async function processTransactionsForConnection(
       usageRecord.isFullyUsed = true;
       usageRecord.manualOverride = true;
 
-      overrideUpdates.push(
-        db
-          .update(schema.benefitUsage)
-          .set({
-            amountUsed: benefitDef.creditAmount,
-            amountRemaining: 0,
-            isFullyUsed: true,
-            manualOverride: true,
-            updatedAt: new Date(),
-          })
-          .where(eq(schema.benefitUsage.id, usageRecord.id))
-      );
+      overrideIds.push({ id: usageRecord.id, creditAmount: benefitDef.creditAmount });
     }
   }
-  if (overrideUpdates.length > 0) {
-    await Promise.all(overrideUpdates);
+  for (const { id, creditAmount } of overrideIds) {
+    await db
+      .update(schema.benefitUsage)
+      .set({
+        amountUsed: creditAmount,
+        amountRemaining: 0,
+        isFullyUsed: true,
+        manualOverride: true,
+        updatedAt: new Date(),
+      })
+      .where(eq(schema.benefitUsage.id, id));
   }
 
   // Build usage map keyed by "benefitId:periodKey" — includes ALL periods
@@ -196,7 +196,7 @@ export async function processTransactionsForConnection(
     const benefit = cardDef.benefits.find((b) => b.id === match.benefitId)!;
     const matchTx = txLookup.get(match.transactionId);
     const bounds = getCurrentCycleBounds(
-      benefit.cycle as any,
+      benefit.cycle,
       matchTx?.date ?? new Date(),
       cardProfile.anniversaryDate
     );
@@ -241,20 +241,17 @@ export async function processTransactionsForConnection(
       .set({ matchedStatus: "matched" as MatchedStatus })
       .where(inArray(schema.transactions.id, matchedTransactionIds));
   }
-  if (usageFinalState.size > 0) {
-    await Promise.all(
-      Array.from(usageFinalState.entries()).map(([usageId, { newUsed, effectiveCredit }]) =>
-        db
-          .update(schema.benefitUsage)
-          .set({
-            amountUsed: newUsed,
-            amountRemaining: Math.max(0, effectiveCredit - newUsed),
-            isFullyUsed: newUsed >= effectiveCredit,
-            updatedAt: new Date(),
-          })
-          .where(eq(schema.benefitUsage.id, usageId))
-      )
-    );
+  // Sequential updates to avoid parallel HTTP request storm on Neon
+  for (const [usageId, { newUsed, effectiveCredit }] of usageFinalState.entries()) {
+    await db
+      .update(schema.benefitUsage)
+      .set({
+        amountUsed: newUsed,
+        amountRemaining: Math.max(0, effectiveCredit - newUsed),
+        isFullyUsed: newUsed >= effectiveCredit,
+        updatedAt: new Date(),
+      })
+      .where(eq(schema.benefitUsage.id, usageId));
   }
 
   // Batch mark ambiguous transactions
@@ -305,7 +302,7 @@ export async function processTransactionsForConnection(
       if (!benefitDef) continue;
 
       const bounds = getCurrentCycleBounds(
-        benefitDef.cycle as any,
+        benefitDef.cycle,
         new Date(),
         cardProfile.anniversaryDate
       );
@@ -397,20 +394,17 @@ export async function processTransactionsForConnection(
         .set({ matchedStatus: "matched" as MatchedStatus })
         .where(inArray(schema.transactions.id, flagMatchedTxIds));
     }
-    if (flagUsageUpdates.size > 0) {
-      await Promise.all(
-        Array.from(flagUsageUpdates.entries()).map(([usageId, { newUsed, effectiveCredit }]) =>
-          db
-            .update(schema.benefitUsage)
-            .set({
-              amountUsed: newUsed,
-              amountRemaining: Math.max(0, effectiveCredit - newUsed),
-              isFullyUsed: newUsed >= effectiveCredit,
-              updatedAt: new Date(),
-            })
-            .where(eq(schema.benefitUsage.id, usageId))
-        )
-      );
+    // Sequential updates to avoid parallel HTTP request storm on Neon
+    for (const [usageId, { newUsed, effectiveCredit }] of flagUsageUpdates.entries()) {
+      await db
+        .update(schema.benefitUsage)
+        .set({
+          amountUsed: newUsed,
+          amountRemaining: Math.max(0, effectiveCredit - newUsed),
+          isFullyUsed: newUsed >= effectiveCredit,
+          updatedAt: new Date(),
+        })
+        .where(eq(schema.benefitUsage.id, usageId));
     }
   }
 
@@ -493,7 +487,7 @@ export async function initializeBenefitUsage(
       }
 
       const bounds = getCurrentCycleBounds(
-        benefit.cycle as any,
+        benefit.cycle,
         refDate,
         anniversaryDate
       );
@@ -590,6 +584,6 @@ function txToMatcherTx(tx: typeof schema.transactions.$inferSelect): MatcherTran
     plaidCategoryPrimary: tx.plaidCategoryPrimary,
     plaidCategoryDetailed: tx.plaidCategoryDetailed,
     pending: tx.pending,
-    matchedStatus: tx.matchedStatus as any,
+    matchedStatus: tx.matchedStatus as MatchedStatus,
   };
 }

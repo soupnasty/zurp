@@ -16,6 +16,7 @@ import {
   Plus,
 } from "lucide-react";
 import Link from "next/link";
+import { ReauthButton } from "@/components/ReauthButton";
 
 export default async function SettingsPage() {
   const user = await requireAuth();
@@ -240,6 +241,14 @@ export default async function SettingsPage() {
                       ? "REAUTH"
                       : "DISCONNECTED"}
                 </span>
+
+                {conn.status === "needs_reauth" && (
+                  <ReauthButton
+                    connectionId={conn.id}
+                    label="Fix"
+                    className="inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-[10px] font-bold text-[var(--color-accent-cyan)] transition-colors hover:bg-[rgba(34,211,238,0.08)]"
+                  />
+                )}
 
                 <UnlinkButton
                   connectionId={conn.id}

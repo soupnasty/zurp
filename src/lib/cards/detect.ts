@@ -6,6 +6,18 @@ export interface DetectionResult {
 }
 
 /**
+ * Issuer aliases for Plaid institution name matching.
+ * Maps card issuer IDs (which use underscores) to possible institution name
+ * fragments that Plaid may return (which use spaces, abbreviations, etc.).
+ */
+const ISSUER_ALIASES: Record<string, string[]> = {
+  wells_fargo: ["wells fargo", "wellsfargo"],
+  us_bank: ["us bank", "u.s. bank", "usbank"],
+  capital_one: ["capital one", "capitalone"],
+  goldman_sachs: ["goldman sachs", "goldman", "apple card", "gs bank"],
+};
+
+/**
  * Detect a card product from Plaid account name / official name strings.
  * Returns null if no match found.
  */
@@ -33,7 +45,9 @@ export function detectCard(
     // High confidence: the distinctive product name appears in account metadata
     // For "Chase Sapphire Reserve" we match on "sapphire reserve"
     const issuer = card.issuer.toLowerCase();
-    const productName = nameParts.replace(issuer, "").trim();
+    // Also strip space-separated issuer name (e.g. "wells fargo" from "wells fargo active cash")
+    const issuerSpaced = issuer.replace(/_/g, " ");
+    const productName = nameParts.replace(issuerSpaced, "").replace(issuer, "").trim();
 
     if (productName && combined.includes(productName)) {
       return { cardId: card.id, confidence: "high" };
@@ -64,11 +78,18 @@ export function detectCardWithFallback(
   if (exact) return exact;
 
   // Issuer fallback: fuzzy match institution name against card issuers
-  // Plaid may return "Chase", "Chase Bank", "JPMorgan Chase", etc.
+  // Plaid may return "Chase", "Chase Bank", "JPMorgan Chase", "Wells Fargo", etc.
   if (!institutionName) return null;
   const normalized = institutionName.toLowerCase();
   const allCards = getAllCardDefinitions();
-  const issuerCards = allCards.filter((c) => normalized.includes(c.issuer.toLowerCase()));
+  const issuerCards = allCards.filter((c) => {
+    const issuer = c.issuer.toLowerCase();
+    // Direct match (works for single-word issuers like "chase", "amex", "citi")
+    if (normalized.includes(issuer)) return true;
+    // Alias match (for multi-word issuers like "wells_fargo" → "wells fargo")
+    const aliases = ISSUER_ALIASES[issuer];
+    return aliases?.some((alias) => normalized.includes(alias)) ?? false;
+  });
   if (issuerCards.length === 0) return null;
 
   // Pick the card with the highest annual fee (premium heuristic)

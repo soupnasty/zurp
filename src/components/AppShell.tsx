@@ -130,10 +130,10 @@ export function AppShell({ children, userEmail, dashboardNav }: AppShellProps) {
   }
 
   return (
-    <div className="flex min-h-screen overflow-x-hidden">
+    <div className="app-zoom flex overflow-x-hidden">
       {/* Sidebar — desktop only */}
       <aside
-        className={`hidden md:flex fixed left-0 top-0 z-40 h-screen flex-col border-r border-[var(--border-default)] bg-[var(--bg-secondary)] transition-all duration-[var(--duration-default)] ease-[var(--ease-default)] ${
+        className={`hidden md:flex fixed left-0 top-0 z-40 app-zoom-sidebar flex-col border-r border-[var(--border-default)] bg-[var(--bg-secondary)] transition-all duration-[var(--duration-default)] ease-[var(--ease-default)] ${
           collapsed ? "w-16" : "w-56"
         }`}
       >

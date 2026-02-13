@@ -81,6 +81,20 @@ export async function getSimulationForCard(
 }
 
 /**
+ * Lightweight data stats (month count + transaction count) from the first simulation row.
+ */
+export async function getDataStats(
+  cardProfileId: string
+): Promise<{ monthCount: number; totalTransactions: number } | null> {
+  const row = await db.query.cardSimulations.findFirst({
+    where: eq(schema.cardSimulations.cardProfileId, cardProfileId),
+    columns: { monthCount: true, totalTransactions: true },
+  });
+  if (!row) return null;
+  return { monthCount: row.monthCount, totalTransactions: row.totalTransactions };
+}
+
+/**
  * Fetch transactions for a card profile's connection as MatcherTransaction[].
  * Used to run simulateBenefitsForCard() on-demand for per-benefit data.
  */

@@ -33,26 +33,26 @@ export function HeadToHead({ headline, cards, activeCardType }: HeadToHeadProps)
   const rows: RowData[] = [
     {
       label: "Points",
-      leftVal: bestCard.pointsValueConservative,
-      rightVal: userCard.pointsValueConservative,
+      leftVal: userCard.pointsValueConservative,
+      rightVal: bestCard.pointsValueConservative,
       color: "var(--color-accent-blue)",
     },
     {
       label: "Benefits",
-      leftVal: bestBenefits,
-      rightVal: userBenefits,
+      leftVal: userBenefits,
+      rightVal: bestBenefits,
       color: "var(--color-accent-purple)",
     },
     {
       label: "Fees",
-      leftVal: bestCard.annualFee,
-      rightVal: userCard.annualFee,
+      leftVal: userCard.annualFee,
+      rightVal: bestCard.annualFee,
       color: "var(--color-danger)",
     },
     {
       label: "Total",
-      leftVal: bestCard.netActual,
-      rightVal: userCard.netActual,
+      leftVal: userCard.netActual,
+      rightVal: bestCard.netActual,
       color: "var(--color-success)",
       isTotal: true,
     },
@@ -70,30 +70,9 @@ export function HeadToHead({ headline, cards, activeCardType }: HeadToHeadProps)
       <div className="overflow-hidden rounded-2xl border border-[var(--border-subtle)]">
         {/* Header */}
         <div
-          className="grid items-center gap-2 px-4 py-3 border-b border-[var(--border-subtle)] bg-[var(--bg-secondary)]"
-          style={{ gridTemplateColumns: "1fr 100px 1fr" }}
+          className="h2h-row px-3 md:px-4 py-3 border-b border-[var(--border-subtle)] bg-[var(--bg-secondary)]"
         >
           <div className="text-left">
-            <span
-              className="inline-block rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[1px]"
-              style={{
-                fontFamily: "var(--font-mono)",
-                color: "var(--color-success)",
-                background: "rgba(52,211,153,0.08)",
-              }}
-            >
-              #1 BEST FIT
-            </span>
-            <div className="mt-1 text-sm font-semibold text-[var(--text-primary)]">
-              {bestCard.cardName}
-            </div>
-          </div>
-          <div className="text-center text-[11px] font-bold uppercase tracking-[1.5px] text-[var(--text-secondary)]"
-            style={{ fontFamily: "var(--font-mono)" }}
-          >
-            vs
-          </div>
-          <div className="text-right">
             <span
               className="inline-block rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[1px]"
               style={{
@@ -106,6 +85,26 @@ export function HeadToHead({ headline, cards, activeCardType }: HeadToHeadProps)
             </span>
             <div className="mt-1 text-sm font-semibold text-[var(--text-primary)]">
               {userCard.cardName}
+            </div>
+          </div>
+          <div className="text-center text-[11px] font-bold uppercase tracking-[1.5px] text-[var(--text-secondary)]"
+            style={{ fontFamily: "var(--font-mono)" }}
+          >
+            vs
+          </div>
+          <div className="text-right">
+            <span
+              className="inline-block rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[1px]"
+              style={{
+                fontFamily: "var(--font-mono)",
+                color: "var(--color-success)",
+                background: "rgba(52,211,153,0.08)",
+              }}
+            >
+              #1 BEST FIT
+            </span>
+            <div className="mt-1 text-sm font-semibold text-[var(--text-primary)]">
+              {bestCard.cardName}
             </div>
           </div>
         </div>
@@ -121,12 +120,11 @@ export function HeadToHead({ headline, cards, activeCardType }: HeadToHeadProps)
           return (
             <div
               key={row.label}
-              className={`grid items-center gap-2 px-4 py-3 ${
+              className={`h2h-row px-3 md:px-4 py-3 ${
                 row.isTotal
                   ? "border-t border-[var(--border-medium)] bg-[rgba(255,255,255,0.02)]"
                   : "border-t border-[var(--border-subtle)]"
               }`}
-              style={{ gridTemplateColumns: "1fr 100px 1fr" }}
             >
               <span
                 className="text-sm font-bold"

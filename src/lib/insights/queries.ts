@@ -1,6 +1,6 @@
 import "server-only";
 import { db } from "@/db";
-import { eq, and, sql, desc, gte, lte, lt } from "drizzle-orm";
+import { eq, and, sql, desc, gte, lte, lt, inArray } from "drizzle-orm";
 import * as schema from "@/db/schema";
 import { classifyTransaction } from "@/lib/spending/categories";
 import type { InsightImpressionHistory } from "./types";
@@ -186,4 +186,57 @@ export async function getCycleTransactions(
       plaidCategoryPrimary: tx.plaidCategoryPrimary,
       plaidCategoryDetailed: tx.plaidCategoryDetailed,
     }));
+}
+
+/** Batch-fetch all existing insights for a user, keyed by dedupKey. */
+export async function getExistingInsightsByUser(
+  userId: string
+): Promise<Map<string, Awaited<ReturnType<typeof getExistingInsight>>>> {
+  const rows = await db.query.insights.findMany({
+    where: eq(schema.insights.userId, userId),
+  });
+  const map = new Map<string, (typeof rows)[number]>();
+  for (const row of rows) {
+    map.set(row.dedupKey, row);
+  }
+  return map;
+}
+
+/** Batch mark insights as shown. */
+export async function markInsightsShown(insightIds: string[]) {
+  if (insightIds.length === 0) return;
+  const now = new Date();
+  await db
+    .update(schema.insights)
+    .set({ state: "shown", shownAt: now })
+    .where(
+      and(
+        inArray(schema.insights.id, insightIds),
+        eq(schema.insights.state, "pending")
+      )
+    );
+}
+
+/** Batch record impression entries. */
+export async function recordImpressions(
+  entries: Array<{ insightId: string; surface: string }>
+) {
+  if (entries.length === 0) return;
+  await db.insert(schema.insightImpressions).values(
+    entries.map((e) => ({ insightId: e.insightId, surface: e.surface }))
+  );
+}
+
+/** Delete dismissed insights older than a cutoff (cleanup). */
+export async function cleanupDismissedInsights(userId: string, cutoffDays = 90) {
+  const cutoff = new Date(Date.now() - cutoffDays * 24 * 60 * 60 * 1000);
+  await db
+    .delete(schema.insights)
+    .where(
+      and(
+        eq(schema.insights.userId, userId),
+        eq(schema.insights.state, "dismissed"),
+        lt(schema.insights.generatedAt, cutoff)
+      )
+    );
 }

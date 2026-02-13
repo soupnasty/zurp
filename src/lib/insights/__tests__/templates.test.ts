@@ -172,6 +172,27 @@ describe("renderTemplate", () => {
     expect(result.body).toContain("Lyft");
   });
 
+  it("renders b4_renewing", () => {
+    const result = renderTemplate("b4_renewing", {
+      credit: 200,
+      benefit: "Hotel Credit",
+      days: 5,
+      used: 150,
+    });
+    expect(result.title).toBe("Your $200 Hotel Credit credit renews in 5 days");
+    expect(result.body).toContain("You used $150 this period");
+  });
+
+  it("renders b4_maxed_renewing", () => {
+    const result = renderTemplate("b4_maxed_renewing", {
+      benefit: "Hotel Credit",
+      days: 3,
+      credit: 200,
+    });
+    expect(result.title).toBe("Nice — you maxed Hotel Credit. It renews in 3 days");
+    expect(result.body).toContain("Another $200 incoming");
+  });
+
   it("renders p2_portal", () => {
     const result = renderTemplate("p2_portal", {
       spend: 500,
@@ -206,6 +227,9 @@ describe("getTemplateKeys", () => {
     expect(keys).toContain("p1_high_value");
     expect(keys).toContain("p2_rideshare");
     expect(keys).toContain("p2_portal");
-    expect(keys.length).toBeGreaterThanOrEqual(27);
+    // B4 templates
+    expect(keys).toContain("b4_renewing");
+    expect(keys).toContain("b4_maxed_renewing");
+    expect(keys.length).toBeGreaterThanOrEqual(29);
   });
 });

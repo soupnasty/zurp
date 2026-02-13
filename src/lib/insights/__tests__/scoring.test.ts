@@ -69,7 +69,33 @@ describe("computeUrgencyScore", () => {
 
   it("returns 0 for expired", () => {
     expect(computeUrgencyScore(0)).toBe(0);
-    expect(computeUrgencyScore(-1)).toBe(0);
+    expect(computeUrgencyScore(-5)).toBe(0);
+  });
+
+  it("returns 45 for ongoing cost sentinel (-1)", () => {
+    expect(computeUrgencyScore(-1)).toBe(45);
+  });
+});
+
+describe("computeNoveltyScore — gradient", () => {
+  it("returns 40 for shown once 7-30 days ago", () => {
+    const h: InsightImpressionHistory = {
+      insightId: "x",
+      showCount: 1,
+      lastShownAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 14), // 14 days ago
+      firstShownAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 14),
+    };
+    expect(computeNoveltyScore(h)).toBe(40);
+  });
+
+  it("returns 20 for shown once 1-7 days ago", () => {
+    const h: InsightImpressionHistory = {
+      insightId: "x",
+      showCount: 1,
+      lastShownAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), // 3 days ago
+      firstShownAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3),
+    };
+    expect(computeNoveltyScore(h)).toBe(20);
   });
 });
 

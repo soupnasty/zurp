@@ -105,10 +105,10 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error activating subscription:", error);
     return NextResponse.json(
-      { error: error?.message || "Failed to activate subscription" },
+      { error: "Failed to activate subscription" },
       { status: 500 }
     );
   }
@@ -154,10 +154,10 @@ export async function DELETE(request: Request) {
     }
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error deactivating subscription:", error);
     return NextResponse.json(
-      { error: error?.message || "Failed to deactivate subscription" },
+      { error: "Failed to deactivate subscription" },
       { status: 500 }
     );
   }

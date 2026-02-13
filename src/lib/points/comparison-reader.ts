@@ -74,20 +74,20 @@ export async function readComparison(
     };
   });
 
-  // Rank cards by netFloor descending
-  const ranked = [...simulations].sort((a, b) => b.netFloor - a.netFloor);
+  // Rank cards by netActual descending (matches leaderboard sort)
+  const ranked = [...simulations].sort((a, b) => b.netActual - a.netActual);
   ranked.forEach((sim, i) => {
     sim.rank = i + 1;
   });
 
-  // Order: user's card first, then top 2 alternatives by netFloor
+  // Identify user's card and top 2 alternatives for head-to-head
   const usersCard = simulations.find((s) => s.isUsersCard);
   if (!usersCard) return null; // User's card not in simulation set
   const alternatives = ranked.filter((s) => !s.isUsersCard).slice(0, 2);
-  const orderedCards = [usersCard, ...alternatives];
+  const h2hCards = [usersCard, ...alternatives];
 
   // Build category breakdown with winners
-  const categoryBreakdown = buildCategoryBreakdown(orderedCards);
+  const categoryBreakdown = buildCategoryBreakdown(h2hCards);
 
   // Build headline
   const headline = buildHeadline(usersCard, alternatives);
@@ -105,7 +105,7 @@ export async function readComparison(
     totalSpend: firstRow.totalSpend,
     totalCards: ranked.length,
     portalMode,
-    cards: orderedCards,
+    cards: ranked,
     categoryBreakdown,
     headline,
   };

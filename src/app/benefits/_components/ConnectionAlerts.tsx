@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { AlertTriangle, WifiOff, RefreshCw, Loader2 } from "lucide-react";
 import Link from "next/link";
 import type { ConnectionAlert } from "@/lib/notifications";
+import { ReauthButton } from "@/components/ReauthButton";
 
 interface ConnectionAlertsProps {
   alerts: ConnectionAlert[];
@@ -91,12 +92,7 @@ function AlertRow({ alert }: { alert: ConnectionAlert }) {
         </button>
       )}
       {alert.type === "needs_reauth" && (
-        <Link
-          href="/onboarding"
-          className="inline-flex items-center gap-1 rounded-md bg-[var(--color-danger)]/20 px-2.5 py-1 text-[var(--text-caption)] font-medium text-[var(--color-danger)] transition-opacity hover:opacity-80"
-        >
-          Reconnect
-        </Link>
+        <ReauthButton connectionId={alert.connectionId} />
       )}
       {alert.type === "disconnected" && (
         <Link

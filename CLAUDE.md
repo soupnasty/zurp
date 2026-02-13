@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-A credit card benefits tracker that syncs transactions via Plaid, matches them against card-specific benefit rulesets, and shows users which credits they've used, which are expiring, and whether each card is paying for itself. Supports Chase Sapphire Reserve, Chase Sapphire Preferred, Chase Freedom Flex, Chase Freedom Unlimited, Amex Gold, Amex Blue Cash Preferred, Amex Platinum, Citi Strata Elite, Citi Strata Premier, Capital One Venture X, Capital One Venture, Robinhood Gold, and Bilt Palladium.
+A credit card benefits tracker that syncs transactions via Plaid, matches them against card-specific benefit rulesets, and shows users which credits they've used, which are expiring, and whether each card is paying for itself. Supports Chase Sapphire Reserve, Chase Sapphire Preferred, Chase Freedom Flex, Chase Freedom Unlimited, Amex Gold, Amex Blue Cash Preferred, Amex Platinum, Citi Strata Elite, Citi Strata Premier, Capital One Venture X, Capital One Venture, Robinhood Gold, Bilt Palladium, Amex Blue Cash Everyday, Citi Custom Cash, Citi Double Cash, Discover it Cash Back, US Bank Altitude Connect, Wells Fargo Active Cash, Wells Fargo Autograph Journey, Amex Business Platinum, Apple Card, Capital One SavorOne, Delta SkyMiles Platinum, Hilton Honors Aspire, IHG One Rewards Premier, Chase Ink Business Preferred, Southwest Rapid Rewards Priority, United Explorer, and World of Hyatt.
 
 ## Tech Stack
 
@@ -182,10 +182,10 @@ On-demand simulation engine that answers "which card earns the most for your act
 
 - **Category mapper** (`categories.ts`): 3-tier classification — merchant name match → Plaid category fallback → `other`. Uses 26-category taxonomy separate from the 8-category spending system.
 - **Merchant map** (`merchant-map.ts`): ~200 static merchant→category entries with priority-based matching.
-- **Earn configs** (`earn-configs/`): Per-card earn rate definitions (bonus categories, caps, conditions, point valuations). Files: `chase-sapphire-reserve.ts`, `chase-sapphire-preferred.ts`, `chase-freedom-flex.ts`, `chase-freedom-unlimited.ts`, `amex-gold.ts`, `amex-blue-cash-preferred.ts`, `amex-platinum.ts`, `citi-strata-elite.ts`, `citi-strata-premier.ts`, `capital-one-venture-x.ts`, `capital-one-venture.ts`, `robinhood-gold.ts`, `bilt-palladium.ts`.
+- **Earn configs** (`earn-configs/`): Per-card earn rate definitions (bonus categories, caps, conditions, point valuations). 30 card earn configs across tier-1 (CSR, CSP, Amex Platinum), tier-2 (CFF, CFU, CBC Everyday, Citi Custom Cash, Citi Double Cash, Discover it, USBAC, WF Active Cash, WF Autograph Journey), tier-0 (CBC Preferred, Amex Gold, Citi Strata Elite, Citi Strata Premier, Venture X, Venture, Robinhood Gold, Bilt Palladium), and tier-3 (Amex Business Platinum, Apple Card, Capital One SavorOne, Delta SkyMiles Platinum, Hilton Honors Aspire, IHG One Rewards Premier, Chase Ink Business Preferred, Southwest Rapid Rewards Priority, United Explorer, World of Hyatt).
 - **Calculator** (`calculator.ts`): Per-transaction points calculation with cap tracking. Supports `time_window` conditions for time-based earn rates (e.g., Citi Nights).
 - **Simulator** (`simulator.ts`): Full pipeline — classify → calculate per card → aggregate → compute net value (points + benefits - fee). Supports `portalMode` to reclassify travel as `travel_portal`.
-- **Perk matrix** (`perk-matrix.ts`): Static benefit comparison data for the Benefits & Perks tab (13 cards).
+- **Perk matrix** (`perk-matrix.ts`): Static benefit comparison data for the Benefits & Perks tab (30 cards).
 - **Queries** (`queries.ts`): Server-only DB queries for transaction data (includes `datetime` for time-window matching).
 - **Orchestrator** (`index.ts`): `computeComparison(userId, options?)` — main entry point called from the compare page. Accepts `{ portalMode?: boolean }`.
 
@@ -195,7 +195,7 @@ No new DB tables — computed on-demand from existing transaction data.
 
 Card definitions live in `src/lib/cards/`. Each card file exports a `CardDefinition` with all benefits. The registry at `src/lib/cards/index.ts` aggregates them. `detect.ts` auto-detects card type from Plaid account metadata. To add a new card, create a new file in `src/lib/cards/` and register it in `index.ts`.
 
-13 cards: CSR, CSP, CFF, CFU, Amex Gold, Amex Blue Cash Preferred, Amex Platinum, Citi Strata Elite, Citi Strata Premier, Capital One Venture X, Capital One Venture, Robinhood Gold, Bilt Palladium.
+30 cards: CSR, CSP, CFF, CFU, Amex Gold, Amex Blue Cash Preferred, Amex Platinum, Citi Strata Elite, Citi Strata Premier, Capital One Venture X, Capital One Venture, Robinhood Gold, Bilt Palladium, Amex Blue Cash Everyday, Citi Custom Cash, Citi Double Cash, Discover it Cash Back, US Bank Altitude Connect, Wells Fargo Active Cash, Wells Fargo Autograph Journey, Amex Business Platinum, Apple Card, Capital One SavorOne, Delta SkyMiles Platinum, Hilton Honors Aspire, IHG One Rewards Premier, Chase Ink Business Preferred, Southwest Rapid Rewards Priority, United Explorer, World of Hyatt.
 
 The Chase Freedom Flex (`chase-freedom-flex.ts`) has 1 benefit (DashPass subscription). $0 annual fee, Mastercard network. 1x base rate with 5% rotating quarterly categories (not modeled — changes each quarter), 3x dining/drugstores, 5x Chase Travel portal. Earns Chase UR points poolable with CSR/CSP. Points valued at 1.0-2.0cpp (via CSR/CSP transfer partners). Cell phone protection ($800/claim, 2 claims/yr).
 
@@ -216,6 +216,40 @@ The Capital One Venture (`capital-one-venture.ts`) has 3 benefits ($250 annual t
 The Robinhood Gold (`robinhood-gold.ts`) has 1 benefit (No FTF). Its value is entirely in its 3x flat earning rate (highest base rate of any card). 5x on Robinhood Travel portal with $3,500/yr cap. $50/yr fee (Robinhood Gold membership). Points valued at 0.7-1.0cpp (brokerage transfer). No transfer partners, no lounges, no statement credits.
 
 The Bilt Palladium (`bilt-palladium.ts`) has 4 benefit records from 3 logical benefits: $400/yr hotel credit via Bilt Travel portal ($200 semi-annual via expandCycles), $200/yr Bilt Cash annual credit, and No FTF. Flat 2x earning on everything (no bonus categories). 23 transfer partners with Rent Day 75% bonus. Points valued at 1.5-2.2cpp. $495/yr fee. Issuer is "bilt" for Plaid detection.
+
+The Amex Blue Cash Everyday (`amex-blue-cash-everyday.ts`) has 1 benefit (Disney Bundle monthly credit $7/mo). $0 annual fee, Amex network. 3% US supermarkets (capped $6K/yr), 3% gas (capped $6K/yr), 3% online retail (capped $6K/yr), 1% base. Cash back currency at fixed 1.0cpp valuation. 2.7% FTF.
+
+The Citi Custom Cash (`citi-custom-cash.ts`) has 0 benefits (no trackable statement credits). $0 annual fee, Mastercard network. Auto-selects 5% on top spending category per billing cycle ($500 cap, not modeled in static config). 1% base. ThankYou Points poolable with Strata cards. 3% FTF.
+
+The Citi Double Cash (`citi-double-cash.ts`) has 0 benefits (no trackable statement credits). $0 annual fee, Mastercard network. Effective 2% flat rate (1% on purchase + 1% on payment). ThankYou Points poolable with Strata cards. 3% FTF.
+
+The Discover it Cash Back (`discover-it-cash-back.ts`) has 0 benefits (no trackable statement credits). $0 annual fee, Discover network. 5% rotating quarterly categories ($1,500/qtr cap, not modeled), 1% base. Year 1 Cashback Match doubles all earnings (not modeled). No FTF.
+
+The US Bank Altitude Connect (`us-bank-altitude-connect.ts`) has 1 benefit (Global Entry/TSA PreCheck $100/4yr). $0 annual fee, Visa network. 5x US Bank Rewards Center, 4x travel/gas ($4K/yr gas cap), 2x dining/groceries/streaming, 1x base. Priority Pass (4 visits/yr) tracked in perk matrix only.
+
+The Wells Fargo Active Cash (`wells-fargo-active-cash.ts`) has 0 benefits (no trackable statement credits). $0 annual fee, Visa network. Flat 2% cash back on all purchases (uncapped). Cell phone protection ($600/claim) and CDW ($50K secondary) tracked in perk matrix only. 3% FTF.
+
+The Wells Fargo Autograph Journey (`wells-fargo-autograph-journey.ts`) has 1 benefit (Annual Airline Credit $50/yr, minimum $50 charge). $95 annual fee, Visa network. 5x hotels, 4x flights/dining, 3x gas/transit/streaming, 1x base. 6 transfer partners at 1:1 (Flying Blue, Avianca, BA, Iberia, Virgin Atlantic, Aer Lingus). No FTF.
+
+The Amex Business Platinum (`amex-business-platinum.ts`) has 4 benefits (hotel credit x2 semi-annual, Dell credit, Global Entry, CLEAR Plus). $895 annual fee, Amex network. 5x Amex Travel portal, 1x base. Earns Amex MR points. Points valued at 1.0-2.0cpp (via transfer partners).
+
+The Apple Card (`apple-card.ts`) has 0 benefits (Daily Cash is earning structure, not a trackable credit). $0 annual fee, Mastercard network. Issuer is "goldman_sachs". 3% at select merchants (Apple, Uber, Nike, Exxon/Mobil, Walgreens, Ace Hardware, Booking.com) via merchant_match conditions, 1% base (2% Apple Pay). Cash back currency at fixed 1.0cpp. No FTF.
+
+The Capital One SavorOne (`capital-one-savor.ts`) has 1 benefit ($100 first-year Capital One Travel credit, one-time only). $0 annual fee, Mastercard network. 8x Capital One Entertainment portal, 5x travel portal, 3x dining/entertainment/streaming/groceries, 1% base. Cash back currency at fixed 1.0cpp. No FTF.
+
+The Delta SkyMiles Platinum (`delta-platinum.ts`) has 2 benefits ($200/yr Delta flight credit requiring $10K spend, $9.99/mo Uber One credit with activeMonths gating). Companion Certificate tracked in perk matrix only. $350 annual fee, Amex network. 3x Delta flights (merchant_match), 3x hotels, 2x dining/groceries, 1x base. Delta SkyMiles valued at 1.0-1.4cpp.
+
+The Hilton Honors Aspire (`hilton-aspire.ts`) has 7 benefits ($200 resort credit x2 semi-annual, $50 airline fee credit x4 quarterly, $209 CLEAR Plus). Free Night Certificate tracked in perk matrix only. $550 annual fee, Amex network. 14x Hilton (merchant_match, 13 brands), 7x flights/dining/cars, 3x base. Hilton points valued at 0.5-0.8cpp.
+
+The IHG One Rewards Premier (`ihg-premier.ts`) has 1 benefit (Global Entry $120/quadrennial). Free Night Certificate tracked in perk matrix only. $99 annual fee, Visa network. 10x IHG (merchant_match, 13 brands), 5x flights/cars/dining, 3x base. IHG points valued at 0.5-0.8cpp.
+
+The Chase Ink Business Preferred (`ink-business-preferred.ts`) has 0 benefits (business earning card). $95 annual fee, Visa network. 5x Lyft (merchant_match), 3x travel/phone_services ($150K/yr combined cap), 1x base. Chase UR points valued at 1.0-2.0cpp (via transfer partners).
+
+The Southwest Rapid Rewards Priority (`southwest-priority.ts`) has 1 benefit ($75/yr Southwest travel credit). Upgraded Boardings tracked in perk matrix only. $229 annual fee, Visa network. 2x Southwest flights (merchant_match), 2x dining, 1x base. Rapid Rewards points valued at 1.3-1.5cpp.
+
+The United Explorer (`united-explorer.ts`) has 3 benefits ($100/yr United travel credit, $60/yr airport rideshare credit, $120/yr Instacart credit). United Club passes tracked in perk matrix only. $150 annual fee, Visa network. 5x United flights (merchant_match), 2x dining/hotels, 1x base. MileagePlus miles valued at 1.0-1.5cpp.
+
+The World of Hyatt (`world-of-hyatt.ts`) has 0 benefits (both Free Night Certificates tracked in perk matrix only). $95 annual fee, Visa network. 4x Hyatt (merchant_match, 9 brands), 2x dining/flights/cars/transit/fitness, 1x base. Hyatt points valued at 1.5-2.2cpp.
 
 ## Project Structure
 
@@ -245,7 +279,7 @@ src/
 │   ├── engine/             # Pure matching engine + tests
 │   ├── insights/           # Insights Engine v2 (generators, scoring, orchestrator)
 │   ├── spending/           # Spending analysis (categories, queries)
-│   ├── cards/              # Card definitions registry + auto-detection
+│   ├── cards/              # Card definitions registry + auto-detection (30 cards)
 │   ├── points/             # Points earn model (category mapper, earn configs, simulator)
 │   ├── auth.ts             # NextAuth config (lazy)
 │   ├── auth-helpers.ts     # getAuthUser(), requireAuth()
@@ -282,19 +316,18 @@ src/
 - [x] Phase 16: Chase Freedom Flex — 1 benefit (DashPass), 1x base rate, 3x dining/drugstores, 5x portal, $0 fee, Mastercard, cell phone protection, 12-card comparison
 - [x] Phase 17: Chase Freedom Unlimited — 1 benefit (DashPass), 1.5x base rate, 3x dining/drugstores, 5x portal, $0 fee, Visa, 12-card comparison
 - [x] Phase 18: Amex Blue Cash Preferred — 0 benefits, first cash-back card (`cash_back` currency), 6%/6%/3%/3%/1% earn rates, $6K grocery cap, 13-card comparison
+- [x] Phase 19: Tier-2 Cards — 7 new cards (Amex BCE, Citi Custom Cash, Citi Double Cash, Discover it, US Bank Altitude Connect, WF Active Cash, WF Autograph Journey), 3 statement credits, 7 earn configs, 20-card comparison, perk matrix expansion, issuer detection aliases
+- [x] Phase 20: Tier-3 Cards — 10 new cards (Amex Business Platinum, Apple Card, Capital One SavorOne, Delta SkyMiles Platinum, Hilton Honors Aspire, IHG One Rewards Premier, Chase Ink Business Preferred, Southwest Rapid Rewards Priority, United Explorer, World of Hyatt), certificate benefits to perk matrix only, goldman_sachs issuer detection, 19 competitor map entries, 30-card comparison
 
 ### Sync Architecture
 
-Transaction syncing uses a shared `triggerSync()` function (`src/lib/plaid-sync.ts`) called from three entry points:
+Transaction syncing uses a shared `triggerSync()` function (`src/lib/plaid-sync.ts`) called from:
 - **API route** (`/api/plaid/sync`) — user-triggered manual sync via dashboard button
-- **Webhook** (`/api/plaid/webhook`) — Plaid pushes `SYNC_UPDATES_AVAILABLE` and `ITEM.ERROR` events
-- **Cron** (`/api/cron/sync`) — Vercel cron every 6 hours, syncs connections stale >6h, protected by `CRON_SECRET` bearer token
 
 Connection health alerts (`src/lib/notifications.ts`) surface stale/reauth/disconnected states as banners in the dashboard.
 
 ### Deployment (Vercel)
 
-- `vercel.json` defines a cron schedule (`0 */6 * * *` for `/api/cron/sync`)
 - Sandbox page gated behind `NEXT_PUBLIC_ENABLE_SANDBOX=true` env var
 - DB migrations: `npm run db:generate && npm run db:migrate` in build pipeline
 

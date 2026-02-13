@@ -56,7 +56,7 @@ export interface CardDefinition {
   id: string;
   name: string;
   issuer: string;
-  network: "visa" | "amex" | "mastercard";
+  network: "visa" | "amex" | "mastercard" | "discover";
   annualFee: number;
   feeDescriptor: string;
   imageUrl: string | null;

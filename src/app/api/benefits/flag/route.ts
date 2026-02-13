@@ -3,12 +3,23 @@ import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
 import { eq, and } from "drizzle-orm";
+import { createRateLimiter } from "@/lib/rate-limiter";
+
+const flagLimiter = createRateLimiter(60_000, 30);
 
 export async function POST(request: Request) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { allowed, retryAfterMs } = flagLimiter(session.user.id);
+    if (!allowed) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429, headers: { "Retry-After": String(Math.ceil((retryAfterMs || 60000) / 1000)) } }
+      );
     }
 
     const { transactionId, benefitId, benefitUsageId, flagType, reason } =
@@ -41,6 +52,22 @@ export async function POST(request: Request) {
         { error: "Transaction not found" },
         { status: 404 }
       );
+    }
+
+    // Cross-card validation: ensure the benefit belongs to the same card as the transaction
+    if (flagType === "added") {
+      const benefit = await db.query.benefits.findFirst({
+        where: eq(schema.benefits.id, benefitId),
+      });
+      const cardProfile = await db.query.cardProfiles.findFirst({
+        where: eq(schema.cardProfiles.plaidConnectionId, tx.plaidConnectionId),
+      });
+      if (benefit && cardProfile && benefit.cardId !== cardProfile.cardType) {
+        return NextResponse.json(
+          { error: "Benefit does not belong to this card" },
+          { status: 400 }
+        );
+      }
     }
 
     const flagId = crypto.randomUUID();
@@ -222,10 +249,10 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ flag: { id: flagId }, creditApplied });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error creating flag:", error);
     return NextResponse.json(
-      { error: error?.message || "Failed to create flag" },
+      { error: "Failed to create flag" },
       { status: 500 }
     );
   }
@@ -384,7 +411,7 @@ export async function DELETE(request: Request) {
       .where(eq(schema.transactionFlags.id, flagId));
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error undoing flag:", error);
     return NextResponse.json(
       { error: "Failed to undo flag" },

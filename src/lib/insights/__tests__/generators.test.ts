@@ -9,6 +9,7 @@ import { generateC0 } from "../generators/c0-value-snapshot";
 import { generateC2 } from "../generators/c2-roi-milestone";
 import { generateP1 } from "../generators/p1-points-highlight";
 import { generateP2 } from "../generators/p2-missed-bonus";
+import { generateB4 } from "../generators/b4-benefit-renewal";
 import type { GeneratorContext, CompetitorMapEntry } from "../generators/types";
 import type { BenefitUsageSummary } from "@/lib/types";
 import type { CategorizedTransaction } from "@/lib/spending/types";
@@ -94,7 +95,7 @@ describe("A1: Competitor Redirect", () => {
     expect(results.length).toBe(1);
     expect(results[0].category).toBe("A1");
     expect(results[0].templateKey).toBe("a1_standard");
-    expect(results[0].dollarAmount).toBe(30);
+    expect(results[0].dollarAmount).toBe(10); // capped at remaining credit (min of 30, 10)
     expect(results[0].dedupKey).toMatch(/^a1:csr_lyft:/);
   });
 
@@ -142,7 +143,7 @@ describe("A1: Competitor Redirect", () => {
 
     const results = generateA1(ctx);
     expect(results.length).toBe(1);
-    expect(results[0].dollarAmount).toBe(35);
+    expect(results[0].dollarAmount).toBe(10); // capped at remaining credit (min of 35, 10)
   });
 });
 
@@ -624,6 +625,157 @@ describe("P2: Missed Bonus Opportunity", () => {
     });
 
     expect(generateP2(ctx)).toHaveLength(0);
+  });
+});
+
+describe("B4: Benefit Renewal", () => {
+  it("generates for high-value credit renewing within 7 days with >= 50% usage", () => {
+    const now = new Date();
+    const start = new Date(now);
+    start.setDate(start.getDate() - 25);
+    const end = new Date(now);
+    end.setDate(end.getDate() + 5);
+
+    const ctx = makeCtx({
+      benefitUsages: [
+        makeUsage({
+          benefitId: "plat_hotel",
+          benefitName: "Hotel Credit",
+          type: "credit",
+          creditAmount: 200,
+          amountUsed: 150,
+          amountRemaining: 50,
+          isFullyUsed: false,
+          daysRemaining: 5,
+          cycleStart: start,
+          cycleEnd: end,
+          periodKey: "2026-H1",
+        }),
+      ],
+    });
+
+    const results = generateB4(ctx);
+    expect(results.length).toBe(1);
+    expect(results[0].category).toBe("B4");
+    expect(results[0].templateKey).toBe("b4_renewing");
+    expect(results[0].templateVars.benefit).toBe("Hotel Credit");
+    expect(results[0].templateVars.credit).toBe(200);
+    expect(results[0].templateVars.days).toBe(5);
+    expect(results[0].templateVars.used).toBe(150);
+  });
+
+  it("uses b4_maxed_renewing for fully used benefits", () => {
+    const now = new Date();
+    const start = new Date(now);
+    start.setDate(start.getDate() - 25);
+    const end = new Date(now);
+    end.setDate(end.getDate() + 3);
+
+    const ctx = makeCtx({
+      benefitUsages: [
+        makeUsage({
+          benefitId: "plat_hotel",
+          benefitName: "Hotel Credit",
+          type: "credit",
+          creditAmount: 200,
+          amountUsed: 200,
+          amountRemaining: 0,
+          isFullyUsed: true,
+          daysRemaining: 3,
+          cycleStart: start,
+          cycleEnd: end,
+          periodKey: "2026-H1",
+        }),
+      ],
+    });
+
+    const results = generateB4(ctx);
+    expect(results.length).toBe(1);
+    expect(results[0].templateKey).toBe("b4_maxed_renewing");
+  });
+
+  it("skips low-value credits (< $50)", () => {
+    const now = new Date();
+    const start = new Date(now);
+    start.setDate(start.getDate() - 25);
+    const end = new Date(now);
+    end.setDate(end.getDate() + 3);
+
+    const ctx = makeCtx({
+      benefitUsages: [
+        makeUsage({
+          creditAmount: 10,
+          amountUsed: 8,
+          daysRemaining: 3,
+          cycleStart: start,
+          cycleEnd: end,
+        }),
+      ],
+    });
+
+    expect(generateB4(ctx)).toHaveLength(0);
+  });
+
+  it("skips benefits with > 7 days remaining", () => {
+    const now = new Date();
+    const start = new Date(now);
+    start.setDate(start.getDate() - 15);
+    const end = new Date(now);
+    end.setDate(end.getDate() + 15);
+
+    const ctx = makeCtx({
+      benefitUsages: [
+        makeUsage({
+          creditAmount: 200,
+          amountUsed: 150,
+          daysRemaining: 15,
+          cycleStart: start,
+          cycleEnd: end,
+        }),
+      ],
+    });
+
+    expect(generateB4(ctx)).toHaveLength(0);
+  });
+
+  it("skips benefits with < 50% usage (B1 handles those)", () => {
+    const now = new Date();
+    const start = new Date(now);
+    start.setDate(start.getDate() - 25);
+    const end = new Date(now);
+    end.setDate(end.getDate() + 5);
+
+    const ctx = makeCtx({
+      benefitUsages: [
+        makeUsage({
+          creditAmount: 200,
+          amountUsed: 50, // 25% usage
+          daysRemaining: 5,
+          cycleStart: start,
+          cycleEnd: end,
+        }),
+      ],
+    });
+
+    expect(generateB4(ctx)).toHaveLength(0);
+  });
+});
+
+describe("C2: Highest Milestone Selection", () => {
+  it("emits highest reached milestone when multiple are reached at once", () => {
+    const ctx = makeCtx({
+      annualFee: 200,
+      cardType: "test_card",
+      totalBenefitsCaptured: 350, // 175% of $200 fee
+      existingMilestoneKeys: [],
+      pointsData: null,
+    });
+
+    const results = generateC2(ctx);
+    expect(results.length).toBe(1);
+    // Should pick 150% (not 50% or 75% or 100%)
+    expect(results[0].dedupKey).toBe("c2:test_card:150pct");
+    expect(results[0].templateKey).toBe("c2_profitable");
   });
 });
 

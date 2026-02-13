@@ -71,7 +71,7 @@ export function runMatcher(
       }
 
       // Check if benefit has remaining credit (per-period)
-      const bounds = getCurrentCycleBounds(benefit.cycle as any, tx.date, anniversaryDate);
+      const bounds = getCurrentCycleBounds(benefit.cycle, tx.date, anniversaryDate);
       const usageKey = `${benefit.id}:${bounds.periodKey}`;
       const currentUsed = usageMap.get(usageKey) ?? 0;
       const effectiveCredit = getEffectiveCredit(benefit, config);

@@ -76,6 +76,16 @@ const TEMPLATES: Record<string, Template> = {
     body: "${hint}",
   },
 
+  // ── B4: Benefit Renewal Reminder ──
+  b4_renewing: {
+    title: "Your $${credit} ${benefit} credit renews in ${days} days",
+    body: "You used $${used} this period. Plan ahead for the next cycle.",
+  },
+  b4_maxed_renewing: {
+    title: "Nice — you maxed ${benefit}. It renews in ${days} days",
+    body: "Another $${credit} incoming. Consider booking early.",
+  },
+
   // ── C0: Value Snapshot ──
   c0_standard: {
     title: "You've already captured $${total} in benefits",

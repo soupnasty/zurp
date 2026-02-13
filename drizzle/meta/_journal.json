@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1770844260345,
-      "tag": "0000_amusing_ultimo",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1770860004994,
-      "tag": "0001_cloudy_morlocks",
+      "when": 1771011141073,
+      "tag": "0000_warm_gargoyle",
       "breakpoints": true
     }
   ]

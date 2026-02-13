@@ -1,75 +1,12 @@
 import type { InsightCandidate } from "../types";
 import type { GeneratorContext } from "./types";
 import { normalizeMerchantName } from "@/lib/engine/normalize";
-
-interface P2Scenario {
-  id: string;
-  cardTypes: string[];
-  type: "rideshare" | "portal";
-  merchantPattern?: string;
-  spendCategory?: string;
-  redirectTo: string;
-  bonusRate: number;
-  baseRate: number;
-  templateKey: string;
-}
-
-const SCENARIOS: P2Scenario[] = [
-  {
-    id: "uber_to_lyft",
-    cardTypes: ["chase_sapphire_reserve", "chase_sapphire_preferred"],
-    type: "rideshare",
-    merchantPattern: "uber",
-    redirectTo: "Lyft",
-    bonusRate: 10, // Lyft 10x for CSR
-    baseRate: 3,
-    templateKey: "p2_rideshare",
-  },
-  {
-    id: "hotels_to_chase_portal",
-    cardTypes: ["chase_sapphire_reserve"],
-    type: "portal",
-    spendCategory: "travel_hotels",
-    redirectTo: "Chase Travel Portal",
-    bonusRate: 10,
-    baseRate: 3,
-    templateKey: "p2_portal",
-  },
-  {
-    id: "hotels_to_cap1_portal",
-    cardTypes: ["capital_one_venture_x"],
-    type: "portal",
-    spendCategory: "travel_hotels",
-    redirectTo: "Capital One Travel Portal",
-    bonusRate: 10,
-    baseRate: 2,
-    templateKey: "p2_portal",
-  },
-  {
-    id: "hotels_to_citi_portal",
-    cardTypes: ["citi_strata_elite"],
-    type: "portal",
-    spendCategory: "travel_hotels",
-    redirectTo: "Citi Travel Portal",
-    bonusRate: 10,
-    baseRate: 1,
-    templateKey: "p2_portal",
-  },
-  {
-    id: "flights_to_amex_portal",
-    cardTypes: ["amex_gold"],
-    type: "portal",
-    spendCategory: "travel_flights",
-    redirectTo: "Amex Travel Portal",
-    bonusRate: 3,
-    baseRate: 1,
-    templateKey: "p2_portal",
-  },
-];
+import { P2_SCENARIOS } from "./p2-scenarios";
 
 /**
  * P2: Missed Bonus Opportunity (Group A — Redirect)
  * Detects spending that could earn more through a different channel.
+ * Scenarios are configured in p2-scenarios.ts.
  */
 export function generateP2(ctx: GeneratorContext): InsightCandidate[] {
   const { cardType, transactions, pointsData } = ctx;
@@ -79,7 +16,7 @@ export function generateP2(ctx: GeneratorContext): InsightCandidate[] {
   const now = new Date();
   const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 
-  for (const scenario of SCENARIOS) {
+  for (const scenario of P2_SCENARIOS) {
     if (!scenario.cardTypes.includes(cardType)) continue;
 
     let spend = 0;
@@ -126,7 +63,7 @@ export function generateP2(ctx: GeneratorContext): InsightCandidate[] {
         bonus_rate: scenario.bonusRate,
         extra_value: extraValue,
         extra_points: extraPoints,
-        merchant: scenario.type === "rideshare" ? "Uber" : scenario.spendCategory === "travel_hotels" ? "hotels" : "flights",
+        merchant: scenario.type === "rideshare" ? "Uber" : scenario.spendCategory === "travel_hotels" ? "hotels" : scenario.spendCategory === "travel_car_rental" ? "car rentals" : "flights",
       },
       dedupKey,
       triggeredByTransactionId: null,

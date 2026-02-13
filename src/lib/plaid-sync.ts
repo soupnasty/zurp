@@ -15,7 +15,7 @@ export interface SyncResult {
 const SYNC_LOCK_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
 /**
- * Shared sync logic used by the API route, webhook handler, and cron job.
+ * Shared sync logic used by the manual sync API route and webhook handler.
  * Fetches new transactions from Plaid, upserts them, and runs the matcher.
  *
  * Uses a DB-level sync lock (syncLockedUntil) to prevent concurrent syncs
@@ -107,31 +107,28 @@ export async function triggerSync(connectionId: string): Promise<SyncResult> {
         .onConflictDoNothing();
     }
 
-    // Update modified transactions (parallel — each row has different values)
-    if (modified.length > 0) {
-      await Promise.all(
-        modified.map((tx) =>
-          db
-            .update(schema.transactions)
-            .set({
-              date: new Date(tx.date),
-              datetime: tx.authorized_datetime
-                ? new Date(tx.authorized_datetime)
-                : tx.datetime
-                  ? new Date(tx.datetime)
-                  : null,
-              merchantName: tx.merchant_name || tx.name,
-              merchantNameRaw: tx.name,
-              amount: tx.amount,
-              plaidCategoryPrimary:
-                tx.personal_finance_category?.primary || null,
-              plaidCategoryDetailed:
-                tx.personal_finance_category?.detailed || null,
-              pending: tx.pending,
-            })
-            .where(eq(schema.transactions.id, tx.transaction_id))
-        )
-      );
+    // Update modified transactions sequentially to avoid parallel HTTP
+    // request storm on Neon's HTTP driver (each row has different values)
+    for (const tx of modified) {
+      await db
+        .update(schema.transactions)
+        .set({
+          date: new Date(tx.date),
+          datetime: tx.authorized_datetime
+            ? new Date(tx.authorized_datetime)
+            : tx.datetime
+              ? new Date(tx.datetime)
+              : null,
+          merchantName: tx.merchant_name || tx.name,
+          merchantNameRaw: tx.name,
+          amount: tx.amount,
+          plaidCategoryPrimary:
+            tx.personal_finance_category?.primary || null,
+          plaidCategoryDetailed:
+            tx.personal_finance_category?.detailed || null,
+          pending: tx.pending,
+        })
+        .where(eq(schema.transactions.id, tx.transaction_id));
     }
 
     // Remove deleted transactions (batch delete)

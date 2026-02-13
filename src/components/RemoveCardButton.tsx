@@ -29,9 +29,15 @@ export function RemoveCardButton({ cardProfileId, cardName }: RemoveCardButtonPr
         <button
           onClick={handleRemove}
           disabled={removing}
-          className="rounded-[var(--radius-md)] bg-[var(--color-danger)] px-3 py-1.5 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+          className="rounded-[var(--radius-md)] border px-2.5 py-1 text-[11px] font-bold transition-colors disabled:opacity-50"
+          style={{
+            fontFamily: "var(--font-mono)",
+            color: "var(--color-danger)",
+            background: "rgba(248,113,113,0.1)",
+            borderColor: "rgba(248,113,113,0.2)",
+          }}
         >
-          {removing ? "Removing..." : "Confirm"}
+          {removing ? "..." : "Confirm"}
         </button>
         <button
           onClick={() => setConfirming(false)}

@@ -41,22 +41,24 @@ export function InsightGroupSection({ group, insights }: InsightGroupProps) {
   return (
     <div className="mt-8 first:mt-0">
       {/* Section header */}
-      <div className="flex items-center gap-3 mb-4">
-        <h3 className="text-lg font-bold text-[var(--text-primary)]">
-          {config.title}
-        </h3>
-        <span
-          className="rounded-full px-2.5 py-0.5 text-[11px] font-bold"
-          style={{
-            fontFamily: "var(--font-mono)",
-            color: config.color,
-            background: `color-mix(in srgb, ${config.color} 10%, transparent)`,
-            border: `1px solid color-mix(in srgb, ${config.color} 15%, transparent)`,
-          }}
-        >
-          {insights.length}
-        </span>
-        <span className="text-[13px] text-[var(--text-secondary)]">{config.subtitle}</span>
+      <div className="mb-3 md:mb-4">
+        <div className="flex items-center gap-2 md:gap-3">
+          <h3 className="text-base md:text-lg font-bold text-[var(--text-primary)]">
+            {config.title}
+          </h3>
+          <span
+            className="rounded-full px-2 md:px-2.5 py-0.5 text-[10px] md:text-[11px] font-bold"
+            style={{
+              fontFamily: "var(--font-mono)",
+              color: config.color,
+              background: `color-mix(in srgb, ${config.color} 10%, transparent)`,
+              border: `1px solid color-mix(in srgb, ${config.color} 15%, transparent)`,
+            }}
+          >
+            {insights.length}
+          </span>
+        </div>
+        <p className="mt-0.5 text-[12px] md:text-[13px] text-[var(--text-secondary)]">{config.subtitle}</p>
       </div>
 
       {/* Insight cards */}

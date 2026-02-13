@@ -3,12 +3,23 @@ import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
 import { eq, and } from "drizzle-orm";
+import { createRateLimiter } from "@/lib/rate-limiter";
+
+const confirmLimiter = createRateLimiter(60_000, 30);
 
 export async function POST(request: Request) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { allowed, retryAfterMs } = confirmLimiter(session.user.id);
+    if (!allowed) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429, headers: { "Retry-After": String(Math.ceil((retryAfterMs || 60000) / 1000)) } }
+      );
     }
 
     const { transactionId, benefitId, benefitUsageId } = await request.json();
@@ -48,6 +59,18 @@ export async function POST(request: Request) {
         { error: "Benefit usage record not found" },
         { status: 404 }
       );
+    }
+
+    // Idempotency check: if this exact match already exists, return the existing result
+    const existingMatch = await db.query.matchedTx.findFirst({
+      where: and(
+        eq(schema.matchedTx.transactionId, transactionId),
+        eq(schema.matchedTx.benefitUsageId, benefitUsageId)
+      ),
+    });
+
+    if (existingMatch) {
+      return NextResponse.json({ creditApplied: existingMatch.creditApplied });
     }
 
     const creditApplied = Math.min(tx.amount, usage.amountRemaining);
@@ -99,7 +122,7 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ creditApplied });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error confirming benefit:", error);
     return NextResponse.json(
       { error: "Failed to confirm benefit" },

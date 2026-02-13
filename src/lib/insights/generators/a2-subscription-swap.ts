@@ -86,7 +86,7 @@ export function generateA2(ctx: GeneratorContext): InsightCandidate[] {
         periodStart: null,
         periodEnd: null,
         dollarAmount: annualAmount,
-        daysRemaining: null,
+        daysRemaining: -1, // ongoing cost sentinel — user is paying monthly
         actionability: "plan_future",
         confidence: "category_match",
       });
@@ -107,7 +107,7 @@ export function generateA2(ctx: GeneratorContext): InsightCandidate[] {
         periodStart: null,
         periodEnd: null,
         dollarAmount: annualAmount,
-        daysRemaining: null,
+        daysRemaining: -1, // ongoing cost sentinel — user is paying monthly
         actionability: "change_recurring",
         confidence: "exact_confirmed",
       });

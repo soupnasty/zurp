@@ -15,6 +15,7 @@ interface TrackTabProps {
   cardSummary: CardSummary | null;
   benefitGroups: ClassifiedBenefitGroup[];
   annualBenefits: ClassifiedBenefitGroup[];
+  biannualBenefits: ClassifiedBenefitGroup[];
   quarterlyBenefits: ClassifiedBenefitGroup[];
   monthlyBenefits: ClassifiedBenefitGroup[];
   pointsSummary: SerializedPointsSummary | null;
@@ -22,6 +23,8 @@ interface TrackTabProps {
   upcomingResets: UpcomingReset[];
   activeCardName: string;
   activeCardFee: number;
+  monthCount: number | null;
+  totalTransactions: number | null;
 }
 
 function fmt(n: number): string {
@@ -33,6 +36,7 @@ export function TrackTab({
   cardSummary,
   benefitGroups,
   annualBenefits,
+  biannualBenefits,
   quarterlyBenefits,
   monthlyBenefits,
   pointsSummary,
@@ -40,6 +44,8 @@ export function TrackTab({
   upcomingResets,
   activeCardName,
   activeCardFee,
+  monthCount,
+  totalTransactions,
 }: TrackTabProps) {
   const pointsValue = cardSummary?.pointsValueConservative ?? 0;
   const benefitsUsed = cardSummary?.creditsUsed ?? 0;
@@ -76,6 +82,27 @@ export function TrackTab({
 
   return (
     <div>
+      {/* Card header */}
+      <div className="mb-5">
+        <span
+          className="text-[10px] font-bold uppercase tracking-[2.5px] text-[var(--text-secondary)]"
+          style={{ fontFamily: "var(--font-mono)" }}
+        >
+          Your card
+        </span>
+        <h1 className="mt-1 text-xl md:text-2xl font-bold text-[var(--text-primary)]">
+          {activeCardName}
+        </h1>
+        <span
+          className="text-[12px] text-[var(--text-dim)]"
+          style={{ fontFamily: "var(--font-mono)" }}
+        >
+          {monthCount && totalTransactions
+            ? `${monthCount} ${monthCount === 1 ? "month" : "months"} of data · ${totalTransactions.toLocaleString()} transactions`
+            : activeCardFee > 0 ? `$${activeCardFee}/yr fee` : "$0 annual fee"}
+        </span>
+      </div>
+
       <SummaryStrip items={summaryItems} />
 
       {/* Points section */}
@@ -92,6 +119,7 @@ export function TrackTab({
       <BenefitsSection
         benefitGroups={benefitGroups}
         annualBenefits={annualBenefits}
+        biannualBenefits={biannualBenefits}
         quarterlyBenefits={quarterlyBenefits}
         monthlyBenefits={monthlyBenefits}
       />

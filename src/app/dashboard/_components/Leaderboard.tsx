@@ -35,9 +35,8 @@ export function Leaderboard({ cards, activeCardType }: LeaderboardProps) {
       <div className="overflow-hidden rounded-2xl border border-[var(--border-subtle)]">
         {/* Header */}
         <div
-          className="grid items-center gap-3 px-4 py-2.5 border-b border-[var(--border-subtle)] bg-[var(--bg-secondary)]"
+          className="leaderboard-row px-3 md:px-4 py-2.5 border-b border-[var(--border-subtle)] bg-[var(--bg-secondary)]"
           style={{
-            gridTemplateColumns: "40px 1fr 200px 80px",
             fontFamily: "var(--font-mono)",
             fontSize: 9,
             fontWeight: 700,
@@ -53,7 +52,7 @@ export function Leaderboard({ cards, activeCardType }: LeaderboardProps) {
         </div>
 
         {visible.map((card, i) => {
-          const rank = sorted.indexOf(card) + 1;
+          const rank = card.rank;
           const isFirst = rank === 1;
           const isUser = card.cardId === activeCardType;
           const isDimmed = rank > 5;
@@ -64,11 +63,10 @@ export function Leaderboard({ cards, activeCardType }: LeaderboardProps) {
           return (
             <div
               key={card.cardId}
-              className={`grid items-center gap-3 px-4 py-3 transition-colors hover:bg-[var(--bg-card-hover)] ${
+              className={`leaderboard-row px-3 md:px-4 py-2.5 md:py-3 transition-colors hover:bg-[var(--bg-card-hover)] ${
                 i < visible.length - 1 ? "border-b border-[var(--border-subtle)]" : ""
               }`}
               style={{
-                gridTemplateColumns: "40px 1fr 200px 80px",
                 background: isFirst
                   ? "rgba(52,211,153,0.02)"
                   : undefined,
@@ -90,7 +88,7 @@ export function Leaderboard({ cards, activeCardType }: LeaderboardProps) {
                 {rank}
               </span>
 
-              {/* Card name */}
+              {/* Card name + mobile mini bar */}
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <span
@@ -118,9 +116,20 @@ export function Leaderboard({ cards, activeCardType }: LeaderboardProps) {
                 >
                   {card.annualFee > 0 ? `$${card.annualFee}/yr` : "$0 fee"}
                 </span>
+                {/* Mobile mini bar */}
+                <div className="mt-1.5 md:hidden">
+                  <StackedBar
+                    points={card.pointsValueConservative}
+                    benefits={benefitsVal}
+                    fees={card.annualFee}
+                    height={6}
+                    radius={3}
+                    dimmed={isDimmed}
+                  />
+                </div>
               </div>
 
-              {/* Stacked bar */}
+              {/* Desktop stacked bar */}
               <div className="hidden md:block">
                 <StackedBar
                   points={card.pointsValueConservative}
@@ -150,14 +159,17 @@ export function Leaderboard({ cards, activeCardType }: LeaderboardProps) {
         })}
       </div>
 
-      {/* Show more toggle */}
-      {hiddenCount > 0 && !expanded && (
+      {/* Show more / show less toggle */}
+      {hiddenCount > 0 && (
         <button
-          onClick={() => setExpanded(true)}
+          onClick={() => setExpanded(!expanded)}
           className="mt-3 flex items-center gap-1.5 text-xs font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
         >
-          <ChevronDown size={14} />
-          Show {hiddenCount} more cards
+          <ChevronDown
+            size={14}
+            className={`transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
+          />
+          {expanded ? "Show less" : `Show ${hiddenCount} more cards`}
         </button>
       )}
 

@@ -1,6 +1,6 @@
 // ── Insights Engine v2 types ──
 
-export type InsightCategory = "A1" | "A2" | "P2" | "B1" | "B2" | "B3" | "C0" | "C1" | "C2" | "P1";
+export type InsightCategory = "A1" | "A2" | "P2" | "B1" | "B2" | "B3" | "B4" | "C0" | "C1" | "C2" | "P1";
 
 export type InsightState = "pending" | "shown" | "expired" | "superseded" | "dismissed";
 

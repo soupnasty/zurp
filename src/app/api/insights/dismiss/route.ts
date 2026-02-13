@@ -55,10 +55,10 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error dismissing insight:", error);
     return NextResponse.json(
-      { error: error?.message || "Failed to dismiss insight" },
+      { error: "Failed to dismiss insight" },
       { status: 500 }
     );
   }

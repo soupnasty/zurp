@@ -29,7 +29,8 @@ export function generateC2(ctx: GeneratorContext): InsightCandidate[] {
   const insights: InsightCandidate[] = [];
   const ratio = totalValue / annualFee;
 
-  for (const { threshold } of MILESTONES) {
+  // Iterate in reverse so we emit the highest reached milestone, not the lowest
+  for (const { threshold } of [...MILESTONES].reverse()) {
     const dedupKey = `c2:${cardType}:${Math.round(threshold * 100)}pct`;
 
     // Skip if already generated

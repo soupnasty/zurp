@@ -13,30 +13,32 @@ interface SummaryStripProps {
 
 export function SummaryStrip({ items }: SummaryStripProps) {
   const cols = items.length;
+  // 3 or fewer items: single row on all viewports. 4+: 2-col on mobile.
+  const mobileCols = cols <= 3 ? cols : 2;
 
   return (
     <div
       className="summary-strip"
       style={{
-        gridTemplateColumns: `repeat(${Math.min(cols, 2)}, 1fr)`,
+        gridTemplateColumns: `repeat(${mobileCols}, 1fr)`,
       }}
     >
       {items.map((item, i) => (
         <div key={i} className="summary-strip-item">
           <span
-            className="text-[11px] font-bold uppercase tracking-[2px] text-[var(--text-secondary)]"
+            className="text-[10px] md:text-[11px] font-bold uppercase tracking-[1.5px] md:tracking-[2px] text-[var(--text-secondary)]"
             style={{ fontFamily: "var(--font-mono)" }}
           >
             {item.label}
           </span>
           <span
-            className="text-xl font-bold"
+            className="text-base md:text-xl font-bold"
             style={{ fontFamily: "var(--font-mono)", color: item.valueColor }}
           >
             {item.value}
           </span>
           {item.sub && (
-            <span className="text-xs text-[var(--text-secondary)]">{item.sub}</span>
+            <span className="truncate text-[11px] md:text-xs text-[var(--text-secondary)]">{item.sub}</span>
           )}
         </div>
       ))}

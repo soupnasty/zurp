@@ -50,6 +50,7 @@ export const accounts = pgTable(
   },
   (table) => [
     primaryKey({ columns: [table.provider, table.providerAccountId] }),
+    index("accounts_user_idx").on(table.userId),
   ]
 );
 
@@ -120,26 +121,32 @@ export const benefits = pgTable("benefits", {
     .$defaultFn(() => new Date()),
 });
 
-export const plaidConnections = pgTable("plaid_connections", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  userId: text("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  plaidItemId: text("plaid_item_id").notNull(),
-  plaidAccessToken: text("plaid_access_token").notNull(), // encrypted
-  institutionName: text("institution_name").notNull(),
-  accountId: text("account_id").notNull(),
-  accountMask: text("account_mask"), // last 4 digits
-  status: text("status").notNull().default("active"), // "active" | "needs_reauth" | "disconnected"
-  lastSyncCursor: text("last_sync_cursor"),
-  lastSyncedAt: timestamp("last_synced_at", { mode: "date" }),
-  syncLockedUntil: timestamp("sync_locked_until", { mode: "date" }), // Prevents concurrent syncs (5-min TTL)
-  createdAt: timestamp("created_at", { mode: "date" })
-    .notNull()
-    .$defaultFn(() => new Date()),
-});
+export const plaidConnections = pgTable(
+  "plaid_connections",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    plaidItemId: text("plaid_item_id").notNull(),
+    plaidAccessToken: text("plaid_access_token").notNull(), // encrypted
+    institutionName: text("institution_name").notNull(),
+    accountId: text("account_id").notNull(),
+    accountMask: text("account_mask"), // last 4 digits
+    status: text("status").notNull().default("active"), // "active" | "needs_reauth" | "disconnected"
+    lastSyncCursor: text("last_sync_cursor"),
+    lastSyncedAt: timestamp("last_synced_at", { mode: "date" }),
+    syncLockedUntil: timestamp("sync_locked_until", { mode: "date" }), // Prevents concurrent syncs (5-min TTL)
+    createdAt: timestamp("created_at", { mode: "date" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => [
+    index("plaid_connections_user_idx").on(table.userId),
+  ]
+);
 
 export const cardProfiles = pgTable(
   "card_profiles",
@@ -241,6 +248,7 @@ export const benefitUsage = pgTable(
       table.benefitId,
       table.periodKey
     ),
+    index("benefit_usage_user_card_idx").on(table.userId, table.cardProfileId),
   ]
 );
 
@@ -272,6 +280,7 @@ export const transactionFlags = pgTable(
       table.transactionId,
       table.benefitId
     ),
+    index("transaction_flags_user_flag_idx").on(table.userId, table.flagType),
   ]
 );
 
@@ -296,6 +305,7 @@ export const matchedTx = pgTable(
   },
   (table) => [
     unique("matched_tx_unique").on(table.transactionId, table.benefitUsageId),
+    index("matched_tx_usage_idx").on(table.benefitUsageId),
   ]
 );
 
@@ -358,18 +368,24 @@ export const insights = pgTable(
   ]
 );
 
-export const insightImpressions = pgTable("insight_impressions", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  insightId: text("insight_id")
-    .notNull()
-    .references(() => insights.id, { onDelete: "cascade" }),
-  surface: text("surface").notNull(), // "benefits_page", "spending_page"
-  shownAt: timestamp("shown_at", { mode: "date" })
-    .notNull()
-    .$defaultFn(() => new Date()),
-});
+export const insightImpressions = pgTable(
+  "insight_impressions",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    insightId: text("insight_id")
+      .notNull()
+      .references(() => insights.id, { onDelete: "cascade" }),
+    surface: text("surface").notNull(), // "benefits_page", "spending_page"
+    shownAt: timestamp("shown_at", { mode: "date" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => [
+    index("insight_impressions_insight_idx").on(table.insightId),
+  ]
+);
 
 export const competitorMap = pgTable(
   "competitor_map",

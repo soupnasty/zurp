@@ -45,18 +45,12 @@ export function CompareTab({
 
   const summaryItems = [
     {
-      label: "Your card",
-      value: activeCardName,
-      valueColor: "var(--text-primary)",
-      sub: activeCardFee > 0 ? `$${activeCardFee}/yr fee` : "$0 fee",
-    },
-    {
-      label: "Your rank",
+      label: "Rank",
       value: `#${userRank} of ${comparison.totalCards}`,
       valueColor: "var(--color-accent-cyan)",
     },
     {
-      label: "Your net value",
+      label: "Net",
       value: fmt(userNet),
       valueColor: userNet >= 0 ? "var(--color-success)" : "var(--color-danger)",
     },
@@ -64,12 +58,31 @@ export function CompareTab({
       label: "Gap to #1",
       value: gap > 0 ? fmt(gap) : "$0",
       valueColor: gap > 0 ? "var(--color-success)" : "var(--text-secondary)",
-      sub: gap > 0 ? bestCard?.cardName : "You're #1",
+      sub: gap === 0 ? "You're #1" : undefined,
     },
   ];
 
   return (
     <div>
+      {/* Card header */}
+      <div className="mb-5">
+        <span
+          className="text-[10px] font-bold uppercase tracking-[2.5px] text-[var(--text-secondary)]"
+          style={{ fontFamily: "var(--font-mono)" }}
+        >
+          Your card
+        </span>
+        <h1 className="mt-1 text-xl md:text-2xl font-bold text-[var(--text-primary)]">
+          {activeCardName}
+        </h1>
+        <span
+          className="text-[12px] text-[var(--text-dim)]"
+          style={{ fontFamily: "var(--font-mono)" }}
+        >
+          {comparison.monthCount} {comparison.monthCount === 1 ? "month" : "months"} of data · {comparison.totalTransactions.toLocaleString()} transactions
+        </span>
+      </div>
+
       <SummaryStrip items={summaryItems} />
       <Leaderboard cards={comparison.cards} activeCardType={activeCardType} />
       <HeadToHead

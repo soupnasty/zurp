@@ -6,6 +6,7 @@ import type { ClassifiedBenefitGroup } from "./types";
 interface BenefitsSectionProps {
   benefitGroups: ClassifiedBenefitGroup[];
   annualBenefits: ClassifiedBenefitGroup[];
+  biannualBenefits: ClassifiedBenefitGroup[];
   quarterlyBenefits: ClassifiedBenefitGroup[];
   monthlyBenefits: ClassifiedBenefitGroup[];
 }
@@ -31,7 +32,7 @@ function CadenceGroup({ label, benefits }: CadenceGroupProps) {
 
   return (
     <div className="mt-4 first:mt-0">
-      <div className="flex items-center gap-2 px-4 py-2.5 border-b border-[var(--border-subtle)]">
+      <div className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 border-b border-[var(--border-subtle)]">
         <span
           className="text-[10px] font-bold uppercase tracking-[2px] text-[var(--text-secondary)]"
           style={{ fontFamily: "var(--font-mono)" }}
@@ -55,6 +56,7 @@ function CadenceGroup({ label, benefits }: CadenceGroupProps) {
 export function BenefitsSection({
   benefitGroups,
   annualBenefits,
+  biannualBenefits,
   quarterlyBenefits,
   monthlyBenefits,
 }: BenefitsSectionProps) {
@@ -87,15 +89,15 @@ export function BenefitsSection({
         />
 
         {/* Header summary */}
-        <div className="p-6 border-b border-[var(--border-subtle)]">
-          <div className="flex items-baseline gap-3 mb-3">
+        <div className="p-4 md:p-6 border-b border-[var(--border-subtle)]">
+          <div className="flex items-baseline gap-2 md:gap-3 mb-3">
             <span
-              className="text-[28px] font-bold text-[var(--color-accent-purple)]"
+              className="text-[22px] md:text-[28px] font-bold text-[var(--color-accent-purple)]"
               style={{ fontFamily: "var(--font-mono)" }}
             >
               ${Math.round(totalUsed).toLocaleString()}
             </span>
-            <span className="text-sm text-[var(--text-secondary)]">
+            <span className="text-xs md:text-sm text-[var(--text-secondary)]">
               of ${Math.round(totalCredit).toLocaleString()} captured
             </span>
           </div>
@@ -139,6 +141,7 @@ export function BenefitsSection({
 
         {/* Cadence groups */}
         <CadenceGroup label="Annual" benefits={annualBenefits} />
+        <CadenceGroup label="Biannual" benefits={biannualBenefits} />
         <CadenceGroup label="Quarterly" benefits={quarterlyBenefits} />
         <CadenceGroup label="Monthly" benefits={monthlyBenefits} />
       </div>

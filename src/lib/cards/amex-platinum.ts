@@ -181,7 +181,7 @@ const globalEntryDetails: BenefitDetails = {
   description:
     "Up to $120 statement credit every 4 years for Global Entry or TSA PreCheck application fees. Applies to the application fee only.",
   howToUse: [
-    "Apply for Global Entry ($120) or TSA PreCheck ($85) through the official government sites",
+    "Apply for Global Entry ($120) or TSA PreCheck ($78–$85) through the official government sites",
     "Pay the application fee with your Platinum Card",
     "Statement credit posts automatically after the charge",
   ],

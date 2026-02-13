@@ -1,5 +1,5 @@
 {
-  "id": "afbf8942-af56-47a4-95a2-5e57abfb8ecb",
+  "id": "19a33ea7-eed9-463d-a60a-cb6423acc74e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -75,7 +75,23 @@
           "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "accounts_user_idx": {
+          "name": "accounts_user_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "accounts_user_id_users_id_fk": {
           "name": "accounts_user_id_users_id_fk",
@@ -309,7 +325,29 @@
           "notNull": true
         }
       },
-      "indexes": {},
+      "indexes": {
+        "benefit_usage_user_card_idx": {
+          "name": "benefit_usage_user_card_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "card_profile_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "benefit_usage_user_id_users_id_fk": {
           "name": "benefit_usage_user_id_users_id_fk",
@@ -666,6 +704,240 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.card_simulations": {
+      "name": "card_simulations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "card_profile_id": {
+          "name": "card_profile_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "simulated_card_id": {
+          "name": "simulated_card_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "portal_mode": {
+          "name": "portal_mode",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "annual_fee": {
+          "name": "annual_fee",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total_points": {
+          "name": "total_points",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "bonus_points": {
+          "name": "bonus_points",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "points_value_conservative": {
+          "name": "points_value_conservative",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "points_value_upside": {
+          "name": "points_value_upside",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "benefits_simulated": {
+          "name": "benefits_simulated",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "benefits_value": {
+          "name": "benefits_value",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "parallel_value": {
+          "name": "parallel_value",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "net_floor": {
+          "name": "net_floor",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "net_ceiling": {
+          "name": "net_ceiling",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "net_actual": {
+          "name": "net_actual",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "category_breakdown": {
+          "name": "category_breakdown",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        },
+        "analysis_period_start": {
+          "name": "analysis_period_start",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "analysis_period_end": {
+          "name": "analysis_period_end",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "month_count": {
+          "name": "month_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "total_spend": {
+          "name": "total_spend",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "total_transactions": {
+          "name": "total_transactions",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "card_simulations_user_idx": {
+          "name": "card_simulations_user_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "card_simulations_card_profile_idx": {
+          "name": "card_simulations_card_profile_idx",
+          "columns": [
+            {
+              "expression": "card_profile_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "card_simulations_user_id_users_id_fk": {
+          "name": "card_simulations_user_id_users_id_fk",
+          "tableFrom": "card_simulations",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "card_simulations_card_profile_id_card_profiles_id_fk": {
+          "name": "card_simulations_card_profile_id_card_profiles_id_fk",
+          "tableFrom": "card_simulations",
+          "tableTo": "card_profiles",
+          "columnsFrom": [
+            "card_profile_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "card_simulations_unique": {
+          "name": "card_simulations_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "card_profile_id",
+            "simulated_card_id",
+            "portal_mode"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.cards": {
       "name": "cards",
       "schema": "",
@@ -861,7 +1133,23 @@
           "notNull": true
         }
       },
-      "indexes": {},
+      "indexes": {
+        "insight_impressions_insight_idx": {
+          "name": "insight_impressions_insight_idx",
+          "columns": [
+            {
+              "expression": "insight_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "insight_impressions_insight_id_insights_id_fk": {
           "name": "insight_impressions_insight_id_insights_id_fk",
@@ -1197,7 +1485,23 @@
           "notNull": true
         }
       },
-      "indexes": {},
+      "indexes": {
+        "matched_tx_usage_idx": {
+          "name": "matched_tx_usage_idx",
+          "columns": [
+            {
+              "expression": "benefit_usage_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "matched_tx_transaction_id_transactions_id_fk": {
           "name": "matched_tx_transaction_id_transactions_id_fk",
@@ -1306,6 +1610,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "sync_locked_until": {
+          "name": "sync_locked_until",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -1313,7 +1623,23 @@
           "notNull": true
         }
       },
-      "indexes": {},
+      "indexes": {
+        "plaid_connections_user_idx": {
+          "name": "plaid_connections_user_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "plaid_connections_user_id_users_id_fk": {
           "name": "plaid_connections_user_id_users_id_fk",
@@ -1603,7 +1929,29 @@
           "notNull": true
         }
       },
-      "indexes": {},
+      "indexes": {
+        "transaction_flags_user_flag_idx": {
+          "name": "transaction_flags_user_flag_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "flag_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "transaction_flags_user_id_users_id_fk": {
           "name": "transaction_flags_user_id_users_id_fk",

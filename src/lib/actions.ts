@@ -7,6 +7,7 @@ import { requireAuth } from "@/lib/auth-helpers";
 import { revalidatePath } from "next/cache";
 import { reprocessAllTransactions } from "@/lib/engine/orchestrator";
 import { getCardDefinition } from "@/lib/cards";
+import { isValidCardType } from "@/lib/validation";
 
 export async function removeCardProfile(cardProfileId: string) {
   const user = await requireAuth();
@@ -41,6 +42,11 @@ export async function updateCardType(cardProfileId: string, newCardType: string)
   }
 
   if (cardProfile.cardType === newCardType) return;
+
+  // Validate card type against registry before proceeding
+  if (!isValidCardType(newCardType)) {
+    throw new Error("Invalid card type");
+  }
 
   // Ensure the new card and its benefits exist in the DB (FK target for benefit_usage)
   await ensureCardSeeded(newCardType);

@@ -19,7 +19,8 @@ export function computeDollarImpactScore(annualValue: number): number {
 }
 
 export function computeUrgencyScore(daysRemaining: number | null): number {
-  if (daysRemaining === null) return 20; // no expiration (ongoing)
+  if (daysRemaining === null) return 20; // no expiration, no ongoing cost
+  if (daysRemaining === -1) return 45; // ongoing cost sentinel (e.g. subscription you're paying for monthly)
   if (daysRemaining <= 0) return 0; // expired — don't show
   if (daysRemaining <= 7) return 100;
   if (daysRemaining <= 30) return 80;
@@ -49,10 +50,11 @@ export function computeNoveltyScore(
     ? (now - history.lastShownAt.getTime()) / (1000 * 60 * 60 * 24)
     : 999;
 
-  if (daysSinceLast < 1) return 0; // shown last session
-  if (history.showCount >= 2 && daysSinceLast < 60) return 20;
-  if (daysSinceLast >= 30) return 60;
-  return 20;
+  if (daysSinceLast < 1) return 0; // shown this session
+  if (history.showCount >= 2 && daysSinceLast < 60) return 20; // repeat viewer
+  if (daysSinceLast >= 30) return 60; // stale enough to resurface
+  if (daysSinceLast >= 7) return 40; // shown once, 7-30 days ago
+  return 20; // shown once, 1-7 days ago
 }
 
 const CONFIDENCE_SCORES: Record<ConfidenceTier, number> = {
@@ -94,7 +96,9 @@ export function computeTotalScore(scores: {
 
 /**
  * Floor override: high-stakes insights always shown regardless of total score.
- * Only applies to Group A and Group B.
+ * Only applies to Group A and Group B (not Group C celebrations).
+ * Note: P2 benefits from this via insightGroup() mapping P2→"A".
+ * P1 intentionally doesn't — it maps to Group C.
  */
 export function isFloorOverride(
   category: InsightCategory,

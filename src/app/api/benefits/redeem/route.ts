@@ -7,6 +7,10 @@ import { getCardDefinition } from "@/lib/cards";
 import { getCurrentCycleBounds } from "@/lib/engine/cycle-utils";
 import { generateAndPersistInsights } from "@/lib/insights/orchestrator";
 import type { BenefitCycle } from "@/lib/types";
+import { isValidUUID, safeJsonParse } from "@/lib/validation";
+import { createRateLimiter } from "@/lib/rate-limiter";
+
+const redeemLimiter = createRateLimiter(60_000, 30);
 
 export async function POST(request: Request) {
   try {
@@ -15,11 +19,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { allowed, retryAfterMs } = redeemLimiter(session.user.id);
+    if (!allowed) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429, headers: { "Retry-After": String(Math.ceil((retryAfterMs || 60000) / 1000)) } }
+      );
+    }
+
     const { benefitId } = await request.json();
 
-    if (!benefitId) {
+    if (!benefitId || typeof benefitId !== "string") {
       return NextResponse.json(
-        { error: "benefitId is required" },
+        { error: "Valid benefitId is required" },
         { status: 400 }
       );
     }
@@ -135,10 +147,10 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error redeeming benefit:", error);
     return NextResponse.json(
-      { error: error?.message || "Failed to redeem benefit" },
+      { error: "Failed to redeem benefit" },
       { status: 500 }
     );
   }
@@ -247,8 +259,12 @@ export async function DELETE(request: Request) {
         );
       }
 
-      // Restore original values from overrideNote
-      const original = JSON.parse(usage.overrideNote || "{}");
+      // Restore original values from overrideNote (safely parsed)
+      const original = safeJsonParse(usage.overrideNote, {
+        amountUsed: 0,
+        amountRemaining: benefitDef.creditAmount,
+        isFullyUsed: false,
+      });
 
       await db
         .update(schema.benefitUsage)
@@ -282,10 +298,10 @@ export async function DELETE(request: Request) {
     }
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error undoing redemption:", error);
     return NextResponse.json(
-      { error: error?.message || "Failed to undo redemption" },
+      { error: "Failed to undo redemption" },
       { status: 500 }
     );
   }

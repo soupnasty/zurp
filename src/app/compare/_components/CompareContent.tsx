@@ -86,7 +86,7 @@ export function CompareContent({
   }
 
   const disclaimer = (
-    <p className="mt-4 text-[12px] text-[var(--text-secondary)]/60 leading-relaxed">
+    <p className="hidden md:block mt-4 text-[12px] text-[var(--text-secondary)]/60 leading-relaxed">
       Points valued at conservative rates (Chase UR: 1.25¢, Amex MR: 1.0¢, Citi TP: 1.0¢).
       Transfer partner redemptions can yield higher value.
       {" "}Your card shows benefits actually captured; other cards show benefits simulated from your spending history.

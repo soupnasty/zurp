@@ -9,8 +9,53 @@ import {
   XCircle,
   ChevronDown,
   ExternalLink,
+  Plane,
+  ConciergeBell,
+  UtensilsCrossed,
+  Ticket,
+  Bike,
+  Car,
+  Dumbbell,
+  ShieldCheck,
+  Shield,
+  Tv,
+  Music,
+  Hotel,
+  ShoppingBag,
+  ShoppingCart,
+  Coffee,
+  Gift,
+  Globe,
+  Zap,
+  Activity,
+  CreditCard,
+  type LucideIcon,
 } from "lucide-react";
 import type { ClassifiedBenefitGroup } from "./types";
+
+// Map benefit icon string names → Lucide components
+const ICON_MAP: Record<string, LucideIcon> = {
+  Plane,
+  ConciergeBell,
+  UtensilsCrossed,
+  Ticket,
+  Bike,
+  Car,
+  Dumbbell,
+  ShieldCheck,
+  Shield,
+  Tv,
+  Music,
+  Hotel,
+  ShoppingBag,
+  ShoppingCart,
+  Coffee,
+  Gift,
+  Globe,
+  Zap,
+  Activity,
+  CreditCard,
+};
 
 interface BenefitRowProps {
   group: ClassifiedBenefitGroup;
@@ -109,10 +154,72 @@ function getMonthOptions(): { value: string; label: string }[] {
   return options;
 }
 
+function BenefitIcon({
+  group,
+  config,
+  size,
+  iconSize,
+  badgeSize,
+  badgeIconSize,
+}: {
+  group: ClassifiedBenefitGroup;
+  config: (typeof STATUS_CONFIG)[keyof typeof STATUS_CONFIG];
+  size: number;
+  iconSize: number;
+  badgeSize: number;
+  badgeIconSize: number;
+}) {
+  const StatusIcon = config.icon;
+  const FallbackIcon = ICON_MAP[group.icon] ?? CreditCard;
+
+  return (
+    <div className="relative shrink-0" style={{ width: size, height: size }}>
+      <div
+        className="flex items-center justify-center rounded-[10px]"
+        style={{
+          width: size,
+          height: size,
+          background: "rgba(255,255,255,0.05)",
+          border: "1px solid rgba(255,255,255,0.08)",
+        }}
+      >
+        {group.brandSlug ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={`https://cdn.simpleicons.org/${group.brandSlug}/f0f2f5`}
+            alt=""
+            width={iconSize}
+            height={iconSize}
+            style={{ opacity: 0.85 }}
+          />
+        ) : (
+          <FallbackIcon
+            size={iconSize}
+            strokeWidth={1.75}
+            style={{ color: "var(--text-primary)", opacity: 0.85 }}
+          />
+        )}
+      </div>
+      <div
+        className="absolute flex items-center justify-center rounded-full"
+        style={{
+          width: badgeSize,
+          height: badgeSize,
+          bottom: -2,
+          right: -2,
+          background: config.iconBg,
+          border: `1px solid ${config.iconBorder}`,
+        }}
+      >
+        <StatusIcon size={badgeIconSize} strokeWidth={2.5} style={{ color: config.iconColor }} />
+      </div>
+    </div>
+  );
+}
+
 export function BenefitRow({ group }: BenefitRowProps) {
   const [expanded, setExpanded] = useState(false);
   const config = STATUS_CONFIG[group.status];
-  const Icon = config.icon;
   const pct =
     group.totalCredit > 0
       ? Math.min(100, (group.totalUsed / group.totalCredit) * 100)
@@ -132,28 +239,71 @@ export function BenefitRow({ group }: BenefitRowProps) {
 
   return (
     <div className="border-b border-[var(--border-subtle)] last:border-0">
-      {/* Summary row — clickable */}
+      {/* Mobile summary row */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="grid w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-[var(--bg-card-hover)]"
-        style={{ gridTemplateColumns: "40px 1fr 160px 110px 20px" }}
+        className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left transition-colors hover:bg-[var(--bg-card-hover)] md:hidden"
       >
-        {/* Status icon */}
-        <div
-          className="flex items-center justify-center rounded-[10px]"
-          style={{
-            width: 36,
-            height: 36,
-            background: config.iconBg,
-            border: `1px solid ${config.iconBorder}`,
-          }}
-        >
-          <Icon
-            size={18}
-            strokeWidth={1.75}
-            style={{ color: config.iconColor }}
-          />
+        <BenefitIcon group={group} config={config} size={32} iconSize={16} badgeSize={12} badgeIconSize={7} />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-2">
+            <span className="truncate text-[13px] font-semibold text-[var(--text-primary)]">
+              {group.name}
+            </span>
+            <div className="shrink-0 flex items-center gap-1.5">
+              <span
+                className="text-[13px] font-bold"
+                style={{ fontFamily: "var(--font-mono)", color: config.amountColor }}
+              >
+                ${Math.round(group.totalUsed)}
+              </span>
+              <span
+                className="text-[11px] text-[var(--text-secondary)]"
+                style={{ fontFamily: "var(--font-mono)" }}
+              >
+                / ${Math.round(group.totalCredit)}
+              </span>
+              <ChevronDown
+                size={14}
+                strokeWidth={2}
+                className={`text-[var(--text-secondary)] transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
+              />
+            </div>
+          </div>
+          {/* Mobile progress bar */}
+          <div className="mt-1.5 flex items-center gap-2">
+            <div
+              className="flex-1 overflow-hidden rounded-sm"
+              style={{ height: 4, background: "rgba(255,255,255,0.04)" }}
+            >
+              <div
+                className="h-full rounded-sm"
+                style={{ width: `${pct}%`, background: config.barColor }}
+              />
+            </div>
+            <span className="shrink-0 text-[10px] text-[var(--text-secondary)]">
+              {group.status === "expiring" ? (
+                <span style={{ color: "var(--color-accent-amber)" }}>
+                  {group.daysRemaining}d left
+                </span>
+              ) : group.status === "captured" ? (
+                `Resets ${formatResetDate(group.cycleEnd)}`
+              ) : group.status === "partial" ? (
+                `$${Math.round(group.totalRemaining)} left`
+              ) : (
+                "Unused"
+              )}
+            </span>
+          </div>
         </div>
+      </button>
+
+      {/* Desktop summary row */}
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="benefit-row-desktop hidden w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-[var(--bg-card-hover)] md:grid"
+      >
+        <BenefitIcon group={group} config={config} size={36} iconSize={18} badgeSize={14} badgeIconSize={8} />
 
         {/* Name + detail */}
         <div className="min-w-0">
@@ -164,10 +314,7 @@ export function BenefitRow({ group }: BenefitRowProps) {
             {group.status === "expiring" ? (
               <>
                 ${Math.round(group.totalRemaining)} remaining &middot;{" "}
-                <span
-                  className="font-bold"
-                  style={{ color: "var(--color-accent-amber)" }}
-                >
+                <span className="font-bold" style={{ color: "var(--color-accent-amber)" }}>
                   {group.daysRemaining} days left
                 </span>
               </>
@@ -177,8 +324,8 @@ export function BenefitRow({ group }: BenefitRowProps) {
           </div>
         </div>
 
-        {/* Progress bar (hidden on mobile) */}
-        <div className="hidden md:block">
+        {/* Progress bar */}
+        <div>
           <div
             className="overflow-hidden rounded-sm"
             style={{ height: 6, background: "rgba(255,255,255,0.04)" }}
@@ -194,10 +341,7 @@ export function BenefitRow({ group }: BenefitRowProps) {
         <div className="whitespace-nowrap text-right">
           <span
             className="text-sm font-bold"
-            style={{
-              fontFamily: "var(--font-mono)",
-              color: config.amountColor,
-            }}
+            style={{ fontFamily: "var(--font-mono)", color: config.amountColor }}
           >
             ${Math.round(group.totalUsed)}
           </span>
@@ -268,8 +412,8 @@ function BenefitDetail({ group, config, pct }: BenefitDetailProps) {
 
   return (
     <div
-      className="border-t border-[var(--border-subtle)] px-4 pb-5 pt-4"
-      style={{ marginLeft: 52 }}
+      className="border-t border-[var(--border-subtle)] px-3 pb-4 pt-3 md:px-4 md:pb-5 md:pt-4"
+      style={{ marginLeft: 0 }}
     >
       {/* Status + cycle badges */}
       <div className="mb-4 flex flex-wrap items-center gap-2">

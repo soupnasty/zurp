@@ -33,8 +33,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ received: true, synced: true });
     }
 
-    // Handle item errors (needs reauth, disconnected, etc.)
+    // Handle item webhooks
     if (webhook_type === "ITEM") {
+      // New accounts available — trigger sync to pick up new accounts
+      if (webhook_code === "NEW_ACCOUNTS_AVAILABLE") {
+        console.log(`New accounts available for item ${item_id}, syncing...`);
+        await triggerSync(connection.id);
+        return NextResponse.json({ received: true, synced: true });
+      }
+
+      // Item errors (needs reauth, disconnected, etc.)
       if (webhook_code === "ERROR") {
         const errorCode = error?.error_code;
 

@@ -477,6 +477,83 @@ summary {
   animation: mock-net-reveal 0.5s ease var(--delay, 0s) forwards;
 }
 
+/* ── Dashboard zoom (desktop: 110% scale) ── */
+
+.app-zoom {
+  min-height: 100dvh;
+}
+.app-zoom-sidebar {
+  height: 100dvh;
+}
+@media (min-width: 768px) {
+  .app-zoom {
+    zoom: 1.1;
+    min-height: calc(100dvh / 1.1);
+  }
+  .app-zoom-sidebar {
+    height: calc(100dvh / 1.1);
+  }
+}
+
+/* ── Leaderboard row grid (responsive) ── */
+
+.leaderboard-row {
+  display: grid;
+  align-items: center;
+  gap: 8px;
+  grid-template-columns: 28px 1fr 70px;
+}
+@media (min-width: 768px) {
+  .leaderboard-row {
+    gap: 12px;
+    grid-template-columns: 40px 1fr 200px 80px;
+  }
+}
+
+/* ── Head-to-head row grid (responsive) ── */
+
+.h2h-row {
+  display: grid;
+  align-items: center;
+  gap: 8px;
+  grid-template-columns: 1fr 50px 1fr;
+}
+@media (min-width: 768px) {
+  .h2h-row {
+    gap: 8px;
+    grid-template-columns: 1fr 100px 1fr;
+  }
+}
+
+/* ── Points section row grid (desktop only) ── */
+
+@media (min-width: 768px) {
+  .points-row-desktop {
+    display: grid;
+    align-items: center;
+    gap: 12px;
+    grid-template-columns: 10px 1fr 50px 70px 70px;
+  }
+  .points-subrow-desktop {
+    display: grid;
+    align-items: center;
+    gap: 12px;
+    grid-template-columns: 10px 1fr 50px 70px 70px;
+    padding-left: 24px;
+  }
+}
+
+/* ── Benefit row grid (desktop only) ── */
+
+@media (min-width: 768px) {
+  .benefit-row-desktop {
+    display: grid;
+    align-items: center;
+    gap: 12px;
+    grid-template-columns: 40px 1fr 160px 110px 20px;
+  }
+}
+
 /* ── Compare card row grid ── */
 
 .compare-row-grid {
@@ -517,8 +594,14 @@ summary {
 }
 .summary-strip-item {
   background: var(--bg-secondary);
-  padding: 20px 24px;
+  padding: 12px 12px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
+}
+@media (min-width: 768px) {
+  .summary-strip-item {
+    padding: 20px 24px;
+    gap: 4px;
+  }
 }
