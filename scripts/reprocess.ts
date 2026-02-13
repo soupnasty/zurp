@@ -114,15 +114,9 @@ async function main() {
       where: eq(schema.benefitUsage.userId, cp.userId),
     });
 
-    const usageMap = new Map<string, { amountUsed: number; creditAmount: number }>();
+    const usageMap = new Map<string, number>();
     for (const usage of freshUsage) {
-      const benefit = cardDef.benefits.find((b) => b.id === usage.benefitId);
-      if (benefit) {
-        const bounds = getCurrentCycleBounds(benefit.cycle as any, now, cp.anniversaryDate);
-        if (usage.periodKey === bounds.periodKey) {
-          usageMap.set(benefit.id, { amountUsed: usage.amountUsed, creditAmount: benefit.creditAmount });
-        }
-      }
+      usageMap.set(`${usage.benefitId}:${usage.periodKey}`, usage.amountUsed);
     }
 
     // Run matcher
