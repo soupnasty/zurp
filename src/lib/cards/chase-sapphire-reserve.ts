@@ -138,13 +138,27 @@ export const chaseSapphireReserve: CardDefinition = {
       name: "Travel Credit", icon: "Plane",
       category: "travel", type: "credit", creditAmount: 300, cycle: "annual_anniversary",
       merchantPatterns: [
-        "airline", "hotel", "airbnb", "vrbo", "expedia", "booking.com",
-        "hotels.com", "marriott", "hilton", "hyatt", "ihg", "united",
-        "delta", "american airlines", "southwest", "jetblue", "alaska air",
-        "spirit", "frontier", "uber", "lyft", "amtrak", "enterprise",
-        "hertz", "avis", "national car", "turo", "cruise", "carnival",
-        "royal caribbean", "parking", "toll", "ezpass", "e-zpass",
-        "e z pass", "pmusa", "dulles",
+        // Airlines
+        "airline", "united", "delta", "american airlines", "southwest",
+        "jetblue", "alaska air", "spirit", "frontier",
+        // Hotels
+        "hotel", "marriott", "hilton", "hyatt", "ihg", "best western",
+        "wyndham", "choice hotels", "la quinta", "four seasons",
+        "ritz-carlton", "fairmont", "radisson", "kimpton",
+        // Vacation rentals
+        "airbnb", "vrbo",
+        // OTAs
+        "expedia", "booking.com", "hotels.com",
+        // Rental cars
+        "enterprise", "hertz", "avis", "national car", "turo", "zipcar",
+        // Rideshare & transit
+        "uber", "lyft", "amtrak", "ferry", "transit", "metro",
+        // Cruises
+        "cruise", "carnival", "royal caribbean",
+        // Parking & tolls
+        "parking", "toll", "ezpass", "e-zpass", "e z pass", "pmusa", "dulles",
+        // Campgrounds
+        "campground", "koa",
       ],
       plaidCategories: ["TRAVEL", "TRANSPORTATION"],
       autoMatchable: true, requiresActivation: false, priority: 30,
@@ -334,7 +348,7 @@ export const chaseSapphireReserve: CardDefinition = {
       id: "csr_global_entry",
       name: "Global Entry / TSA PreCheck", icon: "ShieldCheck",
       category: "travel", type: "credit", creditAmount: 120, cycle: "quadrennial",
-      merchantPatterns: ["global entry", "tsa", "goes"],
+      merchantPatterns: ["global entry", "tsa", "goes", "nexus"],
       autoMatchable: true, requiresActivation: false, priority: 40,
       description: "Up to $120 credit for Global Entry or TSA PreCheck application fee every 4 years.",
       details: {

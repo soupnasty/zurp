@@ -70,7 +70,7 @@ export const citiStrataElite: CardDefinition = {
   id: CARD_ID,
   name: "Citi Strata Elite",
   issuer: "citi",
-  network: "visa",
+  network: "mastercard",
   annualFee: 595,
   feeDescriptor: "CITI CARD ANNUAL FEE",
   imageUrl: null,

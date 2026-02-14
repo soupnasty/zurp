@@ -14,7 +14,8 @@ const ISSUER_ALIASES: Record<string, string[]> = {
   wells_fargo: ["wells fargo", "wellsfargo"],
   us_bank: ["us bank", "u.s. bank", "usbank"],
   capital_one: ["capital one", "capitalone"],
-  goldman_sachs: ["goldman sachs", "goldman", "apple card", "gs bank"],
+  // Apple Card transitioned from Goldman Sachs to Chase in Jan 2026; detect both
+  chase: ["apple card", "goldman sachs", "goldman", "gs bank"],
 };
 
 /**

@@ -55,7 +55,7 @@ export const deltaPlatinum: CardDefinition = {
   isActive: true,
   benefits: [
     // Non-tracked benefits (certificates, tracked in perk matrix only):
-    // - Companion Certificate (annual, after $25K spend)
+    // - Companion Certificate (annual, no spend requirement)
     // Note: Requires $10,000 in annual card spend to activate. Spending threshold not enforced in matcher.
     b({
       id: "delta_flight_credit",

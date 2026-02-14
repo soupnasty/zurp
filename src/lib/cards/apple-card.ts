@@ -3,7 +3,7 @@ import type { CardDefinition } from "../types";
 export const appleCard: CardDefinition = {
   id: "apple_card",
   name: "Apple Card",
-  issuer: "goldman_sachs",
+  issuer: "chase", // Transitioned from Goldman Sachs to JPMorgan Chase (Jan 2026)
   network: "mastercard",
   annualFee: 0,
   feeDescriptor: "no annual fee",

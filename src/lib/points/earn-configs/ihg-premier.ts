@@ -17,6 +17,7 @@ export const ihgPremierEarnConfig: EarnConfig = {
           "intercontinental",
           "holiday inn",
           "holiday inn express",
+          "holiday inn resort",
           "holiday inn club vacations",
           "crowne plaza",
           "kimpton",
@@ -56,7 +57,7 @@ export const ihgPremierEarnConfig: EarnConfig = {
   caps: [],
   annualFee: 99,
   valuation: {
-    conservativeCpp: 0.5,
+    conservativeCpp: 0.6,
     upsideCpp: 0.8,
     upsideLabel: "Aspirational IHG redemptions (InterContinental, Kimpton)",
   },

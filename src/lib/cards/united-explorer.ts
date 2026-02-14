@@ -31,7 +31,7 @@ const rideshareCreditDetails: BenefitDetails = {
     "Use your United Explorer card to pay for rideshare trips to or from the airport",
     "Eligible trips are automatically detected based on pickup/dropoff location",
     "Statement credits post automatically after qualifying rideshare charges",
-    "Up to $60 per cardmember anniversary year",
+    "Up to $60 per calendar year",
   ],
   links: [
     { label: "United Airlines", url: "https://www.united.com" },
@@ -49,10 +49,28 @@ const instacartCreditDetails: BenefitDetails = {
     "Add your United Explorer card as a payment method in the Instacart app",
     "Make eligible grocery delivery purchases through Instacart",
     "Statement credits post automatically after qualifying Instacart charges",
-    "Up to $120 per cardmember year",
+    "Up to $120 per calendar year",
   ],
   links: [
     { label: "Instacart", url: "https://www.instacart.com" },
+    {
+      label: "Learn More",
+      url: "https://www.chase.com/personal/credit-cards/united-explorer",
+    },
+  ],
+};
+
+const unitedHotelsCreditDetails: BenefitDetails = {
+  description:
+    "$100 annual United Hotels credit: earn up to $50 in statement credits per qualifying stay at United Hotels, for up to 2 stays per year. Book through United Hotels on united.com.",
+  howToUse: [
+    "Go to united.com and search for United Hotels",
+    "Book a qualifying stay using your United Explorer card",
+    "Statement credit of up to $50 posts automatically per stay",
+    "Up to 2 qualifying stays per calendar year ($100 total)",
+  ],
+  links: [
+    { label: "United Hotels", url: "https://www.united.com/hotels" },
     {
       label: "Learn More",
       url: "https://www.chase.com/personal/credit-cards/united-explorer",
@@ -64,7 +82,7 @@ const instacartCreditDetails: BenefitDetails = {
 
 export const unitedExplorer: CardDefinition = {
   id: CARD_ID,
-  name: "United\u2120 Explorer Card",
+  name: "United\u2122 Explorer Card",
   issuer: "chase",
   network: "visa",
   annualFee: 150,
@@ -96,14 +114,14 @@ export const unitedExplorer: CardDefinition = {
       icon: "Car",
       category: "transport",
       type: "credit",
-      creditAmount: 100,
-      cycle: "annual_anniversary",
+      creditAmount: 60,
+      cycle: "annual_calendar",
       merchantPatterns: ["uber", "lyft"],
       plaidCategories: ["TRANSPORTATION_RIDESHARE"],
       autoMatchable: true,
       requiresActivation: false,
       priority: 20,
-      description: "Up to $100/year for rideshare trips to/from the airport.",
+      description: "Up to $60/year for rideshare trips to/from the airport.",
       notes:
         "Eligible trips are auto-detected based on airport pickup/dropoff location.",
       details: rideshareCreditDetails,
@@ -114,16 +132,33 @@ export const unitedExplorer: CardDefinition = {
       icon: "ShoppingCart",
       category: "shopping",
       type: "credit",
-      creditAmount: 180,
-      cycle: "annual_anniversary",
+      creditAmount: 120,
+      cycle: "annual_calendar",
       merchantPatterns: ["instacart"],
       autoMatchable: true,
       requiresActivation: false,
       priority: 20,
-      description: "Up to $180/year for Instacart grocery delivery purchases.",
+      description: "Up to $120/year for Instacart grocery delivery purchases.",
       notes: "Credits distributed periodically throughout the year.",
       details: instacartCreditDetails,
       brandSlug: "instacart",
+    }),
+    // ── United Hotels Credit ($100/year) ──
+    b({
+      id: "united_hotels_credit",
+      name: "United Hotels Credit",
+      icon: "Hotel",
+      category: "travel",
+      type: "credit",
+      creditAmount: 100,
+      cycle: "annual_calendar",
+      merchantPatterns: ["united hotels"],
+      autoMatchable: false,
+      requiresActivation: false,
+      priority: 15,
+      description: "Up to $100/year for United Hotels bookings ($50 per stay, up to 2 stays).",
+      notes: "Book through United Hotels on united.com. $50 per qualifying stay.",
+      details: unitedHotelsCreditDetails,
     }),
   ],
 };

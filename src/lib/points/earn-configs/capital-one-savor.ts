@@ -43,7 +43,7 @@ export const capitalOneSavorEarnConfig: EarnConfig = {
     },
   ],
   caps: [],
-  annualFee: 39,
+  annualFee: 0, // SavorOne has $0 fee (original Savor was $95)
   valuation: {
     conservativeCpp: 1.0,
     upsideCpp: 1.0,

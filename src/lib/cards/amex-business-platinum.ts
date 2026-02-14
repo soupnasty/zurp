@@ -119,6 +119,44 @@ const indeedCreditDetails: BenefitDetails = {
   ],
 };
 
+const airlineFeeCreditDetails: BenefitDetails = {
+  description:
+    "$200 annual statement credit for qualifying airline incidental fees, such as baggage fees, seat selections, and in-flight beverages charged to your Business Platinum card with participating airlines.",
+  howToUse: [
+    "Charge airline incidental fees directly to your Business Platinum card",
+    "Eligible fees include baggage, seat selection, in-flight beverages, and seat upgrades",
+    "Participating airlines: Delta, United, American Airlines, Southwest, Alaska Airlines, JetBlue, Spirit, Frontier",
+    "Statement credit posts automatically after the charge",
+  ],
+  links: [
+    {
+      label: "Business Platinum Benefits",
+      url: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/american-express-business-platinum-credit-card-amex/",
+    },
+  ],
+};
+
+const hiltonCreditDetails: BenefitDetails = {
+  description:
+    "$200 annual statement credit distributed as four $50 quarterly credits for qualifying stays at Hilton for Business properties worldwide when booked directly.",
+  howToUse: [
+    "Book a stay at a Hilton for Business property",
+    "Book directly through hiltonbusiness.com or by calling Hilton",
+    "Charge the stay to your Business Platinum card",
+    "Up to $50 quarterly credit applies per quarter",
+  ],
+  links: [
+    {
+      label: "Hilton for Business",
+      url: "https://www.hiltonbusinesstravel.com/",
+    },
+    {
+      label: "Business Platinum Benefits",
+      url: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/american-express-business-platinum-credit-card-amex/",
+    },
+  ],
+};
+
 // ── Card Definition ──
 
 export const amexBusinessPlatinum: CardDefinition = {
@@ -252,21 +290,119 @@ export const amexBusinessPlatinum: CardDefinition = {
       notes: "Requires $600 in qualifying U.S. purchases per calendar year.",
       details: adobeCreditDetails,
     }),
+
+    // ── Quarterly Credits ──
+    ...expandCycles(
+      CARD_ID,
+      {
+        name: "Indeed Recruiting Credit",
+        icon: "Briefcase",
+        category: "shopping",
+        type: "credit",
+        creditAmount: 90,
+        merchantPatterns: ["indeed"],
+        autoMatchable: true,
+        requiresActivation: true,
+        priority: 15,
+        notes: "Requires enrollment. Up to $360 annually across all quarters.",
+        details: indeedCreditDetails,
+      },
+      [
+        {
+          id: "biz_plat_indeed_credit_q1",
+          cycle: "quarterly_q1",
+          name: "Indeed Credit (Q1)",
+          description: "Up to $90 Indeed recruiting credit (Jan–Mar).",
+        },
+        {
+          id: "biz_plat_indeed_credit_q2",
+          cycle: "quarterly_q2",
+          name: "Indeed Credit (Q2)",
+          description: "Up to $90 Indeed recruiting credit (Apr–Jun).",
+        },
+        {
+          id: "biz_plat_indeed_credit_q3",
+          cycle: "quarterly_q3",
+          name: "Indeed Credit (Q3)",
+          description: "Up to $90 Indeed recruiting credit (Jul–Sep).",
+        },
+        {
+          id: "biz_plat_indeed_credit_q4",
+          cycle: "quarterly_q4",
+          name: "Indeed Credit (Q4)",
+          description: "Up to $90 Indeed recruiting credit (Oct–Dec).",
+        },
+      ]
+    ),
+    ...expandCycles(
+      CARD_ID,
+      {
+        name: "Hilton Credit",
+        icon: "Hotel",
+        category: "travel",
+        type: "credit",
+        creditAmount: 50,
+        merchantPatterns: ["hilton"],
+        autoMatchable: true,
+        requiresActivation: true,
+        priority: 15,
+        notes:
+          "For Hilton for Business properties. Book directly through hiltonbusiness.com.",
+        details: hiltonCreditDetails,
+      },
+      [
+        {
+          id: "biz_plat_hilton_credit_q1",
+          cycle: "quarterly_q1",
+          name: "Hilton Credit (Q1)",
+          description: "Up to $50 Hilton for Business credit (Jan–Mar).",
+        },
+        {
+          id: "biz_plat_hilton_credit_q2",
+          cycle: "quarterly_q2",
+          name: "Hilton Credit (Q2)",
+          description: "Up to $50 Hilton for Business credit (Apr–Jun).",
+        },
+        {
+          id: "biz_plat_hilton_credit_q3",
+          cycle: "quarterly_q3",
+          name: "Hilton Credit (Q3)",
+          description: "Up to $50 Hilton for Business credit (Jul–Sep).",
+        },
+        {
+          id: "biz_plat_hilton_credit_q4",
+          cycle: "quarterly_q4",
+          name: "Hilton Credit (Q4)",
+          description: "Up to $50 Hilton for Business credit (Oct–Dec).",
+        },
+      ]
+    ),
     b({
-      id: "biz_plat_indeed_credit",
-      name: "Indeed Recruiting Credit",
-      icon: "Briefcase",
-      category: "shopping",
+      id: "biz_plat_airline_fee_credit",
+      name: "Airline Fee Credit",
+      icon: "Plane",
+      category: "travel",
       type: "credit",
-      creditAmount: 90,
-      cycle: "quarterly_q1",
-      merchantPatterns: ["indeed"],
+      creditAmount: 200,
+      cycle: "annual_calendar",
+      merchantPatterns: [
+        "airline",
+        "delta",
+        "united",
+        "american air",
+        "southwest",
+        "alaska air",
+        "jetblue",
+        "spirit",
+        "frontier",
+      ],
       autoMatchable: true,
       requiresActivation: true,
       priority: 15,
-      description: "Up to $90/quarter for Indeed job posting credits ($360/year).",
-      notes: "Requires enrollment. Up to $360 annually across all quarters.",
-      details: indeedCreditDetails,
+      description: "Up to $200/year for airline incidental fees.",
+      notes:
+        "Baggage fees, seat selection, in-flight beverages, and seat upgrades.",
+      details: airlineFeeCreditDetails,
     }),
   ],
 };

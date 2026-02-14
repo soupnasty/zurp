@@ -56,7 +56,7 @@ export const capitalOneVenture: CardDefinition = {
   id: CARD_ID,
   name: "Capital One Venture Rewards",
   issuer: "capital_one",
-  network: "visa",
+  network: "mastercard",
   annualFee: 95,
   feeDescriptor: "CAPITAL ONE ANNUAL FEE",
   imageUrl: null,
