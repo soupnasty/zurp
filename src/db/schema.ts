@@ -136,6 +136,7 @@ export const plaidConnections = pgTable(
     accountId: text("account_id").notNull(),
     accountMask: text("account_mask"), // last 4 digits
     status: text("status").notNull().default("active"), // "active" | "needs_reauth" | "disconnected"
+    syncStatus: text("sync_status").notNull().default("pending"), // "pending" | "initial" | "complete"
     lastSyncCursor: text("last_sync_cursor"),
     lastSyncedAt: timestamp("last_synced_at", { mode: "date" }),
     syncLockedUntil: timestamp("sync_locked_until", { mode: "date" }), // Prevents concurrent syncs (5-min TTL)

@@ -66,6 +66,11 @@ export const chaseSapphirePreferred: CardDefinition = {
   imageUrl: null,
   isActive: true,
   benefits: [
+    // Note: Earning multipliers (5x Lyft, 5x Chase Travel portal, 3x online grocery,
+    // 3x streaming, 2x general travel) are defined in the earn config at
+    // src/lib/points/earn-configs/chase-sapphire-preferred.ts, not as benefits here.
+    // Benefits in this file are only trackable statement credits and subscriptions.
+
     // ── Chase Travel Hotel Credit ($50/anniversary year) ──
     b({
       id: "csp_hotel_credit",

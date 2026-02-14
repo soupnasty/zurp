@@ -147,6 +147,9 @@ export async function writeDebugReport(
 
     if (targetEarnConfig) {
       for (const tx of allTransactions) {
+        // Skip payment transactions (negative amounts) — they should not earn or lose points
+        if (tx.amount <= 0) continue;
+
         const assignment = classifications.get(tx.id)!;
         const result = calculatePointsForTransaction(
           {
@@ -413,7 +416,7 @@ function diagnoseUnmatched(
 function buildReportLines(opts: {
   targetCardDef: CardDefinition;
   cardProfile: { id: string; anniversaryDate: Date | null; cardType: string };
-  allTransactions: { id: string; date: Date; datetime: Date | null; merchantName: string | null; amount: number; matchedStatus: string }[];
+  allTransactions: { id: string; date: Date; datetime: Date | null; merchantName: string | null; amount: number; matchedStatus: string; plaidCategoryPrimary: string | null; plaidCategoryDetailed: string | null; pending: boolean }[];
   txMatchData: Map<string, TxMatchInfo>;
   txPointsResults: Map<string, TxPointsInfo>;
   unmatchedCandidates: UnmatchedCandidate[];
@@ -473,12 +476,35 @@ function buildReportLines(opts: {
     `Expiring Soon:   $${summary.expiringSoon.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}  (within 14 days)`
   );
 
+  // Column definitions
+  lines.push("");
+  lines.push("COLUMN DEFINITIONS");
+  lines.push("DATETIME       Transaction date/time (authorized_datetime > datetime > date fallback)");
+  lines.push("MERCHANT       Raw merchant name from Plaid (merchant_name or tx name)");
+  lines.push("NORMALIZED     Merchant name after normalization (lowercase, stripped IDs/order numbers) — what the matcher sees");
+  lines.push("AMOUNT         Transaction amount in USD (positive = charge, negative = refund)");
+  lines.push("PENDING        PEND if transaction is still pending (skipped by engine), — if settled");
+  lines.push("PLAID_PRIMARY  Plaid personal_finance_category primary (e.g. FOOD_AND_DRINK, TRANSPORTATION)");
+  lines.push("PLAID_DETAILED Plaid personal_finance_category detailed (e.g. FOOD_AND_DRINK_RESTAURANT)");
+  lines.push("STATUS         Match status: matched/unmatched (ACTUAL reports use DB status, SIMULATED re-run matcher)");
+  lines.push("BENEFIT        Name of the matched benefit (e.g. Dining Credit, Uber Cash)");
+  lines.push("CREDIT         Dollar amount of credit applied from the benefit for this transaction");
+  lines.push("CONF           Match confidence: high (merchant + amount), medium (merchant only), low (category fallback)");
+  lines.push("PTS_CAT        Points earn category from classifyForPoints (26-category taxonomy, e.g. dining, groceries)");
+  lines.push("RATE           Earn rate multiplier for this card (e.g. 3x, 1x) — may be reduced if cap hit");
+  lines.push("POINTS         Points earned for this transaction (rate × dollar amount, rounded)");
+  lines.push("CAP            CAP if a spending cap was applied (earn rate fell to base), — otherwise");
+
   // Transaction rows
   const txRows: string[] = [];
   const colHeader = [
     "DATETIME",
     "MERCHANT",
+    "NORMALIZED",
     "AMOUNT",
+    "PENDING",
+    "PLAID_PRIMARY",
+    "PLAID_DETAILED",
     "STATUS",
     "BENEFIT",
     "CREDIT",
@@ -493,6 +519,7 @@ function buildReportLines(opts: {
     const dt = tx.datetime ?? tx.date;
     const datetimeStr = formatDatetime(dt, !!tx.datetime);
     const merchant = (tx.merchantName ?? "").padEnd(25).slice(0, 25);
+    const normalized = (normalizeMerchantName(tx.merchantName) ?? "—").padEnd(25).slice(0, 25);
     const amount = tx.amount.toFixed(2).padStart(9);
 
     const matchInfo = txMatchData.get(tx.id);
@@ -527,7 +554,11 @@ function buildReportLines(opts: {
       [
         datetimeStr,
         merchant,
+        normalized,
         amount,
+        tx.pending ? "PEND" : "—",
+        (tx.plaidCategoryPrimary ?? "—").padEnd(18).slice(0, 18),
+        (tx.plaidCategoryDetailed ?? "—").padEnd(30).slice(0, 30),
         status,
         benefitName.padEnd(21).slice(0, 21),
         credit,

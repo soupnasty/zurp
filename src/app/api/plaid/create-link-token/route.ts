@@ -58,6 +58,7 @@ export async function POST(request: Request) {
       user: { client_user_id: session.user.id },
       client_name: "zurp",
       products: [Products.Transactions],
+      transactions: { days_requested: 365 },
       country_codes: [CountryCode.Us],
       language: "en",
       webhook,

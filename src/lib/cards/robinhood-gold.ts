@@ -14,6 +14,16 @@ export const robinhoodGold: CardDefinition = {
   imageUrl: null,
   isActive: true,
   benefits: [
+    // Non-tracked benefits (insurance/perks, not statement credits):
+    // - Cell phone protection ($800/claim, 2 claims/yr)
+    // - Purchase protection ($500/claim)
+    // - Extended warranty (+1 year)
+    // - Return protection (90 days)
+    // - Travel accident insurance ($250K)
+    // - Auto rental CDW (secondary)
+    // - Roadside assistance
+    // - Zero liability protection
+
     b({
       id: "rh_gold_no_ftf",
       name: "No Foreign Transaction Fees",

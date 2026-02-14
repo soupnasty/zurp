@@ -1,6 +1,6 @@
 import "server-only";
 import { db } from "@/db";
-import { eq, and, ne, notInArray, sql } from "drizzle-orm";
+import { eq, and, ne, notInArray, sql, gte } from "drizzle-orm";
 import * as schema from "@/db/schema";
 
 const EXCLUDED_CATEGORIES = [
@@ -27,15 +27,21 @@ export interface CompareTransaction {
  * Sorted by date ascending for cap tracking.
  */
 export async function getCompareTransactions(
-  userId: string
+  userId: string,
+  options?: { since?: Date }
 ): Promise<CompareTransaction[]> {
+  const conditions = [
+    eq(schema.transactions.userId, userId),
+    eq(schema.transactions.pending, false),
+    eq(schema.transactions.isAnnualFee, false),
+    notInArray(schema.transactions.plaidCategoryPrimary, EXCLUDED_CATEGORIES),
+  ];
+  if (options?.since) {
+    conditions.push(gte(schema.transactions.date, options.since));
+  }
+
   const txs = await db.query.transactions.findMany({
-    where: and(
-      eq(schema.transactions.userId, userId),
-      eq(schema.transactions.pending, false),
-      eq(schema.transactions.isAnnualFee, false),
-      notInArray(schema.transactions.plaidCategoryPrimary, EXCLUDED_CATEGORIES)
-    ),
+    where: and(...conditions),
     orderBy: (t, { asc }) => [asc(t.date)],
     columns: {
       id: true,

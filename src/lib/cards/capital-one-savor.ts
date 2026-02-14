@@ -32,7 +32,7 @@ export const capitalOneSavor: CardDefinition = {
   name: "Capital One SavorOne Cash Rewards",
   issuer: "capital_one",
   network: "mastercard",
-  annualFee: 0,
+  annualFee: 39,
   feeDescriptor: "no annual fee",
   imageUrl: null,
   isActive: true,

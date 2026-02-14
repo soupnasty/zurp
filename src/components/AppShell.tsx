@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   Settings,
   ChevronLeft,
@@ -80,6 +80,7 @@ function LogoSvg({ id }: { id: string }) {
 
 export function AppShell({ children, userEmail, dashboardNav }: AppShellProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [collapsed, setCollapsed] = useState(false);
   const [syncing, setSyncing] = useState(false);
@@ -119,7 +120,7 @@ export function AppShell({ children, userEmail, dashboardNav }: AppShellProps) {
       });
       if (res.ok) {
         setSynced(true);
-        // Use window.location to do a full refresh since we don't have router
+        router.refresh();
         setTimeout(() => setSynced(false), 3000);
       }
     } catch {

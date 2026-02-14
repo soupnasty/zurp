@@ -6,6 +6,7 @@ import { classifyForPoints } from "./categories";
 import { calculatePointsForTransaction } from "./calculator";
 import { getEarnConfig } from "./earn-configs";
 import { getCurrentCycleBounds } from "@/lib/engine/cycle-utils";
+
 import type { CapState, EarnCategory } from "./types";
 
 const EXCLUDED_CATEGORIES = [
@@ -15,15 +16,23 @@ const EXCLUDED_CATEGORIES = [
   "BANK_FEES",
 ];
 
+interface PeriodOptions {
+  periodType: "anniversary_year" | "rolling_365";
+  anniversaryDate?: Date | null;
+}
+
 /**
  * Compute points earning summary for a card profile and persist to DB.
  * Called after transaction matching in the sync pipeline.
+ *
+ * When periodType is "anniversary_year", uses anniversary-based bounds (for Track page).
+ * When periodType is "rolling_365", uses a rolling 365-day window (for Compare/simulations).
  */
 export async function computeAndPersistPointsSummary(
   userId: string,
   cardProfileId: string,
   cardType: string,
-  anniversaryDate: Date | null
+  options: PeriodOptions,
 ) {
   // Look up the connection for this card profile
   const cardProfile = await db.query.cardProfiles.findFirst({
@@ -57,17 +66,34 @@ export async function computeAndPersistPointsSummary(
 
   if (txs.length === 0) return;
 
-  // Compute anniversary year period bounds
+  // Compute window bounds based on period type
   const now = new Date();
-  const bounds = getCurrentCycleBounds(
-    "annual_anniversary",
-    now,
-    anniversaryDate
-  );
+  let bounds: { periodKey: string; cycleStart: Date; cycleEnd: Date };
 
-  // Filter to transactions within the anniversary year
+  if (options.periodType === "anniversary_year") {
+    const cycleBounds = getCurrentCycleBounds(
+      "annual_anniversary",
+      now,
+      options.anniversaryDate ?? null
+    );
+    bounds = cycleBounds;
+  } else {
+    // Rolling 365-day window ending today
+    const windowStart = new Date(now);
+    windowStart.setFullYear(windowStart.getFullYear() - 1);
+    windowStart.setDate(windowStart.getDate() + 1);
+    windowStart.setHours(0, 0, 0, 0);
+    const windowEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+    bounds = {
+      periodKey: `${now.getFullYear()}-R365`,
+      cycleStart: windowStart,
+      cycleEnd: windowEnd,
+    };
+  }
+
+  // Filter to transactions within the window
   const yearTxs = txs.filter(
-    (tx) => tx.date >= bounds.cycleStart && tx.date < bounds.cycleEnd
+    (tx) => tx.date >= bounds.cycleStart && tx.date <= bounds.cycleEnd
   );
 
   if (yearTxs.length === 0) return;
@@ -161,7 +187,7 @@ export async function computeAndPersistPointsSummary(
       userId,
       cardProfileId,
       cardId: config.cardId,
-      periodType: "anniversary_year",
+      periodType: options.periodType,
       periodStart: bounds.cycleStart,
       periodEnd: bounds.cycleEnd,
       totalSpend: Math.round(totalSpend * 100) / 100,

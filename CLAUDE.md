@@ -29,6 +29,23 @@ npm run db:studio    # Open Drizzle Studio
 
 ## Architecture
 
+### Page Philosophy — Time Windows & Intent
+
+Each main page has a distinct purpose and time window. This separation is fundamental to how data is queried, computed, and displayed.
+
+| Page | Time Window | Intent |
+|------|------------|--------|
+| **Compare** (`/dashboard/compare`) | Rolling 365 days (or all available if < 1 year) | "Which card would have performed best for your actual spending?" Simulates points, benefits, and fees across all 30 cards using the full trailing year of transaction data. |
+| **Track** (`/dashboard/track`) | Current cycle per benefit | "Are you maximizing your current card this period?" Shows current-cycle benefit usage (monthly, quarterly, annual anniversary, etc.) and current-period points earning. Helps users hit caps before credits expire. |
+| **Insights** (`/dashboard/insights`) | Both current + prior cycles | "What should you do differently?" Generators have access to current cycle benefit usage (what's been redeemed, what's expiring) AND prior cycle spending patterns (to identify trends, missed credits, competitor redirects). |
+
+**Key implications:**
+- Compare page simulations use rolling 365-day window — no anniversary date dependency
+- Track page benefit usage queries `benefitUsage` for the **current cycle period only** (via `getCurrentCycleBounds`)
+- Track page points summary uses the current anniversary year (or rolling 365 days if no anniversary date)
+- When a benefit cycle just rolled over, Track correctly shows $0 — this is expected behavior
+- Insight generators receive both current and prior cycle context to produce actionable recommendations
+
 ### Design System (Tailwind v4)
 
 Tailwind v4 uses CSS-based config via `@theme inline` in `src/app/globals.css` — there is NO `tailwind.config.ts`. All design tokens (colors, typography, spacing, shadows, motion) are CSS custom properties defined in `globals.css`.

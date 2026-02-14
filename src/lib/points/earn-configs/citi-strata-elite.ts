@@ -6,17 +6,21 @@ export const citiStrataEliteEarnConfig: EarnConfig = {
   pointsCurrency: "citi_tp",
   baseRate: 1.5,
   bonusCategories: [
-    // Citi Nights: 6x dining Fri/Sat 6PM-6AM ET
+    // Citi Nights: 6x dining Thu-Sun 5PM-11:59PM ET
+    // NOTE: Thursday-Sunday covers Thu(4), Fri(5), Sat(6), Sun(0).
+    // endHour: 24 means the window includes hours [17, 18, ..., 23] (up to 11:59 PM).
+    // Plaid returns UTC timestamps; for production accuracy, timezone conversion
+    // to America/New_York is applied at calculation time in the time_window matcher.
     {
       categories: ["dining", "coffee", "food_delivery"],
       earnRate: 6,
-      label: "Citi Nights (Fri/Sat 6PM\u20136AM ET)",
+      label: "Citi Nights (Thu-Sun 5PM\u201311:59PM ET)",
       conditions: {
         time_window: {
           timezone: "America/New_York",
-          days: [5, 6], // Fri, Sat
-          startHour: 18,
-          endHour: 6,
+          days: [4, 5, 6, 0], // Thu, Fri, Sat, Sun
+          startHour: 17,
+          endHour: 24, // inclusive of hour 23 (11:59 PM)
         },
       },
     },

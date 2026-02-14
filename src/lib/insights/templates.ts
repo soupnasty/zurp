@@ -55,6 +55,10 @@ const TEMPLATES: Record<string, Template> = {
     title: "Activate your free ${benefit}",
     body: "Worth $${monthly}/mo ($${annual}/yr). Activate through your card's benefits portal.",
   },
+  b1_repeat_unused: {
+    title: "${benefit}: $${remaining} unused again",
+    body: "This benefit went unused last ${period} too. Use it or factor it out of your card's value.",
+  },
 
   // ── B2: Nearly Maxed Credit ──
   b2_standard: {
@@ -74,6 +78,10 @@ const TEMPLATES: Record<string, Template> = {
   b3_specific: {
     title: "$${remaining} left on your ${benefit}",
     body: "${hint}",
+  },
+  b3_chronic: {
+    title: "${benefit}: only $${used} of $${max} used",
+    body: "This benefit was also underused last ${period}. Plan spending to capture the full credit.",
   },
 
   // ── B4: Benefit Renewal Reminder ──

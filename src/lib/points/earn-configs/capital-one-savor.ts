@@ -43,7 +43,7 @@ export const capitalOneSavorEarnConfig: EarnConfig = {
     },
   ],
   caps: [],
-  annualFee: 0,
+  annualFee: 39,
   valuation: {
     conservativeCpp: 1.0,
     upsideCpp: 1.0,

@@ -6,10 +6,10 @@ export const southwestPriorityEarnConfig: EarnConfig = {
   pointsCurrency: "southwest_rr",
   baseRate: 1,
   bonusCategories: [
-    // 2x on Southwest flights
+    // 4x on Southwest flights
     {
       categories: ["travel_flights"],
-      earnRate: 2,
+      earnRate: 4,
       label: "Southwest flights",
       conditions: {
         merchant_match: ["southwest"],

@@ -38,6 +38,24 @@ export const inkBusinessPreferredEarnConfig: EarnConfig = {
       earnRate: 3,
       label: "Internet, cable & phone services",
     },
+    // 3x on shipping (matched by merchant name since no "shipping" earn category)
+    {
+      categories: ["other"],
+      earnRate: 3,
+      label: "Shipping (UPS, FedEx, USPS, DHL)",
+      conditions: {
+        merchant_match: ["ups", "fedex", "usps", "dhl", "united parcel"],
+      },
+    },
+    // 3x on advertising (matched by merchant name since no "advertising" earn category)
+    {
+      categories: ["other"],
+      earnRate: 3,
+      label: "Advertising & marketing",
+      conditions: {
+        merchant_match: ["google ads", "facebook ads", "meta ads", "linkedin ads", "bing ads", "twitter ads", "tiktok ads"],
+      },
+    },
   ],
   caps: [
     {
@@ -50,6 +68,7 @@ export const inkBusinessPreferredEarnConfig: EarnConfig = {
         "parking",
         "transit",
         "phone_services",
+        "other", // includes shipping & advertising via merchant_match
       ],
       maxSpend: 150000,
       period: "calendar_year",

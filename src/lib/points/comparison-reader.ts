@@ -47,12 +47,6 @@ export async function readComparison(
     const config = getEarnConfig(row.simulatedCardId);
     const isUsersCard = row.simulatedCardId === usersCardId;
 
-    // For the user's card, override with actual captured benefits
-    const actualBenefitsCaptured = isUsersCard ? benefitsCaptured : null;
-    const netActual = isUsersCard && benefitsCaptured !== null
-      ? round2(row.pointsValueConservative + benefitsCaptured - row.annualFee)
-      : row.netActual;
-
     return {
       cardId: row.simulatedCardId,
       cardName: config?.cardName ?? row.simulatedCardId,
@@ -63,12 +57,11 @@ export async function readComparison(
       pointsValueConservative: row.pointsValueConservative,
       pointsValueUpside: row.pointsValueUpside,
       benefitsValue: row.benefitsValue,
-      parallelValue: row.parallelValue ?? 0,
-      benefitsCaptured: actualBenefitsCaptured,
-      benefitsSimulated: isUsersCard ? null : row.benefitsSimulated,
+      benefitsCaptured: isUsersCard ? benefitsCaptured : null,
+      benefitsSimulated: row.benefitsSimulated,
       netFloor: row.netFloor,
       netCeiling: row.netCeiling,
-      netActual,
+      netActual: row.netActual,
       rank: 0,
       categories: (row.categoryBreakdown as CategoryEarnSummary[]) ?? [],
     };

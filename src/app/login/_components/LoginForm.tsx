@@ -56,18 +56,6 @@ export function LoginForm() {
         </div>
       </div>
 
-      <p className="text-[var(--text-caption)] leading-snug text-[var(--text-secondary)]">
-        By continuing, you agree to our{" "}
-        <Link
-          href="/privacy"
-          target="_blank"
-          className="text-[var(--accent)] hover:opacity-80"
-        >
-          Privacy Policy
-        </Link>
-        .
-      </p>
-
       {error && (
         <p className="text-[var(--text-caption)] text-[var(--color-danger)]">
           {error}

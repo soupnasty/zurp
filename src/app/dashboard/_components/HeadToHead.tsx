@@ -27,7 +27,7 @@ export function HeadToHead({ headline, cards, activeCardType }: HeadToHeadProps)
 
   if (!bestCard || !userCard || bestCard.cardId === userCard.cardId) return null;
 
-  const userBenefits = userCard.benefitsCaptured ?? 0;
+  const userBenefits = userCard.benefitsSimulated ?? userCard.benefitsValue;
   const bestBenefits = bestCard.benefitsSimulated ?? bestCard.benefitsValue;
 
   const rows: RowData[] = [

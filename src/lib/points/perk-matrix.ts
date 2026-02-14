@@ -1481,7 +1481,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           discover_it_cash_back: { value: null },
           us_bank_altitude_connect: { value: null },
           wells_fargo_active_cash: { value: null },
-          wells_fargo_autograph_journey: { value: "Flying Blue, Avianca, BA, Iberia, Virgin Atlantic", detail: "6 airline partners at 1:1" },
+          wells_fargo_autograph_journey: { value: "Flying Blue, Avianca, BA, Iberia, Virgin Atlantic, JetBlue TrueBlue", detail: "7 airline partners at 1:1" },
           amex_business_platinum: { value: "Delta, ANA, Singapore, Virgin Atlantic", detail: "20+ airline partners via MR" },
           apple_card: { value: null },
           capital_one_savor: { value: null },

@@ -13,6 +13,7 @@ import {
   getActiveInsights,
   getCycleTransactions,
   getPointsSummaryForInsights,
+  getPriorBenefitUsages,
   markInsightsShown,
   recordImpressions,
   cleanupDismissedInsights,
@@ -88,6 +89,7 @@ export async function generateAndPersistInsights(userId: string) {
       milestoneKeys,
       totalCaptured,
       pointsSummaryRow,
+      priorCycleBenefitUsages,
     ] = await Promise.all([
       getCompetitorMap(cardProfile.cardType),
       getRoiMilestonesReached(userId, cardDef.id),
@@ -98,6 +100,7 @@ export async function generateAndPersistInsights(userId: string) {
         cardYearBounds.cycleEnd
       ),
       getPointsSummaryForInsights(userId, cardProfile.id),
+      getPriorBenefitUsages(userId, cardProfile.id, cardProfile.cardType, anniversaryDate),
     ]);
 
     // Build points data context
@@ -122,6 +125,7 @@ export async function generateAndPersistInsights(userId: string) {
       competitorEntries,
       totalBenefitsCaptured: totalCaptured,
       existingMilestoneKeys: milestoneKeys,
+      priorCycleBenefitUsages,
       pointsData,
     };
 

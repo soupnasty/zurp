@@ -76,7 +76,8 @@ export const hiltonAspire: CardDefinition = {
   imageUrl: null,
   isActive: true,
   benefits: [
-    // Free Night Certificate (certificate) tracked in perk matrix only.
+    // Non-tracked benefits (certificates, tracked in perk matrix only):
+    // - Free Night Certificate (annual)
 
     // ── Semi-annual Hilton Resort Credits ($200/half × 2) ──
     ...expandCycles(
@@ -87,7 +88,7 @@ export const hiltonAspire: CardDefinition = {
         category: "travel",
         type: "credit",
         creditAmount: 200,
-        merchantPatterns: ["hilton"],
+        merchantPatterns: ["hilton", "waldorf", "conrad", "lxr"],
         autoMatchable: true,
         requiresActivation: false,
         priority: 25,

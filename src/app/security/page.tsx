@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { BackButton } from "@/components/BackButton";
 
 export const metadata = {
   title: "Security — zurp",
@@ -7,12 +7,7 @@ export const metadata = {
 export default function SecurityPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-[var(--space-3xl)]">
-      <Link
-        href="/"
-        className="text-[var(--text-caption)] text-[var(--text-secondary)] hover:text-[var(--accent)]"
-      >
-        &larr; Back
-      </Link>
+      <BackButton />
 
       <article className="mt-[var(--space-lg)] space-y-[var(--space-lg)] text-[var(--text-secondary)]">
         <header>

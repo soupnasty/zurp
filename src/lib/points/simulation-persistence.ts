@@ -7,7 +7,7 @@ import { EARN_CATEGORY_LABELS, EARN_CATEGORY_ICONS } from "./category-labels";
 import { calculatePointsForTransaction } from "./calculator";
 import { getAllEarnConfigs } from "./earn-configs";
 import { valuatePoints, computeBenefitsValue } from "./valuation";
-import { getCurrentCycleBounds } from "@/lib/engine/cycle-utils";
+
 import { simulateBenefitsForCard } from "@/lib/engine/benefit-simulator";
 import { getTransactionPeriod } from "./queries";
 import type {
@@ -39,7 +39,6 @@ const TRAVEL_CATEGORIES: EarnCategory[] = [
 export async function computeAndPersistSimulations(
   userId: string,
   cardProfileId: string,
-  anniversaryDate: Date | null
 ) {
   // Look up the connection for this card profile
   const cardProfile = await db.query.cardProfiles.findFirst({
@@ -71,13 +70,23 @@ export async function computeAndPersistSimulations(
 
   if (txs.length === 0) return;
 
-  // Compute anniversary year period bounds
+  // Rolling 365-day window ending today (or less if not enough data)
   const now = new Date();
-  const bounds = getCurrentCycleBounds("annual_anniversary", now, anniversaryDate);
+  const windowStart = new Date(now);
+  windowStart.setFullYear(windowStart.getFullYear() - 1);
+  windowStart.setDate(windowStart.getDate() + 1);
+  windowStart.setHours(0, 0, 0, 0);
+  const windowEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
 
-  // Filter to transactions within the anniversary year
+  const bounds = {
+    periodKey: `${now.getFullYear()}-ANN`,
+    cycleStart: windowStart,
+    cycleEnd: windowEnd,
+  };
+
+  // Filter to transactions within the window
   const yearTxs = txs.filter(
-    (tx) => tx.date >= bounds.cycleStart && tx.date < bounds.cycleEnd
+    (tx) => tx.date >= bounds.cycleStart && tx.date <= bounds.cycleEnd
   );
 
   if (yearTxs.length === 0) return;
@@ -121,11 +130,13 @@ export async function computeAndPersistSimulations(
   const upserts: (typeof schema.cardSimulations.$inferInsert)[] = [];
 
   for (const config of configs) {
-    // Run benefit simulation once per card (portal-mode-independent)
+    // Run benefit simulation once per card (portal-mode-independent).
+    // Pass period start as synthetic anniversary date so annual benefits
+    // get one budget across the 365-day window.
     const benefitSim = simulateBenefitsForCard(
       config.cardId,
       matcherTxns,
-      anniversaryDate
+      analysisPeriodStart
     );
     const benefitsSimulated = benefitSim.total;
     const benefitsValue = computeBenefitsValue(config.cardId);
@@ -140,10 +151,10 @@ export async function computeAndPersistSimulations(
 
       const netFloor = round2(simResult.pointsValueConservative - config.annualFee);
       const netCeiling = round2(
-        simResult.pointsValueConservative + benefitsValue + simResult.parallelValue - config.annualFee
+        simResult.pointsValueConservative + benefitsValue - config.annualFee
       );
       const netActual = round2(
-        simResult.pointsValueConservative + benefitsSimulated + simResult.parallelValue - config.annualFee
+        simResult.pointsValueConservative + benefitsSimulated - config.annualFee
       );
 
       upserts.push({
@@ -158,7 +169,6 @@ export async function computeAndPersistSimulations(
         pointsValueUpside: simResult.pointsValueUpside,
         benefitsSimulated,
         benefitsValue,
-        parallelValue: simResult.parallelValue,
         netFloor,
         netCeiling,
         netActual,
@@ -192,7 +202,6 @@ export async function computeAndPersistSimulations(
           pointsValueUpside: row.pointsValueUpside,
           benefitsSimulated: row.benefitsSimulated,
           benefitsValue: row.benefitsValue,
-          parallelValue: row.parallelValue,
           netFloor: row.netFloor,
           netCeiling: row.netCeiling,
           netActual: row.netActual,
@@ -238,7 +247,6 @@ function simulatePointsForCard(
   bonusPoints: number;
   pointsValueConservative: number;
   pointsValueUpside: number;
-  parallelValue: number;
   categories: CategoryEarnSummary[];
 } {
   const capState: CapState = {};
@@ -314,16 +322,6 @@ function simulatePointsForCard(
 
   const values = valuatePoints(totalPoints, config);
 
-  // Parallel earnings (e.g., Bilt Cash 4% on all non-rent purchases)
-  let parallelValue = 0;
-  if (config.parallelEarnings) {
-    const cardTotalSpend = Array.from(categoryMap.values()).reduce(
-      (sum, entry) => sum + entry.spend,
-      0
-    );
-    parallelValue = round2(cardTotalSpend * (config.parallelEarnings.ratePercent / 100));
-  }
-
   // Build category summaries
   const categories: CategoryEarnSummary[] = [];
   for (const [cat, data] of categoryMap) {
@@ -358,7 +356,6 @@ function simulatePointsForCard(
     bonusPoints,
     pointsValueConservative: values.conservative,
     pointsValueUpside: values.upside,
-    parallelValue,
     categories,
   };
 }

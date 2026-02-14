@@ -69,10 +69,10 @@ export const capitalOneVentureX: CardDefinition = {
       type: "credit",
       creditAmount: 300,
       cycle: "annual_anniversary",
-      autoMatchable: false,
+      autoMatchable: true,
       requiresActivation: false,
       priority: 50,
-      merchantPatterns: [],
+      merchantPatterns: ["capital one travel", "capitalone travel"],
       description:
         "$300 annual credit for bookings through Capital One Travel portal. Resets on card anniversary.",
       details: travelCreditDetails,

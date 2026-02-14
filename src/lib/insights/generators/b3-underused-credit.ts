@@ -23,10 +23,20 @@ export function generateB3(ctx: GeneratorContext): InsightCandidate[] {
     const displayName = usage.displayGroupName || usage.benefitName;
     const period = cycleToPeriodLabel(usage.cycle);
 
+    // Check if benefit was also underused in prior cycle
+    const priorUsage = ctx.priorCycleBenefitUsages?.find(
+      (p) => p.benefitId === usage.benefitId
+    );
+    const wasUnderusedPrior =
+      priorUsage && priorUsage.creditAmount > 0 &&
+      priorUsage.amountUsed / priorUsage.creditAmount < 0.75;
+
+    const templateKey = wasUnderusedPrior ? "b3_chronic" : "b3_specific";
+
     insights.push({
       category: "B3",
       benefitId: usage.benefitId,
-      templateKey: "b3_specific",
+      templateKey,
       templateVars: {
         benefit: displayName,
         remaining,

@@ -218,7 +218,7 @@ describe("calculatePointsForTransaction", () => {
         {
           id: "tx_refund",
           merchantName: "CHIPOTLE",
-          amount: -15, // negative = refund
+          amount: -15, // negative but not a payment pattern
           category: "dining",
           confidence: "high",
         },
@@ -226,6 +226,115 @@ describe("calculatePointsForTransaction", () => {
         capState
       );
       expect(result.points).toBe(-45);
+    });
+  });
+
+  describe("Payment transaction exclusion", () => {
+    it("excludes 'PAYMENT THANK YOU' transactions from earning", () => {
+      const capState: CapState = {};
+      const result = calculatePointsForTransaction(
+        {
+          id: "tx_payment",
+          merchantName: "PAYMENT THANK YOU",
+          amount: -500,
+          category: "dining",
+          confidence: "high",
+        },
+        csrEarnConfig,
+        capState
+      );
+      // Payments earn 0 points regardless of card or category
+      expect(result.earnRate).toBe(0);
+      expect(result.points).toBe(0);
+      expect(result.bonusLabel).toBeNull();
+    });
+
+    it("excludes 'ONLINE PAYMENT' transactions from earning", () => {
+      const capState: CapState = {};
+      const result = calculatePointsForTransaction(
+        {
+          id: "tx_online_payment",
+          merchantName: "ONLINE PAYMENT",
+          amount: -300,
+          category: "other",
+          confidence: "high",
+        },
+        csrEarnConfig,
+        capState
+      );
+      expect(result.earnRate).toBe(0);
+      expect(result.points).toBe(0);
+    });
+
+    it("excludes 'AUTOPAY' transactions from earning", () => {
+      const capState: CapState = {};
+      const result = calculatePointsForTransaction(
+        {
+          id: "tx_autopay",
+          merchantName: "AUTOPAY",
+          amount: -1000,
+          category: "other",
+          confidence: "high",
+        },
+        citiDoubleCashEarnConfig,
+        capState
+      );
+      // Even on a card with 2x flat rate, payments earn 0
+      expect(result.earnRate).toBe(0);
+      expect(result.points).toBe(0);
+    });
+
+    it("excludes 'AUTO PAY' (with space) transactions from earning", () => {
+      const capState: CapState = {};
+      const result = calculatePointsForTransaction(
+        {
+          id: "tx_auto_pay",
+          merchantName: "AUTO PAY",
+          amount: -200,
+          category: "other",
+          confidence: "high",
+        },
+        csrEarnConfig,
+        capState
+      );
+      expect(result.earnRate).toBe(0);
+      expect(result.points).toBe(0);
+    });
+
+    it("does not exclude positive transactions even with 'payment' in name", () => {
+      const capState: CapState = {};
+      const result = calculatePointsForTransaction(
+        {
+          id: "tx_payment_processor",
+          merchantName: "PAYMENT PROCESSING",
+          amount: 50, // positive amount
+          category: "other",
+          confidence: "high",
+        },
+        csrEarnConfig,
+        capState
+      );
+      // Positive amounts should earn normally
+      expect(result.earnRate).toBe(1);
+      expect(result.points).toBe(50);
+    });
+
+    it("does not exclude regular refunds (negative but no payment pattern)", () => {
+      const capState: CapState = {};
+      const result = calculatePointsForTransaction(
+        {
+          id: "tx_normal_refund",
+          merchantName: "WHOLE FOODS",
+          amount: -75,
+          category: "groceries",
+          confidence: "high",
+        },
+        csrEarnConfig,
+        capState
+      );
+      // Regular refunds should earn (with negative points)
+      expect(result.earnRate).toBe(1);
+      expect(result.points).toBe(-75);
     });
   });
 
@@ -283,6 +392,8 @@ describe("calculatePointsForTransaction", () => {
   });
 
   describe("Citi Nights time-window", () => {
+    // Thursday-Sunday 5PM-11:59PM ET: days [4, 5, 6, 0], hours [17, 24)
+
     // Friday Jan 3, 2025 at 8PM ET = 2025-01-04 01:00:00 UTC
     it("earns 6x dining on Friday 8PM ET with datetime", () => {
       const capState: CapState = {};
@@ -307,7 +418,7 @@ describe("calculatePointsForTransaction", () => {
 
     it("earns 3x dining on Friday 2PM ET (outside window)", () => {
       const capState: CapState = {};
-      // Friday Jan 3, 2025 at 2PM ET = 2025-01-03 19:00:00 UTC
+      // Friday Jan 3, 2025 at 2PM ET = 2025-01-03 19:00:00 UTC (hour 14, outside [17, 24))
       const fridayAfternoon = new Date("2025-01-03T19:00:00Z");
       const result = calculatePointsForTransaction(
         {
@@ -327,10 +438,10 @@ describe("calculatePointsForTransaction", () => {
       expect(result.bonusLabel).toBe("Dining");
     });
 
-    it("earns 6x dining on Saturday 1AM ET (overnight portion)", () => {
+    it("earns 6x dining on Saturday 8PM ET", () => {
       const capState: CapState = {};
-      // Saturday Jan 4, 2025 at 1AM ET = 2025-01-04 06:00:00 UTC
-      const saturdayEarlyMorning = new Date("2025-01-04T06:00:00Z");
+      // Saturday Jan 4, 2025 at 8PM ET = 2025-01-05 01:00:00 UTC (hour 20, in [17, 24))
+      const saturdayNight = new Date("2025-01-05T01:00:00Z");
       const result = calculatePointsForTransaction(
         {
           id: "tw3",
@@ -339,7 +450,7 @@ describe("calculatePointsForTransaction", () => {
           category: "dining",
           confidence: "high",
           date: new Date("2025-01-04"),
-          datetime: saturdayEarlyMorning,
+          datetime: saturdayNight,
         },
         citiStrataEliteEarnConfig,
         capState
@@ -348,9 +459,51 @@ describe("calculatePointsForTransaction", () => {
       expect(result.points).toBe(300);
     });
 
-    it("earns 3x dining on Wednesday 8PM ET", () => {
+    it("earns 6x dining on Thursday 10PM ET", () => {
       const capState: CapState = {};
-      // Wednesday Jan 1, 2025 at 8PM ET = 2025-01-02 01:00:00 UTC
+      // Thursday Jan 2, 2025 at 10PM ET = 2025-01-03 03:00:00 UTC (hour 22, in [17, 24))
+      const thursdayNight = new Date("2025-01-03T03:00:00Z");
+      const result = calculatePointsForTransaction(
+        {
+          id: "tw3b",
+          merchantName: "CHIPOTLE",
+          amount: 50,
+          category: "dining",
+          confidence: "high",
+          date: new Date("2025-01-02"),
+          datetime: thursdayNight,
+        },
+        citiStrataEliteEarnConfig,
+        capState
+      );
+      expect(result.earnRate).toBe(6);
+      expect(result.points).toBe(300);
+    });
+
+    it("earns 6x dining on Sunday 11:30PM ET", () => {
+      const capState: CapState = {};
+      // Sunday Jan 5, 2025 at 11:30PM ET = 2025-01-06 04:30:00 UTC (hour 23, in [17, 24))
+      const sundayLateNight = new Date("2025-01-06T04:30:00Z");
+      const result = calculatePointsForTransaction(
+        {
+          id: "tw3c",
+          merchantName: "CHIPOTLE",
+          amount: 50,
+          category: "dining",
+          confidence: "high",
+          date: new Date("2025-01-05"),
+          datetime: sundayLateNight,
+        },
+        citiStrataEliteEarnConfig,
+        capState
+      );
+      expect(result.earnRate).toBe(6);
+      expect(result.points).toBe(300);
+    });
+
+    it("earns 3x dining on Wednesday 8PM ET (not in Thu-Sun)", () => {
+      const capState: CapState = {};
+      // Wednesday Jan 1, 2025 at 8PM ET = 2025-01-02 01:00:00 UTC (Wed, hour 20, not a match day)
       const wedNight = new Date("2025-01-02T01:00:00Z");
       const result = calculatePointsForTransaction(
         {
@@ -381,15 +534,36 @@ describe("calculatePointsForTransaction", () => {
           amount: 50,
           category: "dining",
           confidence: "high",
-          date: new Date(2025, 0, 3),
+          date: new Date(2025, 0, 3), // Friday
           datetime: null,
         },
         citiStrataEliteEarnConfig,
         capState
       );
-      // Friday is in the time_window days, so fallback matches
+      // Friday (5) is in the time_window days [4, 5, 6, 0], so fallback matches
       expect(result.earnRate).toBe(6);
       expect(result.points).toBe(300);
+    });
+
+    it("earns 3x dining on Tuesday with only date (not in Thu-Sun)", () => {
+      const capState: CapState = {};
+      // Tuesday Jan 7, 2025 — no datetime, day-of-week fallback
+      const result = calculatePointsForTransaction(
+        {
+          id: "tw5b",
+          merchantName: "CHIPOTLE",
+          amount: 50,
+          category: "dining",
+          confidence: "high",
+          date: new Date(2025, 0, 7), // Tuesday
+          datetime: null,
+        },
+        citiStrataEliteEarnConfig,
+        capState
+      );
+      // Tuesday (2) is NOT in the time_window days [4, 5, 6, 0], so no Citi Nights match
+      expect(result.earnRate).toBe(3);
+      expect(result.points).toBe(150);
     });
 
     it("skips time-window check when no date or datetime (backward compat)", () => {
@@ -406,7 +580,7 @@ describe("calculatePointsForTransaction", () => {
         citiStrataEliteEarnConfig,
         capState
       );
-      // With no date info, time_window check is skipped, first match (6x) wins
+      // With no date info, time_window check is skipped, first match (6x Citi Nights) wins
       expect(result.earnRate).toBe(6);
       expect(result.points).toBe(300);
     });
@@ -523,45 +697,59 @@ describe("getDatePartsInTimezone", () => {
 describe("matchesTimeWindow", () => {
   const citiNights: TimeWindow = {
     timezone: "America/New_York",
-    days: [5, 6], // Fri, Sat
-    startHour: 18,
-    endHour: 6,
+    days: [4, 5, 6, 0], // Thu, Fri, Sat, Sun
+    startHour: 17,
+    endHour: 24, // includes hours [17, 18, ..., 23]
   };
 
-  it("matches Friday 8PM", () => {
+  it("matches Friday 8PM (hour 20, in [17, 24))", () => {
     expect(matchesTimeWindow(5, 20, citiNights)).toBe(true);
   });
 
-  it("matches Friday 6PM (start boundary)", () => {
-    expect(matchesTimeWindow(5, 18, citiNights)).toBe(true);
+  it("matches Friday 5PM (start boundary, hour 17)", () => {
+    expect(matchesTimeWindow(5, 17, citiNights)).toBe(true);
   });
 
-  it("matches Saturday 1AM (overnight from Friday)", () => {
-    expect(matchesTimeWindow(6, 1, citiNights)).toBe(true);
+  it("matches Friday 11:59PM (hour 23, in [17, 24))", () => {
+    expect(matchesTimeWindow(5, 23, citiNights)).toBe(true);
   });
 
-  it("matches Saturday 10PM", () => {
-    expect(matchesTimeWindow(6, 22, citiNights)).toBe(true);
+  it("matches Thursday 10PM", () => {
+    expect(matchesTimeWindow(4, 22, citiNights)).toBe(true);
   });
 
-  it("matches Sunday 3AM (overnight from Saturday)", () => {
-    expect(matchesTimeWindow(0, 3, citiNights)).toBe(true);
+  it("matches Saturday 8PM", () => {
+    expect(matchesTimeWindow(6, 20, citiNights)).toBe(true);
   });
 
-  it("does not match Friday 2PM", () => {
+  it("matches Sunday 5PM (hour 17)", () => {
+    expect(matchesTimeWindow(0, 17, citiNights)).toBe(true);
+  });
+
+  it("does not match Friday 2PM (hour 14, outside [17, 24))", () => {
     expect(matchesTimeWindow(5, 14, citiNights)).toBe(false);
   });
 
-  it("does not match Wednesday 8PM", () => {
+  it("does not match Friday midnight (hour 0, outside [17, 24))", () => {
+    expect(matchesTimeWindow(5, 0, citiNights)).toBe(false);
+  });
+
+  it("does not match Wednesday 8PM (not in Thu-Sun days)", () => {
     expect(matchesTimeWindow(3, 20, citiNights)).toBe(false);
   });
 
-  it("does not match Saturday 6AM (exclusive end boundary)", () => {
-    expect(matchesTimeWindow(6, 6, citiNights)).toBe(false);
+  it("does not match Tuesday 10PM (not in Thu-Sun days)", () => {
+    expect(matchesTimeWindow(2, 22, citiNights)).toBe(false);
   });
 
-  it("does not match Monday 1AM (not adjacent to window)", () => {
-    expect(matchesTimeWindow(1, 1, citiNights)).toBe(false);
+  it("does not match Monday 5PM (not in Thu-Sun days, even in time window)", () => {
+    expect(matchesTimeWindow(1, 17, citiNights)).toBe(false);
+  });
+
+  // Note: Test for endHour boundary
+  it("does not match hour 24 (exclusive upper bound)", () => {
+    // Hour 24 is technically invalid, but testing boundary behavior
+    expect(matchesTimeWindow(5, 24, citiNights)).toBe(false);
   });
 });
 

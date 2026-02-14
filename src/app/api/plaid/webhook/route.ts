@@ -24,13 +24,33 @@ export async function POST(request: Request) {
       return NextResponse.json({ received: true });
     }
 
-    // Handle transaction sync updates
-    if (
-      webhook_type === "TRANSACTIONS" &&
-      webhook_code === "SYNC_UPDATES_AVAILABLE"
-    ) {
-      await triggerSync(connection.id);
-      return NextResponse.json({ received: true, synced: true });
+    // Handle transaction webhooks
+    if (webhook_type === "TRANSACTIONS") {
+      if (webhook_code === "INITIAL_UPDATE") {
+        console.log(`[webhook] INITIAL_UPDATE for ${connection.id}, triggering sync`);
+        await db
+          .update(schema.plaidConnections)
+          .set({ syncStatus: "initial" })
+          .where(eq(schema.plaidConnections.id, connection.id));
+        await triggerSync(connection.id);
+        return NextResponse.json({ received: true, synced: true });
+      }
+
+      if (webhook_code === "HISTORICAL_UPDATE") {
+        console.log(`[webhook] HISTORICAL_UPDATE for ${connection.id}, triggering sync`);
+        await triggerSync(connection.id);
+        await db
+          .update(schema.plaidConnections)
+          .set({ syncStatus: "complete" })
+          .where(eq(schema.plaidConnections.id, connection.id));
+        return NextResponse.json({ received: true, synced: true });
+      }
+
+      if (webhook_code === "SYNC_UPDATES_AVAILABLE") {
+        console.log(`[webhook] SYNC_UPDATES_AVAILABLE for ${connection.id}, triggering sync`);
+        await triggerSync(connection.id);
+        return NextResponse.json({ received: true, synced: true });
+      }
     }
 
     // Handle item webhooks

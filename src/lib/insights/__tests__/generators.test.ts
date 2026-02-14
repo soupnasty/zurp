@@ -24,6 +24,7 @@ function makeCtx(overrides: Partial<GeneratorContext> = {}): GeneratorContext {
     competitorEntries: [],
     totalBenefitsCaptured: 0,
     existingMilestoneKeys: [],
+    priorCycleBenefitUsages: [],
     ...overrides,
   };
 }
@@ -196,6 +197,42 @@ describe("B1: Unused Credit", () => {
     expect(generateB1(ctx)).toHaveLength(0);
   });
 
+  it("uses b1_repeat_unused when prior cycle was also unused", () => {
+    const now = new Date();
+    const start = new Date(now);
+    start.setDate(start.getDate() - 22);
+    const end = new Date(now);
+    end.setDate(end.getDate() + 8);
+
+    const ctx = makeCtx({
+      benefitUsages: [
+        makeUsage({
+          amountUsed: 0,
+          amountRemaining: 10,
+          cycleStart: start,
+          cycleEnd: end,
+          daysRemaining: 8,
+        }),
+      ],
+      priorCycleBenefitUsages: [
+        {
+          benefitId: "csr_lyft",
+          periodKey: "2025-12",
+          cycle: "monthly",
+          creditAmount: 10,
+          amountUsed: 1, // < 25% → unused
+          isFullyUsed: false,
+          cycleStart: new Date(2025, 11, 1),
+          cycleEnd: new Date(2025, 11, 31),
+        },
+      ],
+    });
+
+    const results = generateB1(ctx);
+    expect(results.length).toBe(1);
+    expect(results[0].templateKey).toBe("b1_repeat_unused");
+  });
+
   it("selects b1_very_late for <= 7 days", () => {
     const now = new Date();
     const start = new Date(now);
@@ -255,6 +292,62 @@ describe("B3: Underused Credit", () => {
     });
 
     expect(generateB3(ctx)).toHaveLength(0);
+  });
+
+  it("uses b3_chronic when prior cycle was also underused", () => {
+    const ctx = makeCtx({
+      benefitUsages: [
+        makeUsage({
+          amountUsed: 3,
+          amountRemaining: 7,
+          isFullyUsed: false,
+        }),
+      ],
+      priorCycleBenefitUsages: [
+        {
+          benefitId: "csr_lyft",
+          periodKey: "2025-12",
+          cycle: "monthly",
+          creditAmount: 10,
+          amountUsed: 5, // 50% < 75% → underused
+          isFullyUsed: false,
+          cycleStart: new Date(2025, 11, 1),
+          cycleEnd: new Date(2025, 11, 31),
+        },
+      ],
+    });
+
+    const results = generateB3(ctx);
+    expect(results.length).toBe(1);
+    expect(results[0].templateKey).toBe("b3_chronic");
+  });
+
+  it("uses b3_specific when prior cycle was well-used", () => {
+    const ctx = makeCtx({
+      benefitUsages: [
+        makeUsage({
+          amountUsed: 3,
+          amountRemaining: 7,
+          isFullyUsed: false,
+        }),
+      ],
+      priorCycleBenefitUsages: [
+        {
+          benefitId: "csr_lyft",
+          periodKey: "2025-12",
+          cycle: "monthly",
+          creditAmount: 10,
+          amountUsed: 9, // 90% >= 75% → well used
+          isFullyUsed: false,
+          cycleStart: new Date(2025, 11, 1),
+          cycleEnd: new Date(2025, 11, 31),
+        },
+      ],
+    });
+
+    const results = generateB3(ctx);
+    expect(results.length).toBe(1);
+    expect(results[0].templateKey).toBe("b3_specific");
   });
 });
 

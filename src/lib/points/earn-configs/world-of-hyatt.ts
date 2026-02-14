@@ -26,7 +26,7 @@ export const worldOfHyattEarnConfig: EarnConfig = {
       },
     },
     {
-      categories: ["dining", "coffee", "food_delivery"],
+      categories: ["dining", "coffee"],
       earnRate: 2,
       label: "Dining",
     },

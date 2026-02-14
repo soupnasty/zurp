@@ -1,6 +1,6 @@
 import "server-only";
 import { readComparison } from "./comparison-reader";
-import { getCompareTransactions, getTransactionPeriod } from "./queries";
+import { getCompareTransactions } from "./queries";
 import { classifyForPoints } from "./categories";
 import { getAllEarnConfigs } from "./earn-configs";
 import { runSimulation } from "./simulator";
@@ -37,13 +37,26 @@ async function computeComparisonOnDemand(
   userId: string,
   portalMode: boolean
 ): Promise<ComparisonOutput | null> {
-  // 1. Get transaction period
-  const period = await getTransactionPeriod(userId);
-  if (!period || period.monthCount < 1) return null;
+  // Rolling 365-day cutoff
+  const now = new Date();
+  const cutoff = new Date(now);
+  cutoff.setFullYear(cutoff.getFullYear() - 1);
+  cutoff.setDate(cutoff.getDate() + 1);
+  cutoff.setHours(0, 0, 0, 0);
 
-  // 2. Get all qualifying transactions
-  const rawTxns = await getCompareTransactions(userId);
+  // 1. Get qualifying transactions within the 365-day window
+  const rawTxns = await getCompareTransactions(userId, { since: cutoff });
   if (rawTxns.length === 0) return null;
+
+  // 2. Derive period from filtered data
+  const start = rawTxns[0].date; // sorted ascending by query
+  const end = rawTxns[rawTxns.length - 1].date;
+  const monthCount = Math.max(
+    1,
+    (end.getFullYear() - start.getFullYear()) * 12 +
+      (end.getMonth() - start.getMonth()) +
+      1
+  );
 
   // 3. Classify each transaction
   const classifiedTxns = rawTxns.map((tx) => {
@@ -85,8 +98,8 @@ async function computeComparisonOnDemand(
     configs,
     usersCardId,
     benefitsCaptured,
-    period: { start: period.start, end: period.end },
-    monthCount: period.monthCount,
+    period: { start, end },
+    monthCount,
     portalMode,
   });
 

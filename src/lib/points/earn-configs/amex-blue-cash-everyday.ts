@@ -1,5 +1,14 @@
 import type { EarnConfig } from "../types";
 
+/**
+ * Amex Blue Cash Everyday earn config.
+ *
+ * NOTE: The "shopping_online" category detection relies on merchant name matching
+ * (via merchant-map.ts) and limited Plaid categories (SHOPS_DIGITAL_PURCHASE only).
+ * Many online retailers may be categorized by Plaid as SHOPS_ELECTRONICS or
+ * SHOPS_CLOTHING_AND_ACCESSORIES (mapped to "shopping_instore"), so the actual
+ * 3% earn rate on online retail may be underreported by the simulator.
+ */
 export const amexBceEarnConfig: EarnConfig = {
   cardId: "amex_blue_cash_everyday",
   cardName: "Amex Blue Cash Everyday",

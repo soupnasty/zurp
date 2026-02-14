@@ -30,13 +30,10 @@ export function TotalValueChart({
   bestCardId,
   monthCount,
 }: TotalValueChartProps) {
-  // Shared scale: max(points + benefits + annualFee) across all cards
+  // Shared scale: max(points + benefits + cashBack + annualFee) across all cards
   const maxScale = Math.max(
     ...cards.map((c) => {
-      const benefits =
-        c.isUsersCard && c.benefitsCaptured !== null
-          ? c.benefitsCaptured
-          : (c.benefitsSimulated ?? c.benefitsValue);
+      const benefits = c.benefitsSimulated ?? c.benefitsValue;
       return c.pointsValueConservative + benefits + c.annualFee;
     })
   );
@@ -47,10 +44,7 @@ export function TotalValueChart({
   const altCards = cards.filter((c) => !c.isUsersCard);
 
   function renderCard(card: CardSimulation) {
-    const benefits =
-      card.isUsersCard && card.benefitsCaptured !== null
-        ? card.benefitsCaptured
-        : (card.benefitsSimulated ?? card.benefitsValue);
+    const benefits = card.benefitsSimulated ?? card.benefitsValue;
 
     const ptsW =
       maxScale > 0
@@ -130,7 +124,7 @@ export function TotalValueChart({
                 minWidth: benW > 10 ? undefined : 0,
               }}
             >
-              {benW > 10 && `Benefits ${!card.isUsersCard && card.benefitsSimulated !== null ? "~" : ""}${formatDollars(benefits)}`}
+              {benW > 10 && `Benefits ${card.benefitsSimulated !== null ? "~" : ""}${formatDollars(benefits)}`}
             </div>
           )}
           {feeW > 0 && (
@@ -157,19 +151,10 @@ export function TotalValueChart({
           </span>
           <span>
             Benefits:{" "}
-            {card.isUsersCard && card.benefitsCaptured !== null ? (
+            {card.benefitsSimulated !== null ? (
               <>
                 <span className="font-data font-semibold" style={{ color: BENEFITS_DOT }}>
-                  {formatDollars(card.benefitsCaptured)}
-                </span>{" "}
-                <span className="text-[var(--text-secondary)]">
-                  of {formatDollars(card.benefitsValue)}
-                </span>
-              </>
-            ) : card.benefitsSimulated !== null ? (
-              <>
-                <span className="font-data font-semibold" style={{ color: BENEFITS_DOT }}>
-                  ~{formatDollars(card.benefitsSimulated)}
+                  ~{formatDollars(benefits)}
                 </span>{" "}
                 <span className="text-[11px] text-[var(--text-secondary)]">
                   of {formatDollars(card.benefitsValue)}

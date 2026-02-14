@@ -29,17 +29,27 @@ export function generateB1(ctx: GeneratorContext): InsightCandidate[] {
     const remaining = Math.round(usage.amountRemaining);
     const days = usage.daysRemaining;
 
-    // Select template variant based on urgency
+    const displayName = usage.displayGroupName || usage.benefitName;
+
+    // Check if benefit was also unused in prior cycle
+    const priorUsage = ctx.priorCycleBenefitUsages?.find(
+      (p) => p.benefitId === usage.benefitId
+    );
+    const wasUnusedPrior =
+      priorUsage && priorUsage.creditAmount > 0 &&
+      priorUsage.amountUsed / priorUsage.creditAmount < 0.25;
+
+    // Select template variant based on repeat pattern or urgency
     let templateKey: string;
-    if (days <= 7) {
+    if (wasUnusedPrior) {
+      templateKey = "b1_repeat_unused";
+    } else if (days <= 7) {
       templateKey = "b1_very_late";
     } else if (days <= 30) {
       templateKey = "b1_urgent";
     } else {
       templateKey = "b1_standard";
     }
-
-    const displayName = usage.displayGroupName || usage.benefitName;
 
     const endDate = new Date(usage.cycleEnd);
     const dateStr = endDate.toLocaleDateString("en-US", {
@@ -54,12 +64,15 @@ export function generateB1(ctx: GeneratorContext): InsightCandidate[] {
           ? `${days} days`
           : `${Math.ceil(days / 30)} months`;
 
+    const period = cycleToPeriodLabel(usage.cycle);
+
     const templateVars: Record<string, string | number> = {
       benefit: displayName,
       remaining,
       days,
       date: dateStr,
       time_left: timeLeft,
+      period,
     };
 
     insights.push({
@@ -111,4 +124,20 @@ export function generateB1(ctx: GeneratorContext): InsightCandidate[] {
   }
 
   return insights;
+}
+
+function cycleToPeriodLabel(cycle: string): string {
+  switch (cycle) {
+    case "monthly":
+      return "month";
+    case "biannual_h1":
+      return "half (Jan–Jun)";
+    case "biannual_h2":
+      return "half (Jul–Dec)";
+    case "annual_calendar":
+    case "annual_anniversary":
+      return "year";
+    default:
+      return "period";
+  }
 }

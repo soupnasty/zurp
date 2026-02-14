@@ -27,8 +27,8 @@ function relativeTime(iso: string): string {
 }
 
 export function SyncFooter({ cardProfiles }: SyncFooterProps) {
-  const router = useRouter();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [syncing, setSyncing] = useState(false);
   const [synced, setSynced] = useState(false);
 

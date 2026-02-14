@@ -11,12 +11,6 @@ export const biltPalladiumEarnConfig: EarnConfig = {
   bonusCategories: [],
   caps: [],
   annualFee: 495,
-  // 4% Bilt Cash earned on all non-rent purchases (separate currency from Bilt Points)
-  parallelEarnings: {
-    label: "Bilt Cash (4%)",
-    ratePercent: 4.0,
-    currency: "bilt_cash",
-  },
   valuation: {
     conservativeCpp: 1.5,
     upsideCpp: 2.2,

@@ -24,6 +24,7 @@ export function generateInsights(
     competitorEntries: [],
     totalBenefitsCaptured: 0,
     existingMilestoneKeys: [],
+    priorCycleBenefitUsages: [],
   };
 
   const candidates = runAllGenerators(ctx);

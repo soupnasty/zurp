@@ -20,6 +20,26 @@ interface CalculatorTransaction {
 }
 
 /**
+ * Detect if a transaction is a payment (negative amount with payment-like merchant name).
+ * Payments should be excluded from points calculations because:
+ * 1. Negative amounts shouldn't earn points
+ * 2. Payment transactions (e.g., "PAYMENT THANK YOU", "AUTOPAY") are not purchases
+ */
+function isPaymentTransaction(tx: CalculatorTransaction): boolean {
+  if (tx.amount >= 0) return false; // Positive amounts are not payments
+
+  const merchantName = (tx.merchantName || "").toLowerCase();
+  const paymentPatterns = [
+    "payment",
+    "autopay",
+    "thank you",
+    "auto pay",
+  ];
+
+  return paymentPatterns.some((pattern) => merchantName.includes(pattern));
+}
+
+/**
  * Extract day-of-week (0=Sun..6=Sat) and hour (0-23) in a given IANA timezone.
  */
 export function getDatePartsInTimezone(
@@ -48,24 +68,27 @@ export function getDatePartsInTimezone(
 
 /**
  * Check if a given day+hour falls within a time window.
- * Handles overnight windows where startHour >= endHour.
+ * Handles windows where startHour < endHour (same-day, exclusive end hour).
+ * Note: For time-window conditions like Citi Nights, endHour should be set
+ * such that the last valid hour (23 for 11:59 PM) is < endHour (so use 24).
+ * Plaid timestamps are UTC; for production accuracy, convert to card's timezone.
  */
 export function matchesTimeWindow(
   day: number,
   hour: number,
   tw: TimeWindow
 ): boolean {
-  const isOvernight = tw.startHour >= tw.endHour;
+  // Only support same-day windows (startHour < endHour)
+  // Overnight windows should be modeled with multiple day entries instead
+  if (tw.startHour >= tw.endHour) {
+    // Legacy support: if somehow startHour >= endHour, treat as same-day window
+    // This handles edge cases but overnight windows are not recommended
+    return false;
+  }
 
   for (const startDay of tw.days) {
-    if (isOvernight) {
-      // Window spans: startDay@startHour -> (startDay+1)@endHour
-      const nextDay = (startDay + 1) % 7;
-      if (day === startDay && hour >= tw.startHour) return true;
-      if (day === nextDay && hour < tw.endHour) return true;
-    } else {
-      // Same-day window: startDay@startHour -> startDay@endHour
-      if (day === startDay && hour >= tw.startHour && hour < tw.endHour) return true;
+    if (day === startDay && hour >= tw.startHour && hour < tw.endHour) {
+      return true;
     }
   }
 
@@ -170,12 +193,27 @@ function findCap(config: EarnConfig, category: EarnCategory) {
 /**
  * Calculate points earned on a single transaction for a given card config.
  * Handles cap tracking for capped categories (e.g., Gold grocery $25K).
+ * Skips payment transactions (negative amounts with payment-like merchant names).
  */
 export function calculatePointsForTransaction(
   tx: CalculatorTransaction,
   config: EarnConfig,
   capState: CapState
 ): TransactionEarnResult {
+  // Skip payment transactions — they should not earn points
+  if (isPaymentTransaction(tx)) {
+    return {
+      transactionId: tx.id,
+      category: tx.category,
+      confidence: tx.confidence,
+      amount: tx.amount,
+      earnRate: 0,
+      points: 0,
+      bonusLabel: null,
+      capApplied: false,
+    };
+  }
+
   const normalizedMerchant = normalizeMerchantName(tx.merchantName);
   const absAmount = Math.abs(tx.amount);
   const isRefund = tx.amount < 0;

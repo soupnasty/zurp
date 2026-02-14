@@ -45,7 +45,12 @@ export async function processTransactionsForConnection(
     ),
   });
 
-  if (rawTransactions.length === 0) return;
+  if (rawTransactions.length === 0) {
+    // No new transactions to match, but still recompute summaries
+    // (e.g. after historical backfill when all txns were already processed)
+    await recomputeSummaries(connection.userId, cardProfile, plaidConnectionId);
+    return;
+  }
 
   // Run anniversary detection
   const allTransactions = await db.query.transactions.findMany({
@@ -408,24 +413,47 @@ export async function processTransactionsForConnection(
     }
   }
 
-  // Compute and persist points earning summary
+  await recomputeSummaries(connection.userId, cardProfile, plaidConnectionId);
+}
+
+/**
+ * Recompute points summaries, card simulations, insights, and debug reports.
+ * Called after matching and also when there are no new transactions to match
+ * (to pick up changes in date bounds or reprocessing).
+ */
+async function recomputeSummaries(
+  userId: string,
+  cardProfile: { id: string; cardType: string; anniversaryDate?: Date | null },
+  plaidConnectionId: string
+) {
+  // Compute and persist points earning summaries (anniversary-year for Track, rolling-365 for Compare)
   try {
     await computeAndPersistPointsSummary(
-      connection.userId,
+      userId,
       cardProfile.id,
       cardProfile.cardType,
-      cardProfile.anniversaryDate
+      { periodType: "anniversary_year", anniversaryDate: cardProfile.anniversaryDate ?? null },
     );
   } catch (err) {
-    console.error("Points summary failed:", err);
+    console.error("Points summary (anniversary) failed:", err);
   }
 
-  // Precompute card simulations (6 cards × 2 portal modes)
+  try {
+    await computeAndPersistPointsSummary(
+      userId,
+      cardProfile.id,
+      cardProfile.cardType,
+      { periodType: "rolling_365" },
+    );
+  } catch (err) {
+    console.error("Points summary (rolling) failed:", err);
+  }
+
+  // Precompute card simulations (all cards × 2 portal modes)
   try {
     await computeAndPersistSimulations(
-      connection.userId,
+      userId,
       cardProfile.id,
-      cardProfile.anniversaryDate
     );
   } catch (err) {
     console.error("Card simulations failed:", err);
@@ -433,7 +461,7 @@ export async function processTransactionsForConnection(
 
   // Generate insights after all matches are written
   try {
-    await generateAndPersistInsights(connection.userId);
+    await generateAndPersistInsights(userId);
   } catch (err) {
     console.error("Insight generation failed:", err);
     // Non-fatal: don't block transaction processing

@@ -4,6 +4,7 @@ import { getCardProfiles } from "@/lib/queries";
 import { hasUnseenInsights } from "@/lib/insights/queries";
 import { AppShell } from "@/components/AppShell";
 import { SyncFooter } from "./_components/SyncFooter";
+import { SyncBanner } from "./_components/SyncBanner";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +32,7 @@ export default async function DashboardLayout({
     annualFee: c.annualFee,
     connectionId: c.connectionId,
     connectionStatus: c.connectionStatus,
+    syncStatus: c.syncStatus,
     lastSyncedAt: c.lastSyncedAt?.toISOString() ?? null,
   }));
 
@@ -40,6 +42,7 @@ export default async function DashboardLayout({
       dashboardNav={{ hasNewInsights: hasNew, cardProfiles }}
     >
       <div className="mx-auto max-w-[960px] px-4 pt-8 pb-32 md:px-8">
+        <SyncBanner cardProfiles={cardProfiles} />
         {children}
       </div>
       <SyncFooter cardProfiles={cardProfiles} />

@@ -96,13 +96,13 @@ export const biltPalladium: CardDefinition = {
       type: "credit",
       creditAmount: 200,
       cycle: "annual_calendar",
-      merchantPatterns: ["bilt"],
-      autoMatchable: true,
+      merchantPatterns: [],
+      autoMatchable: false,
       requiresActivation: false,
       priority: 10,
       description: "Up to $200 annual Bilt Cash credit on January 1.",
       notes:
-        "Only $100 unused balance rolls to next year. Must redeem before Dec 31 to avoid expiration.",
+        "Annual account credit deposited Jan 1, not a transaction-matched benefit. Only $100 unused balance rolls to next year. Must redeem before Dec 31 to avoid expiration.",
       details: biltCashAnnualDetails,
     }),
 

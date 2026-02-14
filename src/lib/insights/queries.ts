@@ -3,8 +3,10 @@ import { db } from "@/db";
 import { eq, and, sql, desc, gte, lte, lt, inArray } from "drizzle-orm";
 import * as schema from "@/db/schema";
 import { classifyTransaction } from "@/lib/spending/categories";
+import { getCardDefinition } from "@/lib/cards";
+import { getPreviousCycleBounds } from "@/lib/engine/cycle-utils";
 import type { InsightImpressionHistory } from "./types";
-import type { CompetitorMapEntry } from "./generators/types";
+import type { CompetitorMapEntry, PriorCycleUsage } from "./generators/types";
 import type { CategorizedTransaction } from "@/lib/spending/types";
 
 /** Get impression history for all insights belonging to a user. */
@@ -239,4 +241,64 @@ export async function cleanupDismissedInsights(userId: string, cutoffDays = 90) 
         lt(schema.insights.generatedAt, cutoff)
       )
     );
+}
+
+/**
+ * Get prior cycle benefit usage for each benefit on a card.
+ * Used by B1/B3 generators to detect repeat unused/underused patterns.
+ */
+export async function getPriorBenefitUsages(
+  userId: string,
+  cardProfileId: string,
+  cardType: string,
+  anniversaryDate: Date | null
+): Promise<PriorCycleUsage[]> {
+  const cardDef = getCardDefinition(cardType);
+  if (!cardDef) return [];
+
+  // Compute prior period keys for each benefit
+  const now = new Date();
+  const priorPeriodKeys = new Set<string>();
+  const benefitPriorKeyMap = new Map<string, string>();
+
+  for (const benefit of cardDef.benefits) {
+    if (benefit.type === "subscription") continue;
+    const prior = getPreviousCycleBounds(benefit.cycle, now, anniversaryDate);
+    priorPeriodKeys.add(prior.periodKey);
+    benefitPriorKeyMap.set(benefit.id, prior.periodKey);
+  }
+
+  if (priorPeriodKeys.size === 0) return [];
+
+  // Batch-fetch all usage records for this user+card
+  const usageRecords = await db.query.benefitUsage.findMany({
+    where: and(
+      eq(schema.benefitUsage.userId, userId),
+      eq(schema.benefitUsage.cardProfileId, cardProfileId),
+      inArray(schema.benefitUsage.periodKey, Array.from(priorPeriodKeys))
+    ),
+  });
+
+  // Filter to only records matching the correct prior period for each benefit
+  const results: PriorCycleUsage[] = [];
+  for (const record of usageRecords) {
+    const expectedKey = benefitPriorKeyMap.get(record.benefitId);
+    if (expectedKey !== record.periodKey) continue;
+
+    const benefitDef = cardDef.benefits.find((b) => b.id === record.benefitId);
+    if (!benefitDef) continue;
+
+    results.push({
+      benefitId: record.benefitId,
+      periodKey: record.periodKey,
+      cycle: benefitDef.cycle,
+      creditAmount: benefitDef.creditAmount,
+      amountUsed: record.amountUsed,
+      isFullyUsed: record.isFullyUsed,
+      cycleStart: record.cycleStart,
+      cycleEnd: record.cycleEnd,
+    });
+  }
+
+  return results;
 }

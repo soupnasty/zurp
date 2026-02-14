@@ -16,7 +16,12 @@ const SYNC_LOCK_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
 /**
  * Shared sync logic used by the manual sync API route and webhook handler.
- * Fetches new transactions from Plaid, upserts them, and runs the matcher.
+ * Uses transactionsSync (cursor-based) to fetch new/modified/removed transactions.
+ *
+ * History depth is controlled by `days_requested: 365` set during Link token
+ * creation. Plaid signals data readiness via INITIAL_UPDATE (30 days) and
+ * HISTORICAL_UPDATE (full history) webhooks. transactionsSync gracefully
+ * returns empty results if called before data is ready (no PRODUCT_NOT_READY).
  *
  * Uses a DB-level sync lock (syncLockedUntil) to prevent concurrent syncs
  * for the same connection. The lock has a 5-minute TTL to prevent deadlocks.
@@ -78,8 +83,24 @@ export async function triggerSync(connectionId: string): Promise<SyncResult> {
       cursor = response.data.next_cursor;
     }
 
+    console.log(
+      `[sync] connection=${connectionId} | mode=${connection.lastSyncCursor ? "incremental" : "initial"} | added=${added.length} modified=${modified.length} removed=${removed.length}`
+    );
+
     // Upsert added transactions (batch insert)
     if (added.length > 0) {
+      const dates = added.map((tx) => tx.date).sort();
+      const pendingCount = added.filter((tx) => tx.pending).length;
+      console.log(
+        `[sync] date range: ${dates[0]} → ${dates[dates.length - 1]} | pending: ${pendingCount}/${added.length}`
+      );
+      for (const tx of added.slice(0, 10)) {
+        console.log(
+          `  ${tx.date} | $${tx.amount.toFixed(2)} | ${tx.merchant_name || tx.name} | ${tx.personal_finance_category?.primary ?? "–"} / ${tx.personal_finance_category?.detailed ?? "–"}`
+        );
+      }
+      if (added.length > 10) console.log(`  ... and ${added.length - 10} more`);
+
       await db
         .insert(schema.transactions)
         .values(

@@ -113,9 +113,33 @@ const MERCHANT_MAP_UNSORTED: MerchantEntry[] = [
   // ── Hotels ──
   { pattern: "marriott", matchType: "prefix", category: "travel_hotels", priority: 10 },
   { pattern: "hilton", matchType: "prefix", category: "travel_hotels", priority: 10 },
+  { pattern: "conrad", matchType: "prefix", category: "travel_hotels", priority: 10 },
+  { pattern: "canopy", matchType: "prefix", category: "travel_hotels", priority: 10 },
+  { pattern: "curio", matchType: "prefix", category: "travel_hotels", priority: 10 },
+  { pattern: "doubletree", matchType: "prefix", category: "travel_hotels", priority: 10 },
+  { pattern: "embassy suites", matchType: "prefix", category: "travel_hotels", priority: 10 },
+  { pattern: "hampton", matchType: "prefix", category: "travel_hotels", priority: 10 },
+  { pattern: "hilton garden inn", matchType: "prefix", category: "travel_hotels", priority: 10 },
+  { pattern: "home2 suites", matchType: "prefix", category: "travel_hotels", priority: 10 },
+  { pattern: "homewood suites", matchType: "prefix", category: "travel_hotels", priority: 10 },
+  { pattern: "lxr", matchType: "prefix", category: "travel_hotels", priority: 10 },
+  { pattern: "motto", matchType: "prefix", category: "travel_hotels", priority: 10 },
+  { pattern: "signia", matchType: "prefix", category: "travel_hotels", priority: 10 },
+  { pattern: "tru", matchType: "prefix", category: "travel_hotels", priority: 10 },
+  { pattern: "waldorf astoria", matchType: "prefix", category: "travel_hotels", priority: 10 },
+  { pattern: "tapestry collection", matchType: "prefix", category: "travel_hotels", priority: 10 },
+  { pattern: "yoko", matchType: "prefix", category: "travel_hotels", priority: 10 },
   { pattern: "hyatt", matchType: "prefix", category: "travel_hotels", priority: 10 },
   { pattern: "ihg", matchType: "prefix", category: "travel_hotels", priority: 10 },
   { pattern: "intercontinental", matchType: "prefix", category: "travel_hotels", priority: 10 },
+  { pattern: "voco", matchType: "prefix", category: "travel_hotels", priority: 10 },
+  { pattern: "ruby hotel", matchType: "prefix", category: "travel_hotels", priority: 10 },
+  { pattern: "hualuxe", matchType: "prefix", category: "travel_hotels", priority: 10 },
+  { pattern: "iberostar", matchType: "prefix", category: "travel_hotels", priority: 10 },
+  { pattern: "holiday inn express", matchType: "prefix", category: "travel_hotels", priority: 10 },
+  { pattern: "holiday inn club", matchType: "prefix", category: "travel_hotels", priority: 10 },
+  { pattern: "garner hotel", matchType: "prefix", category: "travel_hotels", priority: 10 },
+  { pattern: "avid hotel", matchType: "prefix", category: "travel_hotels", priority: 10 },
   { pattern: "holiday inn", matchType: "prefix", category: "travel_hotels", priority: 10 },
   { pattern: "best western", matchType: "prefix", category: "travel_hotels", priority: 10 },
   { pattern: "wyndham", matchType: "prefix", category: "travel_hotels", priority: 10 },
@@ -125,6 +149,8 @@ const MERCHANT_MAP_UNSORTED: MerchantEntry[] = [
 
   // ── Travel Portal ──
   { pattern: "chase travel", matchType: "prefix", category: "travel_portal", priority: 10 },
+  { pattern: "ultimate rewards travel", matchType: "prefix", category: "travel_portal", priority: 10 },
+  { pattern: "chase ultimate rewards", matchType: "prefix", category: "travel_portal", priority: 10 },
   { pattern: "amex travel", matchType: "prefix", category: "travel_portal", priority: 10 },
   { pattern: "citi travel", matchType: "prefix", category: "travel_portal", priority: 10 },
   { pattern: "cititravel", matchType: "prefix", category: "travel_portal", priority: 10 },
@@ -187,6 +213,8 @@ const MERCHANT_MAP_UNSORTED: MerchantEntry[] = [
   { pattern: "fandango", matchType: "prefix", category: "entertainment", priority: 10 },
   { pattern: "amc theatre", matchType: "prefix", category: "entertainment", priority: 10 },
   { pattern: "regal cinema", matchType: "prefix", category: "entertainment", priority: 10 },
+  { pattern: "chaan thai massage", matchType: "prefix", category: "entertainment", priority: 10 },
+  { pattern: "king spa", matchType: "prefix", category: "entertainment", priority: 10 },
 
   // ── Shopping Online (before Amazon generic) ──
   { pattern: "amazon", matchType: "prefix", category: "shopping_online", priority: 5 },
@@ -195,6 +223,7 @@ const MERCHANT_MAP_UNSORTED: MerchantEntry[] = [
   { pattern: "etsy", matchType: "prefix", category: "shopping_online", priority: 10 },
   { pattern: "wayfair", matchType: "prefix", category: "shopping_online", priority: 10 },
   { pattern: "chewy", matchType: "prefix", category: "shopping_online", priority: 10 },
+  { pattern: "supermaven", matchType: "prefix", category: "shopping_online", priority: 10 },
 
   // ── Drugstores ──
   { pattern: "cvs", matchType: "prefix", category: "drugstores", priority: 10 },
@@ -209,11 +238,14 @@ const MERCHANT_MAP_UNSORTED: MerchantEntry[] = [
   { pattern: "target", matchType: "prefix", category: "shopping_instore", priority: 5 },
   { pattern: "walmart", matchType: "prefix", category: "shopping_instore", priority: 5 },
   { pattern: "best buy", matchType: "prefix", category: "shopping_instore", priority: 10 },
-  { pattern: "apple store", matchType: "prefix", category: "shopping_instore", priority: 10 },
   { pattern: "nordstrom", matchType: "prefix", category: "shopping_instore", priority: 10 },
   { pattern: "tj maxx", matchType: "prefix", category: "shopping_instore", priority: 10 },
   { pattern: "marshalls", matchType: "prefix", category: "shopping_instore", priority: 10 },
   { pattern: "ross ", matchType: "prefix", category: "shopping_instore", priority: 10 },
+
+  // ── Apple (merchant match for Apple Card 3%) ──
+  { pattern: "apple.com", matchType: "contains", category: "shopping_online", priority: 15 },
+  { pattern: "apple store", matchType: "prefix", category: "shopping_instore", priority: 15 },
 
   // ── Phone Services ──
   { pattern: "verizon", matchType: "prefix", category: "phone_services", priority: 10 },

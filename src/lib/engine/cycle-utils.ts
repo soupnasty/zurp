@@ -104,12 +104,17 @@ export function getCurrentCycleBounds(
 
     case "annual_anniversary": {
       if (!anniversaryDate) {
-        // Fallback to calendar year if no anniversary date
+        // Fallback to rolling 365-day window if no anniversary date detected
+        const cycleEnd = new Date(ref.getFullYear(), ref.getMonth(), ref.getDate(), 23, 59, 59, 999);
+        const cycleStart = new Date(cycleEnd);
+        cycleStart.setFullYear(cycleStart.getFullYear() - 1);
+        cycleStart.setDate(cycleStart.getDate() + 1);
+        cycleStart.setHours(0, 0, 0, 0);
         const year = ref.getFullYear();
         return {
           periodKey: `${year}-ANN`,
-          cycleStart: new Date(year, 0, 1),
-          cycleEnd: new Date(year, 11, 31, 23, 59, 59, 999),
+          cycleStart,
+          cycleEnd,
         };
       }
 

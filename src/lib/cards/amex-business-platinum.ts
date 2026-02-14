@@ -70,6 +70,55 @@ const clearDetails: BenefitDetails = {
   links: [{ label: "CLEAR", url: "https://www.clearme.com" }],
 };
 
+const wirelessCreditDetails: BenefitDetails = {
+  description:
+    "Up to $10/month in statement credits for wireless telephone service purchases made directly with a wireless provider in the U.S., totaling up to $120 back per year.",
+  howToUse: [
+    "Pay your wireless bill directly with your Business Platinum card",
+    "Wireless providers include AT&T, T-Mobile, Verizon, Sprint, and others",
+    "Statement credit posts automatically each month",
+  ],
+  links: [
+    {
+      label: "Business Platinum Benefits",
+      url: "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/american-express-business-platinum-credit-card-amex/",
+    },
+  ],
+};
+
+const adobeCreditDetails: BenefitDetails = {
+  description:
+    "Up to $250 in annual statement credits for purchases made directly with Adobe per calendar year on adobe.com or through Adobe. Requires a minimum of $600 in qualifying U.S. purchases per calendar year.",
+  howToUse: [
+    "Make purchases at adobe.com or directly with Adobe",
+    "Ensure you have at least $600 in qualifying U.S. purchases per calendar year",
+    "Statement credit posts automatically after spending requirement is met",
+  ],
+  links: [
+    {
+      label: "Adobe Benefit Details",
+      url: "https://global.americanexpress.com/card-benefits/detail/adobe-benefit/business-platinum",
+    },
+  ],
+};
+
+const indeedCreditDetails: BenefitDetails = {
+  description:
+    "Up to $360 in annual statement credits for recruiting services on Indeed.com, with up to $90 back per quarter available through sponsored job postings and other Indeed services.",
+  howToUse: [
+    "Enroll in the Indeed benefit through your Amex account",
+    "Go to Indeed.com",
+    "Use your Business Platinum card for job postings or sponsored content",
+    "Statement credits are available up to $90 per quarter",
+  ],
+  links: [
+    {
+      label: "Indeed Benefit",
+      url: "https://global.americanexpress.com/card-benefits/detail/indeed-benefit/business-platinum",
+    },
+  ],
+};
+
 // ── Card Definition ──
 
 export const amexBusinessPlatinum: CardDefinition = {
@@ -168,6 +217,56 @@ export const amexBusinessPlatinum: CardDefinition = {
       description: "Up to $209/year covering CLEAR Plus membership.",
       notes: "Covers annual CLEAR Plus membership fee.",
       details: clearDetails,
+    }),
+
+    // ── 2025 Refresh Benefits ──
+    b({
+      id: "biz_plat_wireless_credit",
+      name: "Wireless Telephone Credit",
+      icon: "Phone",
+      category: "subscription",
+      type: "credit",
+      creditAmount: 10,
+      cycle: "monthly",
+      merchantPatterns: ["at&t", "t-mobile", "verizon", "sprint", "wireless"],
+      autoMatchable: true,
+      requiresActivation: false,
+      priority: 15,
+      description: "Up to $10/month wireless telephone credit ($120/year).",
+      notes: "For U.S. wireless providers (AT&T, T-Mobile, Verizon, Sprint, etc.).",
+      details: wirelessCreditDetails,
+    }),
+    b({
+      id: "biz_plat_adobe_credit",
+      name: "Adobe Credit",
+      icon: "Paintbrush",
+      category: "shopping",
+      type: "credit",
+      creditAmount: 250,
+      cycle: "annual_calendar",
+      merchantPatterns: ["adobe"],
+      autoMatchable: true,
+      requiresActivation: false,
+      priority: 20,
+      description: "Up to $250/year Adobe Creative Cloud credit.",
+      notes: "Requires $600 in qualifying U.S. purchases per calendar year.",
+      details: adobeCreditDetails,
+    }),
+    b({
+      id: "biz_plat_indeed_credit",
+      name: "Indeed Recruiting Credit",
+      icon: "Briefcase",
+      category: "shopping",
+      type: "credit",
+      creditAmount: 90,
+      cycle: "quarterly_q1",
+      merchantPatterns: ["indeed"],
+      autoMatchable: true,
+      requiresActivation: true,
+      priority: 15,
+      description: "Up to $90/quarter for Indeed job posting credits ($360/year).",
+      notes: "Requires enrollment. Up to $360 annually across all quarters.",
+      details: indeedCreditDetails,
     }),
   ],
 };

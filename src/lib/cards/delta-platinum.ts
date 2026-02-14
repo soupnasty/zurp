@@ -54,7 +54,9 @@ export const deltaPlatinum: CardDefinition = {
   imageUrl: null,
   isActive: true,
   benefits: [
-    // Companion Certificate (certificate) tracked in perk matrix only.
+    // Non-tracked benefits (certificates, tracked in perk matrix only):
+    // - Companion Certificate (annual, after $25K spend)
+    // Note: Requires $10,000 in annual card spend to activate. Spending threshold not enforced in matcher.
     b({
       id: "delta_flight_credit",
       name: "Delta Flight Credit",
@@ -88,6 +90,8 @@ export const deltaPlatinum: CardDefinition = {
       description:
         "Up to $9.99/month Uber One membership credit through June 2026.",
       notes: "Includes $0 delivery fees, discounts on rides and Uber Eats.",
+      // Uber One benefit confirmed through June 25, 2026
+      sunsetDate: "2026-06-25",
       details: uberOneMonthlyDetails,
       brandSlug: "uber",
       activeMonths: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],

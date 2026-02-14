@@ -21,6 +21,12 @@ export const amexGoldEarnConfig: EarnConfig = {
       earnRate: 3,
       label: "Flights",
     },
+    // 2x on hotels via Amex Travel portal only
+    {
+      categories: ["travel_portal"],
+      earnRate: 2,
+      label: "Hotels via AmexTravel.com",
+    },
   ],
   caps: [
     {

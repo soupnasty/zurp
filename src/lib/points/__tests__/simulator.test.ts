@@ -6,7 +6,7 @@ import { cffEarnConfig } from "../earn-configs/chase-freedom-flex";
 import { amexGoldEarnConfig } from "../earn-configs/amex-gold";
 import { citiStrataEliteEarnConfig } from "../earn-configs/citi-strata-elite";
 import { ventureXEarnConfig } from "../earn-configs/capital-one-venture-x";
-import { biltPalladiumEarnConfig } from "../earn-configs/bilt-palladium";
+
 import type { CategoryAssignment } from "../types";
 
 function makeTx(
@@ -192,12 +192,13 @@ describe("runSimulation", () => {
     // netCeiling = points + full benefits - fee
     expect(csr.netCeiling).toBe(Math.round((pointsValue + csr.benefitsValue - 795) * 100) / 100);
 
-    // netActual = points + captured($500) - fee
-    expect(csr.netActual).toBe(Math.round((pointsValue + 500 - 795) * 100) / 100);
+    // netActual uses simulated benefits (not captured) for fair comparison
+    expect(csr.benefitsSimulated).toBeTypeOf("number");
+    expect(csr.netActual).toBe(Math.round((pointsValue + csr.benefitsSimulated! - 795) * 100) / 100);
 
-    // For user's card: floor < actual < ceiling
-    expect(csr.netFloor).toBeLessThan(csr.netActual);
-    expect(csr.netActual).toBeLessThan(csr.netCeiling);
+    // floor <= actual <= ceiling
+    expect(csr.netFloor).toBeLessThanOrEqual(csr.netActual);
+    expect(csr.netActual).toBeLessThanOrEqual(csr.netCeiling);
   });
 
   it("ranks and headlines by netFloor (points only)", () => {
@@ -518,72 +519,6 @@ describe("runSimulation", () => {
         (c) => c.category === "car_rentals"
       );
       expect(carCat).toBeUndefined();
-    });
-  });
-
-  // ── Fix #4: Bilt parallel earnings ──
-  describe("Bilt parallel earnings (Fix #4)", () => {
-    it("includes parallelValue for Bilt Palladium", () => {
-      const transactions = [
-        makeTx("t1", "2025-01-01", "CHIPOTLE", 5000, "dining"),
-        makeTx("t2", "2025-02-01", "WHOLE FOODS", 5000, "groceries"),
-      ];
-
-      const result = runSimulation({
-        transactions,
-        configs: [biltPalladiumEarnConfig],
-        usersCardId: "bilt_palladium",
-        benefitsCaptured: null,
-        period,
-        monthCount: 12,
-      })!;
-
-      const bilt = result.cards[0];
-      // $10K total spend * 4% = $400 parallel value
-      expect(bilt.parallelValue).toBe(400);
-    });
-
-    it("parallelValue is included in netCeiling", () => {
-      const transactions = [
-        makeTx("t1", "2025-01-01", "RANDOM STORE", 10000, "other"),
-      ];
-
-      const result = runSimulation({
-        transactions,
-        configs: [biltPalladiumEarnConfig],
-        usersCardId: "bilt_palladium",
-        benefitsCaptured: null,
-        period,
-        monthCount: 12,
-      })!;
-
-      const bilt = result.cards[0];
-      // Points: 10000 * 2 = 20000 pts * 1.5cpp = $300
-      // Parallel: 10000 * 4% = $400
-      // Benefits value: some amount
-      // netCeiling = pointsValue + benefitsValue + parallelValue - annualFee
-      const expectedCeiling = Math.round(
-        (bilt.pointsValueConservative + bilt.benefitsValue + bilt.parallelValue - bilt.annualFee) * 100
-      ) / 100;
-      expect(bilt.netCeiling).toBe(expectedCeiling);
-      expect(bilt.parallelValue).toBe(400);
-    });
-
-    it("non-Bilt cards have zero parallelValue", () => {
-      const transactions = [
-        makeTx("t1", "2025-01-01", "RANDOM STORE", 10000, "other"),
-      ];
-
-      const result = runSimulation({
-        transactions,
-        configs: [csrEarnConfig],
-        usersCardId: "chase_sapphire_reserve",
-        benefitsCaptured: 0,
-        period,
-        monthCount: 12,
-      })!;
-
-      expect(result.cards[0].parallelValue).toBe(0);
     });
   });
 

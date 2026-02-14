@@ -26,6 +26,7 @@ interface OnboardingWizardProps {
 export function OnboardingWizard({ userId, cards }: OnboardingWizardProps) {
   const [connectionId, setConnectionId] = useState<string | null>(null);
   const [showCardFallback, setShowCardFallback] = useState(false);
+  const [plaidDismissed, setPlaidDismissed] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const syncAndRedirect = (connId: string, cardType: string) => {
@@ -59,38 +60,58 @@ export function OnboardingWizard({ userId, cards }: OnboardingWizardProps) {
     }
   };
 
+  const handlePlaidExit = () => {
+    // If user dismissed Plaid without linking, show a visible button
+    if (!connectionId) {
+      setPlaidDismissed(true);
+    }
+  };
+
+  // PlaidLink auto-opens on mount. Show nothing until the user dismisses
+  // Plaid (card selection fallback) — the page is just a plain dark bg.
   return (
     <div className="flex flex-col">
-      <div className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-secondary)] p-6">
-        {!showCardFallback ? (
-          <div>
-            <h2 className="text-h3 font-semibold">Link Your Bank Account</h2>
-            <p className="mt-2 text-[var(--text-secondary)]">
-              Connect your bank account so we can detect your card and track
-              benefits automatically.
-            </p>
-            <div className="mt-6">
-              <PlaidLinkButton
-                userId={userId}
-                onSuccess={handlePlaidSuccess}
-                onError={setError}
-              />
-            </div>
-          </div>
-        ) : (
+      {showCardFallback ? (
+        <div className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-secondary)] p-6">
           <CardSelection
             cards={cards}
             onSelect={handleCardSelect}
             detectedCardId={null}
           />
-        )}
 
-        {error && (
-          <p className="mt-4 text-sm text-[var(--color-danger)]">
-            {error}
+          {error && (
+            <p className="mt-4 text-sm text-[var(--color-danger)]">
+              {error}
+            </p>
+          )}
+        </div>
+      ) : plaidDismissed ? (
+        <div className="flex flex-col items-center justify-center gap-4 py-16">
+          <p className="text-sm text-[var(--text-secondary)]">
+            Connect your card to get started
           </p>
-        )}
-      </div>
+          <PlaidLinkButton
+            userId={userId}
+            onSuccess={handlePlaidSuccess}
+            onError={setError}
+            onExit={handlePlaidExit}
+          />
+          {error && (
+            <p className="mt-2 text-sm text-[var(--color-danger)]">
+              {error}
+            </p>
+          )}
+        </div>
+      ) : (
+        <div className="absolute opacity-0 pointer-events-none">
+          <PlaidLinkButton
+            userId={userId}
+            onSuccess={handlePlaidSuccess}
+            onError={setError}
+            onExit={handlePlaidExit}
+          />
+        </div>
+      )}
     </div>
   );
 }

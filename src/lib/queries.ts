@@ -101,6 +101,8 @@ export async function getCardSummary(
   }
 
   // Per-current-cycle metrics: available, expired, value at risk
+  // Note: This includes all non-subscription benefits in the current cycle,
+  // regardless of whether they are autoMatchable or require manual activation.
   let creditsExpired = 0;
   let nearestExpiry: number | null = null;
   let valueAtRisk = 0;
@@ -108,7 +110,7 @@ export async function getCardSummary(
   for (const benefit of cardDef.benefits) {
     if (benefit.type === "subscription") continue;
 
-    // Skip benefits not active in the current month
+    // Skip benefits not active in the current month (e.g., Amex Platinum Uber Cash)
     if (benefit.activeMonths && !benefit.activeMonths.includes(now.getMonth())) continue;
 
     const bounds = getCurrentCycleBounds(
@@ -121,6 +123,7 @@ export async function getCardSummary(
       (u) => u.benefitId === benefit.id && u.periodKey === bounds.periodKey
     );
 
+    // Add the benefit's creditAmount to available (includes both autoMatchable and manual benefits)
     creditsAvailable += benefit.creditAmount;
 
     if (usage) {
@@ -526,6 +529,7 @@ export const getCardProfiles = cache(async function getCardProfiles(userId: stri
       isActive: cp.isActive,
       connectionId: cp.plaidConnectionId,
       connectionStatus: cp.plaidConnection?.status ?? null,
+      syncStatus: (cp.plaidConnection?.syncStatus ?? "pending") as "pending" | "initial" | "complete",
       lastSyncedAt: cp.plaidConnection?.lastSyncedAt ?? null,
       institutionName: cp.plaidConnection.institutionName,
       accountMask: cp.plaidConnection.accountMask,

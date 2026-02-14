@@ -18,7 +18,7 @@ export const amexPlatinumEarnConfig: EarnConfig = {
     },
   ],
   caps: [],
-  annualFee: 695,
+  annualFee: 895,
   valuation: {
     conservativeCpp: 1.0,
     upsideCpp: 2.0,

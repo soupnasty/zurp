@@ -36,7 +36,8 @@ export const ihgPremier: CardDefinition = {
   imageUrl: null,
   isActive: true,
   benefits: [
-    // Free Night Certificate is tracked in perk matrix only (certificate type).
+    // Non-tracked benefits (certificates, tracked in perk matrix only):
+    // - Free Night Certificate (annual, up to 40,000 points value)
     b({
       id: "ihg_global_entry",
       name: "Global Entry / TSA PreCheck",

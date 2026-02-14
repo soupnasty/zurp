@@ -95,15 +95,15 @@ export function runSimulation(input: SimulationInput): ComparisonOutput | null {
     );
   });
 
-  // Simulate benefit matching for non-user cards using the actual matcher
+  // Simulate benefit matching for all cards using the actual matcher.
+  // Pass period.start as synthetic anniversary date so annual benefits
+  // get exactly one budget across the 365-day window (no year-boundary split).
   for (const sim of simulations) {
-    if (!sim.isUsersCard) {
-      const simulated = simulateBenefitsForCard(sim.cardId, sortedTxns);
-      sim.benefitsSimulated = simulated;
-      sim.netActual = round2(
-        sim.pointsValueConservative + simulated + sim.parallelValue - sim.annualFee
-      );
-    }
+    const simulated = simulateBenefitsForCard(sim.cardId, sortedTxns, period.start);
+    sim.benefitsSimulated = simulated;
+    sim.netActual = round2(
+      sim.pointsValueConservative + simulated - sim.annualFee
+    );
   }
 
   // Rank cards by netActual descending (matches leaderboard sort)
@@ -218,23 +218,11 @@ function simulateCard(
   const values = valuatePoints(totalPoints, config);
   const benefitsValue = computeBenefitsValue(config.cardId);
 
-  // Parallel earnings (e.g., Bilt Cash 4% on all non-rent purchases)
-  let parallelValue = 0;
-  if (config.parallelEarnings) {
-    // Sum spend from category map (accounts for refunds correctly)
-    const cardTotalSpend = Array.from(categoryMap.values()).reduce(
-      (sum, entry) => sum + entry.spend,
-      0
-    );
-    parallelValue = round2(cardTotalSpend * (config.parallelEarnings.ratePercent / 100));
-  }
-
   // Range-based net values (apples-to-apples for all cards)
   const netFloor = round2(values.conservative - config.annualFee);
-  const netCeiling = round2(values.conservative + benefitsValue + parallelValue - config.annualFee);
-  const netActual = isUsersCard && benefitsCaptured !== null
-    ? round2(values.conservative + benefitsCaptured + parallelValue - config.annualFee)
-    : netCeiling;
+  const netCeiling = round2(values.conservative + benefitsValue - config.annualFee);
+  // Initial netActual uses ceiling; overridden with benefitsSimulated in runSimulation()
+  const netActual = netCeiling;
 
   // Build category summaries
   const categories: CategoryEarnSummary[] = [];
@@ -277,7 +265,6 @@ function simulateCard(
     pointsValueConservative: values.conservative,
     pointsValueUpside: values.upside,
     benefitsValue,
-    parallelValue,
     benefitsCaptured: isUsersCard ? benefitsCaptured : null,
     benefitsSimulated: null,
     netFloor,
@@ -294,7 +281,8 @@ function simulateCard(
  */
 function simulateBenefitsForCard(
   cardId: string,
-  transactions: SimulationTransaction[]
+  transactions: SimulationTransaction[],
+  periodStart: Date
 ): number {
   const cardDef = getCardDefinition(cardId);
   if (!cardDef || cardDef.benefits.length === 0) return 0;
@@ -314,11 +302,13 @@ function simulateBenefitsForCard(
       matchedStatus: "unmatched" as const,
     }));
 
-  // Run matcher with empty usage (fresh simulation) and no anniversary date
+  // Run matcher with empty usage (fresh simulation).
+  // Use periodStart as synthetic anniversary date so annual_anniversary
+  // benefits get one budget for the entire 365-day window.
   const result = runMatcher(matcherTxns, {
     benefits: cardDef.benefits,
     usageMap: new Map(),
-    anniversaryDate: null,
+    anniversaryDate: periodStart,
   });
 
   // Sum all credits matched

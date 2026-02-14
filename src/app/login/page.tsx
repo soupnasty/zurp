@@ -2,7 +2,7 @@ import { LoginForm } from "./_components/LoginForm";
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
+    <div className="flex min-h-screen flex-col items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           {/* Logo icon */}
@@ -37,6 +37,14 @@ export default function LoginPage() {
           <LoginForm />
         </div>
       </div>
+
+      <footer className="fixed bottom-6 flex gap-4 text-[var(--text-caption)] text-[var(--text-dim)]">
+        <a href="/privacy" className="hover:text-[var(--text-secondary)] transition-colors">Privacy</a>
+        <span>·</span>
+        <a href="/terms" className="hover:text-[var(--text-secondary)] transition-colors">Terms</a>
+        <span>·</span>
+        <a href="/security" className="hover:text-[var(--text-secondary)] transition-colors">Security</a>
+      </footer>
     </div>
   );
 }

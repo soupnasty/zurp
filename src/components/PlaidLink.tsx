@@ -16,12 +16,14 @@ interface PlaidLinkProps {
     detectedCard: DetectedCard | null;
   }) => void;
   onError?: (error: string) => void;
+  onExit?: () => void;
 }
 
 export function PlaidLinkButton({
   userId,
   onSuccess,
   onError,
+  onExit: onExitProp,
 }: PlaidLinkProps) {
   const [linkToken, setLinkToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -96,8 +98,14 @@ export function PlaidLinkButton({
       if (err) {
         onError?.(err.display_message || "Plaid Link exited with error");
       }
+      onExitProp?.();
     },
   });
+
+  // Auto-fetch link token on mount
+  useEffect(() => {
+    fetchLinkToken();
+  }, [fetchLinkToken]);
 
   // Auto-open Plaid Link once token is ready (fires only once)
   useEffect(() => {
@@ -107,12 +115,11 @@ export function PlaidLinkButton({
     }
   }, [linkToken, ready, open]);
 
-  const handleClick = async () => {
+  // Fallback: re-open if user dismissed and clicks the button
+  const handleClick = () => {
     if (linkToken && ready) {
       hasOpened.current = true;
       open();
-    } else {
-      await fetchLinkToken();
     }
   };
 
@@ -122,7 +129,7 @@ export function PlaidLinkButton({
       disabled={loading}
       className="inline-flex items-center gap-2 rounded-[var(--radius-md)] bg-[var(--accent)] px-5 py-2.5 font-medium text-[var(--color-void)] transition-opacity duration-[var(--duration-fast)] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] disabled:opacity-50"
     >
-      {loading ? "Connecting..." : "Link Bank Account"}
+      {loading ? "Connecting..." : "Connect with Plaid"}
     </button>
   );
 }

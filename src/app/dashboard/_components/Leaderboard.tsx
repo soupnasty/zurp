@@ -15,6 +15,10 @@ function fmt(n: number): string {
   return `-$${Math.abs(Math.round(n)).toLocaleString()}`;
 }
 
+function fmtPlain(n: number): string {
+  return `$${Math.round(n).toLocaleString()}`;
+}
+
 export function Leaderboard({ cards, activeCardType }: LeaderboardProps) {
   const [expanded, setExpanded] = useState(false);
   const sorted = [...cards].sort((a, b) => b.netActual - a.netActual);
@@ -56,9 +60,7 @@ export function Leaderboard({ cards, activeCardType }: LeaderboardProps) {
           const isFirst = rank === 1;
           const isUser = card.cardId === activeCardType;
           const isDimmed = rank > 5;
-          const benefitsVal = card.isUsersCard
-            ? (card.benefitsCaptured ?? 0)
-            : (card.benefitsSimulated ?? card.benefitsValue);
+          const benefitsVal = card.benefitsSimulated ?? card.benefitsValue;
 
           return (
             <div
@@ -110,12 +112,34 @@ export function Leaderboard({ cards, activeCardType }: LeaderboardProps) {
                     </span>
                   )}
                 </div>
-                <span
-                  className="text-[11px] text-[var(--text-secondary)]"
-                  style={{ fontFamily: "var(--font-mono)" }}
+                <div
+                  className="mt-0.5 flex items-center gap-3"
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 10,
+                    fontWeight: 700,
+                    opacity: isDimmed ? 0.4 : 0.85,
+                  }}
                 >
-                  {card.annualFee > 0 ? `$${card.annualFee}/yr` : "$0 fee"}
-                </span>
+                  <span className="flex items-center gap-1">
+                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--color-accent-blue)]" />
+                    <span style={{ color: "var(--color-accent-blue)" }}>
+                      {fmtPlain(card.pointsValueConservative)}
+                    </span>
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--color-accent-purple)]" />
+                    <span style={{ color: "var(--color-accent-purple)" }}>
+                      {fmtPlain(benefitsVal)}
+                    </span>
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--color-danger)]" />
+                    <span style={{ color: "var(--color-danger)" }}>
+                      {fmtPlain(card.annualFee)}
+                    </span>
+                  </span>
+                </div>
                 {/* Mobile mini bar */}
                 <div className="mt-1.5 md:hidden">
                   <StackedBar
