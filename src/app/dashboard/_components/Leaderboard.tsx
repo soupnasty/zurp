@@ -77,7 +77,8 @@ function getCardBenefits(
       value = annualized;
     } else if (bMode === "my_picks") {
       // Lifestyle-selected benefits get max(matched, annualized); others get matched only
-      if (b.lifestyleKey && lifestyleKeys.has(b.lifestyleKey)) {
+      const bKeys = Array.isArray(b.lifestyleKey) ? b.lifestyleKey : b.lifestyleKey ? [b.lifestyleKey] : [];
+      if (bKeys.some((k) => lifestyleKeys.has(k))) {
         value = Math.max(matched, annualized);
       } else {
         value = matched;

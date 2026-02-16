@@ -60,6 +60,8 @@ export default async function TrackPage({
     g.cycle.startsWith("quarterly")
   );
   const monthlyBenefits = classifiedGroups.filter((g) => g.cycle === "monthly");
+  const subscriptionBenefits = classifiedGroups.filter((g) => g.cycle === "subscription");
+  const quadrennialBenefits = classifiedGroups.filter((g) => g.cycle === "quadrennial");
 
   // Upcoming resets
   const upcomingResets = classifiedGroups
@@ -93,6 +95,8 @@ export default async function TrackPage({
       biannualBenefits={biannualBenefits}
       quarterlyBenefits={quarterlyBenefits}
       monthlyBenefits={monthlyBenefits}
+      subscriptionBenefits={subscriptionBenefits}
+      quadrennialBenefits={quadrennialBenefits}
       pointsSummary={serializedPointsSummary}
       earnConfig={earnConfig ? { conservativeCpp: earnConfig.valuation.conservativeCpp } : null}
       upcomingResets={upcomingResets}

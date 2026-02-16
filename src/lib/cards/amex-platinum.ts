@@ -223,7 +223,7 @@ export const amexPlatinum: CardDefinition = {
       autoMatchable: false, requiresActivation: true, priority: 10,
       notes: "Must enroll before first purchase. Reservation through Resy not required.",
       details: resyCreditDetails,
-      lifestyleKey: "resy",
+      lifestyleKey: "fine_dining",
     }, [
       { id: "plat_resy_credit_q1", cycle: "quarterly_q1", name: "Resy Credit (Q1)", description: "Up to $100 in statement credits for Resy dining (Jan\u2013Mar)." },
       { id: "plat_resy_credit_q2", cycle: "quarterly_q2", name: "Resy Credit (Q2)", description: "Up to $100 in statement credits for Resy dining (Apr\u2013Jun)." },
@@ -289,7 +289,7 @@ export const amexPlatinum: CardDefinition = {
       description: "Up to $25/month for eligible digital entertainment subscriptions.",
       notes: "Must enroll before first purchase. Eligible services include Disney+, Disney+ Bundle, Hulu, ESPN+, NYT, WSJ, YouTube Premium, YouTube TV, Peacock, Paramount+.",
       details: digitalEntertainmentDetails,
-      lifestyleKey: "streaming",
+      lifestyleKey: ["disney_plus", "youtube_premium", "peacock", "paramount_plus", "nyt", "wsj"],
     }),
     b({
       id: "plat_uber_cash",

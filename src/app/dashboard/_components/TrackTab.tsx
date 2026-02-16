@@ -18,6 +18,8 @@ interface TrackTabProps {
   biannualBenefits: ClassifiedBenefitGroup[];
   quarterlyBenefits: ClassifiedBenefitGroup[];
   monthlyBenefits: ClassifiedBenefitGroup[];
+  subscriptionBenefits: ClassifiedBenefitGroup[];
+  quadrennialBenefits: ClassifiedBenefitGroup[];
   pointsSummary: SerializedPointsSummary | null;
   earnConfig: { conservativeCpp: number } | null;
   upcomingResets: UpcomingReset[];
@@ -33,6 +35,8 @@ export function TrackTab({
   biannualBenefits,
   quarterlyBenefits,
   monthlyBenefits,
+  subscriptionBenefits,
+  quadrennialBenefits,
   pointsSummary,
   earnConfig,
   upcomingResets,
@@ -123,6 +127,8 @@ export function TrackTab({
         biannualBenefits={biannualBenefits}
         quarterlyBenefits={quarterlyBenefits}
         monthlyBenefits={monthlyBenefits}
+        subscriptionBenefits={subscriptionBenefits}
+        quadrennialBenefits={quadrennialBenefits}
       />
 
       {/* Upcoming resets */}

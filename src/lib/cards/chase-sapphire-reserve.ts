@@ -229,7 +229,7 @@ export const chaseSapphireReserve: CardDefinition = {
       merchantPatterns: ["exclusive tables", "chase dining"],
       autoMatchable: false, requiresActivation: true, priority: 10,
       notes: "Must book through Chase Exclusive Tables program.",
-      lifestyleKey: "dining_portal",
+      lifestyleKey: "fine_dining",
       details: exclusiveTablesDetails,
     }, [
       { id: "csr_dining_h1", cycle: "biannual_h1", description: "Up to $150 in statement credits for Exclusive Tables dining experiences (Jan-Jun)." },
@@ -404,7 +404,7 @@ export const chaseSapphireReserve: CardDefinition = {
       description: "Complimentary Apple Music subscription (Individual plan).",
       notes: "Must activate through Chase benefits portal.",
       sunsetDate: "2027-06-22",
-      lifestyleKey: "apple_tv",
+      lifestyleKey: "apple_music",
       details: appleMusicDetails,
       brandSlug: "apple",
     }),

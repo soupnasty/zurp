@@ -3,6 +3,14 @@ import { db } from "@/db";
 import { eq } from "drizzle-orm";
 import * as schema from "@/db/schema";
 
+// Legacy keys that were split into more specific options.
+// Expand old DB values so existing users keep their selections working.
+const LEGACY_KEY_MAP: Record<string, string[]> = {
+  streaming: ["disney_plus", "youtube_premium", "peacock", "paramount_plus", "nyt", "wsj"],
+  resy: ["fine_dining"],
+  dining_portal: ["grubhub", "cheesecake_factory", "fine_dining"],
+};
+
 /**
  * Get all lifestyle keys selected by a user.
  */
@@ -14,7 +22,16 @@ export async function getLifestyleSelections(
     .from(schema.lifestyleSelections)
     .where(eq(schema.lifestyleSelections.userId, userId));
 
-  return rows.map((r) => r.lifestyleKey);
+  const keys = new Set<string>();
+  for (const r of rows) {
+    const expanded = LEGACY_KEY_MAP[r.lifestyleKey];
+    if (expanded) {
+      for (const k of expanded) keys.add(k);
+    } else {
+      keys.add(r.lifestyleKey);
+    }
+  }
+  return [...keys];
 }
 
 /**

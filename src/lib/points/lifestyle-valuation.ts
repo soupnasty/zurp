@@ -24,7 +24,12 @@ export function computeLifestyleBenefits(
 
     const matched = matchedPerBenefit[benefit.id] ?? 0;
 
-    if (benefit.lifestyleKey && selectedKeys.has(benefit.lifestyleKey)) {
+    const keys = Array.isArray(benefit.lifestyleKey)
+      ? benefit.lifestyleKey
+      : benefit.lifestyleKey
+        ? [benefit.lifestyleKey]
+        : [];
+    if (keys.some((k) => selectedKeys.has(k))) {
       const multiplier = getCycleMultiplier(benefit.cycle as BenefitCycle);
       const annualized = benefit.creditAmount * multiplier;
       total += Math.max(matched, annualized);

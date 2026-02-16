@@ -35,31 +35,38 @@ export interface LifestyleGroupDef {
 
 export const LIFESTYLE_OPTIONS: LifestyleOption[] = [
   // Rides & Delivery
-  { key: "uber", label: "Uber", description: "Rides, Uber Eats, Uber One", group: "rides_delivery", iconType: "brand", iconSlug: "uber" },
-  { key: "doordash", label: "DoorDash", description: "Food & grocery delivery", group: "rides_delivery", iconType: "brand", iconSlug: "doordash" },
-  { key: "lyft", label: "Lyft", description: "Rideshare", group: "rides_delivery", iconType: "brand", iconSlug: "lyft" },
-  { key: "instacart", label: "Instacart", description: "Grocery delivery", group: "rides_delivery", iconType: "brand", iconSlug: "instacart" },
+  { key: "uber", label: "Uber", description: "Rides, Uber Eats, Uber One", group: "rides_delivery", iconType: "lucide", iconSlug: "Car" },
+  { key: "doordash", label: "DoorDash", description: "Food & grocery delivery", group: "rides_delivery", iconType: "lucide", iconSlug: "Bike" },
+  { key: "lyft", label: "Lyft", description: "Rideshare", group: "rides_delivery", iconType: "lucide", iconSlug: "Navigation" },
+  { key: "instacart", label: "Instacart", description: "Grocery delivery", group: "rides_delivery", iconType: "lucide", iconSlug: "ShoppingBasket" },
 
   // Dining
-  { key: "resy", label: "Resy", description: "Fine dining reservations", group: "dining", iconType: "lucide", iconSlug: "UtensilsCrossed" },
+  { key: "grubhub", label: "Grubhub", description: "Food delivery & pickup", group: "dining", iconType: "lucide", iconSlug: "UtensilsCrossed" },
   { key: "dunkin", label: "Dunkin'", description: "Coffee & breakfast", group: "dining", iconType: "lucide", iconSlug: "Coffee" },
   { key: "home_chef", label: "Home Chef", description: "Meal kits", group: "dining", iconType: "lucide", iconSlug: "ChefHat" },
-  { key: "dining_portal", label: "Dining Experiences", description: "Exclusive Tables, OpenTable", group: "dining", iconType: "lucide", iconSlug: "Utensils" },
+  { key: "cheesecake_factory", label: "Cheesecake Factory", description: "Casual dining", group: "dining", iconType: "lucide", iconSlug: "Utensils" },
+  { key: "fine_dining", label: "Fine Dining", description: "Resy, Exclusive Tables credits", group: "dining", iconType: "lucide", iconSlug: "Wine" },
 
   // Streaming
-  { key: "streaming", label: "Streaming Services", description: "Disney+, Hulu, Peacock, YouTube, NYT, WSJ", group: "streaming", iconType: "lucide", iconSlug: "Tv" },
-  { key: "apple_tv", label: "Apple TV+ & Music", description: "Apple subscriptions", group: "streaming", iconType: "brand", iconSlug: "appletv" },
+  { key: "disney_plus", label: "Disney+", description: "Disney+, Hulu & ESPN+ bundle", group: "streaming", iconType: "lucide", iconSlug: "Clapperboard" },
+  { key: "youtube_premium", label: "YouTube Premium", description: "Premium, TV & Music", group: "streaming", iconType: "lucide", iconSlug: "Play" },
+  { key: "peacock", label: "Peacock", description: "NBCUniversal streaming", group: "streaming", iconType: "lucide", iconSlug: "Tv" },
+  { key: "paramount_plus", label: "Paramount+", description: "Paramount streaming", group: "streaming", iconType: "lucide", iconSlug: "Tv" },
+  { key: "nyt", label: "NYT Digital", description: "New York Times subscription", group: "streaming", iconType: "lucide", iconSlug: "Newspaper" },
+  { key: "wsj", label: "WSJ Digital", description: "Wall Street Journal subscription", group: "streaming", iconType: "lucide", iconSlug: "Newspaper" },
+  { key: "apple_tv", label: "Apple TV+", description: "Apple streaming", group: "streaming", iconType: "lucide", iconSlug: "MonitorPlay" },
+  { key: "apple_music", label: "Apple Music", description: "Music streaming", group: "streaming", iconType: "lucide", iconSlug: "Music" },
 
   // Entertainment
-  { key: "stubhub", label: "StubHub", description: "Concerts, sports, events", group: "entertainment", iconType: "brand", iconSlug: "stubhub" },
-  { key: "peloton", label: "Peloton", description: "Connected fitness", group: "entertainment", iconType: "brand", iconSlug: "peloton" },
+  { key: "stubhub", label: "StubHub", description: "Concerts, sports, events", group: "entertainment", iconType: "lucide", iconSlug: "Ticket" },
+  { key: "peloton", label: "Peloton", description: "Connected fitness", group: "entertainment", iconType: "lucide", iconSlug: "Bike" },
   { key: "equinox", label: "Equinox", description: "Premium gym membership", group: "entertainment", iconType: "lucide", iconSlug: "Dumbbell" },
 
   // Shopping
   { key: "saks", label: "Saks Fifth Avenue", description: "Luxury retail", group: "shopping", iconType: "lucide", iconSlug: "ShoppingBag" },
   { key: "lululemon", label: "lululemon", description: "Athletic apparel", group: "shopping", iconType: "lucide", iconSlug: "Shirt" },
   { key: "walmart_plus", label: "Walmart+", description: "Free delivery, fuel discounts", group: "shopping", iconType: "lucide", iconSlug: "ShoppingCart" },
-  { key: "dell", label: "Dell", description: "Computers & tech", group: "shopping", iconType: "brand", iconSlug: "dell" },
+  { key: "dell", label: "Dell", description: "Computers & tech", group: "shopping", iconType: "lucide", iconSlug: "Monitor" },
   { key: "adobe", label: "Adobe", description: "Creative Cloud", group: "shopping", iconType: "lucide", iconSlug: "Palette" },
 
   // Travel
@@ -71,9 +78,9 @@ export const LIFESTYLE_OPTIONS: LifestyleOption[] = [
   { key: "blacklane", label: "Blacklane", description: "Premium car service", group: "travel", iconType: "lucide", iconSlug: "Car" },
 
   // Airlines
-  { key: "southwest", label: "Southwest", description: "Southwest travel credits", group: "airlines", iconType: "brand", iconSlug: "southwestairlines" },
-  { key: "united", label: "United", description: "United travel & Instacart", group: "airlines", iconType: "brand", iconSlug: "unitedairlines" },
-  { key: "delta", label: "Delta", description: "Delta flight credits", group: "airlines", iconType: "brand", iconSlug: "delta" },
+  { key: "southwest", label: "Southwest", description: "Southwest travel credits", group: "airlines", iconType: "lucide", iconSlug: "PlaneTakeoff" },
+  { key: "united", label: "United", description: "United travel & Instacart", group: "airlines", iconType: "lucide", iconSlug: "Plane" },
+  { key: "delta", label: "Delta", description: "Delta flight credits", group: "airlines", iconType: "lucide", iconSlug: "PlaneLanding" },
 
   // Memberships
   { key: "clear_plus", label: "CLEAR Plus", description: "Airport security fast lane", group: "memberships", iconType: "lucide", iconSlug: "ScanFace" },

@@ -9,6 +9,8 @@ interface BenefitsSectionProps {
   biannualBenefits: ClassifiedBenefitGroup[];
   quarterlyBenefits: ClassifiedBenefitGroup[];
   monthlyBenefits: ClassifiedBenefitGroup[];
+  subscriptionBenefits: ClassifiedBenefitGroup[];
+  quadrennialBenefits: ClassifiedBenefitGroup[];
 }
 
 function countByStatus(groups: ClassifiedBenefitGroup[]) {
@@ -59,6 +61,8 @@ export function BenefitsSection({
   biannualBenefits,
   quarterlyBenefits,
   monthlyBenefits,
+  subscriptionBenefits,
+  quadrennialBenefits,
 }: BenefitsSectionProps) {
   const totalBenefits = benefitGroups.length;
   const totalUsed = benefitGroups.reduce((s, g) => s + g.totalUsed, 0);
@@ -144,6 +148,8 @@ export function BenefitsSection({
         <CadenceGroup label="Biannual" benefits={biannualBenefits} />
         <CadenceGroup label="Quarterly" benefits={quarterlyBenefits} />
         <CadenceGroup label="Monthly" benefits={monthlyBenefits} />
+        <CadenceGroup label="Subscriptions" benefits={subscriptionBenefits} />
+        <CadenceGroup label="Multi-year" benefits={quadrennialBenefits} />
       </div>
     </div>
   );

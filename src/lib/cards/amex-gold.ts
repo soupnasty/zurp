@@ -96,7 +96,7 @@ export const amexGold: CardDefinition = {
       description: "Up to $10/month in statement credits at Grubhub, The Cheesecake Factory, Goldbelly, Wine.com, and Five Guys.",
       notes: "Must enroll before first purchase. Shared across primary + authorized users ($10 total). Gift cards do not qualify.",
       details: diningCreditDetails,
-      lifestyleKey: "dining_portal",
+      lifestyleKey: ["grubhub", "cheesecake_factory"],
     }),
 
     // ── Resy Dining Credit ($50 × 2 biannual) ──
@@ -107,7 +107,7 @@ export const amexGold: CardDefinition = {
       autoMatchable: false, requiresActivation: true, priority: 10,
       notes: "Dine at Resy-affiliated restaurants or purchase on Resy.com/app. Reservation through Resy not required.",
       details: resyCreditDetails,
-      lifestyleKey: "resy",
+      lifestyleKey: "fine_dining",
     }, [
       { id: "gold_resy_credit_h1", cycle: "biannual_h1", description: "Up to $50 in statement credits for Resy dining experiences (Jan-Jun)." },
       { id: "gold_resy_credit_h2", cycle: "biannual_h2", description: "Up to $50 in statement credits for Resy dining experiences (Jul-Dec)." },
