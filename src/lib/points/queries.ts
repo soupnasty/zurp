@@ -140,11 +140,14 @@ export async function getTransactionPeriod(
   const end = new Date(row.maxDate);
 
   // Calculate month count
-  const monthCount = Math.max(
-    1,
-    (end.getFullYear() - start.getFullYear()) * 12 +
-      (end.getMonth() - start.getMonth()) +
-      1
+  const monthCount = Math.min(
+    12,
+    Math.max(
+      1,
+      (end.getFullYear() - start.getFullYear()) * 12 +
+        (end.getMonth() - start.getMonth()) +
+        1
+    )
   );
 
   return { start, end, monthCount };

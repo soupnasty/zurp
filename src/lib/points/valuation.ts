@@ -4,14 +4,21 @@ import type { BenefitCycle } from "@/lib/types";
 
 /**
  * Convert points to dollar values using a card's valuation rates.
+ * Returns three tiers:
+ *   conservative — cash-out / portal floor (guaranteed value)
+ *   realistic    — midpoint (informed user who occasionally transfers)
+ *   upside       — strategic transfer partner maximizer
  */
 export function valuatePoints(
   points: number,
   config: EarnConfig
-): { conservative: number; upside: number } {
+): { conservative: number; realistic: number; upside: number } {
+  const { conservativeCpp, upsideCpp } = config.valuation;
+  const realisticCpp = (conservativeCpp + upsideCpp) / 2;
   return {
-    conservative: Math.round(points * config.valuation.conservativeCpp) / 100,
-    upside: Math.round(points * config.valuation.upsideCpp) / 100,
+    conservative: Math.round(points * conservativeCpp) / 100,
+    realistic: Math.round(points * realisticCpp) / 100,
+    upside: Math.round(points * upsideCpp) / 100,
   };
 }
 

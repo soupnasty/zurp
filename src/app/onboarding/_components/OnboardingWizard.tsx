@@ -85,11 +85,8 @@ export function OnboardingWizard({ userId, cards }: OnboardingWizardProps) {
             </p>
           )}
         </div>
-      ) : plaidDismissed ? (
+      ) : (
         <div className="flex flex-col items-center justify-center gap-4 py-16">
-          <p className="text-sm text-[var(--text-secondary)]">
-            Connect your card to get started
-          </p>
           <PlaidLinkButton
             userId={userId}
             onSuccess={handlePlaidSuccess}
@@ -101,15 +98,6 @@ export function OnboardingWizard({ userId, cards }: OnboardingWizardProps) {
               {error}
             </p>
           )}
-        </div>
-      ) : (
-        <div className="absolute opacity-0 pointer-events-none">
-          <PlaidLinkButton
-            userId={userId}
-            onSuccess={handlePlaidSuccess}
-            onError={setError}
-            onExit={handlePlaidExit}
-          />
         </div>
       )}
     </div>

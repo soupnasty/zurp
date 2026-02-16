@@ -92,6 +92,7 @@ export const amexBlueCashEveryday: CardDefinition = {
         "Annual value of $84. Must have official Disney bundle (not individual services) charged to card.",
       details: disneyBundleCreditDetails,
       brandSlug: "disneyplus",
+      lifestyleKey: "streaming",
     }),
     // ── Home Chef Credit ($15/mo) ──
     b({
@@ -111,6 +112,7 @@ export const amexBlueCashEveryday: CardDefinition = {
       notes:
         "Annual value of $180. Must enroll before first purchase. Charged to card.",
       details: homeChefCreditDetails,
+      lifestyleKey: "home_chef",
     }),
   ],
 };

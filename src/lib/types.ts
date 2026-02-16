@@ -92,6 +92,7 @@ export interface BenefitDefinition {
   activeMonths?: number[]; // 0=Jan, 11=Dec. If set, benefit only matches in these months.
   brandSlug?: string; // Simple Icons CDN slug for brand logo (e.g. "doordash", "uber")
   isCategoryFallback?: boolean; // If true, this benefit only matches by category when no merchant-specific benefit also matches.
+  lifestyleKey?: string; // Maps benefit to lifestyle-keys.ts taxonomy for benefit assumption mode
 }
 
 // ── Computed summaries ──

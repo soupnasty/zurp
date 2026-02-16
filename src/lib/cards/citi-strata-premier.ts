@@ -64,6 +64,7 @@ export const citiStrataPremier: CardDefinition = {
       notes:
         "Resets Jan 1. Must book through Citi Travel portal, not direct or OTA.",
       details: hotelCreditDetails,
+      lifestyleKey: "hotel_portal",
     }),
 
     // ── No Foreign Transaction Fees ──

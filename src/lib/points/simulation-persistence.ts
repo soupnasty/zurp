@@ -93,7 +93,7 @@ export async function computeAndPersistSimulations(
 
   // Get transaction period for month count
   const period = await getTransactionPeriod(userId);
-  const monthCount = period?.monthCount ?? 1;
+  const monthCount = Math.min(12, period?.monthCount ?? 1);
   const analysisPeriodStart = period?.start ?? bounds.cycleStart;
   const analysisPeriodEnd = period?.end ?? bounds.cycleEnd;
 
@@ -139,6 +139,7 @@ export async function computeAndPersistSimulations(
       analysisPeriodStart
     );
     const benefitsSimulated = benefitSim.total;
+    const matchedPerBenefit = Object.fromEntries(benefitSim.perBenefit);
     const benefitsValue = computeBenefitsValue(config.cardId);
 
     // Run points simulation for each portal mode
@@ -168,6 +169,7 @@ export async function computeAndPersistSimulations(
         pointsValueConservative: simResult.pointsValueConservative,
         pointsValueUpside: simResult.pointsValueUpside,
         benefitsSimulated,
+        matchedPerBenefit,
         benefitsValue,
         netFloor,
         netCeiling,
@@ -201,6 +203,7 @@ export async function computeAndPersistSimulations(
           pointsValueConservative: row.pointsValueConservative,
           pointsValueUpside: row.pointsValueUpside,
           benefitsSimulated: row.benefitsSimulated,
+          matchedPerBenefit: row.matchedPerBenefit,
           benefitsValue: row.benefitsValue,
           netFloor: row.netFloor,
           netCeiling: row.netCeiling,

@@ -70,6 +70,7 @@ export const southwestPriority: CardDefinition = {
       description: "Up to $75/year for eligible Southwest purchases.",
       notes: "Covers airfare, baggage, seats, and incidentals.",
       details: southwestTravelCreditDetails,
+      lifestyleKey: "southwest",
     }),
     // ── Anniversary Bonus Points (7,500 points/year) ──
     b({

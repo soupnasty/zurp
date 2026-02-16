@@ -190,6 +190,7 @@ export const amexBusinessPlatinum: CardDefinition = {
         notes:
           "Fine Hotels + Resorts or The Hotel Collection. Book through AmexTravel.com.",
         details: hotelCreditDetails,
+        lifestyleKey: "hotel_portal",
       },
       [
         {
@@ -223,6 +224,7 @@ export const amexBusinessPlatinum: CardDefinition = {
       description: "Up to $150 annual automatic Dell Technologies credit.",
       notes: "Additional up to $1,000 available after $5,000 annual spend.",
       details: dellCreditDetails,
+      lifestyleKey: "dell",
     }),
     b({
       id: "biz_plat_global_entry",
@@ -239,6 +241,7 @@ export const amexBusinessPlatinum: CardDefinition = {
       description: "Up to $120 every 4 years for Global Entry or TSA PreCheck.",
       notes: "Covers application fee only.",
       details: globalEntryDetails,
+      lifestyleKey: "global_entry",
     }),
     b({
       id: "biz_plat_clear",
@@ -255,6 +258,7 @@ export const amexBusinessPlatinum: CardDefinition = {
       description: "Up to $209/year covering CLEAR Plus membership.",
       notes: "Covers annual CLEAR Plus membership fee.",
       details: clearDetails,
+      lifestyleKey: "clear_plus",
     }),
 
     // ── 2025 Refresh Benefits ──
@@ -289,6 +293,7 @@ export const amexBusinessPlatinum: CardDefinition = {
       description: "Up to $250/year Adobe Creative Cloud credit.",
       notes: "Requires $600 in qualifying U.S. purchases per calendar year.",
       details: adobeCreditDetails,
+      lifestyleKey: "adobe",
     }),
 
     // ── Quarterly Credits ──
@@ -349,6 +354,7 @@ export const amexBusinessPlatinum: CardDefinition = {
         notes:
           "For Hilton for Business properties. Book directly through hiltonbusiness.com.",
         details: hiltonCreditDetails,
+        lifestyleKey: "hilton_resorts",
       },
       [
         {
@@ -403,6 +409,7 @@ export const amexBusinessPlatinum: CardDefinition = {
       notes:
         "Baggage fees, seat selection, in-flight beverages, and seat upgrades.",
       details: airlineFeeCreditDetails,
+      lifestyleKey: "airline_fee",
     }),
   ],
 };

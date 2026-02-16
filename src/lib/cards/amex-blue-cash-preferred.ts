@@ -73,6 +73,7 @@ export const amexBlueCashPreferred: CardDefinition = {
         "Annual value of $120. Must have official Disney bundle (not individual services) charged to card.",
       details: disneyBundleCreditDetails,
       brandSlug: "disneyplus",
+      lifestyleKey: "streaming",
     }),
   ],
 };

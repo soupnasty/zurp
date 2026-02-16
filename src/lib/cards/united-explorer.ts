@@ -107,6 +107,7 @@ export const unitedExplorer: CardDefinition = {
       notes:
         "Covers airfare, baggage, seat upgrades, and incidentals. Anniversary year cycle.",
       details: unitedTravelCreditDetails,
+      lifestyleKey: "united",
     }),
     b({
       id: "united_rideshare_credit",
@@ -125,6 +126,7 @@ export const unitedExplorer: CardDefinition = {
       notes:
         "Eligible trips are auto-detected based on airport pickup/dropoff location.",
       details: rideshareCreditDetails,
+      lifestyleKey: "lyft",
     }),
     b({
       id: "united_instacart_credit",
@@ -142,6 +144,7 @@ export const unitedExplorer: CardDefinition = {
       notes: "Credits distributed periodically throughout the year.",
       details: instacartCreditDetails,
       brandSlug: "instacart",
+      lifestyleKey: "instacart",
     }),
     // ── United Hotels Credit ($100/year) ──
     b({
@@ -159,6 +162,7 @@ export const unitedExplorer: CardDefinition = {
       description: "Up to $100/year for United Hotels bookings ($50 per stay, up to 2 stays).",
       notes: "Book through United Hotels on united.com. $50 per qualifying stay.",
       details: unitedHotelsCreditDetails,
+      lifestyleKey: "hotel_portal",
     }),
   ],
 };

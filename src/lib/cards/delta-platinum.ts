@@ -74,6 +74,7 @@ export const deltaPlatinum: CardDefinition = {
       notes:
         "Covers baggage fees, seats, and incidentals—NOT airfare. Requires $10K spend to activate.",
       details: deltaFlightCreditDetails,
+      lifestyleKey: "delta",
     }),
     b({
       id: "delta_uber_one",
@@ -95,6 +96,7 @@ export const deltaPlatinum: CardDefinition = {
       details: uberOneMonthlyDetails,
       brandSlug: "uber",
       activeMonths: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+      lifestyleKey: "uber",
     }),
   ],
 };

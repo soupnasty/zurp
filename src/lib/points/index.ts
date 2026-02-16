@@ -5,6 +5,7 @@ import { classifyForPoints } from "./categories";
 import { getAllEarnConfigs } from "./earn-configs";
 import { runSimulation } from "./simulator";
 import { getCardProfiles, getCardSummary } from "@/lib/queries";
+import { getLifestyleSelections } from "@/lib/lifestyle-queries";
 import type { ComparisonOutput, CategoryAssignment } from "./types";
 
 export type { ComparisonOutput } from "./types";
@@ -51,11 +52,14 @@ async function computeComparisonOnDemand(
   // 2. Derive period from filtered data
   const start = rawTxns[0].date; // sorted ascending by query
   const end = rawTxns[rawTxns.length - 1].date;
-  const monthCount = Math.max(
-    1,
-    (end.getFullYear() - start.getFullYear()) * 12 +
-      (end.getMonth() - start.getMonth()) +
-      1
+  const monthCount = Math.min(
+    12,
+    Math.max(
+      1,
+      (end.getFullYear() - start.getFullYear()) * 12 +
+        (end.getMonth() - start.getMonth()) +
+        1
+    )
   );
 
   // 3. Classify each transaction
@@ -92,7 +96,10 @@ async function computeComparisonOnDemand(
   const summary = await getCardSummary(userId, activeProfile.id);
   const benefitsCaptured = summary?.creditsUsed ?? null;
 
-  // 7. Run simulation
+  // 7. Get user's lifestyle selections for benefit assumption mode
+  const lifestyleKeys = await getLifestyleSelections(userId);
+
+  // 8. Run simulation
   const result = runSimulation({
     transactions: classifiedTxns,
     configs,
@@ -101,6 +108,7 @@ async function computeComparisonOnDemand(
     period: { start, end },
     monthCount,
     portalMode,
+    lifestyleKeys,
   });
 
   return result;

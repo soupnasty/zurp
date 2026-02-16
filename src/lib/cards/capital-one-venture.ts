@@ -78,6 +78,7 @@ export const capitalOneVenture: CardDefinition = {
       description:
         "$250 annual statement credit for eligible travel purchases. Resets each calendar year.",
       details: travelCreditDetails,
+      lifestyleKey: "travel_portal",
     }),
 
     // ── Global Entry / TSA PreCheck Credit ($120) ──
@@ -96,6 +97,7 @@ export const capitalOneVenture: CardDefinition = {
       description:
         "Up to $120 credit for Global Entry or TSA PreCheck application fee every 4 years.",
       details: globalEntryDetails,
+      lifestyleKey: "global_entry",
     }),
 
     // ── No Foreign Transaction Fees ──

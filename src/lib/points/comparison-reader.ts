@@ -3,7 +3,10 @@ import { db } from "@/db";
 import { eq, and } from "drizzle-orm";
 import * as schema from "@/db/schema";
 import { getCardProfiles, getCardSummary } from "@/lib/queries";
+import { getLifestyleSelections } from "@/lib/lifestyle-queries";
 import { getEarnConfig } from "./earn-configs";
+import { computeBenefitsValue } from "./valuation";
+import { computeLifestyleBenefits } from "./lifestyle-valuation";
 import type {
   ComparisonOutput,
   CardSimulation,
@@ -11,6 +14,7 @@ import type {
   CategoryEarnSummary,
   HeadlineVerdict,
   EarnCategory,
+  BenefitAssumptionMode,
 } from "./types";
 
 /**
@@ -42,10 +46,45 @@ export async function readComparison(
   const summary = await getCardSummary(userId, activeProfile.id);
   const benefitsCaptured = summary?.creditsUsed ?? null;
 
+  // Get user's lifestyle selections for benefit assumption mode
+  const lifestyleKeys = await getLifestyleSelections(userId);
+  const selectedLifestyle = new Set(lifestyleKeys);
+
   // Build CardSimulation array from DB rows
   const simulations: CardSimulation[] = rows.map((row) => {
     const config = getEarnConfig(row.simulatedCardId);
     const isUsersCard = row.simulatedCardId === usersCardId;
+
+    const pointsValueRealistic = round2(
+      (row.pointsValueConservative + row.pointsValueUpside) / 2
+    );
+    const proven = row.benefitsSimulated ?? 0;
+
+    const perBenefit = (row.matchedPerBenefit as Record<string, number>) ?? {};
+    const myPicks = computeLifestyleBenefits(row.simulatedCardId, perBenefit, selectedLifestyle);
+    const allCredits = computeBenefitsValue(row.simulatedCardId);
+
+    const pointsModes = {
+      conservative: row.pointsValueConservative,
+      realistic: pointsValueRealistic,
+      upside: row.pointsValueUpside,
+    } as const;
+
+    const benefitModes = {
+      proven,
+      my_picks: myPicks,
+      all_credits: allCredits,
+    } as const;
+
+    const netByMode = {} as CardSimulation["netByMode"];
+    for (const vMode of ["conservative", "realistic", "upside"] as const) {
+      netByMode[vMode] = {} as Record<BenefitAssumptionMode, number>;
+      for (const bMode of ["proven", "my_picks", "all_credits"] as const) {
+        netByMode[vMode][bMode] = round2(
+          pointsModes[vMode] + benefitModes[bMode] - row.annualFee
+        );
+      }
+    }
 
     return {
       cardId: row.simulatedCardId,
@@ -55,13 +94,17 @@ export async function readComparison(
       totalPoints: row.totalPoints,
       bonusPoints: row.bonusPoints,
       pointsValueConservative: row.pointsValueConservative,
+      pointsValueRealistic,
       pointsValueUpside: row.pointsValueUpside,
       benefitsValue: row.benefitsValue,
       benefitsCaptured: isUsersCard ? benefitsCaptured : null,
       benefitsSimulated: row.benefitsSimulated,
+      matchedPerBenefit: perBenefit,
+      benefitsByMode: benefitModes,
       netFloor: row.netFloor,
       netCeiling: row.netCeiling,
       netActual: row.netActual,
+      netByMode,
       rank: 0,
       categories: (row.categoryBreakdown as CategoryEarnSummary[]) ?? [],
     };
@@ -93,7 +136,7 @@ export async function readComparison(
       start: firstRow.analysisPeriodStart,
       end: firstRow.analysisPeriodEnd,
     },
-    monthCount: firstRow.monthCount,
+    monthCount: Math.min(12, firstRow.monthCount),
     totalTransactions: firstRow.totalTransactions,
     totalSpend: firstRow.totalSpend,
     totalCards: ranked.length,

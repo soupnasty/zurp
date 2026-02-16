@@ -19,47 +19,29 @@ interface PlaidLinkProps {
   onExit?: () => void;
 }
 
-export function PlaidLinkButton({
+/**
+ * Inner component — only mounted once we have a valid link token.
+ * This ensures usePlaidLink never initializes with null, avoiding
+ * the "embedded more than once" Plaid script warning.
+ */
+function PlaidLinkReady({
+  token,
   userId,
   onSuccess,
   onError,
   onExit: onExitProp,
-}: PlaidLinkProps) {
-  const [linkToken, setLinkToken] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+}: PlaidLinkProps & { token: string }) {
   const hasOpened = useRef(false);
-
-  const fetchLinkToken = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/plaid/create-link-token", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId }),
-      });
-      const data = await res.json();
-      if (data.linkToken) {
-        setLinkToken(data.linkToken);
-        sessionStorage.setItem("plaid_link_token", data.linkToken);
-      } else {
-        onError?.("Failed to get link token");
-      }
-    } catch {
-      onError?.("Failed to connect to server");
-    } finally {
-      setLoading(false);
-    }
-  }, [userId, onError]);
+  const [dismissed, setDismissed] = useState(false);
 
   const { open, ready } = usePlaidLink({
-    token: linkToken,
+    token,
     onSuccess: async (publicToken, metadata) => {
       try {
         const account = metadata.accounts[0];
         const accountId = account?.id || "";
         const institutionName = metadata.institution?.name || "Unknown";
         const accountName = account?.name || "";
-        // react-plaid-link types don't include official_name/mask but Plaid returns them
         const accountMeta = account as unknown as Record<string, unknown>;
         const accountOfficialName = (accountMeta?.official_name as string) || "";
         const accountMask = (accountMeta?.mask as string) || account?.mask || "";
@@ -95,6 +77,7 @@ export function PlaidLinkButton({
     },
     onExit: (err) => {
       hasOpened.current = false;
+      setDismissed(true);
       if (err) {
         onError?.(err.display_message || "Plaid Link exited with error");
       }
@@ -102,34 +85,93 @@ export function PlaidLinkButton({
     },
   });
 
-  // Auto-fetch link token on mount
+  // Auto-open once Plaid is ready (fires only once)
   useEffect(() => {
-    fetchLinkToken();
-  }, [fetchLinkToken]);
-
-  // Auto-open Plaid Link once token is ready (fires only once)
-  useEffect(() => {
-    if (linkToken && ready && !hasOpened.current) {
+    if (ready && !hasOpened.current) {
       hasOpened.current = true;
       open();
     }
-  }, [linkToken, ready, open]);
+  }, [ready, open]);
 
-  // Fallback: re-open if user dismissed and clicks the button
-  const handleClick = () => {
-    if (linkToken && ready) {
-      hasOpened.current = true;
-      open();
-    }
-  };
+  // Cleanup Plaid script on unmount
+  useEffect(() => {
+    return () => {
+      document
+        .querySelectorAll('script[src*="plaid.com/link"]')
+        .forEach((s) => s.remove());
+    };
+  }, []);
+
+  // Only show the button after the user dismissed Plaid
+  if (!dismissed) return null;
 
   return (
     <button
-      onClick={handleClick}
-      disabled={loading}
+      onClick={() => { hasOpened.current = true; open(); }}
       className="inline-flex items-center gap-2 rounded-[var(--radius-md)] bg-[var(--accent)] px-5 py-2.5 font-medium text-[var(--color-void)] transition-opacity duration-[var(--duration-fast)] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] disabled:opacity-50"
     >
-      {loading ? "Connecting..." : "Connect with Plaid"}
+      Connect with Plaid
     </button>
+  );
+}
+
+export function PlaidLinkButton({
+  userId,
+  onSuccess,
+  onError,
+  onExit,
+}: PlaidLinkProps) {
+  const [linkToken, setLinkToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchLinkToken = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/plaid/create-link-token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
+      const data = await res.json();
+      if (data.linkToken) {
+        setLinkToken(data.linkToken);
+        sessionStorage.setItem("plaid_link_token", data.linkToken);
+      } else {
+        onError?.("Failed to get link token");
+      }
+    } catch {
+      onError?.("Failed to connect to server");
+    } finally {
+      setLoading(false);
+    }
+  }, [userId, onError]);
+
+  useEffect(() => {
+    // Remove any leftover Plaid scripts from prior navigation before fetching
+    document
+      .querySelectorAll('script[src*="plaid.com/link"]')
+      .forEach((s) => s.remove());
+    fetchLinkToken();
+  }, [fetchLinkToken]);
+
+  if (loading || !linkToken) {
+    return (
+      <button
+        disabled
+        className="inline-flex items-center gap-2 rounded-[var(--radius-md)] bg-[var(--accent)] px-5 py-2.5 font-medium text-[var(--color-void)] opacity-50"
+      >
+        Connecting...
+      </button>
+    );
+  }
+
+  return (
+    <PlaidLinkReady
+      token={linkToken}
+      userId={userId}
+      onSuccess={onSuccess}
+      onError={onError}
+      onExit={onExit}
+    />
   );
 }

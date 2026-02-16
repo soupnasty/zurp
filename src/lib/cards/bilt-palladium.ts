@@ -70,6 +70,7 @@ export const biltPalladium: CardDefinition = {
         notes:
           "2-night minimum stay required per credit. Must book through Bilt Travel portal.",
         details: hotelCreditDetails,
+        lifestyleKey: "hotel_portal",
       },
       [
         {

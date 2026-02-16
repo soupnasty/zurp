@@ -113,6 +113,17 @@ export interface CapState {
   };
 }
 
+// ── Valuation Modes ──
+
+export type ValuationMode = "conservative" | "realistic" | "upside";
+export type BenefitAssumptionMode = "proven" | "my_picks" | "all_credits";
+
+/** Per-benefit simulation result from the matcher. */
+export interface BenefitSimResult {
+  total: number;
+  perBenefit: Record<string, number>; // benefitId → creditMatched
+}
+
 // ── Simulation Results ──
 
 export interface CategoryEarnSummary {
@@ -135,17 +146,24 @@ export interface CardSimulation {
   totalPoints: number;
   bonusPoints: number;
   pointsValueConservative: number;
+  pointsValueRealistic: number;
   pointsValueUpside: number;
   benefitsValue: number;
   benefitsCaptured: number | null;
   /** For non-user cards: simulated benefit capture from matcher. Null for user's card. */
   benefitsSimulated: number | null;
+  /** Per-benefit matched amounts from simulation (benefitId → credit matched). */
+  matchedPerBenefit: Record<string, number>;
+  /** Benefits value at each assumption mode: proven (matched), my_picks (matched + lifestyle), all_credits (full catalog). */
+  benefitsByMode: { proven: number; my_picks: number; all_credits: number };
   /** Points only - fee (guaranteed value, no benefits assumed) */
   netFloor: number;
   /** Points + full catalog benefits - fee (max possible) */
   netCeiling: number;
   /** For user's card: points + captured benefits - fee. For others: points + estimated benefits - fee. */
   netActual: number;
+  /** Net value at each valuation × benefit assumption mode. */
+  netByMode: Record<ValuationMode, Record<BenefitAssumptionMode, number>>;
   rank: number;
   categories: CategoryEarnSummary[];
 }

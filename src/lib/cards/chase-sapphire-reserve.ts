@@ -165,6 +165,7 @@ export const chaseSapphireReserve: CardDefinition = {
       isCategoryFallback: true,
       description: "Up to $300 in statement credits for travel purchases each cardmember anniversary year.",
       notes: "Accumulates until $300 is reached. Broad travel category including hotels, flights, car rentals, tolls, parking, transit.",
+      lifestyleKey: "travel_portal",
       details: {
         description:
           "Up to $300 in automatic statement credits each cardmember anniversary year as reimbursement for travel purchases charged to your card. This is the most flexible travel credit available \u2014 there's no need to book through Chase Travel.",
@@ -187,6 +188,7 @@ export const chaseSapphireReserve: CardDefinition = {
       merchantPatterns: ["the edit"],
       autoMatchable: false, requiresActivation: false, priority: 5,
       notes: "Must book through Chase Travel portal. Two $250 credits per calendar year, usable anytime.",
+      lifestyleKey: "hotel_portal",
       details: editHotelDetails,
     }, [
       { id: "csr_edit_h1", cycle: "annual_calendar", description: "Up to $250 per booking in statement credits for The Edit hotel collection (credit 1 of 2)." },
@@ -203,6 +205,7 @@ export const chaseSapphireReserve: CardDefinition = {
       description: "Up to $250 in statement credits for prepaid hotel stays at select Chase Travel partner hotels (2026 only).",
       notes: "Eligible chains: IHG, Montage, Pendry, Omni, Virgin Hotels, Minor Hotels, Pan Pacific. 2-night minimum. Booked through Chase Travel only. One-time credit expires Dec 31, 2026.",
       sunsetDate: "2026-12-31",
+      lifestyleKey: "hotel_portal",
       details: {
         description:
           "A one-time $250 statement credit for prepaid hotel stays at select partner hotels booked through Chase Travel. Available only in 2026. Eligible chains include IHG Hotels & Resorts, Montage Hotels & Resorts, Pendry Hotels & Resorts, Omni Hotels & Resorts, Virgin Hotels, Minor Hotels, and Pan Pacific Hotels and Resorts. Two-night minimum stay required.",
@@ -226,6 +229,7 @@ export const chaseSapphireReserve: CardDefinition = {
       merchantPatterns: ["exclusive tables", "chase dining"],
       autoMatchable: false, requiresActivation: true, priority: 10,
       notes: "Must book through Chase Exclusive Tables program.",
+      lifestyleKey: "dining_portal",
       details: exclusiveTablesDetails,
     }, [
       { id: "csr_dining_h1", cycle: "biannual_h1", description: "Up to $150 in statement credits for Exclusive Tables dining experiences (Jan-Jun)." },
@@ -239,6 +243,7 @@ export const chaseSapphireReserve: CardDefinition = {
       merchantPatterns: ["stubhub", "viagogo"],
       autoMatchable: true, requiresActivation: true, priority: 15,
       sunsetDate: "2027-12-31",
+      lifestyleKey: "stubhub",
       details: stubhubDetails,
       brandSlug: "stubhub",
     }, [
@@ -257,6 +262,7 @@ export const chaseSapphireReserve: CardDefinition = {
       notes: "Applied at checkout on restaurant orders. If full value is not used on a single order, remaining is forfeited.",
       carriesOver: false,
       sunsetDate: "2027-12-31",
+      lifestyleKey: "doordash",
       displayGroup: "csr_doordash", displayGroupName: "DoorDash Credits", displayGroupIcon: "Bike",
       details: doordashDetails,
       brandSlug: "doordash",
@@ -270,6 +276,7 @@ export const chaseSapphireReserve: CardDefinition = {
       description: "$10/month non-restaurant credit on DoorDash (grocery, convenience, retail).",
       notes: "Use-it-or-lose-it. Grocery, convenience, retail orders.",
       sunsetDate: "2027-12-31",
+      lifestyleKey: "doordash",
       displayGroup: "csr_doordash", displayGroupName: "DoorDash Credits", displayGroupIcon: "Bike",
       details: doordashDetails,
       brandSlug: "doordash",
@@ -283,6 +290,7 @@ export const chaseSapphireReserve: CardDefinition = {
       description: "Second $10/month non-restaurant credit on DoorDash.",
       notes: "Same rules as Non-Restaurant Promo 1.",
       sunsetDate: "2027-12-31",
+      lifestyleKey: "doordash",
       displayGroup: "csr_doordash", displayGroupName: "DoorDash Credits", displayGroupIcon: "Bike",
       details: doordashDetails,
       brandSlug: "doordash",
@@ -297,6 +305,7 @@ export const chaseSapphireReserve: CardDefinition = {
       autoMatchable: true, requiresActivation: true, priority: 20,
       description: "Up to $10/month in Lyft ride credits.",
       sunsetDate: "2027-09-30",
+      lifestyleKey: "lyft",
       details: {
         description:
           "Up to $10 in monthly in-app Lyft credits, plus 5x total points on all Lyft rides. The credit applies automatically to your first qualifying ride each month. Cannot be used on Wait & Save rides, or bike/scooter rentals.",
@@ -324,6 +333,7 @@ export const chaseSapphireReserve: CardDefinition = {
       description: "Up to $10/month credit for Peloton membership or equipment.",
       notes: "Must activate benefit. Applies to Peloton App or All-Access.",
       sunsetDate: "2027-12-31",
+      lifestyleKey: "peloton",
       details: {
         description:
           "Up to $120 in annual statement credits toward Peloton memberships, including All-Access Membership, Rental, App One, App+, Guide, or Strength+. Also earn 10x total points on eligible Peloton equipment/accessory purchases over $150 (up to $5,000 total, through 12/31/2027).",
@@ -351,6 +361,7 @@ export const chaseSapphireReserve: CardDefinition = {
       merchantPatterns: ["global entry", "tsa", "goes", "nexus"],
       autoMatchable: true, requiresActivation: false, priority: 40,
       description: "Up to $120 credit for Global Entry or TSA PreCheck application fee every 4 years.",
+      lifestyleKey: "global_entry",
       details: {
         description:
           "One statement credit of up to $120 every four years to reimburse the application fee for Global Entry ($120), TSA PreCheck ($78\u2013$98), or NEXUS ($50). Only one program per 4-year cycle. The credit covers the primary cardmember or an authorized user.",
@@ -378,6 +389,7 @@ export const chaseSapphireReserve: CardDefinition = {
       description: "Complimentary Apple TV+ subscription.",
       notes: "Must activate through Chase benefits portal.",
       sunsetDate: "2027-06-22",
+      lifestyleKey: "apple_tv",
       details: appleTvDetails,
       brandSlug: "apple",
     }),
@@ -392,6 +404,7 @@ export const chaseSapphireReserve: CardDefinition = {
       description: "Complimentary Apple Music subscription (Individual plan).",
       notes: "Must activate through Chase benefits portal.",
       sunsetDate: "2027-06-22",
+      lifestyleKey: "apple_tv",
       details: appleMusicDetails,
       brandSlug: "apple",
     }),
@@ -406,6 +419,7 @@ export const chaseSapphireReserve: CardDefinition = {
       description: "Complimentary DashPass membership for free delivery on DoorDash.",
       notes: "Must activate through DoorDash.",
       sunsetDate: "2027-12-31",
+      lifestyleKey: "doordash",
       details: dashPassDetails,
       brandSlug: "doordash",
     }),

@@ -43,6 +43,7 @@ export const chaseFreedomFlex: CardDefinition = {
       description: "Complimentary DashPass membership for free delivery on DoorDash.",
       notes: "Must activate through DoorDash.",
       sunsetDate: "2027-12-31",
+      lifestyleKey: "doordash",
       details: dashpassDetails,
       brandSlug: "doordash",
     }),

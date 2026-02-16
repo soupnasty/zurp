@@ -80,6 +80,7 @@ export const chaseSapphirePreferred: CardDefinition = {
       autoMatchable: false, requiresActivation: false, priority: 10,
       description: "Up to $50 in annual statement credits for hotel stays booked through Chase Travel.",
       notes: "Must book through Chase Travel portal. Anniversary year cycle.",
+      lifestyleKey: "hotel_portal",
       details: hotelCreditDetails,
     }),
 
@@ -93,6 +94,7 @@ export const chaseSapphirePreferred: CardDefinition = {
       description: "$10/month non-restaurant credit on DoorDash (grocery, convenience, retail).",
       notes: "Use-it-or-lose-it. If full value is not used on a single order, remaining is forfeited.",
       sunsetDate: "2027-12-31",
+      lifestyleKey: "doordash",
       details: doordashPromoDetails,
       brandSlug: "doordash",
     }),
@@ -107,6 +109,7 @@ export const chaseSapphirePreferred: CardDefinition = {
       description: "Complimentary DashPass membership for free delivery on DoorDash.",
       notes: "Must activate through DoorDash.",
       sunsetDate: "2027-12-31",
+      lifestyleKey: "doordash",
       details: dashpassDetails,
       brandSlug: "doordash",
     }),

@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { getRevealData } from "../../actions";
 import type { RevealData, RevealLeaderboardRow } from "../../actions";
 import { CardChip } from "@/app/_components/CardChip";
 import type { CardVisualId } from "@/app/_components/CardChip";
+import { LifestylePicker } from "./LifestylePicker";
 
 interface Props {
   userId: string;
@@ -14,7 +14,7 @@ interface Props {
   totalCards: number;
 }
 
-type Phase = "processing" | "transitioning" | "reveal";
+type Phase = "processing" | "picker" | "transitioning" | "reveal";
 type StepStatus = "pending" | "active" | "resolved";
 
 const STEP_CONFIG = [
@@ -374,6 +374,7 @@ export function ProcessingReveal({
   benefitCount,
   totalCards,
 }: Props) {
+  // Flow: processing → picker → reveal
   const [phase, setPhase] = useState<Phase>("processing");
   const [stepStates, setStepStates] = useState<StepStatus[]>([
     "pending",
@@ -408,17 +409,9 @@ export function ProcessingReveal({
     t.replace("{totalCards}", String(totalCards))
   );
 
-  // Update a specific step's result text, showing "Earn rates tracked" for 0 benefits
-  const getStep3Result = useCallback(() => {
-    return benefitCount > 0
-      ? `${benefitCount} benefit${
-          benefitCount !== 1 ? "s" : ""
-        } found on your card`
-      : "Earn rates tracked";
-  }, [benefitCount]);
-
-  const transitionToReveal = useCallback(
-    async (syncData: { added: number } | null) => {
+  // Transition from processing → picker once animation + sync are done
+  const transitionToPicker = useCallback(
+    (syncData: { added: number } | null) => {
       // Update step 1 result with real transaction count if available
       if (syncData && syncData.added > 0) {
         setStepResults((prev) => {
@@ -430,23 +423,37 @@ export function ProcessingReveal({
         });
       }
 
-      // Fetch reveal data
+      // Fade to picker
+      setPhase("transitioning");
+      setTimeout(() => setPhase("picker"), 400);
+    },
+    []
+  );
+
+  // After picker is submitted, save selections + fetch reveal via API route
+  // (NOT a server action — avoids re-rendering the processing page which
+  // would redirect away due to the lastSyncedAt guard)
+  const handlePickerComplete = useCallback(
+    async (selectedKeys: string[]) => {
+      setPhase("transitioning");
+
       let data: RevealData | null = null;
       try {
-        data = await getRevealData(userId);
+        const res = await fetch("/api/onboarding", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ lifestyleKeys: selectedKeys }),
+        });
+        const json = await res.json();
+        data = json.reveal ?? null;
       } catch {
         // Fallback: no comparison data
       }
       setRevealData(data);
 
-      // Fade out processing screen
-      setPhase("transitioning");
-
-      // After fade out, show reveal
+      // Show reveal with staggered animation
       setTimeout(() => {
         setPhase("reveal");
-
-        // Stagger reveal elements
         setTimeout(() => setRevealStage(1), 0);
         setTimeout(() => setRevealStage(2), 400);
         setTimeout(() => setRevealStage(3), 800);
@@ -454,20 +461,21 @@ export function ProcessingReveal({
         setTimeout(() => setRevealStage(5), 1600);
       }, 400);
     },
-    [userId]
+    []
   );
 
-  const checkBothDone = useCallback(() => {
+  const checkAllDone = useCallback(() => {
     if (syncCompleteRef.current && animationsDoneRef.current) {
-      transitionToReveal(syncResultRef.current);
+      transitionToPicker(syncResultRef.current);
     }
-  }, [transitionToReveal]);
+  }, [transitionToPicker]);
 
+  // Fire sync + start processing animation immediately on mount
   useEffect(() => {
     if (hasStartedRef.current) return;
     hasStartedRef.current = true;
 
-    // 1. Fire sync in background
+    // Start sync in background
     fetch("/api/plaid/sync", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -477,65 +485,33 @@ export function ProcessingReveal({
       .then((data) => {
         syncResultRef.current = data;
         syncCompleteRef.current = true;
-        checkBothDone();
+        checkAllDone();
       })
       .catch(() => {
         syncCompleteRef.current = true;
-        checkBothDone();
+        checkAllDone();
       });
 
-    // 2. Run step animation sequence
-    const timeouts: ReturnType<typeof setTimeout>[] = [];
+    // Start processing animation
     let delay = INITIAL_DELAY;
-
     STEP_CONFIG.forEach((step, i) => {
-      // Activate step
-      timeouts.push(
-        setTimeout(() => {
-          setStepStates((prev) => {
-            const next = [...prev];
-            next[i] = "active";
-            return next;
-          });
-        }, delay)
-      );
-
-      // Show result mid-step
-      timeouts.push(
-        setTimeout(() => {
-          setShowResult((prev) => {
-            const next = [...prev];
-            next[i] = true;
-            return next;
-          });
-          setProgress(step.progress);
-        }, delay + step.duration * 0.6)
-      );
-
-      // Resolve step
-      timeouts.push(
-        setTimeout(() => {
-          setStepStates((prev) => {
-            const next = [...prev];
-            next[i] = "resolved";
-            return next;
-          });
-        }, delay + step.duration)
-      );
-
+      setTimeout(() => {
+        setStepStates((prev) => { const n = [...prev]; n[i] = "active"; return n; });
+      }, delay);
+      setTimeout(() => {
+        setShowResult((prev) => { const n = [...prev]; n[i] = true; return n; });
+        setProgress(step.progress);
+      }, delay + step.duration * 0.6);
+      setTimeout(() => {
+        setStepStates((prev) => { const n = [...prev]; n[i] = "resolved"; return n; });
+      }, delay + step.duration);
       delay += step.duration + STEP_GAP;
     });
-
-    // Animations done
-    timeouts.push(
-      setTimeout(() => {
-        animationsDoneRef.current = true;
-        checkBothDone();
-      }, delay)
-    );
-
-    return () => timeouts.forEach(clearTimeout);
-  }, [connectionId, checkBothDone, getStep3Result]);
+    setTimeout(() => {
+      animationsDoneRef.current = true;
+      checkAllDone();
+    }, delay);
+  }, [connectionId, checkAllDone]);
 
   // ── Render ──
 
@@ -575,7 +551,7 @@ export function ProcessingReveal({
         }}
       />
 
-      {/* ── PHASE 1: Processing ── */}
+      {/* ── PHASE 0: Processing ── */}
       <div
         style={{
           position: "absolute",
@@ -701,6 +677,25 @@ export function ProcessingReveal({
             }}
           />
         </div>
+      </div>
+
+      {/* ── PHASE 1: Lifestyle Picker ── */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          zIndex: 2,
+          transition: "opacity 0.4s ease",
+          opacity: phase === "picker" ? 1 : 0,
+          pointerEvents: phase === "picker" ? "auto" : "none",
+          overflowY: "auto",
+          padding: "48px 0 64px",
+        }}
+      >
+        <LifestylePicker onComplete={handlePickerComplete} />
       </div>
 
       {/* ── PHASE 2: Reveal ── */}

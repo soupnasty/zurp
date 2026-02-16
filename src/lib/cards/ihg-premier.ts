@@ -53,6 +53,7 @@ export const ihgPremier: CardDefinition = {
       description: "Up to $120 every 4 years for Global Entry or TSA PreCheck.",
       notes: "Covers application fee only.",
       details: globalEntryDetails,
+      lifestyleKey: "global_entry",
     }),
   ],
 };

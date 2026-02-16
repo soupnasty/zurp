@@ -92,6 +92,7 @@ export const citiStrataElite: CardDefinition = {
         "$300 annual credit for hotel stays of 2+ nights booked through cititravel.com.",
       notes: "Applied at checkout (portal credit, not statement credit). Can be used at any hotel. Resets January 1.",
       details: hotelCollectionDetails,
+      lifestyleKey: "hotel_portal",
     }),
 
     // ── Splurge Credit ($200/year) ──
@@ -121,6 +122,7 @@ export const citiStrataElite: CardDefinition = {
       autoMatchable: true, requiresActivation: false, priority: 20,
       notes: "Statement credits for rides booked through Blacklane. Unused credits do not roll over.",
       details: blacklaneCreditDetails,
+      lifestyleKey: "blacklane",
     }, [
       { id: "citi_blacklane_h1", cycle: "biannual_h1", description: "Up to $100 in statement credits for Blacklane rides (Jan–Jun)." },
       { id: "citi_blacklane_h2", cycle: "biannual_h2", description: "Up to $100 in statement credits for Blacklane rides (Jul–Dec)." },
@@ -142,6 +144,7 @@ export const citiStrataElite: CardDefinition = {
       description:
         "Up to $120 credit for Global Entry or TSA PreCheck application fee every 4 years.",
       details: globalEntryDetails,
+      lifestyleKey: "global_entry",
     }),
   ],
 };

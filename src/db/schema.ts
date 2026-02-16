@@ -511,6 +511,10 @@ export const cardSimulations = pgTable(
     pointsValueConservative: real("points_value_conservative").notNull().default(0),
     pointsValueUpside: real("points_value_upside").notNull().default(0),
     benefitsSimulated: real("benefits_simulated").notNull().default(0),
+    matchedPerBenefit: jsonb("matched_per_benefit")
+      .$type<Record<string, number>>()
+      .notNull()
+      .default({}),
     benefitsValue: real("benefits_value").notNull().default(0),
     parallelValue: real("parallel_value").notNull().default(0),
     netFloor: real("net_floor").notNull().default(0),
@@ -759,6 +763,38 @@ export const benefitOverridesRelations = relations(
     benefit: one(benefits, {
       fields: [benefitOverrides.benefitId],
       references: [benefits.id],
+    }),
+  })
+);
+
+// ── Lifestyle Selections (benefit assumption mode) ──
+
+export const lifestyleSelections = pgTable(
+  "lifestyle_selections",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    lifestyleKey: text("lifestyle_key").notNull(),
+    selectedAt: timestamp("selected_at", { mode: "date" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (t) => [
+    unique("ls_user_key").on(t.userId, t.lifestyleKey),
+    index("ls_user_idx").on(t.userId),
+  ]
+);
+
+export const lifestyleSelectionsRelations = relations(
+  lifestyleSelections,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [lifestyleSelections.userId],
+      references: [users.id],
     }),
   })
 );

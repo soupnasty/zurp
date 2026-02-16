@@ -96,6 +96,7 @@ export const amexGold: CardDefinition = {
       description: "Up to $10/month in statement credits at Grubhub, The Cheesecake Factory, Goldbelly, Wine.com, and Five Guys.",
       notes: "Must enroll before first purchase. Shared across primary + authorized users ($10 total). Gift cards do not qualify.",
       details: diningCreditDetails,
+      lifestyleKey: "dining_portal",
     }),
 
     // ── Resy Dining Credit ($50 × 2 biannual) ──
@@ -106,6 +107,7 @@ export const amexGold: CardDefinition = {
       autoMatchable: false, requiresActivation: true, priority: 10,
       notes: "Dine at Resy-affiliated restaurants or purchase on Resy.com/app. Reservation through Resy not required.",
       details: resyCreditDetails,
+      lifestyleKey: "resy",
     }, [
       { id: "gold_resy_credit_h1", cycle: "biannual_h1", description: "Up to $50 in statement credits for Resy dining experiences (Jan-Jun)." },
       { id: "gold_resy_credit_h2", cycle: "biannual_h2", description: "Up to $50 in statement credits for Resy dining experiences (Jul-Dec)." },
@@ -122,6 +124,7 @@ export const amexGold: CardDefinition = {
       notes: "Uber Cash auto-deposits monthly. Use-it-or-lose-it — expires at end of month. U.S. only. Must have Amex card selected as payment method.",
       details: uberCashDetails,
       brandSlug: "uber",
+      lifestyleKey: "uber",
     }),
 
     // ── Monthly Dunkin' Credit ($7/mo) ──
@@ -134,6 +137,7 @@ export const amexGold: CardDefinition = {
       description: "Up to $7/month in statement credits at Dunkin'.",
       notes: "U.S. Dunkin' locations only (in-store or via Dunkin' app). Must enroll before first purchase.",
       details: dunkinCreditDetails,
+      lifestyleKey: "dunkin",
     }),
   ],
 };

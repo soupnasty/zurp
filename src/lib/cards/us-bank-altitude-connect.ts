@@ -62,6 +62,7 @@ export const usBankAltitudeConnect: CardDefinition = {
       notes:
         "Credit provided once every 4 years from date of last reimbursement. Covers application and renewal fees for expedited security programs.",
       details: globalEntryTsaPreCheckDetails,
+      lifestyleKey: "global_entry",
     }),
   ],
 };

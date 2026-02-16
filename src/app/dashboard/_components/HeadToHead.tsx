@@ -1,11 +1,14 @@
 "use client";
 
-import type { CardSimulation, HeadlineVerdict } from "@/lib/points/types";
+import type { CardSimulation, HeadlineVerdict, ValuationMode, BenefitAssumptionMode } from "@/lib/points/types";
+import { getNetForModes, getPointsForMode, getBenefitsForMode } from "./CompareTab";
 
 interface HeadToHeadProps {
   headline: HeadlineVerdict;
   cards: CardSimulation[];
   activeCardType: string;
+  vMode: ValuationMode;
+  bMode: BenefitAssumptionMode;
 }
 
 function fmt(n: number): string {
@@ -20,21 +23,21 @@ interface RowData {
   isTotal?: boolean;
 }
 
-export function HeadToHead({ headline, cards, activeCardType }: HeadToHeadProps) {
-  const sorted = [...cards].sort((a, b) => b.netActual - a.netActual);
+export function HeadToHead({ headline, cards, activeCardType, vMode, bMode }: HeadToHeadProps) {
+  const sorted = [...cards].sort((a, b) => getNetForModes(b, vMode, bMode) - getNetForModes(a, vMode, bMode));
   const bestCard = sorted[0];
   const userCard = cards.find((c) => c.cardId === activeCardType);
 
   if (!bestCard || !userCard || bestCard.cardId === userCard.cardId) return null;
 
-  const userBenefits = userCard.benefitsSimulated ?? userCard.benefitsValue;
-  const bestBenefits = bestCard.benefitsSimulated ?? bestCard.benefitsValue;
+  const userBenefits = getBenefitsForMode(userCard, bMode);
+  const bestBenefits = getBenefitsForMode(bestCard, bMode);
 
   const rows: RowData[] = [
     {
       label: "Points",
-      leftVal: userCard.pointsValueConservative,
-      rightVal: bestCard.pointsValueConservative,
+      leftVal: getPointsForMode(userCard, vMode),
+      rightVal: getPointsForMode(bestCard, vMode),
       color: "var(--color-accent-blue)",
     },
     {
@@ -51,8 +54,8 @@ export function HeadToHead({ headline, cards, activeCardType }: HeadToHeadProps)
     },
     {
       label: "Total",
-      leftVal: userCard.netActual,
-      rightVal: bestCard.netActual,
+      leftVal: getNetForModes(userCard, vMode, bMode),
+      rightVal: getNetForModes(bestCard, vMode, bMode),
       color: "var(--color-success)",
       isTotal: true,
     },

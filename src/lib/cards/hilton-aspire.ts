@@ -103,6 +103,7 @@ export const hiltonAspire: CardDefinition = {
         notes:
           "Valid at any Hilton property worldwide for room, F&B, and resort fees.",
         details: hiltonResortCreditDetails,
+        lifestyleKey: "hilton_resorts",
       },
       [
         {
@@ -147,6 +148,7 @@ export const hiltonAspire: CardDefinition = {
         notes:
           "Any carrier. Covers baggage, seat upgrades, and incidentals. NOT airfare.",
         details: hiltonAirlineDetails,
+        lifestyleKey: "airline_fee",
       },
       [
         {
@@ -192,6 +194,7 @@ export const hiltonAspire: CardDefinition = {
       description: "Up to $209/year covering CLEAR Plus membership.",
       notes: "Covers annual CLEAR Plus membership fee.",
       details: clearPlusCreditDetails,
+      lifestyleKey: "clear_plus",
     }),
   ],
 };

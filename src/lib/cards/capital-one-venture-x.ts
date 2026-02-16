@@ -76,6 +76,7 @@ export const capitalOneVentureX: CardDefinition = {
       description:
         "$300 annual credit for bookings through Capital One Travel portal. Resets on card anniversary.",
       details: travelCreditDetails,
+      lifestyleKey: "travel_portal",
     }),
 
     b({
@@ -110,6 +111,7 @@ export const capitalOneVentureX: CardDefinition = {
       description:
         "Up to $120 credit for Global Entry or TSA PreCheck application fee every 4 years.",
       details: globalEntryDetails,
+      lifestyleKey: "global_entry",
     }),
   ],
 };

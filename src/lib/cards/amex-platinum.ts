@@ -223,6 +223,7 @@ export const amexPlatinum: CardDefinition = {
       autoMatchable: false, requiresActivation: true, priority: 10,
       notes: "Must enroll before first purchase. Reservation through Resy not required.",
       details: resyCreditDetails,
+      lifestyleKey: "resy",
     }, [
       { id: "plat_resy_credit_q1", cycle: "quarterly_q1", name: "Resy Credit (Q1)", description: "Up to $100 in statement credits for Resy dining (Jan\u2013Mar)." },
       { id: "plat_resy_credit_q2", cycle: "quarterly_q2", name: "Resy Credit (Q2)", description: "Up to $100 in statement credits for Resy dining (Apr\u2013Jun)." },
@@ -237,6 +238,7 @@ export const amexPlatinum: CardDefinition = {
       autoMatchable: true, requiresActivation: true, priority: 20,
       notes: "Must enroll before first purchase.",
       details: lululemonDetails,
+      lifestyleKey: "lululemon",
     }, [
       { id: "plat_lululemon_credit_q1", cycle: "quarterly_q1", name: "lululemon Credit (Q1)", description: "Up to $75 in statement credits at lululemon (Jan\u2013Mar)." },
       { id: "plat_lululemon_credit_q2", cycle: "quarterly_q2", name: "lululemon Credit (Q2)", description: "Up to $75 in statement credits at lululemon (Apr\u2013Jun)." },
@@ -252,6 +254,7 @@ export const amexPlatinum: CardDefinition = {
       autoMatchable: false, requiresActivation: false, priority: 15,
       notes: "Two-night minimum stay required. Book through AmexTravel.com.",
       details: hotelCreditDetails,
+      lifestyleKey: "hotel_portal",
     }, [
       { id: "plat_hotel_credit_h1", cycle: "biannual_h1", name: "Hotel Credit (H1)", description: "Up to $300 in hotel credits via FHR/THC on AmexTravel.com (Jan\u2013Jun)." },
       { id: "plat_hotel_credit_h2", cycle: "biannual_h2", name: "Hotel Credit (H2)", description: "Up to $300 in hotel credits via FHR/THC on AmexTravel.com (Jul\u2013Dec)." },
@@ -265,6 +268,7 @@ export const amexPlatinum: CardDefinition = {
       autoMatchable: true, requiresActivation: true, priority: 20,
       notes: "Must enroll before first purchase.",
       details: saksCreditDetails,
+      lifestyleKey: "saks",
     }, [
       { id: "plat_saks_h1", cycle: "biannual_h1", name: "Saks Fifth Avenue Credit (H1)", description: "Up to $50 at Saks Fifth Avenue (Jan\u2013Jun)." },
       { id: "plat_saks_h2", cycle: "biannual_h2", name: "Saks Fifth Avenue Credit (H2)", description: "Up to $50 at Saks Fifth Avenue (Jul\u2013Dec)." },
@@ -285,6 +289,7 @@ export const amexPlatinum: CardDefinition = {
       description: "Up to $25/month for eligible digital entertainment subscriptions.",
       notes: "Must enroll before first purchase. Eligible services include Disney+, Disney+ Bundle, Hulu, ESPN+, NYT, WSJ, YouTube Premium, YouTube TV, Peacock, Paramount+.",
       details: digitalEntertainmentDetails,
+      lifestyleKey: "streaming",
     }),
     b({
       id: "plat_uber_cash",
@@ -297,6 +302,7 @@ export const amexPlatinum: CardDefinition = {
       details: uberCashDetails,
       brandSlug: "uber",
       activeMonths: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      lifestyleKey: "uber",
     }),
     b({
       id: "plat_uber_cash_dec",
@@ -309,6 +315,7 @@ export const amexPlatinum: CardDefinition = {
       details: uberCashDetails,
       brandSlug: "uber",
       activeMonths: [11],
+      lifestyleKey: "uber",
     }),
     b({
       id: "plat_walmart_plus",
@@ -319,6 +326,7 @@ export const amexPlatinum: CardDefinition = {
       description: "Up to $12.95/month covering Walmart+ membership.",
       notes: "Must enroll before first purchase. Covers monthly Walmart+ subscription fee.",
       details: walmartPlusDetails,
+      lifestyleKey: "walmart_plus",
     }),
 
     // ── Annual Calendar Benefits ──
@@ -332,6 +340,7 @@ export const amexPlatinum: CardDefinition = {
       notes: "Must link Amex and Uber accounts. Includes $0 delivery fees and discounts on rides.",
       details: uberOneDetails,
       brandSlug: "uber",
+      lifestyleKey: "uber",
     }),
     b({
       id: "plat_airline_fee_credit",
@@ -344,6 +353,7 @@ export const amexPlatinum: CardDefinition = {
       description: "Up to $200/year for incidental airline fees on your selected airline.",
       notes: "Must select one airline per calendar year. Covers bags, seat upgrades, in-flight purchases \u2014 NOT airfare.",
       details: airlineFeeCreditDetails,
+      lifestyleKey: "airline_fee",
     }),
     b({
       id: "plat_equinox",
@@ -354,6 +364,7 @@ export const amexPlatinum: CardDefinition = {
       description: "Up to $300/year toward Equinox membership.",
       notes: "Applies to Equinox club dues or Equinox+ digital membership.",
       details: equinoxDetails,
+      lifestyleKey: "equinox",
     }),
     b({
       id: "plat_clear",
@@ -364,6 +375,7 @@ export const amexPlatinum: CardDefinition = {
       description: "Up to $209/year covering CLEAR Plus membership.",
       notes: "Covers the annual CLEAR Plus membership fee.",
       details: clearDetails,
+      lifestyleKey: "clear_plus",
     }),
     b({
       id: "plat_oura",
@@ -374,6 +386,7 @@ export const amexPlatinum: CardDefinition = {
       description: "Up to $200/year toward Oura Ring or membership.",
       notes: "Covers Oura Ring purchase or ongoing membership fees.",
       details: ouraDetails,
+      lifestyleKey: "oura",
     }),
 
     // ── Quadrennial ──
@@ -386,6 +399,7 @@ export const amexPlatinum: CardDefinition = {
       description: "Up to $120 every 4 years for Global Entry or TSA PreCheck.",
       notes: "Covers application fee only.",
       details: globalEntryDetails,
+      lifestyleKey: "global_entry",
     }),
   ],
 };

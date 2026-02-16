@@ -74,6 +74,7 @@ export const wellsFargoAutographJourney: CardDefinition = {
       notes:
         "Minimum single charge of $50 required to trigger credit. Credit resets January 1 each year and does not carry over if unused.",
       details: airlineCreditDetails,
+      lifestyleKey: "airline_fee",
     }),
   ],
 };

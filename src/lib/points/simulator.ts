@@ -8,10 +8,14 @@ import type {
   CategoryWinner,
   HeadlineVerdict,
   ComparisonOutput,
+  BenefitSimResult,
+  BenefitAssumptionMode,
+  ValuationMode,
 } from "./types";
 import type { MatcherTransaction } from "@/lib/types";
 import { calculatePointsForTransaction } from "./calculator";
 import { valuatePoints, computeBenefitsValue } from "./valuation";
+import { computeLifestyleBenefits } from "./lifestyle-valuation";
 import { EARN_CATEGORY_LABELS, EARN_CATEGORY_ICONS } from "./categories";
 import { runMatcher } from "@/lib/engine/matcher";
 import { getCardDefinition } from "@/lib/cards";
@@ -36,6 +40,7 @@ interface SimulationInput {
   period: { start: Date; end: Date };
   monthCount: number;
   portalMode?: boolean;
+  lifestyleKeys?: string[];
 }
 
 const TRAVEL_CATEGORIES: EarnCategory[] = [
@@ -57,7 +62,10 @@ export function runSimulation(input: SimulationInput): ComparisonOutput | null {
     period,
     monthCount,
     portalMode = false,
+    lifestyleKeys = [],
   } = input;
+
+  const selectedLifestyle = new Set(lifestyleKeys);
 
   // If portal mode, reclassify travel categories as travel_portal
   const effectiveTxns = portalMode
@@ -99,11 +107,41 @@ export function runSimulation(input: SimulationInput): ComparisonOutput | null {
   // Pass period.start as synthetic anniversary date so annual benefits
   // get exactly one budget across the 365-day window (no year-boundary split).
   for (const sim of simulations) {
-    const simulated = simulateBenefitsForCard(sim.cardId, sortedTxns, period.start);
-    sim.benefitsSimulated = simulated;
-    sim.netActual = round2(
-      sim.pointsValueConservative + simulated - sim.annualFee
-    );
+    const simResult = simulateBenefitsForCard(sim.cardId, sortedTxns, period.start);
+    sim.benefitsSimulated = simResult.total;
+    sim.matchedPerBenefit = simResult.perBenefit;
+
+    // Compute benefits at each assumption mode
+    const proven = simResult.total;
+    const myPicks = computeLifestyleBenefits(sim.cardId, simResult.perBenefit, selectedLifestyle);
+    const allCredits = computeBenefitsValue(sim.cardId);
+    sim.benefitsByMode = { proven, my_picks: myPicks, all_credits: allCredits };
+
+    // Default netActual uses proven benefits (backward compatible)
+    sim.netActual = round2(sim.pointsValueConservative + proven - sim.annualFee);
+
+    // Build full 3×3 netByMode matrix (valuation × benefit assumption)
+    const pointsModes = {
+      conservative: sim.pointsValueConservative,
+      realistic: sim.pointsValueRealistic,
+      upside: sim.pointsValueUpside,
+    } as const;
+
+    const benefitModes = {
+      proven,
+      my_picks: myPicks,
+      all_credits: allCredits,
+    } as const;
+
+    sim.netByMode = {} as CardSimulation["netByMode"];
+    for (const vMode of ["conservative", "realistic", "upside"] as const) {
+      sim.netByMode[vMode] = {} as Record<BenefitAssumptionMode, number>;
+      for (const bMode of ["proven", "my_picks", "all_credits"] as const) {
+        sim.netByMode[vMode][bMode] = round2(
+          pointsModes[vMode] + benefitModes[bMode] - sim.annualFee
+        );
+      }
+    }
   }
 
   // Rank cards by netActual descending (matches leaderboard sort)
@@ -255,6 +293,14 @@ function simulateCard(
   // Sort by spend descending
   categories.sort((a, b) => b.totalSpend - a.totalSpend);
 
+  // Placeholders — overridden in runSimulation() after benefit simulation
+  const emptyBenefitModes = { proven: 0, my_picks: 0, all_credits: 0 };
+  const emptyNetByMode = {
+    conservative: emptyBenefitModes,
+    realistic: emptyBenefitModes,
+    upside: emptyBenefitModes,
+  } as CardSimulation["netByMode"];
+
   return {
     cardId: config.cardId,
     cardName: config.cardName,
@@ -263,13 +309,17 @@ function simulateCard(
     totalPoints,
     bonusPoints,
     pointsValueConservative: values.conservative,
+    pointsValueRealistic: values.realistic,
     pointsValueUpside: values.upside,
     benefitsValue,
     benefitsCaptured: isUsersCard ? benefitsCaptured : null,
     benefitsSimulated: null,
+    matchedPerBenefit: {},
+    benefitsByMode: { proven: 0, my_picks: 0, all_credits: 0 },
     netFloor,
     netCeiling,
     netActual,
+    netByMode: emptyNetByMode,
     rank: 0, // set after ranking
     categories,
   };
@@ -277,15 +327,17 @@ function simulateCard(
 
 /**
  * Run the benefit matching engine against a card's benefit catalog
- * using the user's actual transactions. Returns total credits matched.
+ * using the user's actual transactions. Returns per-benefit breakdown.
  */
 function simulateBenefitsForCard(
   cardId: string,
   transactions: SimulationTransaction[],
   periodStart: Date
-): number {
+): BenefitSimResult {
   const cardDef = getCardDefinition(cardId);
-  if (!cardDef || cardDef.benefits.length === 0) return 0;
+  if (!cardDef || cardDef.benefits.length === 0) {
+    return { total: 0, perBenefit: {} };
+  }
 
   // Convert to MatcherTransaction format (all treated as unmatched)
   const matcherTxns: MatcherTransaction[] = transactions
@@ -311,9 +363,15 @@ function simulateBenefitsForCard(
     anniversaryDate: periodStart,
   });
 
-  // Sum all credits matched
-  const total = result.matches.reduce((sum, m) => sum + m.creditApplied, 0);
-  return round2(total);
+  // Build per-benefit breakdown
+  const perBenefit: Record<string, number> = {};
+  let total = 0;
+  for (const m of result.matches) {
+    perBenefit[m.benefitId] = (perBenefit[m.benefitId] ?? 0) + m.creditApplied;
+    total += m.creditApplied;
+  }
+
+  return { total: round2(total), perBenefit };
 }
 
 function buildCategoryBreakdown(
