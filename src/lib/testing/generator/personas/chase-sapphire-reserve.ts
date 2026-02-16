@@ -116,8 +116,8 @@ export const csrMaximizer: Persona = {
     { benefitId: "csr_edit_h1", behavior: "always_use" },
     { benefitId: "csr_edit_h2", behavior: "never_use" },
 
-    // Select hotel: never use (one-time 2026 credit, requires specific hotel chains)
-    { benefitId: "csr_select_hotel_credit_2026", behavior: "never_use" },
+    // Select hotel: use it (IHG is a qualifying chain)
+    { benefitId: "csr_select_hotel_credit_2026", behavior: "always_use" },
 
     // Dining: Exclusive Tables — use H1, skip H2 (tests B1)
     { benefitId: "csr_dining_h1", behavior: "always_use" },
@@ -125,6 +125,11 @@ export const csrMaximizer: Persona = {
 
     // Global Entry: one-time
     { benefitId: "csr_global_entry", behavior: "always_use" },
+
+    // Subscriptions: passive (auto-benefiting)
+    { benefitId: "csr_apple_tv", behavior: "passive" },
+    { benefitId: "csr_apple_music", behavior: "passive" },
+    { benefitId: "csr_dashpass", behavior: "passive" },
   ],
 
   competitorSpend: [
@@ -243,6 +248,11 @@ export const csrMinimalist: Persona = {
     { benefitId: "csr_dining_h1", behavior: "never_use" },
     { benefitId: "csr_dining_h2", behavior: "never_use" },
     { benefitId: "csr_global_entry", behavior: "never_use" },
+
+    // Subscriptions: passive (auto-benefiting)
+    { benefitId: "csr_apple_tv", behavior: "passive" },
+    { benefitId: "csr_apple_music", behavior: "passive" },
+    { benefitId: "csr_dashpass", behavior: "passive" },
   ],
 
   competitorSpend: [],

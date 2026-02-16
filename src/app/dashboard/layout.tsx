@@ -41,11 +41,11 @@ export default async function DashboardLayout({
       userEmail={user.email ?? undefined}
       dashboardNav={{ hasNewInsights: hasNew, cardProfiles }}
     >
-      <div className="mx-auto max-w-[960px] px-4 pt-8 pb-32 md:px-8">
+      <div className="mx-auto max-w-[960px] px-4 pt-8 pb-24 md:pb-8 md:px-8">
         <SyncBanner cardProfiles={cardProfiles} />
         {children}
+        <SyncFooter cardProfiles={cardProfiles} />
       </div>
-      <SyncFooter cardProfiles={cardProfiles} />
     </AppShell>
   );
 }

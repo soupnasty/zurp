@@ -5,25 +5,21 @@ import type { SerializedInsight } from "./types";
 
 type DisplayGroup = "expiring" | "redirect" | "unused" | "milestone";
 
-const GROUP_LABELS: Record<DisplayGroup, { title: string; subtitle: string; color: string }> = {
+const GROUP_LABELS: Record<DisplayGroup, { title: string; color: string }> = {
   expiring: {
     title: "Expiring soon",
-    subtitle: "Credits resetting before you can use them",
     color: "var(--color-accent-amber)",
   },
   redirect: {
     title: "Redirect spending",
-    subtitle: "Purchases that could earn you more elsewhere",
     color: "var(--color-accent-blue)",
   },
   unused: {
     title: "Unused benefits",
-    subtitle: "Credits you're paying for but not using",
     color: "var(--color-danger)",
   },
   milestone: {
     title: "Milestones",
-    subtitle: "Wins worth celebrating",
     color: "var(--color-success)",
   },
 };
@@ -39,30 +35,29 @@ export function InsightGroupSection({ group, insights }: InsightGroupProps) {
   const config = GROUP_LABELS[group];
 
   return (
-    <div className="mt-8 first:mt-0">
+    <div className="mt-6 first:mt-0">
       {/* Section header */}
-      <div className="mb-3 md:mb-4">
-        <div className="flex items-center gap-2 md:gap-3">
-          <h3 className="text-base md:text-lg font-bold text-[var(--text-primary)]">
-            {config.title}
-          </h3>
-          <span
-            className="rounded-full px-2 md:px-2.5 py-0.5 text-[10px] md:text-[11px] font-bold"
-            style={{
-              fontFamily: "var(--font-mono)",
-              color: config.color,
-              background: `color-mix(in srgb, ${config.color} 10%, transparent)`,
-              border: `1px solid color-mix(in srgb, ${config.color} 15%, transparent)`,
-            }}
-          >
-            {insights.length}
-          </span>
-        </div>
-        <p className="mt-0.5 text-[12px] md:text-[13px] text-[var(--text-secondary)]">{config.subtitle}</p>
+      <div className="flex items-center gap-2 mb-2.5">
+        <span
+          className="text-[10px] font-bold uppercase tracking-[2px]"
+          style={{ fontFamily: "var(--font-mono)", color: config.color }}
+        >
+          {config.title}
+        </span>
+        <span
+          className="rounded-full px-1.5 py-px text-[9px] font-bold"
+          style={{
+            fontFamily: "var(--font-mono)",
+            color: config.color,
+            background: `color-mix(in srgb, ${config.color} 10%, transparent)`,
+          }}
+        >
+          {insights.length}
+        </span>
       </div>
 
       {/* Insight cards */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         {insights.map((insight) => (
           <InsightCardV2 key={insight.id} insight={insight} displayGroup={group} />
         ))}

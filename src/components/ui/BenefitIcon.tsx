@@ -40,24 +40,11 @@ const lucideMap: Record<string, React.ComponentType<any>> = {
 
 interface BenefitIconProps {
   icon: string;
-  brandSlug?: string;
   size?: number;
   className?: string;
 }
 
-export function BenefitIcon({ icon, brandSlug, size = 20, className = "text-[var(--accent)]" }: BenefitIconProps) {
-  if (brandSlug) {
-    return (
-      <img
-        src={`https://cdn.simpleicons.org/${brandSlug}/white`}
-        alt=""
-        width={size}
-        height={size}
-        className={className}
-      />
-    );
-  }
-
+export function BenefitIcon({ icon, size = 20, className = "text-[var(--accent)]" }: BenefitIconProps) {
   const LucideIcon = lucideMap[icon] || CreditCard;
   return <LucideIcon size={size} strokeWidth={1.75} className={className} style={{ color: "var(--benefit-icon-color)" }} />;
 }

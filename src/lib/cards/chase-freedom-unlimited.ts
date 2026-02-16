@@ -45,7 +45,6 @@ export const chaseFreedomUnlimited: CardDefinition = {
       sunsetDate: "2027-12-31",
       lifestyleKey: "doordash",
       details: dashpassDetails,
-      brandSlug: "doordash",
     }),
   ],
 };

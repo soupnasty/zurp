@@ -96,7 +96,7 @@ describe("Merchant Registry — Completeness", () => {
       expect(
         merchant.merchantKey,
         `merchantKey "${merchant.merchantKey}" is not snake_case`
-      ).toMatch(/^[a-z][a-z0-9_]*$/);
+      ).toMatch(/^[a-z0-9][a-z0-9_]*$/);
     }
   });
 

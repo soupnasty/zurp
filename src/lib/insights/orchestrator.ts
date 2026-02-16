@@ -347,6 +347,15 @@ export async function getInsightsForDisplay(
     }
   }
 
+  // Re-apply Rule 6: C0 pending must be first even after Rule 3 reordering
+  const c0SelectedIdx = selected.findIndex(
+    (i) => i.category === "C0" && i.state === "pending"
+  );
+  if (c0SelectedIdx > 0) {
+    const [c0Item] = selected.splice(c0SelectedIdx, 1);
+    selected.unshift(c0Item);
+  }
+
   // Batch mark pending insights as shown (Issues 15: single UPDATE instead of loop)
   const pendingIds = selected
     .filter((i) => i.state === "pending")

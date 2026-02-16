@@ -79,7 +79,7 @@ export const cfuEverydaySpender: Persona = {
   ],
 
   benefitBehavior: [
-    // DashPass subscription benefit is not transaction-matchable (skipped by matcher)
+    { benefitId: "cfu_dashpass", behavior: "passive" },
   ],
 
   competitorSpend: [],
@@ -146,7 +146,7 @@ export const cfuDrugstoreUser: Persona = {
   ],
 
   benefitBehavior: [
-    // DashPass subscription benefit is not transaction-matchable (skipped by matcher)
+    { benefitId: "cfu_dashpass", behavior: "passive" },
   ],
 
   competitorSpend: [],

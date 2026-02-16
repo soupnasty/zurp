@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { calculatePointsForTransaction, getDatePartsInTimezone, matchesTimeWindow } from "../calculator";
+
+/** Parse "YYYY-MM-DD" to a local-time Date (avoids UTC midnight timezone shift) */
+function parseLocalDate(dateStr: string): Date {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
 import { csrEarnConfig } from "../earn-configs/chase-sapphire-reserve";
 import { cspEarnConfig } from "../earn-configs/chase-sapphire-preferred";
 import { cffEarnConfig } from "../earn-configs/chase-freedom-flex";
@@ -405,7 +411,7 @@ describe("calculatePointsForTransaction", () => {
           amount: 50,
           category: "dining",
           confidence: "high",
-          date: new Date("2025-01-03"),
+          date: parseLocalDate("2025-01-03"),
           datetime: fridayNight,
         },
         citiStrataEliteEarnConfig,
@@ -427,7 +433,7 @@ describe("calculatePointsForTransaction", () => {
           amount: 50,
           category: "dining",
           confidence: "high",
-          date: new Date("2025-01-03"),
+          date: parseLocalDate("2025-01-03"),
           datetime: fridayAfternoon,
         },
         citiStrataEliteEarnConfig,
@@ -449,7 +455,7 @@ describe("calculatePointsForTransaction", () => {
           amount: 50,
           category: "dining",
           confidence: "high",
-          date: new Date("2025-01-04"),
+          date: parseLocalDate("2025-01-04"),
           datetime: saturdayNight,
         },
         citiStrataEliteEarnConfig,
@@ -470,7 +476,7 @@ describe("calculatePointsForTransaction", () => {
           amount: 50,
           category: "dining",
           confidence: "high",
-          date: new Date("2025-01-02"),
+          date: parseLocalDate("2025-01-02"),
           datetime: thursdayNight,
         },
         citiStrataEliteEarnConfig,
@@ -491,7 +497,7 @@ describe("calculatePointsForTransaction", () => {
           amount: 50,
           category: "dining",
           confidence: "high",
-          date: new Date("2025-01-05"),
+          date: parseLocalDate("2025-01-05"),
           datetime: sundayLateNight,
         },
         citiStrataEliteEarnConfig,
@@ -512,7 +518,7 @@ describe("calculatePointsForTransaction", () => {
           amount: 50,
           category: "dining",
           confidence: "high",
-          date: new Date("2025-01-01"),
+          date: parseLocalDate("2025-01-01"),
           datetime: wedNight,
         },
         citiStrataEliteEarnConfig,
@@ -766,7 +772,7 @@ describe("calendar year cap reset", () => {
         amount: 15000,
         category: "groceries",
         confidence: "high",
-        date: new Date("2024-06-15"),
+        date: parseLocalDate("2024-06-15"),
       },
       amexGoldEarnConfig,
       capState
@@ -784,7 +790,7 @@ describe("calendar year cap reset", () => {
         amount: 15000,
         category: "groceries",
         confidence: "high",
-        date: new Date("2025-02-01"),
+        date: parseLocalDate("2025-02-01"),
       },
       amexGoldEarnConfig,
       capState
@@ -808,7 +814,7 @@ describe("calendar year cap reset", () => {
         amount: 5000,
         category: "groceries",
         confidence: "high",
-        date: new Date("2024-11-01"),
+        date: parseLocalDate("2024-11-01"),
       },
       amexBcpEarnConfig,
       capState
@@ -823,7 +829,7 @@ describe("calendar year cap reset", () => {
         amount: 5000,
         category: "groceries",
         confidence: "high",
-        date: new Date("2025-01-15"),
+        date: parseLocalDate("2025-01-15"),
       },
       amexBcpEarnConfig,
       capState
@@ -845,7 +851,7 @@ describe("calendar year cap reset", () => {
         amount: 3500,
         category: "travel_portal",
         confidence: "high",
-        date: new Date("2024-09-01"),
+        date: parseLocalDate("2024-09-01"),
       },
       robinhoodGoldEarnConfig,
       capState
@@ -860,7 +866,7 @@ describe("calendar year cap reset", () => {
         amount: 500,
         category: "travel_portal",
         confidence: "high",
-        date: new Date("2024-10-01"),
+        date: parseLocalDate("2024-10-01"),
       },
       robinhoodGoldEarnConfig,
       capState
@@ -876,7 +882,7 @@ describe("calendar year cap reset", () => {
         amount: 1000,
         category: "travel_portal",
         confidence: "high",
-        date: new Date("2025-01-15"),
+        date: parseLocalDate("2025-01-15"),
       },
       robinhoodGoldEarnConfig,
       capState
@@ -899,7 +905,7 @@ describe("CFF rotating quarterly categories", () => {
         amount: 100,
         category: "groceries",
         confidence: "high",
-        date: new Date("2025-02-15"),
+        date: parseLocalDate("2025-02-15"),
       },
       cffEarnConfig,
       capState
@@ -918,7 +924,7 @@ describe("CFF rotating quarterly categories", () => {
         amount: 100,
         category: "groceries",
         confidence: "high",
-        date: new Date("2025-05-15"),
+        date: parseLocalDate("2025-05-15"),
       },
       cffEarnConfig,
       capState
@@ -937,7 +943,7 @@ describe("CFF rotating quarterly categories", () => {
         amount: 50,
         category: "dining",
         confidence: "high",
-        date: new Date("2025-08-15"),
+        date: parseLocalDate("2025-08-15"),
       },
       cffEarnConfig,
       capState
@@ -956,7 +962,7 @@ describe("CFF rotating quarterly categories", () => {
         amount: 50,
         category: "dining",
         confidence: "high",
-        date: new Date("2025-02-15"),
+        date: parseLocalDate("2025-02-15"),
       },
       cffEarnConfig,
       capState
@@ -977,7 +983,7 @@ describe("CFF rotating quarterly categories", () => {
         amount: 1500,
         category: "groceries",
         confidence: "high",
-        date: new Date("2025-01-10"),
+        date: parseLocalDate("2025-01-10"),
       },
       cffEarnConfig,
       capState
@@ -994,7 +1000,7 @@ describe("CFF rotating quarterly categories", () => {
         amount: 100,
         category: "groceries",
         confidence: "high",
-        date: new Date("2025-02-01"),
+        date: parseLocalDate("2025-02-01"),
       },
       cffEarnConfig,
       capState
@@ -1015,7 +1021,7 @@ describe("CFF rotating quarterly categories", () => {
         amount: 1600,
         category: "groceries",
         confidence: "high",
-        date: new Date("2025-03-01"),
+        date: parseLocalDate("2025-03-01"),
       },
       cffEarnConfig,
       capState
@@ -1036,7 +1042,7 @@ describe("CFF rotating quarterly categories", () => {
         amount: 1500,
         category: "groceries",
         confidence: "high",
-        date: new Date("2025-02-01"),
+        date: parseLocalDate("2025-02-01"),
       },
       cffEarnConfig,
       capState
@@ -1050,7 +1056,7 @@ describe("CFF rotating quarterly categories", () => {
         amount: 200,
         category: "gas_stations",
         confidence: "high",
-        date: new Date("2025-05-01"),
+        date: parseLocalDate("2025-05-01"),
       },
       cffEarnConfig,
       capState
@@ -2530,7 +2536,7 @@ describe("Southwest Rapid Rewards Priority earn rates", () => {
     expect(result.points).toBe(100);
   });
 
-  it("earns 2x on Southwest flights merchant match", () => {
+  it("earns 4x on Southwest flights merchant match", () => {
     const capState: CapState = {};
     const result = calculatePointsForTransaction(
       {
@@ -2543,8 +2549,8 @@ describe("Southwest Rapid Rewards Priority earn rates", () => {
       southwestPriorityEarnConfig,
       capState
     );
-    expect(result.earnRate).toBe(2);
-    expect(result.points).toBe(500);
+    expect(result.earnRate).toBe(4);
+    expect(result.points).toBe(1000);
     expect(result.bonusLabel).toBe("Southwest flights");
   });
 
@@ -2732,7 +2738,7 @@ describe("World of Hyatt Chase earn rates", () => {
     expect(result.bonusLabel).toBe("Airlines");
   });
 
-  it("earns 2x on car rentals", () => {
+  it("earns 1x base on car rentals (only Business card earns 2x)", () => {
     const capState: CapState = {};
     const result = calculatePointsForTransaction(
       {
@@ -2745,9 +2751,8 @@ describe("World of Hyatt Chase earn rates", () => {
       worldOfHyattEarnConfig,
       capState
     );
-    expect(result.earnRate).toBe(2);
-    expect(result.points).toBe(240);
-    expect(result.bonusLabel).toBe("Car rentals");
+    expect(result.earnRate).toBe(1);
+    expect(result.points).toBe(120);
   });
 
   it("earns 2x on transit", () => {

@@ -60,6 +60,9 @@ export const cseNightDiner: Persona = {
   benefitBehavior: [
     { benefitId: "citi_hotel_collection", behavior: "always_use" },
     { benefitId: "citi_global_entry", behavior: "always_use" },
+    { benefitId: "citi_splurge_credit", behavior: "partial_use", targetUsagePercent: 30 },
+    { benefitId: "citi_blacklane_h1", behavior: "never_use" },
+    { benefitId: "citi_blacklane_h2", behavior: "never_use" },
   ],
   competitorSpend: [],
   edgeCases: [
@@ -127,6 +130,9 @@ export const cseTravelFocused: Persona = {
   benefitBehavior: [
     { benefitId: "citi_hotel_collection", behavior: "always_use" },
     { benefitId: "citi_global_entry", behavior: "partial_use", targetUsagePercent: 50 },
+    { benefitId: "citi_splurge_credit", behavior: "never_use" },
+    { benefitId: "citi_blacklane_h1", behavior: "always_use" },
+    { benefitId: "citi_blacklane_h2", behavior: "always_use" },
   ],
   competitorSpend: [
     {

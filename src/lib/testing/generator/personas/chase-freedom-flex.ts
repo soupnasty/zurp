@@ -72,7 +72,7 @@ export const cffPointsOptimizer: Persona = {
   ],
 
   benefitBehavior: [
-    // DashPass subscription benefit is not transaction-matchable (skipped by matcher)
+    { benefitId: "cff_dashpass", behavior: "passive" },
   ],
 
   competitorSpend: [],
@@ -125,7 +125,7 @@ export const cffFlatSpender: Persona = {
   ],
 
   benefitBehavior: [
-    // DashPass subscription benefit is not transaction-matchable (skipped by matcher)
+    { benefitId: "cff_dashpass", behavior: "passive" },
   ],
 
   competitorSpend: [],

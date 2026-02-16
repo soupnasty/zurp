@@ -44,8 +44,8 @@ function makeUsage(
     displayGroupIcon: null,
     details: null,
     periodKey: "2026-02",
-    cycleStart: new Date("2026-02-01"),
-    cycleEnd: new Date("2026-03-01"),
+    cycleStart: new Date(2026, 1, 1),
+    cycleEnd: new Date(2026, 2, 1),
     ...overrides,
   };
 }

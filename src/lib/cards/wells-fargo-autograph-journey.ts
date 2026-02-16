@@ -64,7 +64,7 @@ export const wellsFargoAutographJourney: CardDefinition = {
         "spirit",
         "frontier",
       ],
-      plaidCategories: ["TRAVEL_FLIGHTS"],
+      plaidCategories: ["TRAVEL_FLIGHTS", "TRANSPORTATION_AIRLINES_AND_AVIATION_SERVICES"],
       autoMatchable: true,
       requiresActivation: false,
       isCategoryFallback: true,

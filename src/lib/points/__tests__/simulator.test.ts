@@ -9,6 +9,12 @@ import { ventureXEarnConfig } from "../earn-configs/capital-one-venture-x";
 
 import type { CategoryAssignment } from "../types";
 
+/** Parse "YYYY-MM-DD" to a local-time Date (avoids UTC midnight timezone shift) */
+function parseLocalDate(dateStr: string): Date {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
 function makeTx(
   id: string,
   date: string,
@@ -20,7 +26,7 @@ function makeTx(
 ) {
   return {
     id,
-    date: new Date(date),
+    date: parseLocalDate(date),
     datetime,
     merchantName: merchant,
     merchantNameRaw: merchant,
@@ -44,8 +50,8 @@ function assertResult(result: ReturnType<typeof runSimulation>) {
 
 describe("runSimulation", () => {
   const period = {
-    start: new Date("2025-01-01"),
-    end: new Date("2025-12-31"),
+    start: new Date(2025, 0, 1),
+    end: new Date(2025, 11, 31),
   };
 
   it("simulates 3 cards and produces rankings", () => {
@@ -69,9 +75,14 @@ describe("runSimulation", () => {
     expect(result.cards).toHaveLength(3);
     expect(result.totalTransactions).toBe(5);
 
-    // User's card should be first
-    expect(result.cards[0].isUsersCard).toBe(true);
-    expect(result.cards[0].cardId).toBe("chase_sapphire_reserve");
+    // Cards are ranked by netActual descending (best value first)
+    // User's card should be in the results
+    const usersCard = result.cards.find((c) => c.isUsersCard);
+    expect(usersCard).toBeDefined();
+    expect(usersCard!.cardId).toBe("chase_sapphire_reserve");
+
+    // Cards should be ranked by net value (rank 1 = best)
+    expect(result.cards[0].rank).toBe(1);
 
     // Should have category breakdown
     expect(result.categoryBreakdown.length).toBeGreaterThan(0);

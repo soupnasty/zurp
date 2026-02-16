@@ -89,7 +89,7 @@ export function BenefitDetailModal({
 
   const iconElement = (
     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent)]/10">
-      <BenefitIcon icon={group.icon} brandSlug={group.brandSlug} size={20} />
+      <BenefitIcon icon={group.icon} size={20} />
     </div>
   );
 

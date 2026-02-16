@@ -20,9 +20,9 @@ export const shoppingTemplates: MerchantTemplate[] = [
     edgeCases: [
       {
         rawName: "SAKSFIFTHAVE.COM",
-        normalizedOutput: "saksfifthave.com",
+        normalizedOutput: "saksfifthave",
         description:
-          "Normalized form 'saksfifthave.com' contains 'saks' but not full 'saks fifth avenue'; benefit matcher should use contains-based lookup",
+          "Normalized form 'saksfifthave' (.com stripped); contains 'saks' but not full 'saks fifth avenue'; benefit matcher should use contains-based lookup",
       },
     ],
   },
@@ -115,11 +115,11 @@ export const shoppingTemplates: MerchantTemplate[] = [
     merchantKey: "wine_shop",
     plaidMerchantName: "Wine.com",
     nameVariants: ["WINE.COM", "WINE SHOP ONLINE"],
-    normalizedResult: "wine.com",
+    normalizedResult: "wine",
     expectedEarnCategory: "shopping_online",
     plaidCategoryPrimary: "SHOPS",
     plaidCategoryDetailed: "SHOPS_DIGITAL_PURCHASE",
-    matchesBenefitPatterns: ["wine.com"],
+    matchesBenefitPatterns: ["wine"],
     amountRange: { min: 30, max: 300 },
   },
 

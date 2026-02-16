@@ -71,7 +71,7 @@ export const rhgHeavySpender: Persona = {
       merchantKeys: ["best_buy", "home_depot"],
     },
   ],
-  benefitBehavior: [{ benefitId: "rh_no_ftf", behavior: "passive" }],
+  benefitBehavior: [{ benefitId: "rh_gold_no_ftf", behavior: "passive" }],
   competitorSpend: [],
   edgeCases: [
     {
@@ -149,7 +149,7 @@ export const rhgTravelPortalUser: Persona = {
       merchantKeys: ["netflix", "hulu"],
     },
   ],
-  benefitBehavior: [{ benefitId: "rh_no_ftf", behavior: "passive" }],
+  benefitBehavior: [{ benefitId: "rh_gold_no_ftf", behavior: "passive" }],
   competitorSpend: [],
   edgeCases: [
     {

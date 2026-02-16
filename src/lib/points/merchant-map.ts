@@ -147,6 +147,7 @@ const MERCHANT_MAP_UNSORTED: MerchantEntry[] = [
   { pattern: "best western", matchType: "prefix", category: "travel_hotels", priority: 10 },
   { pattern: "wyndham", matchType: "prefix", category: "travel_hotels", priority: 10 },
   { pattern: "choice hotel", matchType: "prefix", category: "travel_hotels", priority: 10 },
+  { pattern: "booking.com", matchType: "prefix", category: "travel_hotels", priority: 10 },
   { pattern: "airbnb", matchType: "prefix", category: "travel_hotels", priority: 10 },
   { pattern: "vrbo", matchType: "prefix", category: "travel_hotels", priority: 10 },
 

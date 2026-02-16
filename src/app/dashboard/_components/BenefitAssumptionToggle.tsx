@@ -33,18 +33,14 @@ function LucideIcon({ name, size = 16 }: { name: string; size?: number }) {
   return <Icon size={size} style={{ color: "rgba(255,255,255,0.85)" }} />;
 }
 
-function BrandIcon({ slug, size = 16 }: { slug: string; size?: number }) {
-  return (
-    <img
-      src={`https://cdn.simpleicons.org/${slug}/ffffff`}
-      alt=""
-      width={size}
-      height={size}
-      style={{ opacity: 0.85 }}
-      loading="lazy"
-    />
-  );
-}
+const BENEFITS_TIP_CONTENT = (
+  <div className="space-y-2 text-[11px] text-[var(--text-secondary)]">
+    <p><span className="font-semibold text-[var(--text-primary)]">Proven</span> — Only counts benefits matched to real transactions on your statement.</p>
+    <p><span className="font-semibold text-[var(--text-primary)]">My Lifestyle</span> — Includes your proven benefits plus credits you&apos;d likely use based on your lifestyle picks.</p>
+    <p><span className="font-semibold text-[var(--text-primary)]">Full Value</span> — Assumes every available benefit credit is fully used.</p>
+  </div>
+);
+
 
 export function BenefitAssumptionToggle({
   mode,
@@ -53,6 +49,7 @@ export function BenefitAssumptionToggle({
   onLifestyleChange,
 }: BenefitAssumptionToggleProps) {
   const [showTip, setShowTip] = useState(false);
+  const [showInfoModal, setShowInfoModal] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set(lifestyleKeys));
   const [saving, setSaving] = useState(false);
@@ -93,8 +90,9 @@ export function BenefitAssumptionToggle({
         >
           Benefits mode
         </span>
+        {/* Desktop: hover tooltip */}
         <div
-          className="relative ml-1.5"
+          className="relative ml-1.5 hidden md:block"
           onMouseEnter={() => setShowTip(true)}
           onMouseLeave={() => setShowTip(false)}
         >
@@ -111,33 +109,23 @@ export function BenefitAssumptionToggle({
               >
                 How benefits are counted
               </p>
-              <div className="space-y-2 text-[11px] text-[var(--text-secondary)]">
-                <p>
-                  <span className="font-semibold text-[var(--text-primary)]">
-                    Proven
-                  </span>{" "}
-                  — Only credits matched to your actual transactions. Most accurate
-                  picture of what you actually capture.
-                </p>
-                <p>
-                  <span className="font-semibold text-[var(--text-primary)]">
-                    My Lifestyle
-                  </span>{" "}
-                  — Your lifestyle picks plus proven matches. Good for
-                  evaluating cards you&apos;re considering.
-                </p>
-                <p>
-                  <span className="font-semibold text-[var(--text-primary)]">
-                    Full Value
-                  </span>{" "}
-                  — Assumes every available credit is fully used. Shows the
-                  theoretical ceiling if you optimized everything.
-                </p>
-              </div>
+              {BENEFITS_TIP_CONTENT}
               <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-[var(--bg-elevated)]" />
             </div>
           )}
         </div>
+        {/* Mobile: tap opens modal */}
+        <button
+          className="ml-1.5 md:hidden"
+          onClick={() => setShowInfoModal(true)}
+          aria-label="How benefits are counted"
+        >
+          <Info
+            size={12}
+            strokeWidth={2}
+            className="text-[var(--text-dim)]"
+          />
+        </button>
         <button
           onClick={handleOpen}
           className="flex items-center transition-colors ml-auto"
@@ -184,7 +172,7 @@ export function BenefitAssumptionToggle({
                 {opt.label}
               </span>
               <span
-                className="block text-[9px] mt-0.5"
+                className="hidden md:block text-[9px] mt-0.5"
                 style={{
                   fontFamily: "var(--font-mono)",
                   fontWeight: 700,
@@ -198,6 +186,15 @@ export function BenefitAssumptionToggle({
           );
         })}
       </div>
+
+      {/* Mobile info modal */}
+      <Modal
+        open={showInfoModal}
+        onClose={() => setShowInfoModal(false)}
+        title="How benefits are counted"
+      >
+        {BENEFITS_TIP_CONTENT}
+      </Modal>
 
       <Modal
         open={editOpen}
@@ -275,11 +272,7 @@ export function BenefitAssumptionToggle({
                           alignItems: "center",
                         }}
                       >
-                        {item.iconType === "brand" ? (
-                          <BrandIcon slug={item.iconSlug} size={20} />
-                        ) : (
-                          <LucideIcon name={item.iconSlug} size={20} />
-                        )}
+                        <LucideIcon name={item.iconSlug} size={20} />
                       </span>
                       <span
                         style={{

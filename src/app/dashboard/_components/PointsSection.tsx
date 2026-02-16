@@ -2,9 +2,8 @@
 
 import type { SerializedPointsSummary } from "./types";
 
-// Two-tone: blue for bonus, muted for base
 const COLOR_BONUS = "#60a5fa";
-const COLOR_BASE = "#7a8ba8";
+const COLOR_BASE = "var(--text-dim)";
 
 const CATEGORY_LABELS: Record<string, string> = {
   dining: "Dining",
@@ -17,7 +16,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   travel_flights: "Flights",
   travel_hotels: "Hotels",
   travel_portal: "Travel Portal",
-  travel_other: "Travel Other",
+  travel_other: "Travel",
   car_rentals: "Car Rentals",
   parking: "Parking",
   transit: "Transit",
@@ -27,7 +26,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   shopping_online: "Online Shopping",
   shopping_instore: "In-Store Shopping",
   drugstores: "Drugstores",
-  home_improvement: "Home",
+  home_improvement: "Home Improvement",
   wholesale_clubs: "Wholesale",
   phone_services: "Phone",
   bills_utilities: "Bills/Utilities",
@@ -38,36 +37,6 @@ const CATEGORY_LABELS: Record<string, string> = {
 function fmtRate(rate: number, isCashBack: boolean): string {
   if (isCashBack) return `${rate}%`;
   return `${rate}x`;
-}
-
-function RatePill({ rate, color, isCashBack }: { rate: number; color: string; isCashBack: boolean }) {
-  return (
-    <span
-      className="inline-block text-center rounded border px-1.5 md:px-2 py-0.5 text-[10px] md:text-xs font-bold"
-      style={{
-        fontFamily: "var(--font-mono)",
-        color,
-        borderColor: `${color}33`,
-        background: `${color}08`,
-      }}
-    >
-      {fmtRate(rate, isCashBack)}
-    </span>
-  );
-}
-
-interface MultiplierGroup {
-  rate: number;
-  color: string;
-  categories: Array<{
-    category: string;
-    spend: number;
-    points: number;
-    earnRate: number;
-    valueConservative: number;
-  }>;
-  totalSpend: number;
-  totalValue: number;
 }
 
 interface PointsSectionProps {
@@ -86,30 +55,18 @@ export function PointsSection({
     .sort((a, b) => b.valueConservative - a.valueConservative);
 
   const totalValue = pointsSummary.valueConservative;
-
-  // Group categories by earn rate
-  const groupMap = new Map<number, MultiplierGroup>();
-  for (const cat of cats) {
-    let group = groupMap.get(cat.earnRate);
-    if (!group) {
-      group = {
-        rate: cat.earnRate,
-        color: cat.earnRate > 1 ? COLOR_BONUS : COLOR_BASE,
-        categories: [],
-        totalSpend: 0,
-        totalValue: 0,
-      };
-      groupMap.set(cat.earnRate, group);
-    }
-    group.categories.push(cat);
-    group.totalSpend += cat.spend;
-    group.totalValue += cat.valueConservative;
-  }
-
-  // Sort groups: highest rate first
-  const groups = Array.from(groupMap.values()).sort((a, b) => b.rate - a.rate);
+  const totalSpend = pointsSummary.totalSpend;
+  const effectiveRate = totalSpend > 0 ? ((totalValue / totalSpend) * 100).toFixed(1) : "0.0";
+  const maxSpend = Math.max(...cats.map((c) => c.spend), 1);
 
   return (
+    <div className="mt-8">
+      <h2
+        className="text-[10px] font-bold uppercase tracking-[2px] text-[var(--text-secondary)] mb-3"
+        style={{ fontFamily: "var(--font-mono)" }}
+      >
+        Points Earned
+      </h2>
     <div
       className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] overflow-hidden"
       style={{ position: "relative" }}
@@ -124,162 +81,139 @@ export function PointsSection({
 
       <div className="p-4 md:p-6">
         {/* Header */}
-        <div className="mb-5 md:mb-6">
+        <div className="flex items-baseline justify-between mb-4">
+          <div className="flex items-baseline gap-2">
+            <span
+              className="text-[22px] md:text-[28px] font-bold text-[var(--color-accent-blue)]"
+              style={{ fontFamily: "var(--font-mono)" }}
+            >
+              ${Math.round(totalValue).toLocaleString()}
+            </span>
+            <span className="text-xs md:text-sm text-[var(--text-secondary)]">
+              points earned this year
+            </span>
+          </div>
           <span
-            className="text-[24px] md:text-[28px] font-bold text-[var(--color-accent-blue)]"
-            style={{ fontFamily: "var(--font-mono)" }}
+            className="text-xs text-[var(--text-dim)]"
+            style={{ fontFamily: "var(--font-mono)", fontWeight: 700 }}
           >
-            ${Math.round(totalValue).toLocaleString()}
-          </span>
-          <span className="ml-2 text-xs md:text-sm text-[var(--text-secondary)]">
-            total points value this year
+            ${Math.round(totalSpend).toLocaleString()} total spend
           </span>
         </div>
 
-        {/* Two-tone bar: bonus vs base */}
-        {groups.length > 0 && (() => {
-          const bonusValue = groups.filter((g) => g.rate > 1).reduce((s, g) => s + g.totalValue, 0);
-          const baseValue = groups.filter((g) => g.rate <= 1).reduce((s, g) => s + g.totalValue, 0);
-          const bonusPct = totalValue > 0 ? (bonusValue / totalValue) * 100 : 0;
-          const basePct = totalValue > 0 ? (baseValue / totalValue) * 100 : 0;
-          return (
-            <div className="mb-5 md:mb-6 flex overflow-hidden rounded-md" style={{ height: 12 }}>
-              {bonusPct > 0 && (
-                <div style={{ width: `${bonusPct}%`, background: "linear-gradient(90deg, #3b82f6, #60a5fa)" }} />
-              )}
-              {basePct > 0 && (
-                <div style={{ width: `${basePct}%`, background: "linear-gradient(90deg, #64748b, #7a8ba8)" }} />
-              )}
-            </div>
-          );
-        })()}
+        {/* Category rows */}
+        <div className="flex flex-col">
+          {cats.map((cat) => {
+            const isBonus = cat.earnRate > 1;
+            const color = isBonus ? COLOR_BONUS : COLOR_BASE;
+            const barPct = (cat.spend / maxSpend) * 100;
 
-        {/* Multiplier groups */}
-        <div>
-          {groups.map((group, gi) => {
-            const isSingleCategory = group.categories.length === 1;
-            const cat0 = group.categories[0];
-            const borderClass = gi < groups.length - 1 ? "border-b border-[var(--border-subtle)]" : "";
-
-            // Single category in group: render as a flat row
-            if (isSingleCategory) {
-              return (
-                <div key={group.rate} className={borderClass}>
-                  {/* Mobile: flex row */}
-                  <div className="flex items-center gap-2 py-2.5 md:hidden">
-                    <span className="h-2 w-2 shrink-0 rounded-sm" style={{ background: group.color }} />
-                    <span className="flex-1 min-w-0 truncate text-[13px] font-semibold text-[var(--text-primary)]">
-                      {CATEGORY_LABELS[cat0.category] ?? cat0.category}
-                    </span>
-                    <RatePill rate={group.rate} color={group.color} isCashBack={isCashBack} />
-                    <span
-                      className="shrink-0 text-[13px] font-bold"
-                      style={{ fontFamily: "var(--font-mono)", color: group.color }}
-                    >
-                      ${Math.round(cat0.valueConservative).toLocaleString()}
-                    </span>
-                  </div>
-                  {/* Desktop: grid row */}
-                  <div className="points-row-desktop hidden md:grid py-3">
-                    <span className="h-2.5 w-2.5 rounded-sm" style={{ background: group.color }} />
-                    <span className="text-sm font-semibold text-[var(--text-primary)]">
-                      {CATEGORY_LABELS[cat0.category] ?? cat0.category}
-                    </span>
-                    <RatePill rate={group.rate} color={group.color} isCashBack={isCashBack} />
-                    <span className="text-right text-xs text-[var(--text-secondary)]" style={{ fontFamily: "var(--font-mono)" }}>
-                      ${Math.round(cat0.spend).toLocaleString()}
-                    </span>
-                    <span className="text-right text-sm font-bold" style={{ fontFamily: "var(--font-mono)", color: group.color }}>
-                      ${Math.round(cat0.valueConservative).toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              );
-            }
-
-            // Multiple categories: group header + sub-rows
             return (
-              <div key={group.rate} className={borderClass}>
-                {/* Mobile header */}
-                <div className="flex items-center gap-2 pt-2.5 pb-1 md:hidden">
-                  <span className="h-2 w-2 shrink-0 rounded-sm" style={{ background: group.color }} />
-                  <span
-                    className="text-[10px] font-bold uppercase tracking-[2px] text-[var(--text-secondary)]"
-                    style={{ fontFamily: "var(--font-mono)" }}
-                  >
-                    {group.rate === 1 ? "Base" : "Bonus"}
-                  </span>
-                  <RatePill rate={group.rate} color={group.color} isCashBack={isCashBack} />
-                  <span className="flex-1" />
-                  <span
-                    className="shrink-0 text-[13px] font-bold"
-                    style={{ fontFamily: "var(--font-mono)", color: group.color }}
-                  >
-                    ${Math.round(group.totalValue).toLocaleString()}
-                  </span>
-                </div>
-                {/* Desktop header */}
-                <div className="points-row-desktop hidden md:grid pt-3 pb-1">
-                  <span className="h-2.5 w-2.5 rounded-sm" style={{ background: group.color }} />
-                  <span
-                    className="text-[10px] font-bold uppercase tracking-[2px] text-[var(--text-secondary)]"
-                    style={{ fontFamily: "var(--font-mono)" }}
-                  >
-                    {group.rate === 1 ? "Base" : "Bonus"}
-                  </span>
-                  <RatePill rate={group.rate} color={group.color} isCashBack={isCashBack} />
-                  <span className="text-right text-xs text-[var(--text-secondary)]" style={{ fontFamily: "var(--font-mono)" }}>
-                    ${Math.round(group.totalSpend).toLocaleString()}
-                  </span>
-                  <span className="text-right text-sm font-bold" style={{ fontFamily: "var(--font-mono)", color: group.color }}>
-                    ${Math.round(group.totalValue).toLocaleString()}
-                  </span>
+              <div
+                key={cat.category}
+                className="grid items-center gap-2 py-2.5 border-t border-[var(--border-subtle)]"
+                style={{
+                  gridTemplateColumns: "minmax(70px, 110px) 40px 1fr auto auto",
+                }}
+              >
+                {/* Category name */}
+                <span
+                  className="text-[13px] font-semibold text-[var(--text-primary)] truncate"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  {CATEGORY_LABELS[cat.category] ?? cat.category}
+                </span>
+
+                {/* Rate pill */}
+                <span
+                  className="inline-flex items-center justify-center rounded text-[10px] font-bold"
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    color: isBonus ? COLOR_BONUS : "var(--text-secondary)",
+                    borderWidth: 1,
+                    borderColor: isBonus ? "rgba(96,165,250,0.25)" : "rgba(255,255,255,0.08)",
+                    background: isBonus ? "rgba(96,165,250,0.08)" : "transparent",
+                    padding: "2px 6px",
+                  }}
+                >
+                  {fmtRate(cat.earnRate, isCashBack)}
+                </span>
+
+                {/* Spend bar */}
+                <div
+                  className="overflow-hidden rounded-full"
+                  style={{ height: 6, background: "rgba(255,255,255,0.04)" }}
+                >
+                  <div
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${barPct}%`,
+                      background: isBonus
+                        ? "linear-gradient(90deg, #3b82f6, #60a5fa)"
+                        : "var(--color-accent-blue)",
+                      opacity: isBonus ? 1 : 0.5,
+                    }}
+                  />
                 </div>
 
-                {/* Sub-rows */}
-                {group.categories.map((cat) => (
-                  <div key={cat.category}>
-                    {/* Mobile sub-row */}
-                    <div className="flex items-center justify-between pl-5 py-1 md:hidden">
-                      <span className="text-[12px] text-[var(--text-secondary)]">
-                        {CATEGORY_LABELS[cat.category] ?? cat.category}
-                      </span>
-                      <span
-                        className="text-[12px] font-bold"
-                        style={{ fontFamily: "var(--font-mono)", color: group.color, opacity: 0.7 }}
-                      >
-                        ${Math.round(cat.valueConservative).toLocaleString()}
-                      </span>
-                    </div>
-                    {/* Desktop sub-row */}
-                    <div className="points-subrow-desktop hidden md:grid py-1.5">
-                      <span />
-                      <span className="text-[13px] text-[var(--text-secondary)]">
-                        {CATEGORY_LABELS[cat.category] ?? cat.category}
-                      </span>
-                      <span />
-                      <span
-                        className="text-right text-[11px] text-[var(--text-secondary)]"
-                        style={{ fontFamily: "var(--font-mono)", opacity: 0.7 }}
-                      >
-                        ${Math.round(cat.spend).toLocaleString()}
-                      </span>
-                      <span
-                        className="text-right text-[13px] font-bold"
-                        style={{ fontFamily: "var(--font-mono)", color: group.color, opacity: 0.7 }}
-                      >
-                        ${Math.round(cat.valueConservative).toLocaleString()}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+                {/* Spend amount */}
+                <span
+                  className="text-[11px] text-[var(--text-dim)] text-right"
+                  style={{ fontFamily: "var(--font-mono)", fontWeight: 700, minWidth: 48 }}
+                >
+                  ${Math.round(cat.spend).toLocaleString()}
+                </span>
 
-                <div className="h-1.5 md:h-2" />
+                {/* Points value */}
+                <span
+                  className="text-[13px] font-bold text-right"
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    color: "var(--color-accent-blue)",
+                    minWidth: 36,
+                  }}
+                >
+                  ${Math.round(cat.valueConservative).toLocaleString()}
+                </span>
               </div>
             );
           })}
+
+          {/* Total row */}
+          <div
+            className="grid items-center gap-2 pt-3 mt-1 border-t border-[var(--border-subtle)]"
+            style={{
+              gridTemplateColumns: "minmax(70px, 110px) 40px 1fr auto auto",
+            }}
+          >
+            <span
+              className="text-[13px] font-bold text-[var(--text-secondary)]"
+              style={{ fontFamily: "var(--font-mono)" }}
+            >
+              Total
+            </span>
+            <span />
+            <span />
+            <span
+              className="text-[11px] text-[var(--text-dim)] text-right"
+              style={{ fontFamily: "var(--font-mono)", fontWeight: 700, minWidth: 48 }}
+            >
+              ${Math.round(totalSpend).toLocaleString()}
+            </span>
+            <span
+              className="text-[13px] font-bold text-right"
+              style={{
+                fontFamily: "var(--font-mono)",
+                color: "var(--color-accent-blue)",
+                minWidth: 36,
+              }}
+            >
+              ${Math.round(totalValue).toLocaleString()}
+            </span>
+          </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }

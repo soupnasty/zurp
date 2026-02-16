@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Info } from "lucide-react";
+import { Modal } from "@/components/ui/Modal";
 import { Leaderboard } from "./Leaderboard";
 import { ValuationToggle } from "./ValuationToggle";
 import { BenefitAssumptionToggle } from "./BenefitAssumptionToggle";
@@ -17,6 +18,7 @@ interface CompareTabProps {
   activeCardName: string;
   activeCardFee: number;
   lifestyleKeys: string[];
+  syncStatus: "pending" | "initial" | "complete";
 }
 
 /** Get the net value for a card at the given valuation + benefit assumption modes. */
@@ -64,6 +66,7 @@ export function CompareTab({
   activeCardName,
   activeCardFee,
   lifestyleKeys,
+  syncStatus,
 }: CompareTabProps) {
   const router = useRouter();
   const [vMode, setVMode] = useState<ValuationMode>("realistic");
@@ -97,6 +100,11 @@ export function CompareTab({
       return { ...card, benefitsByMode: newBenefitsByMode, netByMode: newNetByMode };
     });
   }, [comparison, localLifestyleKeys]);
+
+  // Show processing animation when historical sync isn't complete
+  if (syncStatus !== "complete") {
+    return <CompareSyncProcessing />;
+  }
 
   if (!comparison || !cards) {
     return (
@@ -144,10 +152,10 @@ export function CompareTab({
           {activeCardName}
         </h1>
         <span
-          className="text-[12px] text-[var(--text-dim)]"
+          className="text-[10px] md:text-[12px] text-[var(--text-dim)] whitespace-nowrap"
           style={{ fontFamily: "var(--font-mono)" }}
         >
-          {comparison.totalTransactions.toLocaleString()} transactions · {comparison.monthCount} {comparison.monthCount === 1 ? "month" : "months"} · {formatPeriod(comparison.analysisPeriod.start, comparison.analysisPeriod.end)}
+          {comparison.totalTransactions.toLocaleString()} transactions · {comparison.monthCount}{comparison.monthCount === 1 ? "mo" : "mo"} · {formatPeriod(comparison.analysisPeriod.start, comparison.analysisPeriod.end)}
         </span>
       </div>
 
@@ -162,7 +170,7 @@ export function CompareTab({
         gap={gap}
       />
 
-      <div className="mt-6 mb-2 grid grid-cols-1 md:grid-cols-2 items-end gap-4">
+      <div className="mt-3 mb-1 md:mt-6 md:mb-2 grid grid-cols-1 md:grid-cols-2 items-end gap-1.5 md:gap-4">
         <ValuationToggle mode={vMode} onChange={setVMode} />
         <BenefitAssumptionToggle
           mode={bMode}
@@ -196,8 +204,38 @@ function CompareSummary({
   gap: number;
 }) {
   const [showNetTip, setShowNetTip] = useState(false);
+  const [showNetModal, setShowNetModal] = useState(false);
+
+  const netBreakdownContent = (
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      <div className="flex justify-between" style={{ fontFamily: "var(--font-mono)", fontSize: 13, fontWeight: 700 }}>
+        <span style={{ color: "var(--color-accent-blue)" }}>Points</span>
+        <span style={{ color: "var(--color-accent-blue)" }}>${Math.round(userPoints).toLocaleString()}</span>
+      </div>
+      <div className="flex justify-between" style={{ fontFamily: "var(--font-mono)", fontSize: 13, fontWeight: 700 }}>
+        <span style={{ color: "var(--color-accent-purple)" }}>Benefits</span>
+        <span style={{ color: "var(--color-accent-purple)" }}>${Math.round(userBenefits).toLocaleString()}</span>
+      </div>
+      <div className="flex justify-between" style={{ fontFamily: "var(--font-mono)", fontSize: 13, fontWeight: 700 }}>
+        <span style={{ color: "var(--color-danger)" }}>Fees</span>
+        <span style={{ color: "var(--color-danger)" }}>-${annualFee.toLocaleString()}</span>
+      </div>
+      <div
+        style={{
+          borderTop: "1px solid var(--border-subtle)",
+          paddingTop: 8,
+          marginTop: 2,
+        }}
+        className="flex justify-between"
+      >
+        <span style={{ fontFamily: "var(--font-mono)", fontSize: 13, fontWeight: 700, color: userNet >= 0 ? "var(--color-success)" : "var(--color-danger)" }}>Net</span>
+        <span style={{ fontFamily: "var(--font-mono)", fontSize: 13, fontWeight: 700, color: userNet >= 0 ? "var(--color-success)" : "var(--color-danger)" }}>{fmt(userNet)}</span>
+      </div>
+    </div>
+  );
 
   return (
+    <>
     <div
       style={{
         display: "grid",
@@ -209,7 +247,7 @@ function CompareSummary({
       }}
     >
       {/* Net Value — hero */}
-      <div style={{ background: "var(--bg-secondary)", padding: "20px 24px", borderRadius: "15px 0 0 15px" }}>
+      <div className="px-3 py-4 md:px-6 md:py-5" style={{ background: "var(--bg-secondary)", borderRadius: "15px 0 0 15px" }}>
         <span
           style={{
             fontFamily: "var(--font-mono)",
@@ -223,11 +261,11 @@ function CompareSummary({
         >
           Net
         </span>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 md:gap-2">
           <span
+            className="text-[20px] md:text-[28px]"
             style={{
               fontFamily: "var(--font-mono)",
-              fontSize: "clamp(24px, 3vw, 32px)",
               fontWeight: 700,
               color: userNet >= 0 ? "var(--color-success)" : "var(--color-danger)",
               lineHeight: 1.2,
@@ -235,8 +273,9 @@ function CompareSummary({
           >
             {fmt(userNet)}
           </span>
+          {/* Desktop: hover tooltip */}
           <div
-            className="relative"
+            className="relative hidden md:block"
             onMouseEnter={() => setShowNetTip(true)}
             onMouseLeave={() => setShowNetTip(false)}
           >
@@ -258,39 +297,27 @@ function CompareSummary({
                 }}
               >
                 <div className="absolute left-1/2 bottom-full -translate-x-1/2 border-4 border-transparent border-b-[var(--bg-elevated)]" />
-                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                  <div className="flex justify-between" style={{ fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 700 }}>
-                    <span style={{ color: "var(--color-accent-blue)" }}>Points</span>
-                    <span style={{ color: "var(--color-accent-blue)" }}>${Math.round(userPoints).toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between" style={{ fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 700 }}>
-                    <span style={{ color: "var(--color-accent-purple)" }}>Benefits</span>
-                    <span style={{ color: "var(--color-accent-purple)" }}>${Math.round(userBenefits).toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between" style={{ fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 700 }}>
-                    <span style={{ color: "var(--color-danger)" }}>Fees</span>
-                    <span style={{ color: "var(--color-danger)" }}>-${annualFee.toLocaleString()}</span>
-                  </div>
-                  <div
-                    style={{
-                      borderTop: "1px solid var(--border-subtle)",
-                      paddingTop: 6,
-                      marginTop: 2,
-                    }}
-                    className="flex justify-between"
-                  >
-                    <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 700, color: userNet >= 0 ? "var(--color-success)" : "var(--color-danger)" }}>Net</span>
-                    <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 700, color: userNet >= 0 ? "var(--color-success)" : "var(--color-danger)" }}>{fmt(userNet)}</span>
-                  </div>
-                </div>
+                {netBreakdownContent}
               </div>
             )}
           </div>
+          {/* Mobile: tap opens modal */}
+          <button
+            className="md:hidden"
+            onClick={() => setShowNetModal(true)}
+            aria-label="Net value breakdown"
+          >
+            <Info
+              size={16}
+              strokeWidth={2}
+              className="text-[var(--text-dim)]"
+            />
+          </button>
         </div>
       </div>
 
       {/* Rank */}
-      <div style={{ background: "var(--bg-secondary)", padding: "20px 24px" }}>
+      <div className="px-3 py-4 md:px-6 md:py-5" style={{ background: "var(--bg-secondary)" }}>
         <span
           style={{
             fontFamily: "var(--font-mono)",
@@ -305,22 +332,22 @@ function CompareSummary({
           Rank
         </span>
         <span
+          className="text-[20px] md:text-[28px]"
           style={{
             fontFamily: "var(--font-mono)",
-            fontSize: "clamp(24px, 3vw, 32px)",
             fontWeight: 700,
             lineHeight: 1.2,
+            whiteSpace: "nowrap",
           }}
         >
           <span style={{ color: "var(--color-accent-cyan)" }}>{userRank}</span>
-          {" "}
-          <span style={{ color: "var(--text-dim)", fontWeight: 400 }}>/</span>{" "}
-          <span style={{ color: "var(--text-secondary)" }}>{totalCards}</span>
+          <span style={{ color: "var(--text-dim)", fontWeight: 400, fontSize: "0.6em" }}>/</span>
+          <span style={{ color: "var(--text-secondary)", fontSize: "0.6em" }}>{totalCards}</span>
         </span>
       </div>
 
       {/* Gap to #1 */}
-      <div style={{ background: "var(--bg-secondary)", padding: "20px 24px", borderRadius: "0 15px 15px 0" }}>
+      <div className="px-3 py-4 md:px-6 md:py-5" style={{ background: "var(--bg-secondary)", borderRadius: "0 15px 15px 0" }}>
         <span
           style={{
             fontFamily: "var(--font-mono)",
@@ -336,9 +363,9 @@ function CompareSummary({
         </span>
         {gap > 0 ? (
           <span
+            className="text-[20px] md:text-[28px]"
             style={{
               fontFamily: "var(--font-mono)",
-              fontSize: "clamp(24px, 3vw, 32px)",
               fontWeight: 700,
               color: "var(--color-danger)",
               lineHeight: 1.2,
@@ -348,9 +375,9 @@ function CompareSummary({
           </span>
         ) : (
           <span
+            className="text-[20px] md:text-[28px]"
             style={{
               fontFamily: "var(--font-mono)",
-              fontSize: "clamp(24px, 3vw, 32px)",
               fontWeight: 700,
               color: "var(--text-secondary)",
               lineHeight: 1.2,
@@ -366,6 +393,204 @@ function CompareSummary({
         )}
       </div>
 
+    </div>
+
+    {/* Mobile net breakdown modal */}
+    <Modal
+      open={showNetModal}
+      onClose={() => setShowNetModal(false)}
+      title="Net value breakdown"
+    >
+      {netBreakdownContent}
+    </Modal>
+    </>
+  );
+}
+
+// ── Sync Processing Animation ──
+
+const PROCESSING_STEPS = [
+  "Syncing your transaction history for 1 year...",
+  "This usually takes 1–2 minutes",
+];
+
+function CompareSyncProcessing() {
+  const router = useRouter();
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [stepIndex, setStepIndex] = useState(0);
+
+  // Rotate step text
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setStepIndex((i) => (i + 1) % PROCESSING_STEPS.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Poll sync status every 3 seconds
+  useEffect(() => {
+    async function checkStatus() {
+      try {
+        const res = await fetch("/api/plaid/sync-status");
+        const data = await res.json();
+        if (data.syncStatus === "complete") {
+          if (pollRef.current) clearInterval(pollRef.current);
+          router.refresh();
+        }
+      } catch {
+        // Silently retry on next interval
+      }
+    }
+
+    pollRef.current = setInterval(checkStatus, 3000);
+    // Also check immediately
+    checkStatus();
+
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+  }, [router]);
+
+  return (
+    <div className="flex flex-col items-center justify-center py-20">
+      <div
+        className="flex flex-col items-center gap-6"
+        style={{ maxWidth: 400 }}
+      >
+        {/* Animated card logo */}
+        <svg
+          width="64"
+          height="48"
+          viewBox="0 0 46 36"
+          fill="none"
+          aria-hidden="true"
+        >
+          <rect
+            x="2"
+            y="2"
+            width="42"
+            height="30"
+            rx="5"
+            fill="#0a0e17"
+            stroke="#22d3ee"
+            strokeWidth="1.5"
+          />
+          <clipPath id="cs-t">
+            <rect x="8" y="9" width="30" height="6" rx="3" />
+          </clipPath>
+          <g clipPath="url(#cs-t)">
+            <rect
+              x="8"
+              y="9"
+              width="18"
+              height="6"
+              fill="#60a5fa"
+              style={{ animation: "z-fill 2.4s ease-in-out infinite" }}
+            />
+            <rect
+              x="26"
+              y="9"
+              width="6.5"
+              height="6"
+              fill="#a78bfa"
+              style={{
+                animation: "z-fill 2.4s ease-in-out infinite",
+                animationDelay: "0.24s",
+              }}
+            />
+            <rect
+              x="32.5"
+              y="9"
+              width="5.5"
+              height="6"
+              fill="#f87171"
+              style={{
+                animation: "z-fill 2.4s ease-in-out infinite",
+                animationDelay: "0.48s",
+              }}
+            />
+          </g>
+          <clipPath id="cs-b">
+            <rect x="8" y="19" width="30" height="6" rx="3" />
+          </clipPath>
+          <g clipPath="url(#cs-b)">
+            <rect
+              x="8"
+              y="19"
+              width="5.5"
+              height="6"
+              fill="#f87171"
+              opacity="0.5"
+              style={{
+                animation: "z-fill-dim 2.4s ease-in-out infinite",
+                animationDelay: "0.72s",
+              }}
+            />
+            <rect
+              x="13.5"
+              y="19"
+              width="6.5"
+              height="6"
+              fill="#a78bfa"
+              opacity="0.5"
+              style={{
+                animation: "z-fill-dim 2.4s ease-in-out infinite",
+                animationDelay: "0.96s",
+              }}
+            />
+            <rect
+              x="20"
+              y="19"
+              width="18"
+              height="6"
+              fill="#60a5fa"
+              opacity="0.5"
+              style={{
+                animation: "z-fill-dim 2.4s ease-in-out infinite",
+                animationDelay: "1.2s",
+              }}
+            />
+          </g>
+        </svg>
+
+        {/* Spinner */}
+        <div
+          style={{
+            width: 20,
+            height: 20,
+            border: "2px solid var(--border-subtle)",
+            borderTopColor: "var(--accent)",
+            borderRadius: "50%",
+            animation: "spin 0.8s linear infinite",
+          }}
+        />
+
+        {/* Rotating status text */}
+        <p
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: 13,
+            color: "var(--text-secondary)",
+            textAlign: "center",
+            transition: "opacity 0.3s ease",
+            minHeight: 40,
+          }}
+        >
+          {PROCESSING_STEPS[stepIndex]}
+        </p>
+
+        {/* Subtle indicator */}
+        <p
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: 11,
+            color: "var(--text-dim)",
+            textAlign: "center",
+          }}
+        >
+          Results will appear automatically
+        </p>
+      </div>
     </div>
   );
 }

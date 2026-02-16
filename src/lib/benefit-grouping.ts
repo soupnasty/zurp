@@ -25,7 +25,6 @@ export interface BenefitGroup {
   isActivated?: boolean;
   activatedAt?: string | null;
   activeMonths?: number[];
-  brandSlug?: string;
 }
 
 export function groupBenefits(
@@ -88,7 +87,6 @@ export function groupBenefits(
           benefitTransactions: [...bTxs],
           isActivated: b.isActivated,
           activatedAt: b.activatedAt,
-          brandSlug: b.brandSlug,
         });
       }
     } else {
@@ -116,7 +114,6 @@ export function groupBenefits(
         isActivated: b.isActivated,
         activatedAt: b.activatedAt,
         activeMonths: b.activeMonths,
-        brandSlug: b.brandSlug,
       });
     }
   }

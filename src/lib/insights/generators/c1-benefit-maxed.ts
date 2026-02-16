@@ -4,35 +4,50 @@ import type { GeneratorContext } from "./types";
 /**
  * C1: Benefit Maxed
  * Positive reinforcement for fully used benefits.
+ *
+ * Benefits sharing a displayGroup (e.g. DoorDash $5/$10/$10) are consolidated
+ * into a single insight — only fires when ALL sub-credits are maxed.
  */
 export function generateC1(ctx: GeneratorContext): InsightCandidate[] {
   const { benefitUsages } = ctx;
   const insights: InsightCandidate[] = [];
 
+  // Group credit benefits by displayGroup (or benefitId if ungrouped)
+  const grouped = new Map<string, typeof benefitUsages>();
   for (const usage of benefitUsages) {
-    if (!usage.isFullyUsed) continue;
     if (usage.type !== "credit") continue;
     if (usage.creditAmount === 0) continue;
+    const key = usage.displayGroup || usage.benefitId;
+    const list = grouped.get(key) ?? [];
+    list.push(usage);
+    grouped.set(key, list);
+  }
 
-    const displayName = usage.displayGroupName || usage.benefitName;
-    const period = cycleToPeriodLabel(usage.cycle);
-    const value = Math.round(usage.creditAmount);
+  for (const [groupKey, members] of grouped) {
+    // All members must be fully used
+    if (!members.every((m) => m.isFullyUsed)) continue;
+
+    const rep = members[0];
+    const totalCredit = members.reduce((s, m) => s + m.creditAmount, 0);
+    const displayName = rep.displayGroupName || rep.benefitName;
+    const period = cycleToPeriodLabel(rep.cycle);
+    const value = Math.round(totalCredit);
 
     insights.push({
       category: "C1",
-      benefitId: usage.benefitId,
+      benefitId: rep.benefitId,
       templateKey: "c1_standard",
       templateVars: {
         benefit: displayName,
         value,
         period,
       },
-      dedupKey: `c1:${usage.benefitId}:${usage.periodKey}`,
+      dedupKey: `c1:${groupKey}:${rep.periodKey}`,
       triggeredByTransactionId: null,
-      periodStart: usage.cycleStart,
-      periodEnd: usage.cycleEnd,
+      periodStart: rep.cycleStart,
+      periodEnd: rep.cycleEnd,
       dollarAmount: value,
-      daysRemaining: null, // no urgency — celebration
+      daysRemaining: null,
       actionability: "plan_future",
       confidence: "exact_confirmed",
     });

@@ -66,8 +66,8 @@ export function SyncFooter({ cardProfiles }: SyncFooterProps) {
   if (!connectionId) return null;
 
   return (
-    <div className="fixed bottom-16 inset-x-0 z-30 flex items-center justify-center py-4 pointer-events-none md:hidden">
-      <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[rgba(10,14,23,0.9)] px-5 py-2.5 backdrop-blur-md shadow-lg">
+    <div className="flex items-center justify-center py-6 mt-4 md:hidden">
+      <div className="flex items-center gap-2">
         {synced ? (
           <>
             <Check size={14} strokeWidth={2} className="text-[var(--color-success)]" />

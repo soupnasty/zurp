@@ -11,7 +11,7 @@ export function UpcomingResets({ resets }: UpcomingResetsProps) {
   if (resets.length === 0) return null;
 
   return (
-    <div className="mt-8">
+    <div>
       <div
         className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] overflow-hidden"
         style={{ position: "relative" }}
@@ -24,19 +24,10 @@ export function UpcomingResets({ resets }: UpcomingResetsProps) {
           }}
         />
 
-        <div className="p-6 pb-2">
-          <h3
-            className="text-[10px] font-bold uppercase tracking-[2px] text-[var(--text-secondary)] mb-4"
-            style={{ fontFamily: "var(--font-mono)" }}
-          >
-            UPCOMING RESETS
-          </h3>
-        </div>
-
-        {resets.map((reset) => (
+        {resets.map((reset, i) => (
           <div
             key={reset.id}
-            className="flex items-center gap-3 px-6 py-3 border-t border-[var(--border-subtle)]"
+            className={`flex items-center gap-3 px-6 py-3 ${i > 0 ? "border-t border-[var(--border-subtle)]" : ""}`}
           >
             {/* Clock icon */}
             <div

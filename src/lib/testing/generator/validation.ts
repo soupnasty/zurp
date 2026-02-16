@@ -217,13 +217,15 @@ export function validateFixture(
 
 function getMonthsInWindow(start: string, end: string): string[] {
   const months: string[] = [];
-  const startDate = new Date(start);
-  const endDate = new Date(end);
+  // Parse YYYY-MM-DD strings directly to avoid timezone issues
+  // (new Date("2025-01-01") parses as UTC midnight, which is Dec 31 in US timezones)
+  const [startYear, startMonth] = start.split("-").map(Number);
+  const [endYear, endMonth] = end.split("-").map(Number);
 
-  let year = startDate.getFullYear();
-  let month = startDate.getMonth();
+  let year = startYear;
+  let month = startMonth - 1; // Convert 1-indexed to 0-indexed
 
-  while (year < endDate.getFullYear() || (year === endDate.getFullYear() && month <= endDate.getMonth())) {
+  while (year < endYear || (year === endYear && month <= endMonth - 1)) {
     months.push(`${year}-${String(month + 1).padStart(2, "0")}`);
     month++;
     if (month > 11) {

@@ -7,7 +7,7 @@ const MERCHANT_ALIASES: [RegExp, string][] = [
   // Amazon variants
   [/^amzn\s+mktp\s+us/i, "amazon"],
   [/^amazon\.com/i, "amazon"],
-  [/^amazon\s+prime/i, "amazon"],
+  [/^amazon\s+prime/i, "amazon prime"],
   [/^amazon\s+fresh/i, "amazon fresh"],
 
   // Airline ticket number variants (DELTA AIR 0062399, UNITED AIR LINES INC, etc.)
@@ -28,6 +28,9 @@ const MERCHANT_ALIASES: [RegExp, string][] = [
   [/^the\s+edit/i, "the edit"],
   [/^theedit/i, "the edit"],
 
+  // Booking.com (preserve domain before .com stripping)
+  [/^booking\.com\b/i, "booking.com"],
+
   // Walmart variants (handles walmart.com, walmart+, walmart etc.)
   [/^walmart[\.\+]?\b/i, "walmart"],
 
@@ -37,6 +40,9 @@ const MERCHANT_ALIASES: [RegExp, string][] = [
 
   // Dunkin variants
   [/^dunkin\s+donuts/i, "dunkin"],
+
+  // HomeChef (no space variant)
+  [/^homechef\b/i, "home chef"],
 
   // ExxonMobil variants (handles both compound and separated forms)
   [/^exxon\s*mobil\b/i, "exxon"],
@@ -90,9 +96,11 @@ export function normalizeMerchantName(raw: string | null): string {
 
   // Apply brand-specific aliases early (before stripping suffixes)
   // This allows aliases to override the generic "the " stripping rule
+  let aliasMatched = false;
   for (const [pattern, replacement] of MERCHANT_ALIASES) {
     if (pattern.test(s)) {
       s = replacement;
+      aliasMatched = true;
       break; // Only one alias applies
     }
   }
@@ -101,25 +109,29 @@ export function normalizeMerchantName(raw: string | null): string {
     .replace(/[*#]\s*\d+/g, "") // Remove *12345 or #12345
     .replace(/\s*\*\s*/g, " ") // Clean up asterisks
     .replace(/\s*-\s*order\s*$/i, "") // Remove trailing " - ORDER"
-    .replace(/\s+\d{3,}$/g, "") // Remove trailing numeric IDs (3+ digits)
+    .replace(/\s+\d{3,}$/g, "") // Remove trailing numeric IDs (3+ digits);
 
-    // Strip domain suffixes (.com, .com/bill, etc.)
-    .replace(/\.com\b\S*/gi, "")
+  // Strip domain suffixes (.com, .com/bill, etc.)
+  // Skip if an alias already produced the canonical name (e.g. "booking.com")
+  if (!aliasMatched) {
+    s = s.replace(/\.com\b\S*/gi, "");
+  }
+
+  s = s
 
     // Strip corporate suffixes (including intl for international subsidiaries)
     .replace(/\s*,?\s*\b(inc|llc|ltd|corp|co|intl)\b\.?\s*$/i, "")
 
     // Strip brand-specific descriptive suffixes
+    // NOTE: "store" and "premium" intentionally excluded — they are meaningful
+    // parts of merchant names (e.g. "apple store", "youtube premium").
+    // "ride", "trip", "order", "tv", "music" also excluded — over-stripping
+    // these breaks normalization of "lyft ride", "uber trip", "doordash order",
+    // "apple tv", "youtube music" etc.
     .replace(
-      /\s+(store|hotels?|service\s+station|station|marketplace|interactive|membership|subscription|fitness|premium|computers|delivery|airways|air\s+lines?\s+inc|athletica|creative\s+cloud|car\s+rental|grocery|donuts|w\+)\s*$/i,
+      /\s+(hotels?|service\s+station|station|marketplace|interactive|membership|subscription|fitness|computers|delivery|airways|air\s+lines?\s+inc|athletica|creative\s+cloud|car\s+rental|grocery|donuts|w\+)\s*$/i,
       "",
     )
-
-    // Strip product sub-labels (RIDE, TRIP, ORDER, TV, MUSIC, etc.)
-    // Note: "eats order" removed — regex greedily matches from "eats" position,
-    // stripping both "eats" and "order" from "uber eats order" → "uber" (wrong).
-    // Plain "order" suffix stripping correctly produces "uber eats".
-    .replace(/\s+(ride|trip|order|tv|music)\s*$/i, "")
 
     // Strip leading "THE " only if it's not part of a known brand name
     // (known "the " brands are handled via aliases, so if they reach here, preserve them)

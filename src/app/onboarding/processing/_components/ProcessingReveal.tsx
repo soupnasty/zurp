@@ -1,9 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import type { RevealData, RevealLeaderboardRow } from "../../actions";
-import { CardChip } from "@/app/_components/CardChip";
-import type { CardVisualId } from "@/app/_components/CardChip";
 import { LifestylePicker } from "./LifestylePicker";
 
 interface Props {
@@ -14,7 +11,7 @@ interface Props {
   totalCards: number;
 }
 
-type Phase = "processing" | "picker" | "transitioning" | "reveal";
+type Phase = "processing" | "picker" | "transitioning";
 type StepStatus = "pending" | "active" | "resolved";
 
 const STEP_CONFIG = [
@@ -40,11 +37,6 @@ const DEFAULT_RESULTS = [
 
 const STEP_GAP = 400;
 const INITIAL_DELAY = 600;
-
-function formatDollars(n: number): string {
-  const abs = Math.abs(Math.round(n));
-  return (n < 0 ? "-" : "") + "$" + abs.toLocaleString("en-US");
-}
 
 // ── Processing Logo (A2 z-path fill) ──
 
@@ -147,234 +139,14 @@ function ProcessingLogo() {
   );
 }
 
-// ── Mini Leaderboard ──
-
-function MiniLeaderboard({
-  rows,
-  belowCount,
-}: {
-  rows: RevealLeaderboardRow[];
-  belowCount: number;
-}) {
-  // Find the max absolute net value for proportional bar widths
-  const maxNet = Math.max(
-    ...rows.map((r) => Math.abs(r.pointsValue + r.benefitsValue))
-  );
-
-  return (
-    <div
-      style={{
-        width: 320,
-        background: "var(--bg-secondary)",
-        border: "1px solid var(--border-subtle)",
-        borderRadius: 14,
-        padding: 16,
-      }}
-    >
-      {rows.map((row, i) => {
-        const isTop = row.rank === 1;
-        const isYou = row.isUsersCard;
-        const isDim = !isTop && !isYou;
-
-        // Proportional bar segments
-        const ptsW = maxNet > 0 ? (row.pointsValue / maxNet) * 100 : 0;
-        const benW = maxNet > 0 ? (row.benefitsValue / maxNet) * 100 : 0;
-        const feeW = maxNet > 0 ? (row.annualFee / maxNet) * 100 : 0;
-
-        // Show gap indicator if rank jumps by more than 1
-        const prevRank = i > 0 ? rows[i - 1].rank : 0;
-        const rankGap = row.rank - prevRank;
-        const showGap = i > 0 && rankGap > 1;
-
-        return (
-          <div key={row.rank}>
-            {/* Gap indicator */}
-            {showGap && (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  padding: "6px 0",
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: 9,
-                    width: 18,
-                    textAlign: "center",
-                    flexShrink: 0,
-                    color: "var(--text-dim)",
-                    opacity: 0.3,
-                  }}
-                >
-                  ···
-                </span>
-                <div
-                  style={{
-                    flex: 1,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 3,
-                  }}
-                >
-                  {[0, 1].map((j) => (
-                    <div
-                      key={j}
-                      style={{
-                        height: 4,
-                        borderRadius: 2,
-                        background: "rgba(255,255,255,0.03)",
-                      }}
-                    />
-                  ))}
-                </div>
-                <span
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: 9,
-                    width: 72,
-                    textAlign: "right",
-                    flexShrink: 0,
-                    color: "var(--text-dim)",
-                    opacity: 0.3,
-                  }}
-                >
-                  {rankGap - 1} more
-                </span>
-              </div>
-            )}
-
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 10,
-                padding: isYou ? "8px 8px" : "8px 0",
-                borderTop:
-                  i > 0 && !isYou && !showGap
-                    ? "1px solid var(--border-subtle)"
-                    : "none",
-                background: isYou ? "rgba(34,211,238,0.04)" : "transparent",
-                margin: isYou ? "0 -8px" : 0,
-                borderRadius: isYou ? 8 : 0,
-              }}
-            >
-              {/* Rank */}
-              <span
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 11,
-                  fontWeight: 700,
-                  width: 18,
-                  textAlign: "center",
-                  flexShrink: 0,
-                  color: isTop
-                    ? "var(--color-success)"
-                    : isYou
-                    ? "var(--accent)"
-                    : "var(--text-dim)",
-                  opacity: isDim ? 0.4 : 1,
-                }}
-              >
-                {row.rank}
-              </span>
-
-              {/* Bar */}
-              <div
-                style={{
-                  flex: 1,
-                  height: 10,
-                  borderRadius: 3,
-                  overflow: "hidden",
-                  display: "flex",
-                  background: "rgba(255,255,255,0.02)",
-                }}
-              >
-                <div
-                  style={{
-                    flex: ptsW,
-                    background: "#60a5fa",
-                    borderRadius: "3px 0 0 3px",
-                    opacity: isDim ? 0.2 : 1,
-                  }}
-                />
-                {benW > 0 && (
-                  <div
-                    style={{
-                      flex: benW,
-                      background: "#a78bfa",
-                      opacity: isDim ? 0.2 : 1,
-                    }}
-                  />
-                )}
-                {feeW > 0 && (
-                  <div
-                    style={{
-                      flex: feeW,
-                      background: "#f87171",
-                      borderRadius: "0 3px 3px 0",
-                      opacity: isDim ? 0.2 : 1,
-                    }}
-                  />
-                )}
-              </div>
-
-              {/* Net label */}
-              <span
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 10,
-                  width: 72,
-                  textAlign: "right",
-                  flexShrink: 0,
-                  whiteSpace: "nowrap",
-                  color: isTop
-                    ? "var(--color-success)"
-                    : isYou
-                    ? "var(--accent)"
-                    : "var(--text-dim)",
-                }}
-              >
-                {formatDollars(row.netValue)}
-                {isYou && " \u2190 you"}
-              </span>
-            </div>
-          </div>
-        );
-      })}
-
-      {/* Footer */}
-      {belowCount > 0 && (
-        <div
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: 9,
-            color: "var(--text-dim)",
-            textAlign: "center",
-            paddingTop: 10,
-            borderTop: "1px solid var(--border-subtle)",
-            marginTop: 8,
-          }}
-        >
-          {belowCount} more card{belowCount !== 1 ? "s" : ""} below yours
-        </div>
-      )}
-    </div>
-  );
-}
-
 // ── Main Component ──
 
 export function ProcessingReveal({
-  userId,
   connectionId,
-  cardType,
   benefitCount,
   totalCards,
 }: Props) {
-  // Flow: processing → picker → reveal
+  // Flow: processing → picker → redirect to compare
   const [phase, setPhase] = useState<Phase>("processing");
   const [stepStates, setStepStates] = useState<StepStatus[]>([
     "pending",
@@ -396,8 +168,6 @@ export function ProcessingReveal({
     false,
   ]);
   const [progress, setProgress] = useState(0);
-  const [revealData, setRevealData] = useState<RevealData | null>(null);
-  const [revealStage, setRevealStage] = useState(0);
 
   const syncCompleteRef = useRef(false);
   const syncResultRef = useRef<{ added: number } | null>(null);
@@ -430,36 +200,22 @@ export function ProcessingReveal({
     []
   );
 
-  // After picker is submitted, save selections + fetch reveal via API route
-  // (NOT a server action — avoids re-rendering the processing page which
-  // would redirect away due to the lastSyncedAt guard)
+  // After picker is submitted, save selections + redirect to compare page
   const handlePickerComplete = useCallback(
     async (selectedKeys: string[]) => {
       setPhase("transitioning");
 
-      let data: RevealData | null = null;
       try {
-        const res = await fetch("/api/onboarding", {
+        await fetch("/api/onboarding", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ lifestyleKeys: selectedKeys }),
         });
-        const json = await res.json();
-        data = json.reveal ?? null;
       } catch {
-        // Fallback: no comparison data
+        // Fail silently — selections can be changed later on compare page
       }
-      setRevealData(data);
 
-      // Show reveal with staggered animation
-      setTimeout(() => {
-        setPhase("reveal");
-        setTimeout(() => setRevealStage(1), 0);
-        setTimeout(() => setRevealStage(2), 400);
-        setTimeout(() => setRevealStage(3), 800);
-        setTimeout(() => setRevealStage(4), 1200);
-        setTimeout(() => setRevealStage(5), 1600);
-      }, 400);
+      window.location.href = "/dashboard/compare";
     },
     []
   );
@@ -515,8 +271,6 @@ export function ProcessingReveal({
 
   // ── Render ──
 
-  const isWin = revealData?.headline.type === "win";
-
   return (
     <div
       style={{
@@ -543,11 +297,8 @@ export function ProcessingReveal({
           borderRadius: "50%",
           pointerEvents: "none",
           zIndex: 0,
-          transition: "all 1s ease",
           background:
-            phase === "reveal"
-              ? "radial-gradient(ellipse, rgba(96,165,250,0.05) 0%, rgba(34,211,238,0.02) 40%, transparent 70%)"
-              : "radial-gradient(ellipse, rgba(34,211,238,0.03) 0%, transparent 70%)",
+            "radial-gradient(ellipse, rgba(34,211,238,0.03) 0%, transparent 70%)",
         }}
       />
 
@@ -696,310 +447,6 @@ export function ProcessingReveal({
         }}
       >
         <LifestylePicker onComplete={handlePickerComplete} />
-      </div>
-
-      {/* ── PHASE 2: Reveal ── */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 1,
-          opacity: phase === "reveal" ? 1 : 0,
-          pointerEvents: phase === "reveal" ? "auto" : "none",
-          transition: "opacity 0.6s ease",
-          overflowY: "auto",
-          padding: "40px 16px",
-        }}
-      >
-        {revealData ? (
-          <>
-            {/* Card visual */}
-            <div
-              style={{
-                position: "relative",
-                marginBottom: 48,
-                opacity: revealStage >= 1 ? 1 : 0,
-                transform:
-                  revealStage >= 1
-                    ? "scale(1) translateY(0)"
-                    : "scale(0.95) translateY(12px)",
-                transition: "opacity 0.6s ease, transform 0.6s ease",
-              }}
-            >
-              <div
-                style={{ transform: "scale(1.4)", transformOrigin: "center" }}
-              >
-                <CardChip cardId={cardType as CardVisualId} />
-              </div>
-            </div>
-
-            {/* Headline */}
-            <div
-              style={{
-                fontSize: "clamp(20px, 3vw, 28px)",
-                fontWeight: 700,
-                textAlign: "center",
-                letterSpacing: "-0.5px",
-                marginBottom: 8,
-                opacity: revealStage >= 2 ? 1 : 0,
-                transform:
-                  revealStage >= 2 ? "translateY(0)" : "translateY(12px)",
-                transition: "opacity 0.5s ease, transform 0.5s ease",
-              }}
-            >
-              {isWin ? (
-                <>Your card is <span style={{ color: "var(--accent)" }}>#1</span> out of {revealData.totalCards}</>
-              ) : (
-                <>Your card ranks <span style={{ color: "var(--accent)" }}>#{revealData.rank}</span> out of {revealData.totalCards}</>
-              )}
-            </div>
-
-            {/* Gap / value section */}
-            <div
-              style={{
-                textAlign: "center",
-                marginBottom: 40,
-                opacity: revealStage >= 3 ? 1 : 0,
-                transform:
-                  revealStage >= 3 ? "translateY(0)" : "translateY(12px)",
-                transition: "opacity 0.5s ease, transform 0.5s ease",
-              }}
-            >
-              {isWin ? (
-                <>
-                  <div
-                    style={{
-                      fontFamily: "var(--font-mono)",
-                      fontSize: "clamp(40px, 6vw, 56px)",
-                      fontWeight: 700,
-                      color: "var(--color-success)",
-                      letterSpacing: "-2px",
-                      lineHeight: 1.1,
-                    }}
-                  >
-                    {formatDollars(revealData.netValue)}
-                    <span style={{ fontSize: "0.5em", letterSpacing: 0 }}>
-                      /yr
-                    </span>
-                  </div>
-                  <div
-                    style={{
-                      fontSize: 15,
-                      color: "var(--text-secondary)",
-                      marginTop: 6,
-                    }}
-                  >
-                    You have the best card for your spending
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div
-                    style={{
-                      fontFamily: "var(--font-mono)",
-                      fontSize: "clamp(40px, 6vw, 56px)",
-                      fontWeight: 700,
-                      color: "var(--color-success)",
-                      letterSpacing: "-2px",
-                      lineHeight: 1.1,
-                    }}
-                  >
-                    +{formatDollars(revealData.headline.margin)}
-                    <span style={{ fontSize: "0.5em", letterSpacing: 0 }}>
-                      /yr
-                    </span>
-                  </div>
-                  <div
-                    style={{
-                      fontSize: 15,
-                      color: "var(--text-secondary)",
-                      marginTop: 6,
-                    }}
-                  >
-                    more value available on the #1 card
-                  </div>
-                </>
-              )}
-            </div>
-
-            {/* Mini leaderboard */}
-            <div
-              style={{
-                marginBottom: 36,
-                opacity: revealStage >= 4 ? 1 : 0,
-                transform:
-                  revealStage >= 4 ? "translateY(0)" : "translateY(12px)",
-                transition: "opacity 0.5s ease, transform 0.5s ease",
-              }}
-            >
-              <MiniLeaderboard
-                rows={revealData.leaderboard}
-                belowCount={revealData.belowCount}
-              />
-            </div>
-
-            {/* CTA */}
-            <button
-              onClick={() => {
-                window.location.href = "/dashboard";
-              }}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 10,
-                padding: "16px 36px",
-                background: "var(--accent)",
-                color: "var(--bg-primary)",
-                fontFamily: "var(--font-display)",
-                fontSize: 16,
-                fontWeight: 700,
-                border: "none",
-                borderRadius: 12,
-                letterSpacing: "-0.2px",
-                opacity: revealStage >= 5 ? 1 : 0,
-                transform:
-                  revealStage >= 5 ? "translateY(0)" : "translateY(12px)",
-                transition:
-                  "opacity 0.5s ease, transform 0.5s ease, background 0.25s ease, box-shadow 0.25s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "#06b6d4";
-                e.currentTarget.style.boxShadow =
-                  "0 8px 32px rgba(34,211,238,0.2), 0 2px 8px rgba(34,211,238,0.15)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "var(--accent)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
-            >
-              See your full results
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="5" y1="12" x2="19" y2="12" />
-                <polyline points="12 5 19 12 12 19" />
-              </svg>
-            </button>
-          </>
-        ) : (
-          /* ── Fallback: No comparison data ── */
-          <>
-            {/* Card visual (no rank badge) */}
-            <div
-              style={{
-                marginBottom: 36,
-                opacity: revealStage >= 1 ? 1 : 0,
-                transform:
-                  revealStage >= 1
-                    ? "scale(1) translateY(0)"
-                    : "scale(0.95) translateY(12px)",
-                transition: "opacity 0.6s ease, transform 0.6s ease",
-              }}
-            >
-              <div
-                style={{ transform: "scale(1.4)", transformOrigin: "center" }}
-              >
-                <CardChip cardId={cardType as CardVisualId} />
-              </div>
-            </div>
-
-            {/* Headline */}
-            <div
-              style={{
-                fontSize: "clamp(20px, 3vw, 28px)",
-                fontWeight: 700,
-                textAlign: "center",
-                letterSpacing: "-0.5px",
-                marginBottom: 8,
-                opacity: revealStage >= 2 ? 1 : 0,
-                transform:
-                  revealStage >= 2 ? "translateY(0)" : "translateY(12px)",
-                transition: "opacity 0.5s ease, transform 0.5s ease",
-              }}
-            >
-              Your card is connected
-            </div>
-
-            {/* Subtitle */}
-            <div
-              style={{
-                fontSize: 15,
-                color: "var(--text-secondary)",
-                textAlign: "center",
-                marginBottom: 40,
-                maxWidth: 360,
-                opacity: revealStage >= 3 ? 1 : 0,
-                transform:
-                  revealStage >= 3 ? "translateY(0)" : "translateY(12px)",
-                transition: "opacity 0.5s ease, transform 0.5s ease",
-              }}
-            >
-              We&apos;re tracking your benefits. Check back as transactions come
-              in.
-            </div>
-
-            {/* CTA */}
-            <button
-              onClick={() => {
-                window.location.href = "/dashboard";
-              }}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 10,
-                padding: "16px 36px",
-                background: "var(--accent)",
-                color: "var(--bg-primary)",
-                fontFamily: "var(--font-display)",
-                fontSize: 16,
-                fontWeight: 700,
-                border: "none",
-                borderRadius: 12,
-                letterSpacing: "-0.2px",
-                opacity: revealStage >= 4 ? 1 : 0,
-                transform:
-                  revealStage >= 4 ? "translateY(0)" : "translateY(12px)",
-                transition:
-                  "opacity 0.5s ease, transform 0.5s ease, background 0.25s ease, box-shadow 0.25s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "#06b6d4";
-                e.currentTarget.style.boxShadow =
-                  "0 8px 32px rgba(34,211,238,0.2), 0 2px 8px rgba(34,211,238,0.15)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "var(--accent)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
-            >
-              Go to your dashboard
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="5" y1="12" x2="19" y2="12" />
-                <polyline points="12 5 19 12 12 19" />
-              </svg>
-            </button>
-          </>
-        )}
       </div>
     </div>
   );

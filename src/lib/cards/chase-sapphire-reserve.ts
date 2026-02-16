@@ -246,7 +246,6 @@ export const chaseSapphireReserve: CardDefinition = {
       sunsetDate: "2027-12-31",
       lifestyleKey: "stubhub",
       details: stubhubDetails,
-      brandSlug: "stubhub",
     }, [
       { id: "csr_stubhub_h1", cycle: "biannual_h1", description: "Up to $150 in statement credits for StubHub purchases (Jan-Jun).", notes: "Must activate benefit first. Purchases on stubhub.com or app." },
       { id: "csr_stubhub_h2", cycle: "biannual_h2", description: "Up to $150 in statement credits for StubHub purchases (Jul-Dec).", notes: "Must activate benefit first. Purchases on stubhub.com or app." },
@@ -266,7 +265,6 @@ export const chaseSapphireReserve: CardDefinition = {
       lifestyleKey: "doordash",
       displayGroup: "csr_doordash", displayGroupName: "DoorDash Credits", displayGroupIcon: "Bike",
       details: doordashDetails,
-      brandSlug: "doordash",
     }),
     b({
       id: "csr_doordash_nonrestaurant_1",
@@ -280,7 +278,6 @@ export const chaseSapphireReserve: CardDefinition = {
       lifestyleKey: "doordash",
       displayGroup: "csr_doordash", displayGroupName: "DoorDash Credits", displayGroupIcon: "Bike",
       details: doordashDetails,
-      brandSlug: "doordash",
     }),
     b({
       id: "csr_doordash_nonrestaurant_2",
@@ -294,7 +291,6 @@ export const chaseSapphireReserve: CardDefinition = {
       lifestyleKey: "doordash",
       displayGroup: "csr_doordash", displayGroupName: "DoorDash Credits", displayGroupIcon: "Bike",
       details: doordashDetails,
-      brandSlug: "doordash",
     }),
 
     // ── Lyft ($10/month) ──
@@ -321,7 +317,6 @@ export const chaseSapphireReserve: CardDefinition = {
           { label: "Learn More", url: "https://account.chase.com/sapphire/reserve/benefits" },
         ],
       },
-      brandSlug: "lyft",
     }),
 
     // ── Peloton ($10/month) ──
@@ -351,7 +346,6 @@ export const chaseSapphireReserve: CardDefinition = {
           { label: "Learn More", url: "https://www.chase.com/personal/credit-cards/education/rewards-benefits/how-to-earn-10x-points-on-peloton-with-chase-sapphire-reserve" },
         ],
       },
-      brandSlug: "peloton",
     }),
 
     // ── Global Entry / TSA PreCheck ($120/4 years) ──
@@ -392,7 +386,6 @@ export const chaseSapphireReserve: CardDefinition = {
       sunsetDate: "2027-06-22",
       lifestyleKey: "apple_tv",
       details: appleTvDetails,
-      brandSlug: "apple",
     }),
 
     // ── Apple Music (subscription) ──
@@ -407,7 +400,6 @@ export const chaseSapphireReserve: CardDefinition = {
       sunsetDate: "2027-06-22",
       lifestyleKey: "apple_music",
       details: appleMusicDetails,
-      brandSlug: "apple",
     }),
 
     // ── DashPass (subscription) ──
@@ -422,7 +414,6 @@ export const chaseSapphireReserve: CardDefinition = {
       sunsetDate: "2027-12-31",
       lifestyleKey: "doordash",
       details: dashPassDetails,
-      brandSlug: "doordash",
     }),
   ],
 };

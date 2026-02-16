@@ -17,19 +17,6 @@ function LucideIcon({ name, size = 20 }: { name: string; size?: number }) {
   return <Icon size={size} />;
 }
 
-/** Brand icon from Simple Icons CDN. */
-function BrandIcon({ slug, size = 20 }: { slug: string; size?: number }) {
-  return (
-    <img
-      src={`https://cdn.simpleicons.org/${slug}/ffffff`}
-      alt=""
-      width={size}
-      height={size}
-      style={{ opacity: 0.85 }}
-      loading="lazy"
-    />
-  );
-}
 
 export function LifestylePicker({ onComplete }: LifestylePickerProps) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -155,11 +142,7 @@ export function LifestylePicker({ onComplete }: LifestylePickerProps) {
                         alignItems: "center",
                       }}
                     >
-                      {item.iconType === "brand" ? (
-                        <BrandIcon slug={item.iconSlug} size={20} />
-                      ) : (
-                        <LucideIcon name={item.iconSlug} size={20} />
-                      )}
+                      <LucideIcon name={item.iconSlug} size={20} />
                     </span>
                     <span
                       style={{

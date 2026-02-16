@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ChevronRight } from "lucide-react";
 import { StackedBar } from "./StackedBar";
 import { getNetForModes, getPointsForMode, getBenefitsForMode } from "./CompareTab";
 import { getCardDefinition } from "@/lib/cards";
@@ -190,60 +191,57 @@ function RowComparison({
   return (
     <div
       style={{
-        padding: "20px 24px 24px",
+        padding: "16px 16px 20px",
         background: "var(--bg-secondary)",
         borderTop: "1px solid var(--border-subtle)",
       }}
+      className="md:!px-6 md:!pt-5 md:!pb-6"
     >
       {/* Column headers: Your Card vs {Card Name} */}
       <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 40px 1fr",
-          alignItems: "center",
-          marginBottom: 16,
-        }}
+        className="grid items-center mb-3 md:mb-4"
+        style={{ gridTemplateColumns: "1fr 28px 1fr" }}
       >
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
           <span style={{ ...sectionLabel, color: "var(--text-secondary)" }}>Your Card</span>
         </div>
         <span style={vsStyle}>vs</span>
         <div>
-          <span style={{ ...sectionLabel, color: "var(--text-secondary)" }}>{comparedCard.cardName}</span>
+          <span style={{ ...sectionLabel, color: "var(--text-secondary)", fontSize: 9 }} className="md:!text-[10px]">{comparedCard.cardName}</span>
         </div>
       </div>
 
       {/* ── Points by Category ── */}
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ ...sectionLabel, marginBottom: 12, borderBottom: "1px solid var(--border-subtle)", paddingBottom: 8 }}>
+      <div style={{ marginBottom: 20 }}>
+        <div style={{ ...sectionLabel, marginBottom: 8, borderBottom: "1px solid var(--border-subtle)", paddingBottom: 6 }}>
           Points by Category
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div className="flex flex-col gap-1 md:gap-2">
           {catRows.map((row) => {
             const userWins = row.user >= row.comp;
             return (
               <div
                 key={row.label}
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 40px 1fr",
-                  alignItems: "center",
-                  gap: 0,
-                }}
+                className="grid items-center"
+                style={{ gridTemplateColumns: "1fr 28px 1fr" }}
               >
                 {/* User side — right-aligned */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8 }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6 }}>
                   <span
                     style={{
                       fontFamily: "var(--font-display)",
                       fontSize: 12,
                       color: "var(--text-secondary)",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
                       whiteSpace: "nowrap",
                     }}
+                    className="max-w-[100px] md:max-w-none"
                   >
                     {row.label}
                   </span>
-                  <div style={{ width: 80, height: 6, borderRadius: 3, background: "rgba(255,255,255,0.03)", overflow: "hidden", display: "flex", justifyContent: "flex-end" }}>
+                  {/* Bar — desktop only */}
+                  <div className="hidden md:flex" style={{ width: 80, height: 6, borderRadius: 3, background: "rgba(255,255,255,0.03)", overflow: "hidden", justifyContent: "flex-end" }}>
                     <div
                       style={{
                         width: `${(row.user / maxCatVal) * 100}%`,
@@ -260,31 +258,35 @@ function RowComparison({
                       fontSize: 11,
                       fontWeight: 700,
                       color: userWins ? "var(--color-accent-blue)" : "var(--text-dim)",
-                      minWidth: 44,
+                      minWidth: 36,
                       textAlign: "right",
+                      flexShrink: 0,
                     }}
                   >
                     {fmtPlain(row.user)}
                   </span>
                 </div>
 
-                {/* vs */}
-                <span style={vsStyle}>vs</span>
+                {/* vs — desktop only, mobile just a dot */}
+                <span style={vsStyle} className="hidden md:block">vs</span>
+                <span className="md:hidden" style={{ ...vsStyle, fontSize: 8, letterSpacing: 0 }}>·</span>
 
                 {/* Compared card side — left-aligned */}
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                   <span
                     style={{
                       fontFamily: "var(--font-mono)",
                       fontSize: 11,
                       fontWeight: 700,
                       color: !userWins ? "var(--color-accent-blue)" : "var(--text-dim)",
-                      minWidth: 44,
+                      minWidth: 36,
+                      flexShrink: 0,
                     }}
                   >
                     {fmtPlain(row.comp)}
                   </span>
-                  <div style={{ width: 80, height: 6, borderRadius: 3, background: "rgba(255,255,255,0.03)", overflow: "hidden" }}>
+                  {/* Bar — desktop only */}
+                  <div className="hidden md:block" style={{ width: 80, height: 6, borderRadius: 3, background: "rgba(255,255,255,0.03)", overflow: "hidden" }}>
                     <div
                       style={{
                         width: `${(row.comp / maxCatVal) * 100}%`,
@@ -306,12 +308,9 @@ function RowComparison({
             const compPtsTotal = catRows.reduce((s, r) => s + r.comp, 0);
             return (
               <div
+                className="grid items-center mt-1.5 pt-1.5 md:mt-2 md:pt-2"
                 style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 40px 1fr",
-                  alignItems: "center",
-                  marginTop: 8,
-                  paddingTop: 8,
+                  gridTemplateColumns: "1fr 28px 1fr",
                   borderTop: "1px solid var(--border-subtle)",
                 }}
               >
@@ -347,48 +346,67 @@ function RowComparison({
       </div>
 
       {/* ── Benefits ── */}
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ ...sectionLabel, marginBottom: 12, borderBottom: "1px solid var(--border-subtle)", paddingBottom: 8 }}>
+      <div style={{ marginBottom: 20 }}>
+        <div style={{ ...sectionLabel, marginBottom: 8, borderBottom: "1px solid var(--border-subtle)", paddingBottom: 6 }}>
           Benefits
         </div>
 
         {/* Itemized rows */}
         {maxBenRows > 0 ? (
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <div className="flex flex-col gap-1 md:gap-1.5">
             {Array.from({ length: maxBenRows }).map((_, i) => {
               const uBen = userBenefits[i];
               const cBen = compBenefits[i];
               return (
                 <div
                   key={i}
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 40px 1fr",
-                    alignItems: "center",
-                  }}
+                  className="grid items-center"
+                  style={{ gridTemplateColumns: "1fr 28px 1fr" }}
                 >
                   {/* User benefit */}
-                  <div style={{ display: "flex", justifyContent: "flex-end", gap: 6, alignItems: "baseline" }}>
+                  <div style={{ display: "flex", justifyContent: "flex-end", gap: 5, alignItems: "baseline" }}>
                     {uBen ? (
                       <>
-                        <span style={{ fontFamily: "var(--font-display)", fontSize: 12, color: "var(--text-secondary)", textAlign: "right" }}>
+                        <span
+                          style={{
+                            fontFamily: "var(--font-display)",
+                            fontSize: 12,
+                            color: "var(--text-secondary)",
+                            textAlign: "right",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                          className="max-w-[80px] md:max-w-none"
+                        >
                           {uBen.name}
                         </span>
-                        <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 700, color: "var(--color-accent-purple)" }}>
+                        <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 700, color: "var(--color-accent-purple)", flexShrink: 0 }}>
                           {fmtPlain(uBen.annual)}
                         </span>
                       </>
                     ) : <span />}
                   </div>
-                  <span style={vsStyle}>{i === 0 ? "vs" : ""}</span>
+                  <span style={vsStyle} className="hidden md:block">{i === 0 ? "vs" : ""}</span>
+                  <span className="md:hidden" style={{ ...vsStyle, fontSize: 8 }}>{i === 0 ? "·" : ""}</span>
                   {/* Compared benefit */}
-                  <div style={{ display: "flex", gap: 6, alignItems: "baseline" }}>
+                  <div style={{ display: "flex", gap: 5, alignItems: "baseline" }}>
                     {cBen ? (
                       <>
-                        <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 700, color: "var(--color-accent-purple)" }}>
+                        <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 700, color: "var(--color-accent-purple)", flexShrink: 0 }}>
                           {fmtPlain(cBen.annual)}
                         </span>
-                        <span style={{ fontFamily: "var(--font-display)", fontSize: 12, color: "var(--text-secondary)" }}>
+                        <span
+                          style={{
+                            fontFamily: "var(--font-display)",
+                            fontSize: 12,
+                            color: "var(--text-secondary)",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                          className="max-w-[80px] md:max-w-none"
+                        >
                           {cBen.name}
                         </span>
                       </>
@@ -400,12 +418,9 @@ function RowComparison({
 
             {/* Totals */}
             <div
+              className="grid items-center mt-1.5 pt-1.5 md:mt-2 md:pt-2"
               style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 40px 1fr",
-                alignItems: "center",
-                marginTop: 8,
-                paddingTop: 8,
+                gridTemplateColumns: "1fr 28px 1fr",
                 borderTop: "1px solid var(--border-subtle)",
               }}
             >
@@ -445,15 +460,12 @@ function RowComparison({
 
       {/* ── Annual Fee ── */}
       <div>
-        <div style={{ ...sectionLabel, marginBottom: 12, borderBottom: "1px solid var(--border-subtle)", paddingBottom: 8 }}>
+        <div style={{ ...sectionLabel, marginBottom: 8, borderBottom: "1px solid var(--border-subtle)", paddingBottom: 6 }}>
           Annual Fee
         </div>
         <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 40px 1fr",
-            alignItems: "center",
-          }}
+          className="grid items-center"
+          style={{ gridTemplateColumns: "1fr 28px 1fr" }}
         >
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
             <span
@@ -467,7 +479,8 @@ function RowComparison({
               -${userFee.toLocaleString()}
             </span>
           </div>
-          <span style={vsStyle}>vs</span>
+          <span style={vsStyle} className="hidden md:block">vs</span>
+          <span className="md:hidden" style={{ ...vsStyle, fontSize: 8 }}>·</span>
           <div>
             <span
               style={{
@@ -512,17 +525,32 @@ export function Leaderboard({ cards, activeCardType, vMode, bMode, lifestyleKeys
         >
           Leaderboard
         </h2>
-        <span
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: 10,
-            fontWeight: 700,
-            color: "var(--text-dim)",
-            letterSpacing: "0.5px",
-          }}
-        >
-          {sorted.length} cards ranked by net value
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            className="md:hidden"
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: 10,
+              fontWeight: 700,
+              color: "var(--text-dim)",
+              letterSpacing: "0.5px",
+            }}
+          >
+            tap to compare
+          </span>
+          <span
+            className="hidden md:inline"
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: 10,
+              fontWeight: 700,
+              color: "var(--text-dim)",
+              letterSpacing: "0.5px",
+            }}
+          >
+            {sorted.length} cards ranked by net value
+          </span>
+        </div>
       </div>
 
       {/* Legend — outside container */}
@@ -573,7 +601,8 @@ export function Leaderboard({ cards, activeCardType, vMode, bMode, lifestyleKeys
           const rank = card.rank;
           const isFirst = rank === 1;
           const isUser = card.cardId === activeCardType;
-          const isDimmed = rank > 5 && !isUser;
+          const userRank = userCard?.rank ?? sorted.length;
+          const isDimmed = !isUser && rank > userRank;
           const benefitsVal = getBenefitsForMode(card, bMode);
           const pointsVal = getPointsForMode(card, vMode);
           const netVal = getNetForModes(card, vMode, bMode);
@@ -597,7 +626,7 @@ export function Leaderboard({ cards, activeCardType, vMode, bMode, lifestyleKeys
                     ? "rgba(255,255,255,0.02)"
                     : undefined,
                   borderLeft: isUser
-                    ? "3px solid var(--text-dim)"
+                    ? "3px solid var(--color-accent-cyan)"
                     : isFirst
                     ? "3px solid var(--color-success)"
                     : "3px solid transparent",
@@ -615,6 +644,8 @@ export function Leaderboard({ cards, activeCardType, vMode, bMode, lifestyleKeys
                     fontFamily: "var(--font-mono)",
                     color: isFirst
                       ? "var(--color-success)"
+                      : isUser
+                      ? "var(--color-accent-cyan)"
                       : "var(--text-secondary)",
                   }}
                 >
@@ -649,8 +680,8 @@ export function Leaderboard({ cards, activeCardType, vMode, bMode, lifestyleKeys
                         className="shrink-0 rounded px-1.5 py-0.5 text-[10px] font-bold"
                         style={{
                           fontFamily: "var(--font-mono)",
-                          color: "var(--text-secondary)",
-                          background: "rgba(255,255,255,0.06)",
+                          color: "var(--color-accent-cyan)",
+                          background: "rgba(34,211,238,0.08)",
                         }}
                       >
                         YOU
@@ -710,8 +741,8 @@ export function Leaderboard({ cards, activeCardType, vMode, bMode, lifestyleKeys
                   />
                 </div>
 
-                {/* Net value + mini-bar */}
-                <div className="flex flex-col items-end gap-1">
+                {/* Net value + chevron */}
+                <div className="flex items-center justify-end gap-1">
                   <span
                     className="text-sm font-bold"
                     style={{
@@ -724,28 +755,19 @@ export function Leaderboard({ cards, activeCardType, vMode, bMode, lifestyleKeys
                   >
                     {fmt(netVal)}
                   </span>
-                  {/* Net mini-bar */}
-                  <div
-                    style={{
-                      width: 60,
-                      height: 3,
-                      borderRadius: 1.5,
-                      background: "rgba(255,255,255,0.04)",
-                      overflow: "hidden",
-                    }}
-                  >
-                    <div
+                  {!isUser && (
+                    <ChevronRight
+                      size={14}
+                      strokeWidth={2}
                       style={{
-                        height: "100%",
-                        borderRadius: 1.5,
-                        width: `${Math.max(0, netBarPct)}%`,
-                        background: isFirst
-                          ? "var(--color-success)"
-                          : "var(--text-dim)",
-                        opacity: isDimmed ? 0.3 : 0.6,
+                        color: "var(--text-dim)",
+                        opacity: isDimmed ? 0.3 : 0.5,
+                        transition: "transform 0.2s ease",
+                        transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)",
+                        flexShrink: 0,
                       }}
                     />
-                  </div>
+                  )}
                 </div>
               </div>
 

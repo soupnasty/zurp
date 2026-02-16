@@ -7,7 +7,7 @@ import {
   MinusCircle,
   Clock,
   XCircle,
-  ChevronDown,
+  ChevronRight,
   ExternalLink,
   Plane,
   ConciergeBell,
@@ -64,29 +64,29 @@ interface BenefitRowProps {
 const STATUS_CONFIG = {
   captured: {
     icon: CheckCircle2,
-    iconBg: "rgba(52,211,153,0.1)",
-    iconBorder: "rgba(52,211,153,0.2)",
-    iconColor: "var(--color-success)",
-    amountColor: "var(--color-success)",
-    barColor: "var(--color-success)",
+    iconBg: "rgba(167,139,250,0.1)",
+    iconBorder: "rgba(167,139,250,0.2)",
+    iconColor: "var(--color-accent-purple)",
+    amountColor: "var(--color-accent-purple)",
+    barColor: "var(--color-accent-purple)",
     label: "Captured",
   },
   partial: {
     icon: MinusCircle,
-    iconBg: "rgba(248,113,113,0.1)",
-    iconBorder: "rgba(248,113,113,0.2)",
-    iconColor: "var(--color-danger)",
-    amountColor: "var(--color-danger)",
-    barColor: "var(--color-danger)",
+    iconBg: "rgba(167,139,250,0.1)",
+    iconBorder: "rgba(167,139,250,0.2)",
+    iconColor: "var(--color-accent-purple)",
+    amountColor: "var(--color-accent-purple)",
+    barColor: "var(--color-accent-purple)",
     label: "Partial",
   },
   expiring: {
     icon: Clock,
-    iconBg: "rgba(251,191,36,0.1)",
-    iconBorder: "rgba(251,191,36,0.2)",
-    iconColor: "var(--color-accent-amber)",
-    amountColor: "var(--color-accent-amber)",
-    barColor: "var(--color-accent-amber)",
+    iconBg: "rgba(167,139,250,0.1)",
+    iconBorder: "rgba(167,139,250,0.2)",
+    iconColor: "var(--color-accent-purple)",
+    amountColor: "var(--color-accent-purple)",
+    barColor: "var(--color-accent-purple)",
     label: "Expiring",
   },
   unused: {
@@ -183,22 +183,11 @@ function BenefitIcon({
           border: "1px solid rgba(255,255,255,0.08)",
         }}
       >
-        {group.brandSlug ? (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img
-            src={`https://cdn.simpleicons.org/${group.brandSlug}/f0f2f5`}
-            alt=""
-            width={iconSize}
-            height={iconSize}
-            style={{ opacity: 0.85 }}
-          />
-        ) : (
-          <FallbackIcon
-            size={iconSize}
-            strokeWidth={1.75}
-            style={{ color: "var(--text-primary)", opacity: 0.85 }}
-          />
-        )}
+        <FallbackIcon
+          size={iconSize}
+          strokeWidth={1.75}
+          style={{ color: "var(--text-primary)", opacity: 0.85 }}
+        />
       </div>
       <div
         className="absolute flex items-center justify-center rounded-full"
@@ -234,7 +223,8 @@ export function BenefitRow({ group }: BenefitRowProps) {
   } else if (group.status === "partial") {
     detail = `$${Math.round(group.totalRemaining)} remaining \u00b7 resets ${formatResetDate(group.cycleEnd)}`;
   } else {
-    detail = `$${Math.round(group.totalCredit)}/${group.cycle === "monthly" ? "mo" : "yr"} \u00b7 never used`;
+    const periodLabel = group.cycle === "monthly" || group.cycle === "subscription" ? "mo" : group.cycle === "quadrennial" ? "4yr" : "yr";
+    detail = `$${Math.round(group.totalCredit)}/${periodLabel} \u00b7 never used`;
   }
 
   return (
@@ -263,10 +253,10 @@ export function BenefitRow({ group }: BenefitRowProps) {
               >
                 / ${Math.round(group.totalCredit)}
               </span>
-              <ChevronDown
+              <ChevronRight
                 size={14}
                 strokeWidth={2}
-                className={`text-[var(--text-secondary)] transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
+                className={`text-[var(--text-secondary)] transition-transform duration-200 ${expanded ? "rotate-90" : ""}`}
               />
             </div>
           </div>
@@ -354,10 +344,10 @@ export function BenefitRow({ group }: BenefitRowProps) {
         </div>
 
         {/* Chevron */}
-        <ChevronDown
+        <ChevronRight
           size={16}
           strokeWidth={2}
-          className={`text-[var(--text-secondary)] transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
+          className={`text-[var(--text-secondary)] transition-transform duration-200 ${expanded ? "rotate-90" : ""}`}
         />
       </button>
 

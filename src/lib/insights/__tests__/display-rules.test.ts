@@ -131,6 +131,15 @@ function applyDisplayRules(
     }
   }
 
+  // Re-apply Rule 6: C0 pending must be first even after Rule 3 reordering
+  const c0SelIdx = selected.findIndex(
+    (i) => i.category === "C0" && i.state === "pending"
+  );
+  if (c0SelIdx > 0) {
+    const [c0Item] = selected.splice(c0SelIdx, 1);
+    selected.unshift(c0Item);
+  }
+
   return selected.slice(0, max);
 }
 

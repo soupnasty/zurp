@@ -24,7 +24,7 @@ export function BenefitCard({ group, capturedLabel = "this year", simulated = fa
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent)]/10">
-                <BenefitIcon icon={group.icon} brandSlug={group.brandSlug} size={20} />
+                <BenefitIcon icon={group.icon} size={20} />
               </div>
               <div>
                 <h3 className="text-[var(--text-body)] font-semibold text-[var(--text-primary)]">

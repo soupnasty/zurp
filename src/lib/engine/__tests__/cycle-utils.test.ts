@@ -93,10 +93,13 @@ describe("getCurrentCycleBounds", () => {
     });
 
     it("falls back to calendar year when no anniversary date", () => {
-      const ref = new Date(2026, 6, 15);
+      const ref = new Date(2026, 6, 15); // July 15 2026
       const result = getCurrentCycleBounds("annual_anniversary", ref, null);
       expect(result.periodKey).toBe("2026-ANN");
       expect(result.cycleStart).toEqual(new Date(2026, 0, 1));
+      expect(result.cycleEnd.getFullYear()).toBe(2026);
+      expect(result.cycleEnd.getMonth()).toBe(11);
+      expect(result.cycleEnd.getDate()).toBe(31);
     });
   });
 

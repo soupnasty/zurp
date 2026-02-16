@@ -235,9 +235,6 @@ export function AppShell({ children, userEmail, dashboardNav }: AppShellProps) {
                       >
                         <span className="relative">
                           <Icon size={20} strokeWidth={1.75} />
-                          {id === "insights" && dashboardNav.hasNewInsights && (
-                            <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-[var(--color-danger)]" />
-                          )}
                         </span>
                         {!collapsed && <span>{label}</span>}
                       </Link>
@@ -319,9 +316,6 @@ export function AppShell({ children, userEmail, dashboardNav }: AppShellProps) {
                 >
                   <span className="relative">
                     <Icon size={20} strokeWidth={1.75} />
-                    {id === "insights" && dashboardNav.hasNewInsights && (
-                      <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-[var(--color-danger)]" />
-                    )}
                   </span>
                   <span>{label}</span>
                 </Link>

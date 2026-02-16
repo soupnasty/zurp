@@ -67,6 +67,8 @@ export const abceBalancedSpender: Persona = {
   benefitBehavior: [
     // Disney Bundle: $7/mo credit
     { benefitId: "bce_disney_bundle", behavior: "always_use" },
+    // Home Chef: $15/mo credit
+    { benefitId: "bce_home_chef", behavior: "partial_use", targetUsagePercent: 30 },
   ],
 
   competitorSpend: [],
@@ -142,6 +144,8 @@ export const abceOnlineShopper: Persona = {
 
   benefitBehavior: [
     { benefitId: "bce_disney_bundle", behavior: "always_use" },
+    // Home Chef: rarely used
+    { benefitId: "bce_home_chef", behavior: "never_use" },
   ],
 
   competitorSpend: [],

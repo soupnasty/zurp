@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { Calendar } from "lucide-react";
 import { SummaryStrip } from "./SummaryStrip";
 import { InsightGroupSection } from "./InsightGroup";
 import type { SerializedInsight } from "./types";
@@ -84,45 +86,90 @@ export function InsightsTab({ insights, activeCardName, activeCardFee, anniversa
       value: potentialSavings > 0 ? `$${Math.round(potentialSavings).toLocaleString()}/yr` : "$0",
       valueColor: "var(--color-success)",
     },
-    {
-      label: "Expiring soon",
-      value: expiringAmount > 0 ? `$${Math.round(expiringAmount).toLocaleString()}` : "--",
-      valueColor: expiringAmount > 0 ? "var(--color-accent-amber)" : "var(--text-secondary)",
-      sub: expiringInsights.length > 0 ? `${expiringInsights.length} benefit${expiringInsights.length > 1 ? "s" : ""}` : undefined,
-    },
   ];
 
+  const { cycleLabel, renewalLabel } = (() => {
+    if (!anniversaryDate) {
+      return {
+        cycleLabel: activeCardFee > 0 ? `$${activeCardFee}/yr fee` : "$0 annual fee",
+        renewalLabel: null,
+      };
+    }
+    const anniv = new Date(anniversaryDate);
+    const now = new Date();
+    // UTC getters — anniversary dates are calendar dates stored at UTC midnight
+    const annivMonth = anniv.getUTCMonth();
+    const annivDay = anniv.getUTCDate();
+    let yearStart = new Date(now.getFullYear(), annivMonth, annivDay);
+    if (yearStart > now) {
+      yearStart = new Date(now.getFullYear() - 1, annivMonth, annivDay);
+    }
+    const yearEnd = new Date(yearStart.getFullYear() + 1, annivMonth, annivDay - 1);
+    const fmt = (d: Date) => d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+
+    let nextRenewal = new Date(now.getFullYear(), annivMonth, annivDay);
+    if (nextRenewal <= now) {
+      nextRenewal = new Date(now.getFullYear() + 1, annivMonth, annivDay);
+    }
+    const renewalStr = activeCardFee > 0
+      ? `$${activeCardFee} fee renews ${fmt(nextRenewal)}`
+      : null;
+
+    return {
+      cycleLabel: `${fmt(yearStart)} – ${fmt(yearEnd)}`,
+      renewalLabel: renewalStr,
+    };
+  })();
+
   const cardHeader = (
-    <div className="mb-5">
-      <span
-        className="text-[10px] font-bold uppercase tracking-[2.5px] text-[var(--text-secondary)]"
-        style={{ fontFamily: "var(--font-mono)" }}
-      >
-        Your card
-      </span>
-      <h1 className="mt-1 text-xl md:text-2xl font-bold text-[var(--text-primary)]">
-        {activeCardName}
-      </h1>
-      <span
-        className="text-[12px] text-[var(--text-dim)]"
-        style={{ fontFamily: "var(--font-mono)" }}
-      >
-        {(() => {
-          if (!anniversaryDate) return activeCardFee > 0 ? `$${activeCardFee}/yr fee` : "$0 annual fee";
-          const anniv = new Date(anniversaryDate);
-          const now = new Date();
-          const annivMonth = anniv.getMonth();
-          const annivDay = anniv.getDate();
-          let yearStart = new Date(now.getFullYear(), annivMonth, annivDay);
-          if (yearStart > now) {
-            yearStart = new Date(now.getFullYear() - 1, annivMonth, annivDay);
-          }
-          const yearEnd = new Date(yearStart.getFullYear() + 1, annivMonth, annivDay - 1);
-          const fmt = (d: Date) => d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-          return `${fmt(yearStart)} – ${fmt(yearEnd)}`;
-        })()}
-      </span>
-    </div>
+    <>
+      <div className="mb-5">
+        <span
+          className="text-[10px] font-bold uppercase tracking-[2.5px] text-[var(--text-secondary)]"
+          style={{ fontFamily: "var(--font-mono)" }}
+        >
+          Your card
+        </span>
+        <h1 className="mt-1 text-xl md:text-2xl font-bold text-[var(--text-primary)]">
+          {activeCardName}
+        </h1>
+        <span
+          className="text-[10px] md:text-[12px] text-[var(--text-dim)]"
+          style={{ fontFamily: "var(--font-mono)" }}
+        >
+          {cycleLabel}
+          {renewalLabel && (
+            <>
+              <span className="hidden md:inline"> · {renewalLabel}</span>
+              <span className="block md:hidden mt-0.5">{renewalLabel}</span>
+            </>
+          )}
+        </span>
+      </div>
+
+      {/* Missing anniversary date banner */}
+      {!anniversaryDate && (
+        <Link
+          href="/settings"
+          className="mb-5 flex items-center gap-3 rounded-xl px-4 py-3 transition-colors hover:brightness-110"
+          style={{
+            background: "rgba(251,191,36,0.06)",
+            border: "1px solid rgba(251,191,36,0.15)",
+          }}
+        >
+          <Calendar className="h-4 w-4 shrink-0" style={{ color: "#fbbf24" }} />
+          <span className="text-sm text-[var(--text-secondary)]">
+            Set your card anniversary date for accurate benefit tracking
+          </span>
+          <span
+            className="ml-auto shrink-0 text-xs font-medium"
+            style={{ color: "#fbbf24" }}
+          >
+            Settings →
+          </span>
+        </Link>
+      )}
+    </>
   );
 
   if (insights.length === 0) {

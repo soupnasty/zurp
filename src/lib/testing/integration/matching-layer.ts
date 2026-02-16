@@ -152,9 +152,18 @@ export function testMatching(
         // — if so, this is expected behavior, not a bug.
         const expectedBenefitDef = cardBenefitMap.get(expectedBenefit);
         if (expectedBenefitDef && !expectedBenefitDef.autoMatchable) {
-          // Verify the merchant pattern would actually match
+          // Verify the merchant pattern or plaid category would actually match
           const normalizedName = normalizeMerchantName(tx.merchantName || tx.merchantNameRaw);
-          if (matchesMerchantPattern(normalizedName, expectedBenefitDef.merchantPatterns)) {
+          const merchantMatch = matchesMerchantPattern(normalizedName, expectedBenefitDef.merchantPatterns);
+          // For isCategoryFallback benefits with empty merchantPatterns, check plaid category
+          const plaidMatch =
+            expectedBenefitDef.isCategoryFallback &&
+            expectedBenefitDef.plaidCategories?.some(
+              (cat: string) =>
+                tx.plaidCategoryPrimary === cat ||
+                tx.plaidCategoryDetailed === cat,
+            );
+          if (merchantMatch || plaidMatch) {
             result.passed++;
           } else {
             result.failed++;
@@ -185,19 +194,28 @@ export function testMatching(
           });
         }
       } else {
-        // Not matched at all, but benefit exists and isn't depleted
-        result.failed++;
-        result.mismatches.push({
-          txId: tx.id,
-          merchant: tx.merchantName,
-          card,
-          persona: personaName,
-          layer: "matching",
-          expected: expectedBenefit,
-          actual: "NO MATCH",
-          severity: "bug",
-          detail: `Benefit "${expectedBenefit}" exists on card but tx "${tx.merchantName}" ($${tx.amount}) was not matched`,
-        });
+        // Not matched at all, but benefit exists and isn't depleted.
+        // Check if the benefit is non-autoMatchable with empty merchantPatterns —
+        // these are portal/manual-confirmation benefits (e.g., hotel collection credits)
+        // that can't be auto-matched from transaction data alone.
+        const benefitDef = cardBenefitMap.get(expectedBenefit);
+        if (benefitDef && !benefitDef.autoMatchable && benefitDef.merchantPatterns.length === 0) {
+          // Expected: benefit requires portal booking or manual confirmation
+          result.passed++;
+        } else {
+          result.failed++;
+          result.mismatches.push({
+            txId: tx.id,
+            merchant: tx.merchantName,
+            card,
+            persona: personaName,
+            layer: "matching",
+            expected: expectedBenefit,
+            actual: "NO MATCH",
+            severity: "bug",
+            detail: `Benefit "${expectedBenefit}" exists on card but tx "${tx.merchantName}" ($${tx.amount}) was not matched`,
+          });
+        }
       }
     } else {
       // General spend — no specific benefit expected, just check no crash

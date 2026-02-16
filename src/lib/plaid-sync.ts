@@ -162,13 +162,17 @@ export async function triggerSync(connectionId: string): Promise<SyncResult> {
         .where(inArray(schema.transactions.id, removedIds));
     }
 
-    // Update sync cursor and timestamp
+    // Update sync cursor, timestamp, and promote syncStatus on first sync
+    const syncUpdate: Record<string, unknown> = {
+      lastSyncCursor: cursor,
+      lastSyncedAt: new Date(),
+    };
+    if (connection.syncStatus === "pending" && added.length > 0) {
+      syncUpdate.syncStatus = "initial";
+    }
     await db
       .update(schema.plaidConnections)
-      .set({
-        lastSyncCursor: cursor,
-        lastSyncedAt: new Date(),
-      })
+      .set(syncUpdate)
       .where(eq(schema.plaidConnections.id, connection.id));
 
     // Run matching engine

@@ -30,6 +30,12 @@ export interface CalculatorTransaction {
   datetime?: Date | null;
 }
 
+/** Parse "YYYY-MM-DD" to a local-time Date (avoids UTC midnight timezone shift) */
+function parseLocalDate(dateStr: string): Date {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
 /**
  * Convert GeneratedTransaction → MatcherTransaction.
  * Key conversion: date string → Date object.
@@ -37,7 +43,7 @@ export interface CalculatorTransaction {
 export function toMatcherTx(tx: GeneratedTransaction): MatcherTransaction {
   return {
     id: tx.id,
-    date: new Date(tx.date),
+    date: parseLocalDate(tx.date),
     merchantName: tx.merchantName,
     merchantNameRaw: tx.merchantNameRaw,
     amount: tx.amount,
@@ -61,7 +67,7 @@ export function toCalculatorTx(
     amount: tx.amount,
     category: assignment.category,
     confidence: assignment.confidence,
-    date: new Date(tx.date),
+    date: parseLocalDate(tx.date),
     datetime: tx.datetime ? new Date(tx.datetime) : null,
   };
 }
@@ -77,9 +83,12 @@ export function buildMatcherConfig(
     benefits: cardDef.benefits,
     usageMap: new Map<string, number>(),
     anniversaryDate: persona.anniversaryDate
-      ? new Date(persona.anniversaryDate)
+      ? (() => {
+          const [y, m, d] = persona.anniversaryDate!.split("-").map(Number);
+          return new Date(y, m - 1, d);
+        })()
       : null,
-    referenceDate: new Date("2025-07-01"), // Mid-year reference
+    referenceDate: new Date(2025, 6, 1), // Mid-year reference (July 1)
   };
 }
 

@@ -68,6 +68,8 @@ export const amexGoldMaximizer: Persona = {
     { benefitId: "gold_uber_cash", behavior: "always_use" },
     { benefitId: "gold_dining_credit", behavior: "always_use" },
     { benefitId: "gold_dunkin_credit", behavior: "always_use" },
+    { benefitId: "gold_resy_credit_h1", behavior: "always_use" },
+    { benefitId: "gold_resy_credit_h2", behavior: "always_use" },
   ],
   competitorSpend: [
     {
@@ -154,6 +156,8 @@ export const amexGoldGroceryFocused: Persona = {
     { benefitId: "gold_uber_cash", behavior: "partial_use", targetUsagePercent: 20 },
     { benefitId: "gold_dining_credit", behavior: "never_use" },
     { benefitId: "gold_dunkin_credit", behavior: "never_use" },
+    { benefitId: "gold_resy_credit_h1", behavior: "never_use" },
+    { benefitId: "gold_resy_credit_h2", behavior: "never_use" },
   ],
   competitorSpend: [],
   edgeCases: [

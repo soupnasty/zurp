@@ -11,8 +11,8 @@ export interface LifestyleOption {
   label: string;
   description: string;
   group: LifestyleGroup;
-  iconType: "brand" | "lucide";
-  iconSlug: string; // brandSlug for Simple Icons CDN, or lucide icon name
+  iconType: "lucide";
+  iconSlug: string; // Lucide icon name (e.g. "Car", "Bike")
 }
 
 export type LifestyleGroup =

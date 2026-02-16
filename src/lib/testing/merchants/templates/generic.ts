@@ -124,7 +124,7 @@ export const genericTemplates: MerchantTemplate[] = [
   {
     merchantKey: "stubhub",
     plaidMerchantName: "StubHub",
-    nameVariants: ["STUBHUB ORDER", "STUBHUB.COM", "VIAGOGO"],
+    nameVariants: ["STUBHUB ORDER", "STUBHUB.COM"],
     normalizedResult: "stubhub",
     expectedEarnCategory: "entertainment",
     plaidCategoryPrimary: "ENTERTAINMENT",

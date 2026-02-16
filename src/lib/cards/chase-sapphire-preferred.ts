@@ -96,7 +96,6 @@ export const chaseSapphirePreferred: CardDefinition = {
       sunsetDate: "2027-12-31",
       lifestyleKey: "doordash",
       details: doordashPromoDetails,
-      brandSlug: "doordash",
     }),
 
     // ── DashPass (subscription) ──
@@ -111,7 +110,6 @@ export const chaseSapphirePreferred: CardDefinition = {
       sunsetDate: "2027-12-31",
       lifestyleKey: "doordash",
       details: dashpassDetails,
-      brandSlug: "doordash",
     }),
   ],
 };

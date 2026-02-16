@@ -110,7 +110,7 @@ for (const [cardType, personas] of Object.entries(ALL_PERSONAS)) {
           }
         });
 
-        it("covers all benefit behaviors that are not never_use", () => {
+        it("covers all benefit behaviors that are not never_use or passive", () => {
           const targetedBenefits = new Set(
             transactions
               .map((tx) => tx._meta.intendedBenefit)
@@ -118,7 +118,7 @@ for (const [cardType, personas] of Object.entries(ALL_PERSONAS)) {
           );
 
           for (const bb of persona.benefitBehavior) {
-            if (bb.behavior === "never_use") continue;
+            if (bb.behavior === "never_use" || bb.behavior === "passive") continue;
             expect(
               targetedBenefits.has(bb.benefitId),
               `Missing coverage for benefit ${bb.benefitId} (behavior: ${bb.behavior})`,

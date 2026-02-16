@@ -19,9 +19,9 @@ export const groceriesTemplates: MerchantTemplate[] = [
     edgeCases: [
       {
         rawName: "WHOLEFDS MKT #04217",
-        normalizedOutput: "wholefds mkt",
+        normalizedOutput: "wholefds market",
         description:
-          "Abbreviated form 'wholefds mkt' does NOT contain 'whole foods'; depends on Plaid enrichment (plaidMerchantName) for correct classification. If enrichment is missing, falls back to Plaid category.",
+          "Abbreviated form 'wholefds' with 'mkt' expanded to 'market' by MERCHANT_ALIASES; normalized result contains 'market' which matches 'whole foods market' Plaid enrichment via substring matching.",
       },
       {
         rawName: "WFM *WHOLE FOODS 365",
@@ -40,7 +40,7 @@ export const groceriesTemplates: MerchantTemplate[] = [
       "TRADER JOES #247",
       "TRADER JOE S",
     ],
-    normalizedResult: "trader joes",
+    normalizedResult: "trader joe's",
     expectedEarnCategory: "groceries",
     plaidCategoryPrimary: "FOOD_AND_DRINK",
     plaidCategoryDetailed: "FOOD_AND_DRINK_GROCERIES",
@@ -57,7 +57,13 @@ export const groceriesTemplates: MerchantTemplate[] = [
         rawName: "TRADER JOE'S #247",
         normalizedOutput: "trader joe's",
         description:
-          "Apostrophe is preserved by normalizer (not stripped); number #247 is removed",
+          "Apostrophe is preserved by normalizer (not stripped); number #247 is removed as trailing numeric ID",
+      },
+      {
+        rawName: "TRADER JOES #247",
+        normalizedOutput: "trader joes",
+        description:
+          "No apostrophe in raw variant; normalizes without apostrophe. Plaid enrichment (plaidMerchantName) needed for canonical form.",
       },
     ],
   },

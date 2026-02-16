@@ -143,7 +143,6 @@ export const unitedExplorer: CardDefinition = {
       description: "Up to $120/year for Instacart grocery delivery purchases.",
       notes: "Credits distributed periodically throughout the year.",
       details: instacartCreditDetails,
-      brandSlug: "instacart",
       lifestyleKey: "instacart",
     }),
     // ── United Hotels Credit ($100/year) ──

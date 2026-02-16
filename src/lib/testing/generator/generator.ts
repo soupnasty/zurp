@@ -51,13 +51,15 @@ function getMonthsInRange(
   end: string,
 ): { year: number; month: number }[] {
   const months: { year: number; month: number }[] = [];
-  const startDate = new Date(start);
-  const endDate = new Date(end);
+  // Parse YYYY-MM-DD strings directly to avoid timezone issues
+  // (new Date("2025-01-01") parses as UTC midnight, which is Dec 31 in US timezones)
+  const [startYear, startMonth] = start.split("-").map(Number);
+  const [endYear, endMonth] = end.split("-").map(Number);
 
-  let year = startDate.getFullYear();
-  let month = startDate.getMonth();
+  let year = startYear;
+  let month = startMonth - 1; // Convert 1-indexed to 0-indexed
 
-  while (year < endDate.getFullYear() || (year === endDate.getFullYear() && month <= endDate.getMonth())) {
+  while (year < endYear || (year === endYear && month <= endMonth - 1)) {
     months.push({ year, month });
     month++;
     if (month > 11) {
@@ -392,7 +394,7 @@ function findMerchantForBenefit(
     csr_edit: ["the_edit"],         // "csr_edit" not "edit" — "credit" contains "edit"!
     csr_dining: ["exclusive_dining"],  // Exclusive Tables credit
     stubhub: ["stubhub"],
-    select_hotel: ["generic_hotel"],
+    select_hotel: ["ihg_hotel"],  // CSR select hotels — IHG is in merchantPatterns
     global_entry: ["global_entry"],
     apple_tv: ["apple_services"],
     apple_music: ["apple_services"],
@@ -418,17 +420,34 @@ function findMerchantForBenefit(
     southwest_travel: ["southwest_airlines"],
     delta_flight: ["delta_airlines"],
 
+    // ── Delta Platinum benefits ──
+    uber_one: ["uber_ride", "uber_eats"],
+
+    // ── Hilton Aspire benefits ──
+    hilton_resort: ["hilton_hotel", "hilton_subbrand"],
+    hilton_airline: ["united_airlines", "delta_airlines", "american_airlines"],
+
+    // ── Citi Strata Elite benefits ──
+    hotel_collection: ["generic_hotel", "hyatt_hotel", "marriott_hotel"],
+    splurge: ["1stdibs", "best_buy"],
+    blacklane: ["blacklane"],
+
     // ── Other card benefits ──
+    csr_travel: ["united_airlines", "delta_airlines", "hyatt_hotel", "marriott_hotel"],
     rideshare_credit: ["uber_ride", "lyft_ride"],
     instacart: ["instacart"],
     dell: ["dell"],
     clear: ["clear_membership"],
     anniversary_miles: ["united_airlines"],
     citi_nights: ["resy_restaurant", "cheesecake_factory"],
+    dunkin: ["dunkin"],
     dining: ["resy_restaurant", "cheesecake_factory"],
 
     // ── Amex BCP benefits ──
     disney_bundle: ["disney_plus", "hulu"],
+
+    // ── Amex Blue Cash Everyday benefits ──
+    home_chef: ["home_chef"],
   };
 
   // Find the best match from the benefit ID
@@ -675,7 +694,8 @@ function generateEdgeCaseTransactions(
       if (abMonth != null) {
         annivMonth = abMonth - 1; // 1-indexed to 0-indexed
       } else if (persona.anniversaryDate) {
-        annivMonth = new Date(persona.anniversaryDate).getMonth();
+        // Parse directly to avoid timezone issues
+        annivMonth = parseInt(persona.anniversaryDate.split("-")[1], 10) - 1;
       } else {
         annivMonth = 5; // June fallback
       }

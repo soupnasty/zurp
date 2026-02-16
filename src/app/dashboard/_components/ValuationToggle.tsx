@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Info } from "lucide-react";
+import { Modal } from "@/components/ui/Modal";
 import type { ValuationMode } from "@/lib/points/types";
 
 interface ValuationToggleProps {
@@ -19,8 +20,17 @@ const OPTIONS: {
   { value: "upside", label: "Best Transfer", sub: "optimal value" },
 ];
 
+const TIP_CONTENT = (
+  <div className="space-y-2 text-[11px] text-[var(--text-secondary)]">
+    <p><span className="font-semibold text-[var(--text-primary)]">Cash Value</span> — Face value redemption. Good for cash back redeemers or portal bookers.</p>
+    <p><span className="font-semibold text-[var(--text-primary)]">Avg Redemption</span> — Typical redemption value across common uses. Good for most people who mix portal bookings and occasional transfers.</p>
+    <p><span className="font-semibold text-[var(--text-primary)]">Best Transfer</span> — Optimal value via airline/hotel transfer partners. Good for regular transfers to international business/first class.</p>
+  </div>
+);
+
 export function ValuationToggle({ mode, onChange }: ValuationToggleProps) {
   const [showTip, setShowTip] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   return (
     <div>
@@ -31,8 +41,9 @@ export function ValuationToggle({ mode, onChange }: ValuationToggleProps) {
         >
           Points mode
         </span>
+        {/* Desktop: hover tooltip */}
         <div
-          className="relative"
+          className="relative hidden md:block"
           onMouseEnter={() => setShowTip(true)}
           onMouseLeave={() => setShowTip(false)}
         >
@@ -48,15 +59,23 @@ export function ValuationToggle({ mode, onChange }: ValuationToggleProps) {
               <p className="text-[10px] font-bold uppercase tracking-[1px] text-[var(--text-secondary)] mb-2" style={{ fontFamily: "var(--font-mono)" }}>
                 How points are valued
               </p>
-              <div className="space-y-2 text-[11px] text-[var(--text-secondary)]">
-                <p><span className="font-semibold text-[var(--text-primary)]">Cash Value</span> — Face value redemption. Good for cash back redeemers or portal bookers.</p>
-                <p><span className="font-semibold text-[var(--text-primary)]">Avg Redemption</span> — Typical redemption value across common uses. Good for most people who mix portal bookings and occasional transfers.</p>
-                <p><span className="font-semibold text-[var(--text-primary)]">Best Transfer</span> — Optimal value via airline/hotel transfer partners. Good for regular transfers to international business/first class.</p>
-              </div>
+              {TIP_CONTENT}
               <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-[var(--bg-elevated)]" />
             </div>
           )}
         </div>
+        {/* Mobile: tap opens modal */}
+        <button
+          className="md:hidden"
+          onClick={() => setShowModal(true)}
+          aria-label="How points are valued"
+        >
+          <Info
+            size={12}
+            strokeWidth={2}
+            className="text-[var(--text-dim)]"
+          />
+        </button>
       </div>
       <div
         className="flex w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-card)] p-1"
@@ -87,7 +106,7 @@ export function ValuationToggle({ mode, onChange }: ValuationToggleProps) {
                 {opt.label}
               </span>
               <span
-                className="block text-[9px] mt-0.5"
+                className="hidden md:block text-[9px] mt-0.5"
                 style={{
                   fontFamily: "var(--font-mono)",
                   fontWeight: 700,
@@ -103,6 +122,15 @@ export function ValuationToggle({ mode, onChange }: ValuationToggleProps) {
           );
         })}
       </div>
+
+      {/* Mobile info modal */}
+      <Modal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        title="How points are valued"
+      >
+        {TIP_CONTENT}
+      </Modal>
     </div>
   );
 }

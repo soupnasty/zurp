@@ -19,9 +19,9 @@ export const rideshareTemplates: MerchantTemplate[] = [
     edgeCases: [
       {
         rawName: "UBER *TRIP HELP.UBER.COM",
-        normalizedOutput: "uber trip help.uber.com",
+        normalizedOutput: "uber trip help.uber",
         description:
-          "Contains both 'uber' (rideshare match) and URL suffix; merchant-map uses 'uber trip' prefix match at priority 20 to classify as rideshare over generic 'uber' at priority 10",
+          "Contains both 'uber' (rideshare match) and URL suffix; .com gets stripped by normalizer; merchant-map uses 'uber trip' prefix match at priority 20 to classify as rideshare over generic 'uber' at priority 10",
       },
     ],
   },

@@ -4,21 +4,37 @@ import type { GeneratorContext } from "./types";
 /**
  * B1: Unused Credit (Time Pressure)
  * Benefit used < 25% AND period elapsed > 50%.
+ *
+ * Benefits sharing a displayGroup (e.g. DoorDash $5/$10/$10) are consolidated
+ * into a single insight with combined dollar amounts.
  */
 export function generateB1(ctx: GeneratorContext): InsightCandidate[] {
   const { benefitUsages } = ctx;
   const insights: InsightCandidate[] = [];
 
+  // Group credit benefits by displayGroup (or benefitId if ungrouped)
+  const grouped = new Map<string, typeof benefitUsages>();
   for (const usage of benefitUsages) {
     if (usage.type !== "credit") continue;
     if (usage.creditAmount === 0) continue;
+    const key = usage.displayGroup || usage.benefitId;
+    const list = grouped.get(key) ?? [];
+    list.push(usage);
+    grouped.set(key, list);
+  }
 
-    const usedPct = usage.amountUsed / usage.creditAmount;
+  for (const [groupKey, members] of grouped) {
+    // Aggregate across grouped members
+    const totalCredit = members.reduce((s, m) => s + m.creditAmount, 0);
+    const totalUsed = members.reduce((s, m) => s + m.amountUsed, 0);
+
+    const usedPct = totalUsed / totalCredit;
     if (usedPct >= 0.25) continue;
 
-    // Calculate period progress
-    const cycleStart = new Date(usage.cycleStart).getTime();
-    const cycleEnd = new Date(usage.cycleEnd).getTime();
+    // Use the first member for cycle bounds (grouped benefits share the same cycle)
+    const rep = members[0];
+    const cycleStart = new Date(rep.cycleStart).getTime();
+    const cycleEnd = new Date(rep.cycleEnd).getTime();
     const now = Date.now();
     const totalDuration = cycleEnd - cycleStart;
     const elapsed = now - cycleStart;
@@ -26,14 +42,14 @@ export function generateB1(ctx: GeneratorContext): InsightCandidate[] {
 
     if (progress < 0.5) continue;
 
-    const remaining = Math.round(usage.amountRemaining);
-    const days = usage.daysRemaining;
+    const remaining = Math.round(totalCredit - totalUsed);
+    const days = rep.daysRemaining;
 
-    const displayName = usage.displayGroupName || usage.benefitName;
+    const displayName = rep.displayGroupName || rep.benefitName;
 
     // Check if benefit was also unused in prior cycle
     const priorUsage = ctx.priorCycleBenefitUsages?.find(
-      (p) => p.benefitId === usage.benefitId
+      (p) => p.benefitId === rep.benefitId
     );
     const wasUnusedPrior =
       priorUsage && priorUsage.creditAmount > 0 &&
@@ -51,7 +67,7 @@ export function generateB1(ctx: GeneratorContext): InsightCandidate[] {
       templateKey = "b1_standard";
     }
 
-    const endDate = new Date(usage.cycleEnd);
+    const endDate = new Date(rep.cycleEnd);
     const dateStr = endDate.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -64,7 +80,7 @@ export function generateB1(ctx: GeneratorContext): InsightCandidate[] {
           ? `${days} days`
           : `${Math.ceil(days / 30)} months`;
 
-    const period = cycleToPeriodLabel(usage.cycle);
+    const period = cycleToPeriodLabel(rep.cycle);
 
     const templateVars: Record<string, string | number> = {
       benefit: displayName,
@@ -77,13 +93,13 @@ export function generateB1(ctx: GeneratorContext): InsightCandidate[] {
 
     insights.push({
       category: "B1",
-      benefitId: usage.benefitId,
+      benefitId: rep.benefitId,
       templateKey,
       templateVars,
-      dedupKey: `b1:${usage.benefitId}:${usage.periodKey}`,
+      dedupKey: `b1:${groupKey}:${rep.periodKey}`,
       triggeredByTransactionId: null,
-      periodStart: usage.cycleStart,
-      periodEnd: usage.cycleEnd,
+      periodStart: rep.cycleStart,
+      periodEnd: rep.cycleEnd,
       dollarAmount: remaining,
       daysRemaining: days,
       actionability: "plan_future",

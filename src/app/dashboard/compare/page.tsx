@@ -39,6 +39,7 @@ export default async function ComparePage({
       activeCardName={activeCard.name}
       activeCardFee={activeCard.annualFee}
       lifestyleKeys={lifestyleKeys}
+      syncStatus={activeCard.syncStatus}
     />
   );
 }

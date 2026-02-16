@@ -89,15 +89,8 @@ export async function getCardSummary(
     const monthsElapsed = countFullMonths(rangeStart, rangeEnd) + 1;
     creditsUsed += benefit.creditAmount * monthsElapsed;
 
-    // Total months for creditsAvailable: from max(activationDate, cardYearStart) to min(sunsetDate, cardYearEnd)
-    const totalEndCandidates = [cardYearBounds.cycleEnd];
-    if (sunsetDate) totalEndCandidates.push(sunsetDate);
-    const totalEnd = new Date(Math.min(...totalEndCandidates.map((d) => d.getTime())));
-
-    if (totalEnd > rangeStart) {
-      const totalMonths = countFullMonths(rangeStart, totalEnd);
-      creditsAvailable += benefit.creditAmount * totalMonths;
-    }
+    // Subscriptions are fully "used" each month they're active — available = elapsed
+    creditsAvailable += benefit.creditAmount * monthsElapsed;
   }
 
   // Per-current-cycle metrics: available, expired, value at risk
@@ -333,7 +326,6 @@ export async function getBenefitUsageSummaries(
       isActivated,
       activatedAt,
       activeMonths: benefit.activeMonths,
-      brandSlug: benefit.brandSlug,
     });
   }
 

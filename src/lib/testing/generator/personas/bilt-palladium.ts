@@ -67,7 +67,7 @@ export const biltRentPayer: Persona = {
   benefitBehavior: [
     { benefitId: "bilt_hotel_credit_h1", behavior: "always_use" },
     { benefitId: "bilt_hotel_credit_h2", behavior: "always_use" },
-    // bilt_bilt_cash_annual is an account credit (not transaction-matchable, skipped by matcher)
+    { benefitId: "bilt_bilt_cash_annual", behavior: "passive" },
     { benefitId: "bilt_no_ftf", behavior: "passive" },
   ],
   competitorSpend: [],
@@ -158,7 +158,7 @@ export const biltGeneralSpender: Persona = {
   benefitBehavior: [
     { benefitId: "bilt_hotel_credit_h1", behavior: "partial_use", targetUsagePercent: 20 },
     { benefitId: "bilt_hotel_credit_h2", behavior: "never_use" },
-    // bilt_bilt_cash_annual is an account credit (not transaction-matchable, skipped by matcher)
+    { benefitId: "bilt_bilt_cash_annual", behavior: "passive" },
     { benefitId: "bilt_no_ftf", behavior: "passive" },
   ],
   competitorSpend: [],

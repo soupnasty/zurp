@@ -123,7 +123,6 @@ export const amexGold: CardDefinition = {
       description: "Up to $10/month in Uber Cash for Uber rides and Uber Eats.",
       notes: "Uber Cash auto-deposits monthly. Use-it-or-lose-it — expires at end of month. U.S. only. Must have Amex card selected as payment method.",
       details: uberCashDetails,
-      brandSlug: "uber",
       lifestyleKey: "uber",
     }),
 
