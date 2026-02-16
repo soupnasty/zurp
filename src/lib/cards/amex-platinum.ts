@@ -394,7 +394,7 @@ export const amexPlatinum: CardDefinition = {
       id: "plat_global_entry",
       name: "Global Entry / TSA PreCheck", icon: "Shield",
       category: "travel", type: "credit", creditAmount: 120, cycle: "quadrennial",
-      merchantPatterns: ["global entry", "tsa precheck", "tsa pre"],
+      merchantPatterns: ["global entry", "tsa precheck", "tsa pre", "goes", "trusted traveler"],
       autoMatchable: true, requiresActivation: false, priority: 20,
       description: "Up to $120 every 4 years for Global Entry or TSA PreCheck.",
       notes: "Covers application fee only.",

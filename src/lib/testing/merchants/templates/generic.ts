@@ -112,13 +112,25 @@ export const genericTemplates: MerchantTemplate[] = [
   {
     merchantKey: "entertainment",
     plaidMerchantName: null,
-    nameVariants: ["LIVE NATION", "STUBHUB", "VIAGOGO"],
+    nameVariants: ["LIVE NATION", "TICKETMASTER", "FANDANGO"],
     normalizedResult: "live nation",
     expectedEarnCategory: "entertainment",
     plaidCategoryPrimary: "ENTERTAINMENT",
     plaidCategoryDetailed: "ENTERTAINMENT_EVENTS",
-    matchesBenefitPatterns: ["live nation", "stubhub", "viagogo"],
+    matchesBenefitPatterns: ["live nation", "ticketmaster", "fandango"],
     amountRange: { min: 30, max: 500 },
+  },
+
+  {
+    merchantKey: "stubhub",
+    plaidMerchantName: "StubHub",
+    nameVariants: ["STUBHUB ORDER", "STUBHUB.COM", "VIAGOGO"],
+    normalizedResult: "stubhub",
+    expectedEarnCategory: "entertainment",
+    plaidCategoryPrimary: "ENTERTAINMENT",
+    plaidCategoryDetailed: "ENTERTAINMENT_EVENTS",
+    matchesBenefitPatterns: ["stubhub", "viagogo"],
+    amountRange: { min: 50, max: 500 },
   },
 
   {
@@ -159,14 +171,17 @@ export const genericTemplates: MerchantTemplate[] = [
 
   {
     merchantKey: "exclusive_dining",
-    plaidMerchantName: null,
-    nameVariants: ["EXCLUSIVE TABLES", "FIVE GUYS"],
+    plaidMerchantName: "Exclusive Tables",
+    nameVariants: [
+      "EXCLUSIVE TABLES #1234",
+      "EXCLUSIVE TABLES",
+    ],
     normalizedResult: "exclusive tables",
     expectedEarnCategory: "dining",
     plaidCategoryPrimary: "FOOD_AND_DRINK",
     plaidCategoryDetailed: "FOOD_AND_DRINK_RESTAURANTS",
-    matchesBenefitPatterns: ["exclusive tables", "five guys"],
-    amountRange: { min: 10, max: 80 },
+    matchesBenefitPatterns: ["exclusive tables", "chase dining"],
+    amountRange: { min: 50, max: 300 },
   },
 
   {

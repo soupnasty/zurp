@@ -234,7 +234,7 @@ export const amexBusinessPlatinum: CardDefinition = {
       type: "credit",
       creditAmount: 120,
       cycle: "quadrennial",
-      merchantPatterns: ["global entry", "tsa precheck", "tsa pre"],
+      merchantPatterns: ["global entry", "tsa precheck", "tsa pre", "goes", "trusted traveler"],
       autoMatchable: true,
       requiresActivation: false,
       priority: 20,

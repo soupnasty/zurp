@@ -55,7 +55,7 @@ export const citiStrataPremier: CardDefinition = {
       type: "credit",
       creditAmount: 100,
       cycle: "annual_calendar",
-      merchantPatterns: [],
+      merchantPatterns: ["citi travel"],
       autoMatchable: false,
       requiresActivation: false,
       priority: 50,

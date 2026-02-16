@@ -176,6 +176,7 @@ const MERCHANT_MAP_UNSORTED: MerchantEntry[] = [
   { pattern: "carnival cruise", matchType: "prefix", category: "travel_other", priority: 10 },
   { pattern: "royal caribbean", matchType: "prefix", category: "travel_other", priority: 10 },
   { pattern: "norwegian cruise", matchType: "prefix", category: "travel_other", priority: 10 },
+  { pattern: "cruise line", matchType: "contains", category: "travel_other", priority: 5 },
 
   // ── Transit ──
   { pattern: "mta", matchType: "prefix", category: "transit", priority: 10 },

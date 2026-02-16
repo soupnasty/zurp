@@ -137,7 +137,7 @@ export const citiStrataElite: CardDefinition = {
       type: "credit",
       creditAmount: 120,
       cycle: "quadrennial",
-      merchantPatterns: ["global entry", "tsa", "goes"],
+      merchantPatterns: ["global entry", "tsa", "goes", "trusted traveler"],
       autoMatchable: true,
       requiresActivation: false,
       priority: 40,

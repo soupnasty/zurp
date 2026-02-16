@@ -53,7 +53,7 @@ export const usBankAltitudeConnect: CardDefinition = {
       type: "credit",
       creditAmount: 100,
       cycle: "quadrennial",
-      merchantPatterns: ["global entry", "tsa precheck", "tsa", "goes", "trusted traveler"],
+      merchantPatterns: ["global entry", "tsa precheck", "tsa pre", "goes", "trusted traveler"],
       autoMatchable: true,
       requiresActivation: false,
       priority: 20,

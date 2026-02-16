@@ -51,10 +51,22 @@ export const shoppingTemplates: MerchantTemplate[] = [
     amountRange: { min: 12.95, max: 12.95 },
     edgeCases: [
       {
+        rawName: "WALMART+ MEMBERSHIP",
+        normalizedOutput: "walmart",
+        description:
+          "Walmart+ alias matches and converts to 'walmart'; 'membership' suffix then stripped",
+      },
+      {
+        rawName: "WALMART.COM W+",
+        normalizedOutput: "walmart",
+        description:
+          "Walmart.com alias matches and converts to 'walmart'; 'w+' suffix then stripped",
+      },
+      {
         rawName: "WAL-MART *PLUS",
         normalizedOutput: "wal-mart plus",
         description:
-          "Hyphenated form 'wal-mart' normalized preserves hyphen; does NOT contain 'walmart' substring; depends on benefit pattern matching strategy",
+          "Hyphenated form 'wal-mart' normalized preserves hyphen (not 'walmart'); does NOT match walmart alias; asterisk becomes space. 'plus' is NOT stripped (removed from suffix list to preserve 'Disney Plus'). Benefit patterns include 'walmart plus' for matching",
       },
     ],
   },
@@ -121,5 +133,13 @@ export const shoppingTemplates: MerchantTemplate[] = [
     plaidCategoryDetailed: "SHOPS_DIGITAL_PURCHASE",
     matchesBenefitPatterns: ["the edit"],
     amountRange: { min: 50, max: 400 },
+    edgeCases: [
+      {
+        rawName: "THEEDIT.COM",
+        normalizedOutput: "the edit",
+        description:
+          "TheEdit alias (applied before .com stripping) converts to 'the edit'; leading 'the' is then preserved by the negative lookahead in the stripping rule",
+      },
+    ],
   },
 ];

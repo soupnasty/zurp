@@ -111,8 +111,9 @@ export const platMaximizer: Persona = {
     { benefitId: "plat_saks_h2", behavior: "always_use" },
 
     // Annual credits
-    { benefitId: "plat_uber_one", behavior: "always_use" },
-    { benefitId: "plat_airline_fee_credit", behavior: "partial_use", targetUsagePercent: 50 },
+    // plat_uber_one is a subscription benefit (not transaction-matchable, skipped by matcher)
+    // plat_airline_fee_credit requires activation (user selects airline) — can't test generically
+    { benefitId: "plat_airline_fee_credit", behavior: "never_use" },
     { benefitId: "plat_equinox", behavior: "always_use" },
     { benefitId: "plat_clear", behavior: "always_use" },
     { benefitId: "plat_oura", behavior: "never_use" }, // Tests B1
@@ -234,7 +235,6 @@ export const platMinimalist: Persona = {
     { benefitId: "plat_saks_h1", behavior: "never_use" },
     { benefitId: "plat_saks_h2", behavior: "never_use" },
     { benefitId: "plat_walmart_plus", behavior: "never_use" },
-    { benefitId: "plat_uber_one", behavior: "never_use" },
     { benefitId: "plat_airline_fee_credit", behavior: "never_use" },
     { benefitId: "plat_equinox", behavior: "never_use" },
     { benefitId: "plat_clear", behavior: "never_use" },

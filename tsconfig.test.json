@@ -5,6 +5,7 @@
     "moduleResolution": "node",
     "noEmit": false,
     "outDir": "./dist-test",
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     }

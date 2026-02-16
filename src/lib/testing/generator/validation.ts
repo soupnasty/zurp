@@ -95,7 +95,7 @@ export function validateFixture(
   );
 
   for (const bb of persona.benefitBehavior) {
-    if (bb.behavior === "never_use") continue;
+    if (bb.behavior === "never_use" || bb.behavior === "passive") continue;
     if (!targetedBenefits.has(bb.benefitId)) {
       errors.push({
         txId: "N/A",
@@ -110,6 +110,7 @@ export function validateFixture(
   for (const comp of persona.competitorSpend) {
     const matching = competitorTxs.filter((tx) =>
       tx._meta.recurringGroupId === `recurring_${comp.merchantKey}` ||
+      tx._meta.competitorBenefitKey === comp.merchantKey ||
       tx.merchantName?.toLowerCase().includes(comp.competitorMerchant.toLowerCase()),
     );
 

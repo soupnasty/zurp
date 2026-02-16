@@ -54,7 +54,7 @@ export interface MonthlySpendProfile {
 
 export interface BenefitBehavior {
   benefitId: string;
-  behavior: "always_use" | "partial_use" | "never_use" | "over_use";
+  behavior: "always_use" | "partial_use" | "never_use" | "over_use" | "passive";
   /** Override for partial_use (0-100) */
   targetUsagePercent?: number;
 }
@@ -87,7 +87,8 @@ export type EdgeCaseType =
   | "refund" // Negative amount transaction
   | "zero_amount" // $0 authorization
   | "activeMonths_boundary" // Test activeMonths gating (Uber Dec/Jan)
-  | "fee_charge"; // Annual fee for anniversary detection
+  | "fee_charge" // Annual fee for anniversary detection
+  | "time_window"; // Time-based earn conditions (e.g., Citi Nights)
 
 // ─── Generated Transaction ─────────────────────────────────────────
 

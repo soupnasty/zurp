@@ -74,7 +74,7 @@ export const capitalOneVenture: CardDefinition = {
       autoMatchable: false,
       requiresActivation: false,
       priority: 50,
-      merchantPatterns: [],
+      merchantPatterns: ["capital one travel", "capitalone travel"],
       description:
         "$250 annual statement credit for eligible travel purchases. Resets each calendar year.",
       details: travelCreditDetails,
@@ -90,7 +90,7 @@ export const capitalOneVenture: CardDefinition = {
       type: "credit",
       creditAmount: 120,
       cycle: "quadrennial",
-      merchantPatterns: ["global entry", "tsa", "goes"],
+      merchantPatterns: ["global entry", "tsa", "goes", "trusted traveler"],
       autoMatchable: true,
       requiresActivation: false,
       priority: 30,

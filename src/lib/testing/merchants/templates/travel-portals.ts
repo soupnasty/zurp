@@ -3,7 +3,7 @@ import type { MerchantTemplate } from "../types";
 export const travelPortalTemplates: MerchantTemplate[] = [
   {
     merchantKey: "chase_travel",
-    plaidMerchantName: null,
+    plaidMerchantName: "Chase Travel",
     nameVariants: [
       "CHASE TRAVEL",
       "ULTIMATE REWARDS TRAVEL",
@@ -19,7 +19,7 @@ export const travelPortalTemplates: MerchantTemplate[] = [
 
   {
     merchantKey: "amex_travel",
-    plaidMerchantName: null,
+    plaidMerchantName: "Amex Travel",
     nameVariants: ["AMEX TRAVEL", "AMEXTRAVEL.COM"],
     normalizedResult: "amex travel",
     expectedEarnCategory: "travel_portal",
@@ -36,19 +36,19 @@ export const travelPortalTemplates: MerchantTemplate[] = [
 
   {
     merchantKey: "citi_travel",
-    plaidMerchantName: null,
+    plaidMerchantName: "Citi Travel",
     nameVariants: ["CITI TRAVEL", "CITITRAVEL"],
     normalizedResult: "citi travel",
     expectedEarnCategory: "travel_portal",
     plaidCategoryPrimary: "TRAVEL",
     plaidCategoryDetailed: "TRAVEL_LODGING",
-    matchesBenefitPatterns: [],
+    matchesBenefitPatterns: ["citi travel"],
     amountRange: { min: 150, max: 2000 },
   },
 
   {
     merchantKey: "capital_one_travel",
-    plaidMerchantName: null,
+    plaidMerchantName: "Capital One Travel",
     nameVariants: ["CAPITAL ONE TRAVEL", "CAPITALONETRAVE"],
     normalizedResult: "capital one travel",
     expectedEarnCategory: "travel_portal",
@@ -60,7 +60,7 @@ export const travelPortalTemplates: MerchantTemplate[] = [
 
   {
     merchantKey: "bilt_travel",
-    plaidMerchantName: null,
+    plaidMerchantName: "Bilt Travel",
     nameVariants: ["BILT TRAVEL"],
     normalizedResult: "bilt travel",
     expectedEarnCategory: "travel_portal",

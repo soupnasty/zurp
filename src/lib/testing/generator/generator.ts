@@ -156,7 +156,7 @@ export function generateTransactions(
           persona,
           {
             intendedBenefit: null,
-            intendedCategory: profile.category,
+            intendedCategory: template.expectedEarnCategory,
             edgeCaseTag: null,
             isCompetitorSpend: false,
             competitorBenefitKey: null,
@@ -171,7 +171,7 @@ export function generateTransactions(
 
   // ── Step 2: Benefit-targeting transactions ──
   for (const bb of persona.benefitBehavior) {
-    if (bb.behavior === "never_use") continue;
+    if (bb.behavior === "never_use" || bb.behavior === "passive") continue;
 
     // Find a suitable merchant for this benefit
     const benefitTxs = generateBenefitTransactions(
@@ -237,7 +237,7 @@ export function generateTransactions(
             intendedCategory: template.expectedEarnCategory,
             edgeCaseTag: null,
             isCompetitorSpend: true,
-            competitorBenefitKey: null,
+            competitorBenefitKey: comp.merchantKey,
             recurringGroupId: null,
           },
           amount,
@@ -378,35 +378,56 @@ function findMerchantForBenefit(
   // Mapping from benefit ID patterns to merchant keys.
   // Keys must match merchantKey values in the merchant template registry.
   const BENEFIT_MERCHANT_MAP: Record<string, string[]> = {
-    // CSR benefits
+    // ── Portal-specific credits (must appear before generic patterns) ──
+    csp_hotel: ["chase_travel"],
+    citip_annual_hotel: ["citi_travel"],
+    bilt_hotel: ["bilt_travel"],  // Bilt Travel portal
+    cov_annual_travel: ["capital_one_travel"],  // Capital One Venture portal
+    vx_travel: ["capital_one_travel"],  // Capital One Venture X portal
+
+    // ── CSR benefits ──
     doordash: ["doordash_order"],
     lyft: ["lyft_ride"],
     peloton: ["peloton"],
-    travel: ["united_airlines", "delta_airlines", "hyatt_hotel", "marriott_hotel"],
-    stubhub: ["entertainment"],
-    edit: ["the_edit"],
+    csr_edit: ["the_edit"],         // "csr_edit" not "edit" — "credit" contains "edit"!
+    csr_dining: ["exclusive_dining"],  // Exclusive Tables credit
+    stubhub: ["stubhub"],
     select_hotel: ["generic_hotel"],
-    dining: ["resy_restaurant", "cheesecake_factory"],
     global_entry: ["global_entry"],
     apple_tv: ["apple_services"],
     apple_music: ["apple_services"],
     dashpass: ["doordash_order"],
 
-    // Amex Platinum benefits
+    // ── Amex Platinum benefits ──
     resy: ["resy_restaurant"],
     lululemon: ["lululemon_store"],
     uber_cash: ["uber_ride", "uber_eats"],
-    uber_one: ["uber_ride"],
     digital_entertainment: ["hulu", "disney_plus", "peacock", "nytimes"],
     walmart_plus: ["walmart_plus"],
-    hotel_credit: ["generic_hotel"],
     saks: ["saks_store"],
-    airline_fee: ["united_airlines", "delta_airlines"],
     equinox: ["equinox"],
-    clear: ["clear_membership"],
     oura: ["oura_ring"],
 
-    // Amex BCP benefits
+    // ── Travel/hotel/airline credits (generic patterns, after specific ones) ──
+    plat_hotel: ["amex_travel"],  // FHR/Hotel Collection → Amex Travel portal
+    hotel_credit: ["generic_hotel"],
+    resort_credit: ["generic_hotel", "hyatt_hotel", "marriott_hotel"],
+    travel_credit: ["united_airlines", "delta_airlines", "hyatt_hotel", "marriott_hotel"],
+    airline_fee: ["united_airlines", "delta_airlines"],
+    airline_credit: ["united_airlines", "delta_airlines"],
+    southwest_travel: ["southwest_airlines"],
+    delta_flight: ["delta_airlines"],
+
+    // ── Other card benefits ──
+    rideshare_credit: ["uber_ride", "lyft_ride"],
+    instacart: ["instacart"],
+    dell: ["dell"],
+    clear: ["clear_membership"],
+    anniversary_miles: ["united_airlines"],
+    citi_nights: ["resy_restaurant", "cheesecake_factory"],
+    dining: ["resy_restaurant", "cheesecake_factory"],
+
+    // ── Amex BCP benefits ──
     disney_bundle: ["disney_plus", "hulu"],
   };
 
@@ -493,9 +514,12 @@ function generateEdgeCaseTransactions(
     }
 
     case "month_boundary": {
-      const merchantKey = (edgeCase.details.merchantKey as string) ??
-        "doordash";
-      const template = getMerchantByKey(merchantKey);
+      // Find a merchant: prefer benefitId lookup, then merchantKey, then fallback
+      const mbBenefitId = (edgeCase.details.benefitId ?? edgeCase.details.benefit) as string | undefined;
+      const mbMerchantKey = edgeCase.details.merchantKey as string | undefined;
+      let template = mbBenefitId ? findMerchantForBenefit(rng, mbBenefitId) : undefined;
+      if (!template && mbMerchantKey) template = getMerchantByKey(mbMerchantKey);
+      if (!template) template = getMerchantByKey("doordash_order");
       if (template) {
         // Transaction on last day of a month
         const year = parseInt(persona.generationWindow.start);
@@ -508,7 +532,7 @@ function generateEdgeCaseTransactions(
           seq++,
           persona,
           {
-            intendedBenefit: edgeCase.details.benefitId as string ?? null,
+            intendedBenefit: mbBenefitId ?? null,
             intendedCategory: template.expectedEarnCategory,
             edgeCaseTag: "month_boundary",
             isCompetitorSpend: false,
@@ -559,7 +583,8 @@ function generateEdgeCaseTransactions(
     }
 
     case "activeMonths_boundary": {
-      const benefitId = edgeCase.details.benefitId as string;
+      const benefitId = (edgeCase.details.benefitId ?? edgeCase.details.benefit) as string | undefined;
+      if (!benefitId) break;
       const template = findMerchantForBenefit(rng, benefitId);
       if (template) {
         const year = parseInt(persona.generationWindow.start);
@@ -610,8 +635,11 @@ function generateEdgeCaseTransactions(
     }
 
     case "quarter_boundary": {
-      const benefitId = edgeCase.details.benefitId as string;
-      const template = findMerchantForBenefit(rng, benefitId);
+      const benefitId = (edgeCase.details.benefitId ?? edgeCase.details.benefit) as string | undefined;
+      const qbMerchantKey = edgeCase.details.merchantKey as string | undefined;
+      let template = benefitId ? findMerchantForBenefit(rng, benefitId) : undefined;
+      if (!template && qbMerchantKey) template = getMerchantByKey(qbMerchantKey);
+      if (!template) break;
       if (template) {
         const year = parseInt(persona.generationWindow.start);
         // Q1 ends March 31
@@ -622,7 +650,7 @@ function generateEdgeCaseTransactions(
           seq++,
           persona,
           {
-            intendedBenefit: benefitId,
+            intendedBenefit: benefitId ?? null,
             intendedCategory: template.expectedEarnCategory,
             edgeCaseTag: "quarter_boundary",
             isCompetitorSpend: false,
@@ -636,11 +664,129 @@ function generateEdgeCaseTransactions(
       break;
     }
 
+    case "anniversary_boundary": {
+      // Generate a transaction on the day before and day of anniversary
+      const abBenefitId = (edgeCase.details.benefitId ?? edgeCase.details.benefit) as string | undefined;
+      const abMonth = (edgeCase.details.month as number | undefined);
+      const year = parseInt(persona.generationWindow.start);
+
+      // Determine the anniversary month (0-indexed)
+      let annivMonth: number;
+      if (abMonth != null) {
+        annivMonth = abMonth - 1; // 1-indexed to 0-indexed
+      } else if (persona.anniversaryDate) {
+        annivMonth = new Date(persona.anniversaryDate).getMonth();
+      } else {
+        annivMonth = 5; // June fallback
+      }
+
+      // Find merchant from benefit or use a generic one
+      let template = abBenefitId ? findMerchantForBenefit(rng, abBenefitId) : undefined;
+      if (!template) template = getMerchantByKey("generic_hotel") ?? getMerchantByKey("united_airlines");
+      if (template) {
+        // Transaction on the day before anniversary (last day of prior month)
+        const priorMonth = annivMonth === 0 ? 11 : annivMonth - 1;
+        const priorYear = annivMonth === 0 ? year - 1 : year;
+        const lastDay = daysInMonth(priorYear, priorMonth);
+        const tx = buildTransaction(
+          rng,
+          template,
+          formatDate(priorYear >= parseInt(persona.generationWindow.start) ? priorYear : year, priorMonth, lastDay),
+          seq++,
+          persona,
+          {
+            intendedBenefit: abBenefitId ?? null,
+            intendedCategory: template.expectedEarnCategory,
+            edgeCaseTag: "anniversary_boundary",
+            isCompetitorSpend: false,
+            competitorBenefitKey: null,
+            recurringGroupId: null,
+          },
+          randomInRange(rng, template.amountRange.min, template.amountRange.max),
+        );
+        transactions.push(tx);
+
+        // Transaction on anniversary day
+        const tx2 = buildTransaction(
+          rng,
+          template,
+          formatDate(year, annivMonth, 1),
+          seq++,
+          persona,
+          {
+            intendedBenefit: abBenefitId ?? null,
+            intendedCategory: template.expectedEarnCategory,
+            edgeCaseTag: "anniversary_boundary",
+            isCompetitorSpend: false,
+            competitorBenefitKey: null,
+            recurringGroupId: null,
+          },
+          randomInRange(rng, template.amountRange.min, template.amountRange.max),
+        );
+        transactions.push(tx2);
+      }
+      break;
+    }
+
+    case "time_window": {
+      // Generate transactions at specific times for time-based earn conditions (e.g., Citi Nights)
+      const twBenefitId = (edgeCase.details.benefitId ?? edgeCase.details.benefit) as string | undefined;
+      const twWindow = edgeCase.details.timeWindow as { startHour: number; endHour: number } | undefined;
+      const year = parseInt(persona.generationWindow.start);
+
+      // Use dining as default for time-window (Citi Nights is dining-based)
+      let template = twBenefitId ? findMerchantForBenefit(rng, twBenefitId) : undefined;
+      if (!template) template = getMerchantByKey("resy_restaurant") ?? getMerchantByKey("cheesecake_factory");
+      if (template && twWindow) {
+        // Transaction during the time window (e.g., 8 PM)
+        const inWindowHour = twWindow.startHour + 2; // 2 hours after start
+        const txIn = buildTransaction(
+          rng,
+          template,
+          formatDate(year, 3, 15), // April 15
+          seq++,
+          persona,
+          {
+            intendedBenefit: twBenefitId ?? null,
+            intendedCategory: template.expectedEarnCategory,
+            edgeCaseTag: "time_window",
+            isCompetitorSpend: false,
+            competitorBenefitKey: null,
+            recurringGroupId: null,
+          },
+          randomInRange(rng, template.amountRange.min, template.amountRange.max),
+        );
+        txIn.datetime = `${year}-04-15T${String(inWindowHour).padStart(2, "0")}:30:00-04:00`;
+        transactions.push(txIn);
+
+        // Transaction outside the time window (e.g., 2 PM)
+        const outWindowHour = twWindow.endHour + 2; // 2 hours after window ends
+        const txOut = buildTransaction(
+          rng,
+          template,
+          formatDate(year, 3, 16), // April 16
+          seq++,
+          persona,
+          {
+            intendedBenefit: twBenefitId ?? null,
+            intendedCategory: template.expectedEarnCategory,
+            edgeCaseTag: "time_window",
+            isCompetitorSpend: false,
+            competitorBenefitKey: null,
+            recurringGroupId: null,
+          },
+          randomInRange(rng, template.amountRange.min, template.amountRange.max),
+        );
+        txOut.datetime = `${year}-04-16T${String(outWindowHour).padStart(2, "0")}:30:00-04:00`;
+        transactions.push(txOut);
+      }
+      break;
+    }
+
     // Other edge cases can be added as needed
     case "near_cap":
     case "exceed_cap":
     case "cross_midnight":
-    case "anniversary_boundary":
     case "pending_to_posted":
     case "refund":
     case "zero_amount":

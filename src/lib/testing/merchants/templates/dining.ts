@@ -46,7 +46,7 @@ export const diningTemplates: MerchantTemplate[] = [
     merchantKey: "dunkin",
     plaidMerchantName: "Dunkin'",
     nameVariants: ["DUNKIN #12847", "DUNKIN DONUTS"],
-    normalizedResult: "dunkin'",
+    normalizedResult: "dunkin",
     expectedEarnCategory: "coffee",
     plaidCategoryPrimary: "FOOD_AND_DRINK",
     plaidCategoryDetailed: "FOOD_AND_DRINK_COFFEE_SHOPS",

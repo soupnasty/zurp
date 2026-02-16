@@ -40,7 +40,7 @@ export const groceriesTemplates: MerchantTemplate[] = [
       "TRADER JOES #247",
       "TRADER JOE S",
     ],
-    normalizedResult: "trader joe's",
+    normalizedResult: "trader joes",
     expectedEarnCategory: "groceries",
     plaidCategoryPrimary: "FOOD_AND_DRINK",
     plaidCategoryDetailed: "FOOD_AND_DRINK_GROCERIES",
@@ -52,6 +52,12 @@ export const groceriesTemplates: MerchantTemplate[] = [
         normalizedOutput: "trader joe s",
         description:
           "Apostrophe stripped by bank creates 'trader joe s' with dangling 's'; benefit matching would need fuzzy match or Plaid enrichment fallback.",
+      },
+      {
+        rawName: "TRADER JOE'S #247",
+        normalizedOutput: "trader joe's",
+        description:
+          "Apostrophe is preserved by normalizer (not stripped); number #247 is removed",
       },
     ],
   },

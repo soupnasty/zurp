@@ -112,15 +112,15 @@ export const csrMaximizer: Persona = {
     { benefitId: "csr_stubhub_h1", behavior: "always_use" },
     { benefitId: "csr_stubhub_h2", behavior: "never_use" },
 
-    // Edit hotel: never use (tests B1)
-    { benefitId: "csr_edit_h1", behavior: "never_use" },
+    // Edit hotel: use H1, skip H2 (tests B1)
+    { benefitId: "csr_edit_h1", behavior: "always_use" },
     { benefitId: "csr_edit_h2", behavior: "never_use" },
 
-    // Select hotel: never use
+    // Select hotel: never use (one-time 2026 credit, requires specific hotel chains)
     { benefitId: "csr_select_hotel_credit_2026", behavior: "never_use" },
 
-    // Dining: partial
-    { benefitId: "csr_dining_h1", behavior: "partial_use", targetUsagePercent: 50 },
+    // Dining: Exclusive Tables — use H1, skip H2 (tests B1)
+    { benefitId: "csr_dining_h1", behavior: "always_use" },
     { benefitId: "csr_dining_h2", behavior: "never_use" },
 
     // Global Entry: one-time

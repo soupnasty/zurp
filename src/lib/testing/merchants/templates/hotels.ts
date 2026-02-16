@@ -16,6 +16,20 @@ export const hotelTemplates: MerchantTemplate[] = [
     plaidCategoryDetailed: "TRAVEL_LODGING",
     matchesBenefitPatterns: ["hyatt", "fairmont", "four seasons", "pendry", "nomad", "united hotels", "montage"],
     amountRange: { min: 150, max: 800 },
+    edgeCases: [
+      {
+        rawName: "PARK HYATT NEW YORK",
+        normalizedOutput: "park hyatt new york",
+        description:
+          "Hyatt sub-brand normalizes to full name (no alias); benefit matcher uses contains-match on 'hyatt' which matches the normalized output",
+      },
+      {
+        rawName: "HYATT REGENCY SAN FRANCISCO",
+        normalizedOutput: "hyatt regency san francisco",
+        description:
+          "Sub-brand contains 'hyatt'; benefit matcher can use substring matching",
+      },
+    ],
   },
 
   {
@@ -52,6 +66,14 @@ export const hotelTemplates: MerchantTemplate[] = [
     plaidCategoryDetailed: "TRAVEL_LODGING",
     matchesBenefitPatterns: ["marriott", "ritz-carlton"],
     amountRange: { min: 120, max: 500 },
+    edgeCases: [
+      {
+        rawName: "MARRIOTT INTL",
+        normalizedOutput: "marriott",
+        description:
+          "'intl' (international) corporate suffix is stripped by normalizer; result is 'marriott'",
+      },
+    ],
   },
 
   {
@@ -80,6 +102,14 @@ export const hotelTemplates: MerchantTemplate[] = [
       "graduate hotel",
     ],
     amountRange: { min: 100, max: 400 },
+    edgeCases: [
+      {
+        rawName: "HILTON GARDEN INN",
+        normalizedOutput: "hilton garden inn",
+        description:
+          "Sub-brand 'hilton garden inn' contains 'hilton' for benefit matching",
+      },
+    ],
   },
 
   {
@@ -129,11 +159,8 @@ export const hotelTemplates: MerchantTemplate[] = [
       "BEST WESTERN",
       "CHOICE HOTELS",
       "RADISSON",
-      "HOTELS.COM",
-      "BOOKING.COM",
-      "EXPEDIA",
-      "AIRBNB",
-      "VRBO",
+      "WYNDHAM HOTEL",
+      "LA QUINTA INN",
     ],
     normalizedResult: "best western",
     expectedEarnCategory: "travel_hotels",
@@ -141,7 +168,6 @@ export const hotelTemplates: MerchantTemplate[] = [
     plaidCategoryDetailed: "TRAVEL_LODGING",
     matchesBenefitPatterns: [
       "hotel",
-      "hotels.com",
       "best western",
       "choice hotels",
       "radisson",
@@ -151,10 +177,6 @@ export const hotelTemplates: MerchantTemplate[] = [
       "minor hotel",
       "pan pacific",
       "virgin hotel",
-      "airbnb",
-      "vrbo",
-      "booking.com",
-      "expedia",
     ],
     amountRange: { min: 80, max: 600 },
   },

@@ -151,8 +151,9 @@ export const chaseSapphireReserve: CardDefinition = {
         "expedia", "booking.com", "hotels.com",
         // Rental cars
         "enterprise", "hertz", "avis", "national car", "turo", "zipcar",
-        // Rideshare & transit
-        "uber", "lyft", "amtrak", "ferry", "transit", "metro",
+        // Rideshare & transit (no "uber" — too broad, matches "uber eats".
+        // Uber rides match via plaidCategories: ["TRANSPORTATION"])
+        "lyft", "amtrak", "ferry", "transit", "metro",
         // Cruises
         "cruise", "carnival", "royal caribbean",
         // Parking & tolls
