@@ -33,11 +33,11 @@ const GROUP_ORDER: DisplayGroup[] = ["expiring", "redirect", "unused", "mileston
 interface InsightsTabProps {
   insights: SerializedInsight[];
   activeCardName: string;
-  monthCount: number | null;
-  totalTransactions: number | null;
+  activeCardFee: number;
+  anniversaryDate: string | null;
 }
 
-export function InsightsTab({ insights, activeCardName, monthCount, totalTransactions }: InsightsTabProps) {
+export function InsightsTab({ insights, activeCardName, activeCardFee, anniversaryDate }: InsightsTabProps) {
   // Group insights by display group
   const grouped: Record<DisplayGroup, SerializedInsight[]> = {
     expiring: [],
@@ -51,17 +51,27 @@ export function InsightsTab({ insights, activeCardName, monthCount, totalTransac
     grouped[group].push(insight);
   }
 
+  // Extract the actionable dollar value per insight (not competitor spend)
+  function getInsightValue(i: SerializedInsight): number {
+    const vars = i.templateVars;
+    switch (i.category) {
+      case "A1":
+      case "A2":
+        return Number(vars.remaining ?? vars.annual ?? 0);
+      case "B1":
+      case "B2":
+      case "B3":
+        return Number(vars.remaining ?? vars.annual ?? 0);
+      default:
+        return Number(vars.amount ?? vars.dollarAmount ?? vars.total ?? 0);
+    }
+  }
+
   // Compute summary values
   const totalActive = insights.length;
-  const potentialSavings = insights.reduce((sum, i) => {
-    const amt = Number(i.templateVars.amount ?? i.templateVars.dollarAmount ?? 0);
-    return sum + amt;
-  }, 0);
+  const potentialSavings = insights.reduce((sum, i) => sum + getInsightValue(i), 0);
   const expiringInsights = grouped.expiring;
-  const expiringAmount = expiringInsights.reduce((sum, i) => {
-    const amt = Number(i.templateVars.amount ?? i.templateVars.dollarAmount ?? 0);
-    return sum + amt;
-  }, 0);
+  const expiringAmount = expiringInsights.reduce((sum, i) => sum + getInsightValue(i), 0);
 
   const summaryItems = [
     {
@@ -93,14 +103,25 @@ export function InsightsTab({ insights, activeCardName, monthCount, totalTransac
       <h1 className="mt-1 text-xl md:text-2xl font-bold text-[var(--text-primary)]">
         {activeCardName}
       </h1>
-      {monthCount && totalTransactions && (
-        <span
-          className="text-[12px] text-[var(--text-dim)]"
-          style={{ fontFamily: "var(--font-mono)" }}
-        >
-          {monthCount} {monthCount === 1 ? "month" : "months"} of data · {totalTransactions.toLocaleString()} transactions
-        </span>
-      )}
+      <span
+        className="text-[12px] text-[var(--text-dim)]"
+        style={{ fontFamily: "var(--font-mono)" }}
+      >
+        {(() => {
+          if (!anniversaryDate) return activeCardFee > 0 ? `$${activeCardFee}/yr fee` : "$0 annual fee";
+          const anniv = new Date(anniversaryDate);
+          const now = new Date();
+          const annivMonth = anniv.getMonth();
+          const annivDay = anniv.getDate();
+          let yearStart = new Date(now.getFullYear(), annivMonth, annivDay);
+          if (yearStart > now) {
+            yearStart = new Date(now.getFullYear() - 1, annivMonth, annivDay);
+          }
+          const yearEnd = new Date(yearStart.getFullYear() + 1, annivMonth, annivDay - 1);
+          const fmt = (d: Date) => d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+          return `${fmt(yearStart)} – ${fmt(yearEnd)}`;
+        })()}
+      </span>
     </div>
   );
 

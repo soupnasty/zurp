@@ -22,6 +22,8 @@ const MERCHANT_MAP_UNSORTED: MerchantEntry[] = [
   { pattern: "caviar", matchType: "prefix", category: "food_delivery", priority: 10 },
   { pattern: "seamless", matchType: "prefix", category: "food_delivery", priority: 10 },
   { pattern: "gopuff", matchType: "prefix", category: "food_delivery", priority: 10 },
+  { pattern: "home chef", matchType: "prefix", category: "food_delivery", priority: 10 },
+  { pattern: "homechef", matchType: "prefix", category: "food_delivery", priority: 10 },
 
   // ── Rideshare (Uber disambiguation) ──
   { pattern: "uber trip", matchType: "prefix", category: "rideshare", priority: 20 },
@@ -93,6 +95,7 @@ const MERCHANT_MAP_UNSORTED: MerchantEntry[] = [
   { pattern: "wsj", matchType: "prefix", category: "streaming", priority: 10 },
   { pattern: "sirius", matchType: "prefix", category: "streaming", priority: 10 },
   { pattern: "crunchyroll", matchType: "prefix", category: "streaming", priority: 10 },
+  { pattern: "espn", matchType: "prefix", category: "streaming", priority: 10 },
 
   // ── Airlines ──
   { pattern: "united air", matchType: "prefix", category: "travel_flights", priority: 10 },
@@ -206,6 +209,8 @@ const MERCHANT_MAP_UNSORTED: MerchantEntry[] = [
   // ── Entertainment ──
   { pattern: "ticketmaster", matchType: "prefix", category: "entertainment", priority: 10 },
   { pattern: "stubhub", matchType: "prefix", category: "entertainment", priority: 10 },
+  { pattern: "live nation", matchType: "prefix", category: "entertainment", priority: 10 },
+  { pattern: "viagogo", matchType: "prefix", category: "entertainment", priority: 10 },
   { pattern: "axs", matchType: "prefix", category: "entertainment", priority: 10 },
   { pattern: "seatgeek", matchType: "prefix", category: "entertainment", priority: 10 },
   { pattern: "vivid seats", matchType: "prefix", category: "entertainment", priority: 10 },

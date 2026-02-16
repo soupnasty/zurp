@@ -209,7 +209,7 @@ function CompareSummary({
       }}
     >
       {/* Net Value — hero */}
-      <div style={{ background: "var(--bg-secondary)", padding: "20px 24px", borderRadius: "15px 0 0 0" }}>
+      <div style={{ background: "var(--bg-secondary)", padding: "20px 24px", borderRadius: "15px 0 0 15px" }}>
         <span
           style={{
             fontFamily: "var(--font-mono)",
@@ -320,7 +320,7 @@ function CompareSummary({
       </div>
 
       {/* Gap to #1 */}
-      <div style={{ background: "var(--bg-secondary)", padding: "20px 24px", borderRadius: "0 15px 0 0" }}>
+      <div style={{ background: "var(--bg-secondary)", padding: "20px 24px", borderRadius: "0 15px 15px 0" }}>
         <span
           style={{
             fontFamily: "var(--font-mono)",
@@ -366,36 +366,6 @@ function CompareSummary({
         )}
       </div>
 
-      {/* Methodology footnote — spans all 3 columns */}
-      <div
-        style={{
-          gridColumn: "1 / -1",
-          background: "var(--bg-secondary)",
-          padding: "8px 24px 10px",
-          borderTop: "1px solid rgba(255,255,255,0.04)",
-          borderRadius: "0 0 15px 15px",
-        }}
-      >
-        <span
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: 10,
-            color: "var(--text-dim)",
-          }}
-        >
-          ~ Values simulated from your transaction history. Points valued at 1cpp baseline.{" "}
-          <a
-            href="/methodology"
-            style={{
-              color: "var(--text-dim)",
-              textDecoration: "underline",
-              textUnderlineOffset: 2,
-            }}
-          >
-            Methodology
-          </a>
-        </span>
-      </div>
     </div>
   );
 }

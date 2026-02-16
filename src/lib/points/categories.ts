@@ -15,6 +15,10 @@ const PLAID_CATEGORY_MAP: Record<string, EarnCategory> = {
 
   // Coffee
   FOOD_AND_DRINK_COFFEE: "coffee",
+  FOOD_AND_DRINK_COFFEE_SHOPS: "coffee",
+
+  // Food Delivery / Meal Kits
+  FOOD_AND_DRINK_DELIVERY: "food_delivery",
 
   // Grocery
   FOOD_AND_DRINK_GROCERIES: "groceries",
@@ -45,6 +49,7 @@ const PLAID_CATEGORY_MAP: Record<string, EarnCategory> = {
   // Entertainment (events, movies, etc.)
   ENTERTAINMENT_SPORTING_EVENTS_AMUSEMENT_PARKS_AND_MUSEUMS: "entertainment",
   ENTERTAINMENT_EVENTS: "entertainment",
+  ENTERTAINMENT_SPORTS: "streaming",
 
   // Shopping
   SHOPS_ELECTRONICS: "shopping_instore",

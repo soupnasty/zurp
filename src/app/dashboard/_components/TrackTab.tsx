@@ -23,13 +23,7 @@ interface TrackTabProps {
   upcomingResets: UpcomingReset[];
   activeCardName: string;
   activeCardFee: number;
-  monthCount: number | null;
-  totalTransactions: number | null;
-}
-
-function fmt(n: number): string {
-  const abs = Math.abs(Math.round(n));
-  return n >= 0 ? `+$${abs.toLocaleString()}` : `-$${abs.toLocaleString()}`;
+  anniversaryDate: string | null;
 }
 
 export function TrackTab({
@@ -44,14 +38,28 @@ export function TrackTab({
   upcomingResets,
   activeCardName,
   activeCardFee,
-  monthCount,
-  totalTransactions,
+  anniversaryDate,
 }: TrackTabProps) {
   const pointsValue = cardSummary?.pointsValueConservative ?? 0;
+
+  // Compute current anniversary year bounds for subheader
+  const cycleLabel = (() => {
+    if (!anniversaryDate) return activeCardFee > 0 ? `$${activeCardFee}/yr fee` : "$0 annual fee";
+    const anniv = new Date(anniversaryDate);
+    const now = new Date();
+    const annivMonth = anniv.getMonth();
+    const annivDay = anniv.getDate();
+    // Find the most recent anniversary date on or before today
+    let yearStart = new Date(now.getFullYear(), annivMonth, annivDay);
+    if (yearStart > now) {
+      yearStart = new Date(now.getFullYear() - 1, annivMonth, annivDay);
+    }
+    const yearEnd = new Date(yearStart.getFullYear() + 1, annivMonth, annivDay - 1);
+    const fmt = (d: Date) => d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    return `${fmt(yearStart)} – ${fmt(yearEnd)}`;
+  })();
   const benefitsUsed = cardSummary?.creditsUsed ?? 0;
   const benefitsTotal = cardSummary?.creditsAvailable ?? 0;
-  const netValue = cardSummary?.netValue ?? 0;
-
   // Next reset from upcoming resets
   const nextReset = upcomingResets.length > 0 ? upcomingResets[0] : null;
 
@@ -66,11 +74,6 @@ export function TrackTab({
       value: `$${Math.round(benefitsUsed).toLocaleString()}`,
       valueColor: "var(--color-accent-purple)",
       sub: benefitsTotal > 0 ? `of $${Math.round(benefitsTotal).toLocaleString()}` : undefined,
-    },
-    {
-      label: "Net value",
-      value: fmt(netValue),
-      valueColor: netValue >= 0 ? "var(--color-success)" : "var(--color-danger)",
     },
     {
       label: "Next reset",
@@ -97,9 +100,7 @@ export function TrackTab({
           className="text-[12px] text-[var(--text-dim)]"
           style={{ fontFamily: "var(--font-mono)" }}
         >
-          {monthCount && totalTransactions
-            ? `${monthCount} ${monthCount === 1 ? "month" : "months"} of data · ${totalTransactions.toLocaleString()} transactions`
-            : activeCardFee > 0 ? `$${activeCardFee}/yr fee` : "$0 annual fee"}
+          {cycleLabel}
         </span>
       </div>
 

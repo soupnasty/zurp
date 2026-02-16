@@ -73,7 +73,42 @@ export function InsightCardV2({ insight, displayGroup }: InsightCardV2Props) {
 
   if (dismissed) return null;
 
-  const dollarAmount = insight.templateVars.amount ?? insight.templateVars.dollarAmount ?? 0;
+  // Pick the right dollar figure and label per insight type:
+  // - A1/A2 redirects: show the remaining credit (what you could capture), label "unused credit"
+  // - B1/B3 unused/underused: show remaining credit, label "going to waste"
+  // - B2 nearly maxed: show remaining, label "at risk"
+  // - C0/C1/C2 milestones: show the total value, label from group config
+  // - P1/P2 points: show extra value, label from group config
+  const dollarAmount = (() => {
+    const vars = insight.templateVars;
+    switch (insight.category) {
+      case "A1":
+      case "A2":
+        return vars.remaining ?? vars.annual ?? 0;
+      case "B1":
+      case "B2":
+      case "B3":
+        return vars.remaining ?? vars.annual ?? 0;
+      default:
+        return vars.amount ?? vars.dollarAmount ?? vars.total ?? 0;
+    }
+  })();
+
+  const savingsLabel = (() => {
+    switch (insight.category) {
+      case "A1":
+        return "in unused credit";
+      case "A2":
+        return "per year";
+      case "B1":
+      case "B3":
+        return "going to waste";
+      case "B2":
+        return "left to capture";
+      default:
+        return config.savingsLabel;
+    }
+  })();
 
   return (
     <div
@@ -143,7 +178,7 @@ export function InsightCardV2({ insight, displayGroup }: InsightCardV2Props) {
               >
                 ${Math.round(Number(dollarAmount)).toLocaleString()}
               </span>
-              <span className="text-[11px] md:text-xs text-[var(--text-secondary)]">{config.savingsLabel}</span>
+              <span className="text-[11px] md:text-xs text-[var(--text-secondary)]">{savingsLabel}</span>
             </div>
           </div>
         )}

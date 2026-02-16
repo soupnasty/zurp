@@ -48,6 +48,8 @@ function makeUsage(overrides: Partial<BenefitUsageSummary>): BenefitUsageSummary
     daysRemaining: 15,
     requiresActivation: false,
     autoMatchable: true,
+    merchantPatterns: [],
+    plaidCategories: [],
     sunsetDate: null,
     displayGroup: null,
     displayGroupName: null,

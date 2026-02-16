@@ -6,7 +6,6 @@ import {
   getCardProfiles,
 } from "@/lib/queries";
 import { getPointsEarningSummary } from "@/lib/points/queries";
-import { getDataStats } from "@/lib/points/simulation-queries";
 import { getEarnConfig } from "@/lib/points/earn-configs";
 import { groupBenefits } from "@/lib/benefit-grouping";
 import { resolveActiveCard } from "../_lib/resolve-card";
@@ -26,11 +25,10 @@ export default async function TrackPage({
   const activeCard = resolveActiveCard(cardProfilesList, params.card);
   const activeCardId = activeCard.id;
 
-  const [cardSummary, benefits, pointsSummary, dataStats] = await Promise.all([
+  const [cardSummary, benefits, pointsSummary] = await Promise.all([
     getCardSummary(user.id!, activeCardId),
     getBenefitUsageSummaries(user.id!, activeCardId),
     getPointsEarningSummary(user.id!, activeCardId),
-    getDataStats(activeCardId),
   ]);
 
   // Fetch matched transactions for all benefits
@@ -100,8 +98,7 @@ export default async function TrackPage({
       upcomingResets={upcomingResets}
       activeCardName={activeCard.name}
       activeCardFee={activeCard.annualFee}
-      monthCount={dataStats?.monthCount ?? null}
-      totalTransactions={dataStats?.totalTransactions ?? null}
+      anniversaryDate={activeCard.anniversaryDate?.toISOString() ?? null}
     />
   );
 }
