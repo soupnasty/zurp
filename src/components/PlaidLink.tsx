@@ -137,6 +137,7 @@ export function PlaidLinkButton({
         setLinkToken(data.linkToken);
         sessionStorage.setItem("plaid_link_token", data.linkToken);
       } else {
+        console.error("Link token error:", data.detail || data.error);
         onError?.("Failed to get link token");
       }
     } catch {
