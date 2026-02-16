@@ -185,38 +185,16 @@ export async function computeAndPersistSimulations(
     }
   }
 
-  // Upsert all 12 rows
+  // Delete existing rows for this card profile, then insert fresh ones.
+  // Using DELETE + INSERT instead of ON CONFLICT DO UPDATE because
+  // Drizzle's onConflictDoUpdate can fail to update JSONB columns
+  // (categoryBreakdown), leaving stale data from previous computations.
+  await db
+    .delete(schema.cardSimulations)
+    .where(eq(schema.cardSimulations.cardProfileId, cardProfileId));
+
   for (const row of upserts) {
-    await db
-      .insert(schema.cardSimulations)
-      .values(row)
-      .onConflictDoUpdate({
-        target: [
-          schema.cardSimulations.cardProfileId,
-          schema.cardSimulations.simulatedCardId,
-          schema.cardSimulations.portalMode,
-        ],
-        set: {
-          annualFee: row.annualFee,
-          totalPoints: row.totalPoints,
-          bonusPoints: row.bonusPoints,
-          pointsValueConservative: row.pointsValueConservative,
-          pointsValueUpside: row.pointsValueUpside,
-          benefitsSimulated: row.benefitsSimulated,
-          matchedPerBenefit: row.matchedPerBenefit,
-          benefitsValue: row.benefitsValue,
-          netFloor: row.netFloor,
-          netCeiling: row.netCeiling,
-          netActual: row.netActual,
-          categoryBreakdown: row.categoryBreakdown,
-          analysisPeriodStart: row.analysisPeriodStart,
-          analysisPeriodEnd: row.analysisPeriodEnd,
-          monthCount: row.monthCount,
-          totalSpend: row.totalSpend,
-          totalTransactions: row.totalTransactions,
-          updatedAt: new Date(),
-        },
-      });
+    await db.insert(schema.cardSimulations).values(row);
   }
 }
 

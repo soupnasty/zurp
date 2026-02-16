@@ -230,7 +230,7 @@ The Capital One Venture X (`capital-one-venture-x.ts`) has 3 benefits ($300 trav
 
 The Capital One Venture (`capital-one-venture.ts`) has 3 benefits ($250 annual travel credit, $120 Global Entry/TSA PreCheck every 4 years, No FTF). Mid-tier sibling to Venture X — flat 2x base rate, 5x portal hotels/rentals (NOT flights — those stay 2x). $95/yr fee. Same Capital One miles pool. Points valued at 1.0-1.5cpp. Issuer is "capital_one" (same as Venture X).
 
-The Robinhood Gold (`robinhood-gold.ts`) has 1 benefit (No FTF). Its value is entirely in its 3x flat earning rate (highest base rate of any card). 5x on Robinhood Travel portal with $3,500/yr cap. $50/yr fee (Robinhood Gold membership). Points valued at 0.7-1.0cpp (brokerage transfer). No transfer partners, no lounges, no statement credits.
+The Robinhood Gold (`robinhood-gold.ts`) has 1 benefit (No FTF). Its value is entirely in its 3x flat earning rate (highest base rate of any card). 5x on Robinhood Travel portal with $3,500/yr cap. $50/yr fee (Robinhood Gold membership). Points valued at 1.0cpp fixed (1:1 brokerage transfer, no transfer partners). No transfer partners, no lounges, no statement credits.
 
 The Bilt Palladium (`bilt-palladium.ts`) has 4 benefit records from 3 logical benefits: $400/yr hotel credit via Bilt Travel portal ($200 semi-annual via expandCycles), $200/yr Bilt Cash annual credit, and No FTF. Flat 2x earning on everything (no bonus categories). 23 transfer partners with Rent Day 75% bonus. Points valued at 1.5-2.2cpp. $495/yr fee. Issuer is "bilt" for Plaid detection.
 

@@ -22,7 +22,7 @@ export const robinhoodGoldEarnConfig: EarnConfig = {
   ],
   annualFee: 50,
   valuation: {
-    conservativeCpp: 0.7,
+    conservativeCpp: 1.0,
     upsideCpp: 1.0,
     upsideLabel: "Points to brokerage account (1:1 cent)",
   },

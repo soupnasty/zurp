@@ -5,7 +5,7 @@ import * as schema from "@/db/schema";
 import { getCardProfiles, getCardSummary } from "@/lib/queries";
 import { getLifestyleSelections } from "@/lib/lifestyle-queries";
 import { getEarnConfig } from "./earn-configs";
-import { computeBenefitsValue } from "./valuation";
+import { computeBenefitsValue, valuatePoints } from "./valuation";
 import { computeLifestyleBenefits } from "./lifestyle-valuation";
 import type {
   ComparisonOutput,
@@ -50,14 +50,48 @@ export async function readComparison(
   const lifestyleKeys = await getLifestyleSelections(userId);
   const selectedLifestyle = new Set(lifestyleKeys);
 
-  // Build CardSimulation array from DB rows
+  // Build CardSimulation array from DB rows.
+  // Recompute all dollar values from current earn config to guard against
+  // stale DB data (JSONB update bug) and config changes (updated cpp).
   const simulations: CardSimulation[] = rows.map((row) => {
     const config = getEarnConfig(row.simulatedCardId);
     const isUsersCard = row.simulatedCardId === usersCardId;
 
-    const pointsValueRealistic = round2(
-      (row.pointsValueConservative + row.pointsValueUpside) / 2
+    // Recompute category values from stored raw points + current earn config
+    // to guard against stale DB data and config changes (updated cpp).
+    const categories = recomputeCategoryValues(
+      (row.categoryBreakdown as CategoryEarnSummary[]) ?? [],
+      config
     );
+
+    // Derive points dollar values from the sum of positive category values.
+    // Negative categories (refunds/reversals) are excluded from display,
+    // so the leaderboard total should match the visible category breakdown.
+    const positiveCatSum = round2(
+      categories.reduce((s, c) => s + Math.max(0, c.valueConservative), 0)
+    );
+    const pointsValueConservative = positiveCatSum || row.pointsValueConservative;
+
+    // Scale realistic/upside from conservative using cpp ratios
+    let pointsValueRealistic: number;
+    let pointsValueUpside: number;
+    if (config && pointsValueConservative > 0) {
+      const { conservativeCpp, upsideCpp } = config.valuation;
+      const realisticRatio = conservativeCpp > 0
+        ? ((conservativeCpp + upsideCpp) / 2) / conservativeCpp
+        : 1;
+      const upsideRatio = conservativeCpp > 0
+        ? upsideCpp / conservativeCpp
+        : 1;
+      pointsValueRealistic = round2(pointsValueConservative * realisticRatio);
+      pointsValueUpside = round2(pointsValueConservative * upsideRatio);
+    } else {
+      pointsValueRealistic = round2(
+        (row.pointsValueConservative + row.pointsValueUpside) / 2
+      );
+      pointsValueUpside = row.pointsValueUpside;
+    }
+
     const proven = row.benefitsSimulated ?? 0;
 
     const perBenefit = (row.matchedPerBenefit as Record<string, number>) ?? {};
@@ -65,9 +99,9 @@ export async function readComparison(
     const allCredits = computeBenefitsValue(row.simulatedCardId);
 
     const pointsModes = {
-      conservative: row.pointsValueConservative,
+      conservative: pointsValueConservative,
       realistic: pointsValueRealistic,
-      upside: row.pointsValueUpside,
+      upside: pointsValueUpside,
     } as const;
 
     const benefitModes = {
@@ -86,6 +120,11 @@ export async function readComparison(
       }
     }
 
+    // Recompute net values from fresh points
+    const netFloor = round2(pointsValueConservative - row.annualFee);
+    const netCeiling = round2(pointsValueConservative + row.benefitsValue - row.annualFee);
+    const netActual = round2(pointsValueConservative + proven - row.annualFee);
+
     return {
       cardId: row.simulatedCardId,
       cardName: config?.cardName ?? row.simulatedCardId,
@@ -93,20 +132,20 @@ export async function readComparison(
       annualFee: row.annualFee,
       totalPoints: row.totalPoints,
       bonusPoints: row.bonusPoints,
-      pointsValueConservative: row.pointsValueConservative,
+      pointsValueConservative,
       pointsValueRealistic,
-      pointsValueUpside: row.pointsValueUpside,
+      pointsValueUpside,
       benefitsValue: row.benefitsValue,
       benefitsCaptured: isUsersCard ? benefitsCaptured : null,
       benefitsSimulated: row.benefitsSimulated,
       matchedPerBenefit: perBenefit,
       benefitsByMode: benefitModes,
-      netFloor: row.netFloor,
-      netCeiling: row.netCeiling,
-      netActual: row.netActual,
+      netFloor,
+      netCeiling,
+      netActual,
       netByMode,
       rank: 0,
-      categories: (row.categoryBreakdown as CategoryEarnSummary[]) ?? [],
+      categories,
     };
   });
 
@@ -247,6 +286,21 @@ function buildHeadline(
     bestAlternativeNetValue: bestAlt.netFloor,
     margin,
   };
+}
+
+/**
+ * Recompute category dollar values from stored points and current earn config.
+ * Guards against stale JSONB valueConservative data in the DB.
+ */
+function recomputeCategoryValues(
+  categories: CategoryEarnSummary[],
+  config: ReturnType<typeof getEarnConfig>
+): CategoryEarnSummary[] {
+  if (!config) return categories;
+  return categories.map((cat) => ({
+    ...cat,
+    valueConservative: valuatePoints(cat.points, config).conservative,
+  }));
 }
 
 function round2(n: number): number {

@@ -696,7 +696,7 @@ export const PERK_SECTIONS: PerkSection[] = [
           citi_strata_premier: { value: "1.0\u00A2", detail: "up to 1.9\u00A2 via partners" },
           capital_one_venture_x: { value: "1.0\u00A2", detail: "up to 1.85\u00A2 via partners" },
           capital_one_venture: { value: "1.0\u00A2", detail: "up to 1.5\u00A2 via partners" },
-          robinhood_gold: { value: "0.7\u00A2", detail: "up to 1.0\u00A2 to brokerage" },
+          robinhood_gold: { value: "1.0\u00A2", detail: "fixed 1:1 to brokerage" },
           bilt_palladium: { value: "1.5\u00A2", detail: "up to 2.2\u00A2 via partners" },
           amex_blue_cash_everyday: { value: "1.0\u00A2", detail: "cash back, fixed value" },
           citi_custom_cash: { value: "1.0\u00A2", detail: "up to 1.5\u00A2 via Strata partners" },
