@@ -35,7 +35,7 @@ export const capitalOneVentureEarnConfig: EarnConfig = {
   annualFee: 95,
   valuation: {
     conservativeCpp: 1.0,
-    upsideCpp: 1.5,
+    upsideCpp: 1.85,
     upsideLabel: "Transfer partners (Avianca, Aeroplan, etc.)",
   },
 };

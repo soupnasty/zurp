@@ -49,7 +49,7 @@ export const csrEarnConfig: EarnConfig = {
   caps: [],
   annualFee: 795,
   valuation: {
-    conservativeCpp: 1.25,
+    conservativeCpp: 1.0,
     upsideCpp: 2.0,
     upsideLabel: "With transfer partners (Hyatt, United)",
   },

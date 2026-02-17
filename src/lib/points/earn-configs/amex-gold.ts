@@ -39,7 +39,7 @@ export const amexGoldEarnConfig: EarnConfig = {
   annualFee: 325,
   valuation: {
     conservativeCpp: 1.0,
-    upsideCpp: 1.75,
+    upsideCpp: 2.0,
     upsideLabel: "With transfer partners (Delta, ANA)",
   },
 };

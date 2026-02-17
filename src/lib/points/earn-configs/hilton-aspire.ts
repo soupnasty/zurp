@@ -56,7 +56,7 @@ export const hiltonAspireEarnConfig: EarnConfig = {
   caps: [],
   annualFee: 550,
   valuation: {
-    conservativeCpp: 0.4,
+    conservativeCpp: 0.55,
     upsideCpp: 0.8,
     upsideLabel: "Aspirational Hilton redemptions (Waldorf, Conrad)",
   },

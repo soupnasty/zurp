@@ -46,7 +46,7 @@ export const usBankAltitudeConnectEarnConfig: EarnConfig = {
   annualFee: 0,
   valuation: {
     conservativeCpp: 1.0,
-    upsideCpp: 1.5,
-    upsideLabel: "Real-Time Rewards travel redemptions",
+    upsideCpp: 1.0,
+    upsideLabel: "Travel portal / bank deposit (no transfer partners)",
   },
 };
