@@ -34,12 +34,15 @@ const GROUP_ORDER: DisplayGroup[] = ["expiring", "redirect", "unused", "mileston
 
 interface InsightsTabProps {
   insights: SerializedInsight[];
+  expandedInsights?: SerializedInsight[];
   activeCardName: string;
   activeCardFee: number;
   anniversaryDate: string | null;
 }
 
-export function InsightsTab({ insights, activeCardName, activeCardFee, anniversaryDate }: InsightsTabProps) {
+export function InsightsTab({ insights, expandedInsights = [], activeCardName, activeCardFee, anniversaryDate }: InsightsTabProps) {
+  // Merge primary + expanded for the full insights page view
+  const allInsights = [...insights, ...expandedInsights];
   // Group insights by display group
   const grouped: Record<DisplayGroup, SerializedInsight[]> = {
     expiring: [],
@@ -48,7 +51,7 @@ export function InsightsTab({ insights, activeCardName, activeCardFee, anniversa
     milestone: [],
   };
 
-  for (const insight of insights) {
+  for (const insight of allInsights) {
     const group = mapToDisplayGroup(insight.category);
     grouped[group].push(insight);
   }
@@ -70,8 +73,8 @@ export function InsightsTab({ insights, activeCardName, activeCardFee, anniversa
   }
 
   // Compute summary values
-  const totalActive = insights.length;
-  const potentialSavings = insights.reduce((sum, i) => sum + getInsightValue(i), 0);
+  const totalActive = allInsights.length;
+  const potentialSavings = allInsights.reduce((sum, i) => sum + getInsightValue(i), 0);
   const expiringInsights = grouped.expiring;
   const expiringAmount = expiringInsights.reduce((sum, i) => sum + getInsightValue(i), 0);
 
@@ -134,13 +137,13 @@ export function InsightsTab({ insights, activeCardName, activeCardFee, anniversa
           {activeCardName}
         </h1>
         <span
-          className="text-[10px] md:text-[12px] text-[var(--text-dim)]"
+          className="text-[10px] md:text-[12px] text-[var(--text-secondary)]"
           style={{ fontFamily: "var(--font-mono)" }}
         >
           {cycleLabel}
           {renewalLabel && (
             <>
-              <span className="hidden md:inline"> · {renewalLabel}</span>
+              <span className="hidden md:inline"> | {renewalLabel}</span>
               <span className="block md:hidden mt-0.5">{renewalLabel}</span>
             </>
           )}
@@ -172,7 +175,7 @@ export function InsightsTab({ insights, activeCardName, activeCardFee, anniversa
     </>
   );
 
-  if (insights.length === 0) {
+  if (allInsights.length === 0) {
     return (
       <div>
         {cardHeader}

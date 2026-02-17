@@ -525,57 +525,44 @@ export function Leaderboard({ cards, activeCardType, vMode, bMode, lifestyleKeys
         >
           Leaderboard
         </h2>
-        <div className="flex items-center gap-2">
-          <span
-            className="md:hidden"
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: 10,
-              fontWeight: 700,
-              color: "var(--text-dim)",
-              letterSpacing: "0.5px",
-            }}
-          >
-            tap to compare
-          </span>
-          <span
-            className="hidden md:inline"
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: 10,
-              fontWeight: 700,
-              color: "var(--text-dim)",
-              letterSpacing: "0.5px",
-            }}
-          >
-            {sorted.length} cards ranked by net value
-          </span>
-        </div>
       </div>
 
       {/* Legend — outside container */}
       <div
         className="px-1 mb-3"
-        style={{ display: "flex", alignItems: "center", gap: 16 }}
+        style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}
       >
-        {[
-          { color: "var(--color-accent-blue)", label: "Points" },
-          { color: "var(--color-accent-purple)", label: "Benefits" },
-          { color: "var(--color-danger)", label: "Fees" },
-        ].map((item) => (
-          <div key={item.label} className="flex items-center gap-1.5">
-            <span
-              className="inline-block h-2 w-2 rounded-full"
-              style={{ background: item.color }}
-            />
-            <span
-              className="text-[10px] text-[var(--text-secondary)]"
-              style={{ fontFamily: "var(--font-mono)", fontWeight: 700 }}
-            >
-              {item.label}
-            </span>
-          </div>
-        ))}
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          {[
+            { color: "var(--color-accent-blue)", label: "Points" },
+            { color: "var(--color-accent-purple)", label: "Benefits" },
+            { color: "var(--color-danger)", label: "Fees" },
+          ].map((item) => (
+            <div key={item.label} className="flex items-center gap-1.5">
+              <span
+                className="inline-block h-2 w-2 rounded-full"
+                style={{ background: item.color }}
+              />
+              <span
+                className="text-[10px] text-[var(--text-secondary)]"
+                style={{ fontFamily: "var(--font-mono)", fontWeight: 700 }}
+              >
+                {item.label}
+              </span>
+            </div>
+          ))}
+        </div>
+        <span
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: 10,
+            fontWeight: 700,
+            color: "var(--text-secondary)",
+            letterSpacing: "0.5px",
+          }}
+        >
+          Tap card for details
+        </span>
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-[var(--border-subtle)]">

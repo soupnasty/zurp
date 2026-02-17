@@ -246,6 +246,7 @@ export function BenefitAssumptionToggle({
                     <button
                       key={item.key}
                       onClick={() => toggle(item.key)}
+                      className="md:py-2 md:px-3 md:rounded-lg md:gap-2"
                       style={{
                         display: "flex",
                         alignItems: "center",
@@ -272,9 +273,10 @@ export function BenefitAssumptionToggle({
                           alignItems: "center",
                         }}
                       >
-                        <LucideIcon name={item.iconSlug} size={20} />
+                        <LucideIcon name={item.iconSlug} size={16} />
                       </span>
                       <span
+                        className="md:text-[13px]"
                         style={{
                           fontSize: 15,
                           fontWeight: 600,

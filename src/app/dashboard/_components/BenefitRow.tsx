@@ -109,6 +109,15 @@ function formatResetDate(isoDate: string): string {
   });
 }
 
+function formatSunsetDate(isoDate: string): string {
+  const d = new Date(isoDate);
+  return d.toLocaleDateString("en-US", {
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
 function formatTxDate(isoDate: string | Date): string {
   const d = typeof isoDate === "string" ? new Date(isoDate) : isoDate;
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
@@ -207,7 +216,9 @@ function BenefitIcon({
 }
 
 export function BenefitRow({ group }: BenefitRowProps) {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(
+    group.type === "subscription" && !group.isActivated
+  );
   const config = STATUS_CONFIG[group.status];
   const pct =
     group.totalCredit > 0
@@ -224,7 +235,7 @@ export function BenefitRow({ group }: BenefitRowProps) {
     detail = `$${Math.round(group.totalRemaining)} remaining \u00b7 resets ${formatResetDate(group.cycleEnd)}`;
   } else {
     const periodLabel = group.cycle === "monthly" || group.cycle === "subscription" ? "mo" : group.cycle === "quadrennial" ? "4yr" : "yr";
-    detail = `$${Math.round(group.totalCredit)}/${periodLabel} \u00b7 never used`;
+    detail = `$${Math.round(group.totalCredit)}/${periodLabel}`;
   }
 
   return (
@@ -437,19 +448,6 @@ function BenefitDetail({ group, config, pct }: BenefitDetailProps) {
             Resets {formatResetDate(group.cycleEnd)}
           </span>
         )}
-        {group.sunsetDate && (
-          <span
-            className="rounded-full px-2.5 py-0.5 text-[10px] font-bold"
-            style={{
-              fontFamily: "var(--font-mono)",
-              color: "var(--color-accent-amber)",
-              background: "rgba(251,191,36,0.08)",
-              border: "1px solid rgba(251,191,36,0.15)",
-            }}
-          >
-            Expires {formatResetDate(group.sunsetDate)}
-          </span>
-        )}
       </div>
 
       {/* Usage breakdown for credit-type benefits */}
@@ -571,8 +569,11 @@ function BenefitDetail({ group, config, pct }: BenefitDetailProps) {
             </div>
           ) : (
             <div className="mt-3">
-              <p className="mb-2 text-sm text-[var(--text-secondary)]">
-                When did you activate this subscription?
+              <p className="mb-1 text-sm text-[var(--text-secondary)]">
+                This benefit doesn&apos;t appear on your statement &mdash; tell us when you activate it.
+              </p>
+              <p className="mb-2 text-xs text-[var(--text-dim)]">
+                Select the month you activated
               </p>
               <div className="flex items-center gap-2">
                 <select
@@ -595,7 +596,7 @@ function BenefitDetail({ group, config, pct }: BenefitDetailProps) {
                       "linear-gradient(135deg, var(--color-accent-cyan), var(--color-accent-blue))",
                   }}
                 >
-                  {isPending ? "Saving..." : "Activate"}
+                  {isPending ? "Saving..." : "mark as activated"}
                 </button>
               </div>
             </div>
@@ -749,6 +750,16 @@ function BenefitDetail({ group, config, pct }: BenefitDetailProps) {
             </a>
           ))}
         </div>
+      )}
+
+      {/* Partnership expiration disclaimer */}
+      {group.sunsetDate && (
+        <p
+          className="mt-4 text-[11px] text-[var(--text-dim)]"
+          style={{ fontFamily: "var(--font-mono)" }}
+        >
+          Benefit available through {formatSunsetDate(group.sunsetDate)} per card issuer partnership terms.
+        </p>
       )}
     </div>
   );

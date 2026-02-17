@@ -16,20 +16,24 @@ export default async function InsightsPage({
   const cardProfilesList = await getCardProfiles(user.id!);
   const activeCard = resolveActiveCard(cardProfilesList, params.card);
 
-  const insights = await getInsightsForDisplay(user.id!, "dashboard", 20);
+  const { primary, expanded } = await getInsightsForDisplay(user.id!, "dashboard", 3, 20);
 
-  const serializedInsights = insights.map((i) => ({
+  const serializeInsight = (i: (typeof primary)[number]) => ({
     ...i,
     periodStart: i.periodStart?.toISOString() ?? null,
     periodEnd: i.periodEnd?.toISOString() ?? null,
     generatedAt: i.generatedAt.toISOString(),
     shownAt: i.shownAt?.toISOString() ?? null,
     resolvedAt: i.resolvedAt?.toISOString() ?? null,
-  }));
+  });
+
+  const serializedInsights = primary.map(serializeInsight);
+  const serializedExpanded = expanded.map(serializeInsight);
 
   return (
     <InsightsTab
       insights={serializedInsights}
+      expandedInsights={serializedExpanded}
       activeCardName={activeCard.name}
       activeCardFee={activeCard.annualFee}
       anniversaryDate={activeCard.anniversaryDate?.toISOString() ?? null}

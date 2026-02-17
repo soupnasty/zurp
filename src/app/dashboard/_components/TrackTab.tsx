@@ -84,7 +84,9 @@ export function TrackTab({
     };
   })();
   // Derive from benefit groups (same source as BenefitsSection) for consistency
-  const benefitsUsed = benefitGroups.reduce((s, g) => s + g.totalUsed, 0);
+  // For subscriptions, use YTD value (full card-year contribution) instead of single-month usage
+  const benefitsUsed = benefitGroups.reduce((s, g) =>
+    s + (g.type === "subscription" && g.ytdUsed != null ? g.ytdUsed : g.totalUsed), 0);
   const benefitsTotal = benefitGroups.reduce((s, g) => s + g.totalCredit, 0);
   // Expiring soon: total value of benefits resetting within 14 days
   const expiringTotal = upcomingResets.reduce((s, r) => s + r.totalRemaining, 0);
@@ -124,13 +126,13 @@ export function TrackTab({
           {activeCardName}
         </h1>
         <span
-          className="text-[10px] md:text-[12px] text-[var(--text-dim)]"
+          className="text-[10px] md:text-[12px] text-[var(--text-secondary)]"
           style={{ fontFamily: "var(--font-mono)" }}
         >
           {cycleLabel}
           {renewalLabel && (
             <>
-              <span className="hidden md:inline"> · {renewalLabel}</span>
+              <span className="hidden md:inline"> | {renewalLabel}</span>
               <span className="block md:hidden mt-0.5">{renewalLabel}</span>
             </>
           )}
@@ -185,7 +187,7 @@ export function TrackTab({
             fontFamily: "var(--font-mono)",
             fontSize: 10,
             fontWeight: 700,
-            color: "var(--text-dim)",
+            color: "var(--text-secondary)",
             letterSpacing: "0.5px",
           }}
         >

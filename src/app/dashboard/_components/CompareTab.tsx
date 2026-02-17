@@ -152,10 +152,10 @@ export function CompareTab({
           {activeCardName}
         </h1>
         <span
-          className="text-[10px] md:text-[12px] text-[var(--text-dim)] whitespace-nowrap"
+          className="text-[10px] md:text-[12px] text-[var(--text-secondary)] whitespace-nowrap"
           style={{ fontFamily: "var(--font-mono)" }}
         >
-          {comparison.totalTransactions.toLocaleString()} transactions · {comparison.monthCount}{comparison.monthCount === 1 ? "mo" : "mo"} · {formatPeriod(comparison.analysisPeriod.start, comparison.analysisPeriod.end)}
+          {comparison.totalTransactions.toLocaleString()} transactions | {comparison.monthCount}{comparison.monthCount === 1 ? "mo" : "mo"} | {formatPeriod(comparison.analysisPeriod.start, comparison.analysisPeriod.end)}
         </span>
       </div>
 

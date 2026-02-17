@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { BenefitRow } from "./BenefitRow";
 import type { ClassifiedBenefitGroup } from "./types";
 
@@ -64,8 +66,17 @@ export function BenefitsSection({
   subscriptionBenefits,
   quadrennialBenefits,
 }: BenefitsSectionProps) {
+  const [showBreakdown, setShowBreakdown] = useState(false);
+
   const totalBenefits = benefitGroups.length;
-  const totalUsed = benefitGroups.reduce((s, g) => s + g.totalUsed, 0);
+  // For subscriptions, use YTD value (full card-year contribution) instead of single-month usage
+  const effectiveUsed = (g: ClassifiedBenefitGroup) =>
+    g.type === "subscription" && g.ytdUsed != null ? g.ytdUsed : g.totalUsed;
+  const subMonths = (g: ClassifiedBenefitGroup) =>
+    g.type === "subscription" && g.ytdUsed != null && g.totalCredit > 0
+      ? Math.round(g.ytdUsed / g.totalCredit)
+      : null;
+  const totalUsed = benefitGroups.reduce((s, g) => s + effectiveUsed(g), 0);
   const totalCredit = benefitGroups.reduce((s, g) => s + g.totalCredit, 0);
   const counts = countByStatus(benefitGroups);
   const capturedPct = totalBenefits > 0 ? (counts.captured / totalBenefits) * 100 : 0;
@@ -78,6 +89,11 @@ export function BenefitsSection({
     );
   }
 
+  // Build breakdown: only benefits with effective usage > 0, sorted by amount desc
+  const breakdown = benefitGroups
+    .filter((g) => effectiveUsed(g) > 0)
+    .sort((a, b) => effectiveUsed(b) - effectiveUsed(a));
+
   return (
     <div>
       <div
@@ -85,17 +101,60 @@ export function BenefitsSection({
       >
         {/* Header summary */}
         <div className="p-4 md:p-6 border-b border-[var(--border-subtle)]">
-          <div className="flex items-baseline gap-2 md:gap-3">
-            <span
-              className="text-[22px] md:text-[28px] font-bold text-[var(--color-accent-purple)]"
-              style={{ fontFamily: "var(--font-mono)" }}
-            >
-              ${Math.round(totalUsed).toLocaleString()}
-            </span>
-            <span className="text-xs md:text-sm text-[var(--text-secondary)]">
-              of ${Math.round(totalCredit).toLocaleString()} captured
-            </span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-baseline gap-2 md:gap-3">
+              <span
+                className="text-[22px] md:text-[28px] font-bold text-[var(--color-accent-purple)]"
+                style={{ fontFamily: "var(--font-mono)" }}
+              >
+                ${Math.round(totalUsed).toLocaleString()}
+              </span>
+              <span className="text-xs md:text-sm text-[var(--text-secondary)]">
+                of ${Math.round(totalCredit).toLocaleString()} captured
+              </span>
+            </div>
+            {breakdown.length > 0 && (
+              <button
+                onClick={() => setShowBreakdown(!showBreakdown)}
+                className="flex items-center gap-1 text-[11px] font-bold text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
+                style={{ fontFamily: "var(--font-mono)" }}
+              >
+                breakdown
+                <ChevronDown
+                  size={12}
+                  strokeWidth={2.5}
+                  className={`transition-transform duration-200 ${showBreakdown ? "rotate-180" : ""}`}
+                />
+              </button>
+            )}
           </div>
+
+          {/* Breakdown dropdown */}
+          {showBreakdown && (
+            <div className="mt-3 space-y-1.5 border-t border-[var(--border-subtle)] pt-3">
+              {breakdown.map((g) => {
+                const months = subMonths(g);
+                return (
+                  <div key={g.id} className="flex items-center justify-between">
+                    <span className="truncate text-xs text-[var(--text-secondary)]">
+                      {g.name}
+                      {months != null && (
+                        <span className="text-[var(--text-dim)]">
+                          {" "}· {months} mo
+                        </span>
+                      )}
+                    </span>
+                    <span
+                      className="shrink-0 text-xs font-bold text-[var(--color-accent-purple)]"
+                      style={{ fontFamily: "var(--font-mono)" }}
+                    >
+                      ${Math.round(effectiveUsed(g)).toLocaleString()}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Cadence groups */}
