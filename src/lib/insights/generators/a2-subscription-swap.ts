@@ -55,8 +55,15 @@ export function generateA2(ctx: GeneratorContext): InsightCandidate[] {
     );
     if (!matchedEntry) continue;
 
-    // Check recurring heuristic
-    if (!isRecurring(data.amounts, data.dates)) continue;
+    // Check recurring heuristic (two-tier detection)
+    const recurringResult = detectRecurring(normalized, data.amounts, data.dates);
+    if (!recurringResult.isRecurring) continue;
+
+    // Check staleness of competitor map entry
+    const STALE_THRESHOLD_MS = 180 * 24 * 60 * 60 * 1000;
+    const isStale = matchedEntry.lastVerifiedAt
+      ? Date.now() - matchedEntry.lastVerifiedAt.getTime() > STALE_THRESHOLD_MS
+      : false;
 
     const monthlyAmount = Math.round(
       data.amounts.reduce((s, a) => s + a, 0) / data.amounts.length
@@ -88,7 +95,7 @@ export function generateA2(ctx: GeneratorContext): InsightCandidate[] {
         dollarAmount: annualAmount,
         daysRemaining: -1, // ongoing cost sentinel — user is paying monthly
         actionability: "plan_future",
-        confidence: "category_match",
+        confidence: isStale ? "stale_data" : recurringResult.confidence,
       });
     } else {
       // Direct subscription (e.g. csr_apple_music) → free alternative
@@ -109,7 +116,7 @@ export function generateA2(ctx: GeneratorContext): InsightCandidate[] {
         dollarAmount: annualAmount,
         daysRemaining: -1, // ongoing cost sentinel — user is paying monthly
         actionability: "change_recurring",
-        confidence: "exact_confirmed",
+        confidence: isStale ? "stale_data" : recurringResult.confidence,
       });
     }
   }
@@ -117,28 +124,99 @@ export function generateA2(ctx: GeneratorContext): InsightCandidate[] {
   return insights;
 }
 
+/** Known subscription services — single-charge detection for common subs. */
+const KNOWN_SUBSCRIPTIONS = new Set([
+  "netflix", "spotify", "hulu", "disney+", "disney plus", "hbo max", "max",
+  "youtube premium", "youtube music", "apple music", "apple tv+", "apple tv",
+  "amazon prime", "prime video", "audible", "paramount+", "paramount plus",
+  "peacock", "crunchyroll", "espn+", "espn plus", "sling", "fubo",
+  "adobe", "dropbox", "icloud", "google one", "microsoft 365",
+]);
+
+interface RecurringResult {
+  isRecurring: boolean;
+  confidence: "exact_confirmed" | "amount_heuristic";
+}
+
 /**
- * Recurring heuristic: 3+ charges, amounts within 20%, intervals 25-35 days.
+ * Two-tier recurring detection:
+ *
+ * Tier A (exact_confirmed): Strict heuristic — 2+ charges, amounts within 5%,
+ * intervals 28-32 days. OR 3+ charges with original relaxed heuristic.
+ *
+ * Tier B (amount_heuristic): Relaxed — 2+ charges within 50%, intervals 25-95 days,
+ * OR 1 charge at a known subscription merchant.
  */
-function isRecurring(amounts: number[], dates: Date[]): boolean {
-  if (amounts.length < 3) return false;
+function detectRecurring(
+  normalizedMerchant: string,
+  amounts: number[],
+  dates: Date[]
+): RecurringResult {
+  // Tier A: High confidence
+  if (amounts.length >= 2) {
+    const avgAmount = amounts.reduce((s, a) => s + a, 0) / amounts.length;
+    const tightAmounts = amounts.every(
+      (a) => Math.abs(a - avgAmount) / avgAmount <= 0.05
+    );
+    const sorted = [...dates].sort((a, b) => a.getTime() - b.getTime());
 
-  // Check amounts within 20% of each other
-  const avgAmount = amounts.reduce((s, a) => s + a, 0) / amounts.length;
-  const allWithinRange = amounts.every(
-    (a) => Math.abs(a - avgAmount) / avgAmount <= 0.2
-  );
-  if (!allWithinRange) return false;
+    if (tightAmounts && amounts.length >= 2) {
+      // Check for tight intervals (28-32 days)
+      let tightIntervals = 0;
+      for (let i = 1; i < sorted.length; i++) {
+        const diff = (sorted[i].getTime() - sorted[i - 1].getTime()) / (1000 * 60 * 60 * 24);
+        if (diff >= 28 && diff <= 32) tightIntervals++;
+      }
+      if (tightIntervals >= Math.max(1, Math.floor((sorted.length - 1) / 2))) {
+        return { isRecurring: true, confidence: "exact_confirmed" };
+      }
+    }
 
-  // Check intervals between 25-35 days
-  const sorted = [...dates].sort((a, b) => a.getTime() - b.getTime());
-  let validIntervals = 0;
-  for (let i = 1; i < sorted.length; i++) {
-    const diff =
-      (sorted[i].getTime() - sorted[i - 1].getTime()) / (1000 * 60 * 60 * 24);
-    if (diff >= 25 && diff <= 35) validIntervals++;
+    // Original 3+ heuristic (amounts within 20%, intervals 25-35 days)
+    if (amounts.length >= 3) {
+      const relaxedAmounts = amounts.every(
+        (a) => Math.abs(a - avgAmount) / avgAmount <= 0.2
+      );
+      if (relaxedAmounts) {
+        let validIntervals = 0;
+        for (let i = 1; i < sorted.length; i++) {
+          const diff = (sorted[i].getTime() - sorted[i - 1].getTime()) / (1000 * 60 * 60 * 24);
+          if (diff >= 25 && diff <= 35) validIntervals++;
+        }
+        if (validIntervals >= Math.floor((sorted.length - 1) / 2)) {
+          return { isRecurring: true, confidence: "exact_confirmed" };
+        }
+      }
+    }
   }
 
-  // At least half the intervals should be in range
-  return validIntervals >= Math.floor((sorted.length - 1) / 2);
+  // Tier B: Lower confidence — relaxed intervals OR known subscription
+  if (amounts.length >= 2) {
+    const avgAmount = amounts.reduce((s, a) => s + a, 0) / amounts.length;
+    const looseAmounts = amounts.every(
+      (a) => Math.abs(a - avgAmount) / avgAmount <= 0.5
+    );
+    if (looseAmounts) {
+      const sorted = [...dates].sort((a, b) => a.getTime() - b.getTime());
+      let validIntervals = 0;
+      for (let i = 1; i < sorted.length; i++) {
+        const diff = (sorted[i].getTime() - sorted[i - 1].getTime()) / (1000 * 60 * 60 * 24);
+        if (diff >= 25 && diff <= 95) validIntervals++;
+      }
+      if (validIntervals >= 1) {
+        return { isRecurring: true, confidence: "amount_heuristic" };
+      }
+    }
+  }
+
+  // Single charge at known subscription merchant
+  if (amounts.length >= 1) {
+    for (const known of KNOWN_SUBSCRIPTIONS) {
+      if (normalizedMerchant.includes(known)) {
+        return { isRecurring: true, confidence: "amount_heuristic" };
+      }
+    }
+  }
+
+  return { isRecurring: false, confidence: "amount_heuristic" };
 }

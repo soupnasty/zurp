@@ -161,6 +161,7 @@ describe("computeConfidenceScore", () => {
     expect(computeConfidenceScore("exact_inferred")).toBe(80);
     expect(computeConfidenceScore("category_match")).toBe(50);
     expect(computeConfidenceScore("amount_heuristic")).toBe(30);
+    expect(computeConfidenceScore("stale_data")).toBe(15);
   });
 });
 
@@ -184,9 +185,9 @@ describe("computeTotalScore", () => {
       noveltyScore: 20,
       confidenceScore: 100,
     });
-    // 80*0.35 + 60*0.25 + 40*0.20 + 20*0.10 + 100*0.10
-    // = 28 + 15 + 8 + 2 + 10 = 63
-    expect(score).toBe(63);
+    // 80*0.30 + 60*0.25 + 40*0.25 + 20*0.10 + 100*0.10
+    // = 24 + 15 + 10 + 2 + 10 = 61
+    expect(score).toBe(61);
   });
 });
 

@@ -83,7 +83,12 @@ function applyDisplayRules(
   });
 
   // Rule 5: Group A outranks Group B within 10 points
+  // Floor override insights sort above non-override at same group level
   insights.sort((a, b) => {
+    // Floor override always wins over non-override
+    if (a.floorOverride && !b.floorOverride) return -1;
+    if (!a.floorOverride && b.floorOverride) return 1;
+
     const groupA = insightGroup(a.category);
     const groupB = insightGroup(b.category);
     const scoreDiff = Math.abs(a.totalScore - b.totalScore);
@@ -312,6 +317,21 @@ describe("Display Rules: Group C Reservation", () => {
 
     const result = applyDisplayRules(insights, 3);
     expect(result.length).toBe(3);
+  });
+});
+
+describe("Display Rules: Floor Override Sort Priority", () => {
+  it("sorts floorOverride insights above non-override regardless of score", () => {
+    const insights = [
+      makeInsight({ category: "B1", totalScore: 55, floorOverride: false }),
+      makeInsight({ category: "A1", totalScore: 35, floorOverride: true }),
+      makeInsight({ category: "C1", totalScore: 65 }),
+    ];
+
+    const result = applyDisplayRules(insights);
+    // A1 with floorOverride=true at score 35 should beat B1 at score 55
+    expect(result[0].category).toBe("A1");
+    expect(result[0].floorOverride).toBe(true);
   });
 });
 

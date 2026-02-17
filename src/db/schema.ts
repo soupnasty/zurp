@@ -400,10 +400,35 @@ export const competitorMap = pgTable(
     category: text("category").notNull(),
     insightType: text("insight_type").notNull(), // "A1" | "A2"
     notes: text("notes"),
+    lastVerifiedAt: timestamp("last_verified_at", { mode: "date" }),
   },
   (table) => [
     index("competitor_map_card_idx").on(table.cardType),
     index("competitor_map_pattern_idx").on(table.plaidMerchantPattern),
+  ]
+);
+
+// ── Insight Dismissals (feedback loop) ──
+
+export const insightDismissals = pgTable(
+  "insight_dismissals",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    suppressionKey: text("suppression_key").notNull(),
+    dismissCount: integer("dismiss_count").notNull().default(1),
+    lastDismissedAt: timestamp("last_dismissed_at", { mode: "date" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    suppressed: boolean("suppressed").notNull().default(false),
+  },
+  (table) => [
+    unique("dismissals_user_key").on(table.userId, table.suppressionKey),
+    index("dismissals_user_suppressed_idx").on(table.userId, table.suppressed),
   ]
 );
 

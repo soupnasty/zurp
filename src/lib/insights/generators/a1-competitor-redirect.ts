@@ -17,6 +17,8 @@ export function generateA1(ctx: GeneratorContext): InsightCandidate[] {
     (a, b) => b.plaidMerchantPattern.length - a.plaidMerchantPattern.length
   );
 
+  const STALE_THRESHOLD_MS = 180 * 24 * 60 * 60 * 1000; // 180 days
+
   // Aggregate spend by benefit partner
   const partnerSpend = new Map<
     string,
@@ -25,6 +27,7 @@ export function generateA1(ctx: GeneratorContext): InsightCandidate[] {
       merchantNames: Set<string>;
       benefitKey: string;
       partner: string;
+      isStale: boolean;
     }
   >();
 
@@ -43,16 +46,22 @@ export function generateA1(ctx: GeneratorContext): InsightCandidate[] {
       );
       if (!usage || usage.amountRemaining <= 0) continue;
 
+      const isStale = entry.lastVerifiedAt
+        ? Date.now() - entry.lastVerifiedAt.getTime() > STALE_THRESHOLD_MS
+        : false;
+
       const existing = partnerSpend.get(entry.benefitPartner);
       if (existing) {
         existing.total += tx.amount;
         existing.merchantNames.add(tx.merchantName);
+        if (isStale) existing.isStale = true;
       } else {
         partnerSpend.set(entry.benefitPartner, {
           total: tx.amount,
           merchantNames: new Set([tx.merchantName]),
           benefitKey: entry.benefitKey,
           partner: entry.benefitPartner,
+          isStale,
         });
       }
       break; // first match wins per transaction
@@ -97,7 +106,7 @@ export function generateA1(ctx: GeneratorContext): InsightCandidate[] {
       dollarAmount: Math.min(amount, remaining),
       daysRemaining: usage.daysRemaining,
       actionability: "switch_platform",
-      confidence: "exact_confirmed",
+      confidence: data.isStale ? "stale_data" : "exact_confirmed",
     });
   }
 

@@ -85,6 +85,7 @@ describe("A1: Competitor Redirect", () => {
         plaidMerchantPattern: "uber",
         category: "rideshare",
         insightType: "A1",
+        lastVerifiedAt: null,
       },
     ];
 
@@ -111,6 +112,7 @@ describe("A1: Competitor Redirect", () => {
         plaidMerchantPattern: "uber",
         category: "rideshare",
         insightType: "A1",
+        lastVerifiedAt: null,
       },
     ];
 
@@ -132,6 +134,7 @@ describe("A1: Competitor Redirect", () => {
         plaidMerchantPattern: "uber",
         category: "rideshare",
         insightType: "A1",
+        lastVerifiedAt: null,
       },
     ];
 
@@ -377,6 +380,7 @@ describe("A2: Subscription Swap", () => {
         plaidMerchantPattern: "spotify",
         category: "streaming",
         insightType: "A2",
+        lastVerifiedAt: null,
       },
     ];
 
@@ -403,6 +407,7 @@ describe("A2: Subscription Swap", () => {
         plaidMerchantPattern: "netflix",
         category: "streaming",
         insightType: "A2",
+        lastVerifiedAt: null,
       },
     ];
 
@@ -431,6 +436,7 @@ describe("A2: Subscription Swap", () => {
         plaidMerchantPattern: "netflix",
         category: "streaming",
         insightType: "A2",
+        lastVerifiedAt: null,
       },
     ];
 

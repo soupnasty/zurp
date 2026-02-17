@@ -59,6 +59,10 @@ const TEMPLATES: Record<string, Template> = {
     title: "${benefit}: $${remaining} unused again",
     body: "This benefit went unused last ${period} too. Use it or factor it out of your card's value.",
   },
+  b1_chronic_unused: {
+    title: "${benefit}: unused for ${streak} months",
+    body: "$${remaining} going to waste each cycle. Consider if this credit fits your spending.",
+  },
 
   // ── B2: Nearly Maxed Credit ──
   b2_standard: {
@@ -82,6 +86,10 @@ const TEMPLATES: Record<string, Template> = {
   b3_chronic: {
     title: "${benefit}: only $${used} of $${max} used",
     body: "This benefit was also underused last ${period}. Plan spending to capture the full credit.",
+  },
+  b3_deep_chronic: {
+    title: "${benefit}: partially used ${streak} months in a row",
+    body: "You've captured $${used} of $${max} for ${streak} consecutive cycles. A single ${hint} would close the gap.",
   },
 
   // ── B4: Benefit Renewal Reminder ──
@@ -164,6 +172,14 @@ const TEMPLATES: Record<string, Template> = {
     title: "Your points are doing the heavy lifting",
     body: "$${points_value} in points value + $${credits} in credits = $${total} total. That's ${pct_of_fee}% of your fee.",
   },
+  c0_refresh: {
+    title: "Updated: $${total} in benefits captured",
+    body: "With ${months} months of data, that's ${pct_of_fee}% of your annual fee.",
+  },
+  c0_refresh_with_points: {
+    title: "Updated: $${total} in total value",
+    body: "$${credits} in credits + $${points_value} in points across ${months} months — ${pct_of_fee}% of your fee.",
+  },
 
   // ── P1: Points Earning Highlight ──
   p1_standard: {
@@ -183,6 +199,16 @@ const TEMPLATES: Record<string, Template> = {
   p2_portal: {
     title: "$${spend} in ${merchant} booked direct",
     body: "Book through ${redirect_to} for ${bonus_rate}x instead of ${current_rate}x — ~$${extra_value} more value.",
+  },
+
+  // ── A3: Wrong Card ──
+  a3_category_switch: {
+    title: "Your ${category} spending could earn more",
+    body: "You spent $${spend} on ${category}. The ${alt_card} earns ${alt_rate}x vs your ${user_rate}x — ~$${extra_value} more in points.",
+  },
+  a3_category_switch_high: {
+    title: "$${extra_value} more from ${category} on ${alt_card}",
+    body: "Your $${spend} in ${category} earns ${user_rate}x on your card. The ${alt_card} earns ${alt_rate}x.",
   },
 };
 

@@ -1,5 +1,6 @@
 import type { InsightCandidate } from "../types";
 import type { GeneratorContext } from "./types";
+import { groupCreditBenefits, cycleToPeriodLabel } from "./group-utils";
 
 /**
  * B3: Underused Credit
@@ -9,23 +10,10 @@ import type { GeneratorContext } from "./types";
  * into a single insight with combined dollar amounts.
  */
 export function generateB3(ctx: GeneratorContext): InsightCandidate[] {
-  const { benefitUsages } = ctx;
   const insights: InsightCandidate[] = [];
 
-  // Group credit benefits by displayGroup (or benefitId if ungrouped)
-  const grouped = new Map<string, typeof benefitUsages>();
-  for (const usage of benefitUsages) {
-    if (usage.type !== "credit") continue;
-    if (usage.creditAmount === 0) continue;
-    const key = usage.displayGroup || usage.benefitId;
-    const list = grouped.get(key) ?? [];
-    list.push(usage);
-    grouped.set(key, list);
-  }
-
-  for (const [groupKey, members] of grouped) {
-    const totalCredit = members.reduce((s, m) => s + m.creditAmount, 0);
-    const totalUsed = members.reduce((s, m) => s + m.amountUsed, 0);
+  for (const group of groupCreditBenefits(ctx.benefitUsages)) {
+    const { groupKey, rep, totalCredit, totalUsed, displayName } = group;
     const totalRemaining = Math.round(totalCredit - totalUsed);
 
     // Must have some usage but not be fully used or >= 75%
@@ -33,19 +21,30 @@ export function generateB3(ctx: GeneratorContext): InsightCandidate[] {
     const usedPct = totalUsed / totalCredit;
     if (usedPct >= 0.75) continue;
 
-    const rep = members[0];
-    const displayName = rep.displayGroupName || rep.benefitName;
     const period = cycleToPeriodLabel(rep.cycle);
 
-    // Check if benefit was also underused in prior cycle
-    const priorUsage = ctx.priorCycleBenefitUsages?.find(
-      (p) => p.benefitId === rep.benefitId
-    );
-    const wasUnderusedPrior =
-      priorUsage && priorUsage.creditAmount > 0 &&
-      priorUsage.amountUsed / priorUsage.creditAmount < 0.75;
+    // Count consecutive underused prior cycles (up to 6)
+    const priorUsages = (ctx.priorCycleBenefitUsages ?? [])
+      .filter((p) => p.benefitId === rep.benefitId)
+      .sort((a, b) => new Date(b.cycleStart).getTime() - new Date(a.cycleStart).getTime());
 
-    const templateKey = wasUnderusedPrior ? "b3_chronic" : "b3_specific";
+    let consecutiveUnderused = 0;
+    for (const p of priorUsages) {
+      if (p.creditAmount > 0 && p.amountUsed / p.creditAmount < 0.75) {
+        consecutiveUnderused++;
+      } else {
+        break;
+      }
+    }
+
+    let templateKey: string;
+    if (consecutiveUnderused >= 3) {
+      templateKey = "b3_deep_chronic";
+    } else if (consecutiveUnderused >= 1) {
+      templateKey = "b3_chronic";
+    } else {
+      templateKey = "b3_specific";
+    }
 
     insights.push({
       category: "B3",
@@ -59,6 +58,7 @@ export function generateB3(ctx: GeneratorContext): InsightCandidate[] {
         spent: 0,
         category: rep.category,
         period,
+        streak: consecutiveUnderused,
         hint: `You've used $${Math.round(totalUsed)} of $${Math.round(totalCredit)} this ${period}.`,
       },
       dedupKey: `b3:${groupKey}:${rep.periodKey}`,
@@ -73,20 +73,4 @@ export function generateB3(ctx: GeneratorContext): InsightCandidate[] {
   }
 
   return insights;
-}
-
-function cycleToPeriodLabel(cycle: string): string {
-  switch (cycle) {
-    case "monthly":
-      return "month";
-    case "biannual_h1":
-      return "half (Jan–Jun)";
-    case "biannual_h2":
-      return "half (Jul–Dec)";
-    case "annual_calendar":
-    case "annual_anniversary":
-      return "year";
-    default:
-      return "period";
-  }
 }

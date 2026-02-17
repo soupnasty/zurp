@@ -63,7 +63,7 @@ export function generateP2(ctx: GeneratorContext): InsightCandidate[] {
         bonus_rate: scenario.bonusRate,
         extra_value: extraValue,
         extra_points: extraPoints,
-        merchant: scenario.type === "rideshare" ? "Uber" : scenario.spendCategory === "travel_hotels" ? "hotels" : scenario.spendCategory === "travel_car_rental" ? "car rentals" : "flights",
+        merchant: scenario.type === "rideshare" ? "Uber" : scenario.spendCategory === "travel_hotels" ? "hotels" : scenario.spendCategory === "car_rentals" ? "car rentals" : "flights",
       },
       dedupKey,
       triggeredByTransactionId: null,

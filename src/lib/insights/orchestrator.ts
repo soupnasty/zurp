@@ -17,6 +17,8 @@ import {
   markInsightsShown,
   recordImpressions,
   cleanupDismissedInsights,
+  getSuppressedKeys,
+  deriveSuppressionKey,
 } from "./queries";
 import { getBenefitUsageSummaries, getCardProfiles } from "@/lib/queries";
 import { getCardDefinition } from "@/lib/cards";
@@ -40,9 +42,10 @@ export async function generateAndPersistInsights(userId: string) {
   if (cardProfilesList.length === 0) return;
 
   // Batch-fetch user-wide data once (shared across all cards)
-  const [impressionHistory, existingByKey] = await Promise.all([
+  const [impressionHistory, existingByKey, suppressedKeys] = await Promise.all([
     getImpressionHistory(userId),
     getExistingInsightsByUser(userId),
+    getSuppressedKeys(userId),
   ]);
 
   // Process each card profile independently
@@ -137,6 +140,9 @@ export async function generateAndPersistInsights(userId: string) {
 
       // Skip recently dismissed insights — don't waste a DB write re-scoring them
       if (existing?.state === "dismissed") continue;
+
+      // Skip insights whose pattern has been suppressed (3+ dismissals)
+      if (suppressedKeys.has(deriveSuppressionKey(candidate.dedupKey))) continue;
 
       const history = impressionHistory.get(candidate.dedupKey) ?? null;
       const scores = scoreCandidate(candidate, history);
@@ -233,12 +239,14 @@ export async function generateAndPersistInsights(userId: string) {
 /**
  * Get ranked insights for display on a page.
  * Applies display rules from the spec.
+ * Returns primary (top `max`) and expanded (additional insights for "see all").
  */
 export async function getInsightsForDisplay(
   userId: string,
   surface: string,
-  max = 3
-): Promise<ScoredInsight[]> {
+  max = 3,
+  expandedMax = 10
+): Promise<{ primary: ScoredInsight[]; expanded: ScoredInsight[] }> {
   const rows = await getActiveInsights(userId);
 
   // Convert to ScoredInsight
@@ -296,7 +304,12 @@ export async function getInsightsForDisplay(
   });
 
   // Rule 5: Group A outranks Group B when scores within 10 points
+  // Floor override insights sort above non-override at same group level
   insights.sort((a, b) => {
+    // Floor override always wins over non-override
+    if (a.floorOverride && !b.floorOverride) return -1;
+    if (!a.floorOverride && b.floorOverride) return 1;
+
     const groupA = insightGroup(a.category);
     const groupB = insightGroup(b.category);
     const scoreDiff = Math.abs(a.totalScore - b.totalScore);
@@ -356,28 +369,41 @@ export async function getInsightsForDisplay(
     selected.unshift(c0Item);
   }
 
-  // Batch mark pending insights as shown (Issues 15: single UPDATE instead of loop)
-  const pendingIds = selected
+  // Build expanded list from remaining insights (beyond primary selection)
+  const primarySet = new Set(selected.map((s) => s.id));
+  const expanded: ScoredInsight[] = [];
+  for (const insight of insights) {
+    if (expanded.length >= expandedMax - max) break;
+    if (!primarySet.has(insight.id)) {
+      expanded.push(insight);
+    }
+  }
+
+  const primary = selected.slice(0, max);
+
+  // Batch mark primary pending insights as shown (Issues 15: single UPDATE instead of loop)
+  // Expanded insights are NOT marked shown until the user actually expands
+  const pendingIds = primary
     .filter((i) => i.state === "pending")
     .map((i) => i.id);
   await markInsightsShown(pendingIds);
 
   // Update in-memory state for return value
-  for (const insight of selected) {
+  for (const insight of primary) {
     if (insight.state === "pending") {
       insight.state = "shown";
       insight.shownAt = new Date();
     }
   }
 
-  // Batch record impressions server-side
+  // Batch record impressions server-side for primary only
   // Note: Issue 13 will move this to client-side Intersection Observer,
   // but for now keep server-side recording as fallback
   await recordImpressions(
-    selected.map((i) => ({ insightId: i.id, surface }))
+    primary.map((i) => ({ insightId: i.id, surface }))
   );
 
-  return selected.slice(0, max);
+  return { primary, expanded };
 }
 
 /**

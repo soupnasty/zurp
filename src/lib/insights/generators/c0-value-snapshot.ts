@@ -3,14 +3,14 @@ import type { GeneratorContext } from "./types";
 
 /**
  * C0: First-Connect Value Snapshot
- * One-time insight generated after first card connect.
- * Sums all amountUsed from benefit usage + points value to show existing value captured.
+ * Generated after card connect to show existing value captured.
+ *
+ * Two-phase dedup:
+ * - `c0:{cardType}:initial` — first connect (may have low history)
+ * - `c0:{cardType}:mature`  — refresh after 6+ months if initial was low_history
  */
 export function generateC0(ctx: GeneratorContext): InsightCandidate[] {
-  const { benefitUsages, annualFee, totalBenefitsCaptured, cardType, pointsData } = ctx;
-
-  // Dedup key: exactly once per card
-  const dedupKey = `c0:${cardType}`;
+  const { benefitUsages, annualFee, totalBenefitsCaptured, cardType, pointsData, existingMilestoneKeys } = ctx;
 
   const pointsValue = pointsData?.valueConservative ?? 0;
   const totalValue = totalBenefitsCaptured + pointsValue;
@@ -27,9 +27,35 @@ export function generateC0(ctx: GeneratorContext): InsightCandidate[] {
 
   const hasPoints = pointsValue > 0;
 
+  const initialKey = `c0:${cardType}:initial`;
+  const matureKey = `c0:${cardType}:mature`;
+  // Also check legacy key (pre-v3) for backwards compatibility
+  const legacyKey = `c0:${cardType}`;
+
+  const hasInitial = existingMilestoneKeys.includes(initialKey) || existingMilestoneKeys.includes(legacyKey);
+  const hasMature = existingMilestoneKeys.includes(matureKey);
+
+  // Determine which phase to generate
+  let dedupKey: string;
+  let isRefresh = false;
+
+  if (!hasInitial) {
+    // First-time generation
+    dedupKey = initialKey;
+  } else if (!hasMature && monthCount >= 6) {
+    // Refresh: initial exists, 6+ months of data now available
+    dedupKey = matureKey;
+    isRefresh = true;
+  } else {
+    // Already generated both phases, or not enough data for refresh
+    return [];
+  }
+
   // Select template variant
   let templateKey: string;
-  if (hasPoints && pointsValue > credits * 2) {
+  if (isRefresh) {
+    templateKey = hasPoints ? "c0_refresh_with_points" : "c0_refresh";
+  } else if (hasPoints && pointsValue > credits * 2) {
     templateKey = "c0_points_dominant";
   } else if (monthCount < 3) {
     templateKey = hasPoints ? "c0_low_history_with_points" : "c0_low_history";

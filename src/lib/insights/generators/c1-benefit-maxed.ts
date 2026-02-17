@@ -1,5 +1,6 @@
 import type { InsightCandidate } from "../types";
 import type { GeneratorContext } from "./types";
+import { groupCreditBenefits, cycleToPeriodLabel } from "./group-utils";
 
 /**
  * C1: Benefit Maxed
@@ -9,27 +10,12 @@ import type { GeneratorContext } from "./types";
  * into a single insight — only fires when ALL sub-credits are maxed.
  */
 export function generateC1(ctx: GeneratorContext): InsightCandidate[] {
-  const { benefitUsages } = ctx;
   const insights: InsightCandidate[] = [];
 
-  // Group credit benefits by displayGroup (or benefitId if ungrouped)
-  const grouped = new Map<string, typeof benefitUsages>();
-  for (const usage of benefitUsages) {
-    if (usage.type !== "credit") continue;
-    if (usage.creditAmount === 0) continue;
-    const key = usage.displayGroup || usage.benefitId;
-    const list = grouped.get(key) ?? [];
-    list.push(usage);
-    grouped.set(key, list);
-  }
+  for (const group of groupCreditBenefits(ctx.benefitUsages)) {
+    if (!group.allFullyUsed) continue;
 
-  for (const [groupKey, members] of grouped) {
-    // All members must be fully used
-    if (!members.every((m) => m.isFullyUsed)) continue;
-
-    const rep = members[0];
-    const totalCredit = members.reduce((s, m) => s + m.creditAmount, 0);
-    const displayName = rep.displayGroupName || rep.benefitName;
+    const { rep, groupKey, displayName, totalCredit } = group;
     const period = cycleToPeriodLabel(rep.cycle);
     const value = Math.round(totalCredit);
 
@@ -54,20 +40,4 @@ export function generateC1(ctx: GeneratorContext): InsightCandidate[] {
   }
 
   return insights;
-}
-
-function cycleToPeriodLabel(cycle: string): string {
-  switch (cycle) {
-    case "monthly":
-      return "month";
-    case "biannual_h1":
-      return "half (Jan–Jun)";
-    case "biannual_h2":
-      return "half (Jul–Dec)";
-    case "annual_calendar":
-    case "annual_anniversary":
-      return "year";
-    default:
-      return "period";
-  }
 }

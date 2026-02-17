@@ -47,16 +47,17 @@ export async function getExistingInsight(userId: string, dedupKey: string) {
   });
 }
 
-/** Get all existing ROI milestone dedup keys for a user (optionally scoped to a card). */
+/** Get all existing ROI milestone and C0 snapshot dedup keys for a user (optionally scoped to a card). */
 export async function getRoiMilestonesReached(
   userId: string,
   cardId?: string
 ): Promise<string[]> {
-  const pattern = cardId ? `c2:${cardId}:%` : "c2:%";
+  const c2Pattern = cardId ? `c2:${cardId}:%` : "c2:%";
+  const c0Pattern = cardId ? `c0:${cardId}%` : "c0:%";
   const milestones = await db.query.insights.findMany({
     where: and(
       eq(schema.insights.userId, userId),
-      sql`${schema.insights.dedupKey} LIKE ${pattern}`
+      sql`(${schema.insights.dedupKey} LIKE ${c2Pattern} OR ${schema.insights.dedupKey} LIKE ${c0Pattern})`
     ),
     columns: { dedupKey: true },
   });
@@ -93,6 +94,7 @@ export async function getCompetitorMap(
     plaidMerchantPattern: e.plaidMerchantPattern,
     category: e.category,
     insightType: e.insightType,
+    lastVerifiedAt: e.lastVerifiedAt ?? null,
   }));
 }
 
@@ -243,47 +245,118 @@ export async function cleanupDismissedInsights(userId: string, cutoffDays = 90) 
     );
 }
 
+// ── Dismiss suppression ──
+
+/**
+ * Derive a suppression key from a dedup key by stripping the temporal segment.
+ * e.g., "a1:doordash_credit:2026-02" → "a1:doordash_credit"
+ *       "b1:csr_doordash:2026-m02"  → "b1:csr_doordash"
+ *       "c2:csr:100pct"             → "c2:csr:100pct" (no temporal segment)
+ */
+export function deriveSuppressionKey(dedupKey: string): string {
+  // Strip trailing date-like segments: YYYY-MM, YYYY-mMM, YYYY-qN, YYYY
+  return dedupKey.replace(/:\d{4}(-m?\d{2}|-q\d)?$/, "");
+}
+
+/** Get all suppressed suppression keys for a user. */
+export async function getSuppressedKeys(userId: string): Promise<Set<string>> {
+  const rows = await db.query.insightDismissals.findMany({
+    where: and(
+      eq(schema.insightDismissals.userId, userId),
+      eq(schema.insightDismissals.suppressed, true)
+    ),
+    columns: { suppressionKey: true },
+  });
+  return new Set(rows.map((r) => r.suppressionKey));
+}
+
+/** Record a dismissal — increment count, suppress after 3. */
+export async function recordDismissal(userId: string, dedupKey: string) {
+  const suppressionKey = deriveSuppressionKey(dedupKey);
+  const now = new Date();
+
+  // Upsert: increment dismiss count, check threshold
+  const existing = await db.query.insightDismissals.findFirst({
+    where: and(
+      eq(schema.insightDismissals.userId, userId),
+      eq(schema.insightDismissals.suppressionKey, suppressionKey)
+    ),
+  });
+
+  if (existing) {
+    const newCount = existing.dismissCount + 1;
+    await db
+      .update(schema.insightDismissals)
+      .set({
+        dismissCount: newCount,
+        lastDismissedAt: now,
+        suppressed: newCount >= 3,
+      })
+      .where(eq(schema.insightDismissals.id, existing.id));
+  } else {
+    await db.insert(schema.insightDismissals).values({
+      userId,
+      suppressionKey,
+      dismissCount: 1,
+      lastDismissedAt: now,
+      suppressed: false,
+    });
+  }
+}
+
 /**
  * Get prior cycle benefit usage for each benefit on a card.
- * Used by B1/B3 generators to detect repeat unused/underused patterns.
+ * Fetches up to `maxCycles` prior cycles for pattern detection (B1/B3 repeat awareness).
  */
 export async function getPriorBenefitUsages(
   userId: string,
   cardProfileId: string,
   cardType: string,
-  anniversaryDate: Date | null
+  anniversaryDate: Date | null,
+  maxCycles = 6
 ): Promise<PriorCycleUsage[]> {
   const cardDef = getCardDefinition(cardType);
   if (!cardDef) return [];
 
-  // Compute prior period keys for each benefit
+  // Compute up to maxCycles prior period keys for each benefit
   const now = new Date();
-  const priorPeriodKeys = new Set<string>();
-  const benefitPriorKeyMap = new Map<string, string>();
+  const allPriorPeriodKeys = new Set<string>();
+  // Map: benefitId → [periodKey1, periodKey2, ...] (ordered from most recent)
+  const benefitPriorKeysMap = new Map<string, string[]>();
 
   for (const benefit of cardDef.benefits) {
     if (benefit.type === "subscription") continue;
-    const prior = getPreviousCycleBounds(benefit.cycle, now, anniversaryDate);
-    priorPeriodKeys.add(prior.periodKey);
-    benefitPriorKeyMap.set(benefit.id, prior.periodKey);
+
+    const priorKeys: string[] = [];
+    let refDate = now;
+
+    for (let i = 0; i < maxCycles; i++) {
+      const prior = getPreviousCycleBounds(benefit.cycle, refDate, anniversaryDate);
+      priorKeys.push(prior.periodKey);
+      allPriorPeriodKeys.add(prior.periodKey);
+      // Move reference date to start of prior cycle to get the one before it
+      refDate = new Date(prior.cycleStart.getTime() - 1);
+    }
+
+    benefitPriorKeysMap.set(benefit.id, priorKeys);
   }
 
-  if (priorPeriodKeys.size === 0) return [];
+  if (allPriorPeriodKeys.size === 0) return [];
 
-  // Batch-fetch all usage records for this user+card
+  // Batch-fetch all usage records matching any prior period key
   const usageRecords = await db.query.benefitUsage.findMany({
     where: and(
       eq(schema.benefitUsage.userId, userId),
       eq(schema.benefitUsage.cardProfileId, cardProfileId),
-      inArray(schema.benefitUsage.periodKey, Array.from(priorPeriodKeys))
+      inArray(schema.benefitUsage.periodKey, Array.from(allPriorPeriodKeys))
     ),
   });
 
-  // Filter to only records matching the correct prior period for each benefit
+  // Filter to only records matching valid prior periods for each benefit
   const results: PriorCycleUsage[] = [];
   for (const record of usageRecords) {
-    const expectedKey = benefitPriorKeyMap.get(record.benefitId);
-    if (expectedKey !== record.periodKey) continue;
+    const expectedKeys = benefitPriorKeysMap.get(record.benefitId);
+    if (!expectedKeys?.includes(record.periodKey)) continue;
 
     const benefitDef = cardDef.benefits.find((b) => b.id === record.benefitId);
     if (!benefitDef) continue;

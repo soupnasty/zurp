@@ -126,11 +126,18 @@ export async function getCardSummary(
       }
     }
 
-    const days = daysRemainingInCycle(
+    let days = daysRemainingInCycle(
       benefit.cycle as BenefitCycle,
       now,
       cardProfile.anniversaryDate
     );
+
+    // For benefits with a sunset date, use the sooner of cycle end or sunset
+    if (benefit.sunsetDate) {
+      const sunset = new Date(benefit.sunsetDate + "T23:59:59");
+      const sunsetDays = Math.max(0, Math.ceil((sunset.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+      days = Math.min(days, sunsetDays);
+    }
 
     if (nearestExpiry === null || days < nearestExpiry) {
       nearestExpiry = days;
@@ -245,11 +252,18 @@ export async function getBenefitUsageSummaries(
       (u) => u.benefitId === benefit.id && u.periodKey === bounds.periodKey
     );
 
-    const days = daysRemainingInCycle(
+    let days = daysRemainingInCycle(
       benefit.cycle as BenefitCycle,
       now,
       cardProfile.anniversaryDate
     );
+
+    // For benefits with a sunset date, use the sooner of cycle end or sunset
+    if (benefit.sunsetDate) {
+      const sunset = new Date(benefit.sunsetDate + "T23:59:59");
+      const sunsetDays = Math.max(0, Math.ceil((sunset.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+      days = Math.min(days, sunsetDays);
+    }
 
     // YTD: sum all usage for this benefit within the card year
     let ytdUsed: number | undefined;
@@ -279,13 +293,12 @@ export async function getBenefitUsageSummaries(
         if (activationDate) {
           activatedAt = activationDate.toISOString();
 
-          // Compute YTD for activated subscriptions using card year bounds
+          // Compute total value since activation (not clipped to card year —
+          // subscriptions are continuous, and the user expects to see total
+          // months since they activated, regardless of anniversary boundaries)
           // +1 because the activation month itself counts
-          const rangeStart = activationDate > cardYearBounds.cycleStart
-            ? activationDate
-            : cardYearBounds.cycleStart;
-          if (now >= rangeStart) {
-            ytdUsed = benefit.creditAmount * (countFullMonths(rangeStart, now) + 1);
+          if (now >= activationDate) {
+            ytdUsed = benefit.creditAmount * (countFullMonths(activationDate, now) + 1);
           } else {
             ytdUsed = 0;
           }
@@ -297,6 +310,12 @@ export async function getBenefitUsageSummaries(
       }
     }
 
+    // For activated subscriptions, the current month is fully "used"
+    const subActivated = benefit.type === "subscription" && isActivated;
+    const effectiveUsed = subActivated ? benefit.creditAmount : (usage?.amountUsed ?? 0);
+    const effectiveRemaining = subActivated ? 0 : (usage?.amountRemaining ?? benefit.creditAmount);
+    const effectiveFullyUsed = subActivated ? true : (usage?.isFullyUsed ?? false);
+
     summaries.push({
       benefitId: benefit.id,
       benefitName: benefit.name,
@@ -305,9 +324,9 @@ export async function getBenefitUsageSummaries(
       type: benefit.type,
       cycle: benefit.cycle,
       creditAmount: benefit.creditAmount,
-      amountUsed: usage?.amountUsed ?? 0,
-      amountRemaining: usage?.amountRemaining ?? benefit.creditAmount,
-      isFullyUsed: usage?.isFullyUsed ?? false,
+      amountUsed: effectiveUsed,
+      amountRemaining: effectiveRemaining,
+      isFullyUsed: effectiveFullyUsed,
       manualOverride: usage?.manualOverride ?? false,
       daysRemaining: days,
       requiresActivation: benefit.requiresActivation,

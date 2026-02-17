@@ -1,5 +1,6 @@
 import type { InsightCandidate } from "../types";
 import type { GeneratorContext } from "./types";
+import { groupCreditBenefits, cycleToPeriodLabel, computeCycleProgress } from "./group-utils";
 
 /**
  * B1: Unused Credit (Time Pressure)
@@ -12,52 +13,37 @@ export function generateB1(ctx: GeneratorContext): InsightCandidate[] {
   const { benefitUsages } = ctx;
   const insights: InsightCandidate[] = [];
 
-  // Group credit benefits by displayGroup (or benefitId if ungrouped)
-  const grouped = new Map<string, typeof benefitUsages>();
-  for (const usage of benefitUsages) {
-    if (usage.type !== "credit") continue;
-    if (usage.creditAmount === 0) continue;
-    const key = usage.displayGroup || usage.benefitId;
-    const list = grouped.get(key) ?? [];
-    list.push(usage);
-    grouped.set(key, list);
-  }
-
-  for (const [groupKey, members] of grouped) {
-    // Aggregate across grouped members
-    const totalCredit = members.reduce((s, m) => s + m.creditAmount, 0);
-    const totalUsed = members.reduce((s, m) => s + m.amountUsed, 0);
+  for (const group of groupCreditBenefits(benefitUsages)) {
+    const { groupKey, rep, totalCredit, totalUsed, displayName } = group;
 
     const usedPct = totalUsed / totalCredit;
     if (usedPct >= 0.25) continue;
 
-    // Use the first member for cycle bounds (grouped benefits share the same cycle)
-    const rep = members[0];
-    const cycleStart = new Date(rep.cycleStart).getTime();
-    const cycleEnd = new Date(rep.cycleEnd).getTime();
-    const now = Date.now();
-    const totalDuration = cycleEnd - cycleStart;
-    const elapsed = now - cycleStart;
-    const progress = totalDuration > 0 ? elapsed / totalDuration : 0;
-
+    const progress = computeCycleProgress(rep);
     if (progress < 0.5) continue;
 
     const remaining = Math.round(totalCredit - totalUsed);
     const days = rep.daysRemaining;
 
-    const displayName = rep.displayGroupName || rep.benefitName;
+    // Count consecutive unused prior cycles (up to 6)
+    const priorUsages = (ctx.priorCycleBenefitUsages ?? [])
+      .filter((p) => p.benefitId === rep.benefitId)
+      .sort((a, b) => new Date(b.cycleStart).getTime() - new Date(a.cycleStart).getTime()); // most recent first
 
-    // Check if benefit was also unused in prior cycle
-    const priorUsage = ctx.priorCycleBenefitUsages?.find(
-      (p) => p.benefitId === rep.benefitId
-    );
-    const wasUnusedPrior =
-      priorUsage && priorUsage.creditAmount > 0 &&
-      priorUsage.amountUsed / priorUsage.creditAmount < 0.25;
+    let consecutiveUnused = 0;
+    for (const p of priorUsages) {
+      if (p.creditAmount > 0 && p.amountUsed / p.creditAmount < 0.25) {
+        consecutiveUnused++;
+      } else {
+        break; // streak broken
+      }
+    }
 
-    // Select template variant based on repeat pattern or urgency
+    // Select template variant based on streak depth or urgency
     let templateKey: string;
-    if (wasUnusedPrior) {
+    if (consecutiveUnused >= 3) {
+      templateKey = "b1_chronic_unused";
+    } else if (consecutiveUnused >= 1) {
       templateKey = "b1_repeat_unused";
     } else if (days <= 7) {
       templateKey = "b1_very_late";
@@ -140,20 +126,4 @@ export function generateB1(ctx: GeneratorContext): InsightCandidate[] {
   }
 
   return insights;
-}
-
-function cycleToPeriodLabel(cycle: string): string {
-  switch (cycle) {
-    case "monthly":
-      return "month";
-    case "biannual_h1":
-      return "half (Jan–Jun)";
-    case "biannual_h2":
-      return "half (Jul–Dec)";
-    case "annual_calendar":
-    case "annual_anniversary":
-      return "year";
-    default:
-      return "period";
-  }
 }

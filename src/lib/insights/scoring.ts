@@ -62,6 +62,7 @@ const CONFIDENCE_SCORES: Record<ConfidenceTier, number> = {
   exact_inferred: 80,
   category_match: 50,
   amount_heuristic: 30,
+  stale_data: 15,
 };
 
 export function computeConfidenceScore(tier: ConfidenceTier): number {
@@ -71,9 +72,9 @@ export function computeConfidenceScore(tier: ConfidenceTier): number {
 // ── Composite scoring ──
 
 const WEIGHTS = {
-  dollarImpact: 0.35,
+  dollarImpact: 0.30,
   urgency: 0.25,
-  actionability: 0.20,
+  actionability: 0.25,
   novelty: 0.10,
   confidence: 0.10,
 } as const;

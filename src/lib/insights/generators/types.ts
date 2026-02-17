@@ -53,6 +53,7 @@ export interface CompetitorMapEntry {
   plaidMerchantPattern: string;
   category: string;
   insightType: string;
+  lastVerifiedAt: Date | null;
 }
 
 export type InsightGenerator = (ctx: GeneratorContext) => InsightCandidate[];

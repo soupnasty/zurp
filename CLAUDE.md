@@ -150,48 +150,59 @@ Pure-function matching engine with no DB dependencies:
 
 DoorDash has 3 separate sub-credits ($5/$10/$10) tracked internally but displayed as a single $25/month card in the UI. Grouping uses `displayGroup`, `displayGroupName`, and `displayGroupIcon` fields on benefits. The `groupBenefits()` function in the dashboard page handles this.
 
-### Insights Engine v2 (`src/lib/insights/`)
+### Insights Engine v3 (`src/lib/insights/`)
 
-Persistent, scored insight system with 8 categories across 3 groups:
+Persistent, scored insight system with 12 categories across 3 groups:
 
-- **Group A — Competitor Redirects**: A1 (one-time competitor spend), A2 (recurring subscription swap)
-- **Group B — Benefit Optimization**: B1 (unused credit), B2 (nearly maxed), B3 (underused credit)
-- **Group C — Positive Reinforcement**: C0 (first-connect value snapshot), C1 (benefit maxed), C2 (ROI milestone)
+- **Group A — Redirects**: A1 (one-time competitor spend), A2 (recurring subscription swap), A3 (wrong card for category), P2 (missed bonus opportunity)
+- **Group B — Benefit Optimization**: B1 (unused credit), B2 (nearly maxed), B3 (underused credit), B4 (benefit renewal)
+- **Group C — Positive Reinforcement**: C0 (value snapshot, refreshes at 6 months), C1 (benefit maxed), C2 (ROI milestone), P1 (points highlight)
 
 **Architecture** (three layers, mirrors the engine pattern):
 ```
 src/lib/insights/
   generators/              ← Pure functions, no DB (like matcher.ts)
     a1-competitor-redirect.ts
-    a2-subscription-swap.ts
-    b1-unused-credit.ts
+    a2-subscription-swap.ts  ← Two-tier recurring detection
+    a3-wrong-card.ts         ← Cross-card earn rate comparison
+    b1-unused-credit.ts      ← 6-cycle streak counting
     b2-nearly-maxed.ts
-    b3-underused-credit.ts
-    c0-value-snapshot.ts
+    b3-underused-credit.ts   ← 6-cycle streak counting
+    b4-benefit-renewal.ts
+    c0-value-snapshot.ts     ← Two-phase: initial → mature (6mo refresh)
     c1-benefit-maxed.ts
     c2-roi-milestone.ts
-    index.ts               ← Registry, runAllGenerators()
-    types.ts               ← GeneratorContext, InsightGenerator
+    p1-points-highlight.ts
+    p2-missed-bonus.ts       ← Dynamic scenarios from earn configs
+    p2-scenarios.ts          ← Auto-generated from earn configs (not hardcoded)
+    group-utils.ts           ← Shared: groupCreditBenefits, cycleToPeriodLabel, computeCycleProgress
+    index.ts                 ← Registry, runAllGenerators()
+    types.ts                 ← GeneratorContext, InsightGenerator
   scoring.ts               ← 5-factor weighted scoring (pure)
-  templates.ts             ← ~20 copy templates + interpolation
-  orchestrator.ts          ← DB bridge: persist, display, expire
-  queries.ts               ← Server-only DB queries
+  templates.ts             ← ~30 copy templates + interpolation
+  orchestrator.ts          ← DB bridge: persist, display, expire, suppression
+  queries.ts               ← Server-only DB queries + dismiss tracking
   types.ts                 ← InsightCandidate, ScoredInsight, etc.
-  __tests__/               ← 50 tests (scoring, templates, generators)
+  __tests__/               ← Tests (scoring, templates, generators, display rules)
 ```
 
-**Scoring**: 5-factor weighted composite — dollar_impact (0.35), urgency (0.25), actionability (0.20), novelty (0.10), confidence (0.10). Floor override: if dollar_impact ≥ 80 AND urgency ≥ 80 for Group A/B, always shown.
+**Scoring**: 5-factor weighted composite — dollar_impact (0.30), actionability (0.25), urgency (0.25), novelty (0.10), confidence (0.10). Floor override: if dollar_impact ≥ 80 AND urgency ≥ 80 for Group A/B, always shown AND sorts above non-override insights.
 
-**Lifecycle**: `pending` → `shown` → `expired` | `superseded`. Dedup via unique `(userId, dedupKey)` constraint; existing insights update-in-place preserving state/generatedAt/shownAt.
+**Confidence tiers**: exact_confirmed (100), exact_inferred (80), category_match (50), amount_heuristic (30), stale_data (15). Competitor map entries older than 180 days (`lastVerifiedAt`) downgrade to stale_data.
 
-**Display rules** (in `getInsightsForDisplay`): Score floor ≥ 30, max 1 per benefit, at least 1 Group C if available, A outranks B within 10 points, C0 always first, max 3 per page.
+**Lifecycle**: `pending` → `shown` → `expired` | `superseded` | `dismissed`. Dedup via unique `(userId, dedupKey)` constraint; existing insights update-in-place preserving state/generatedAt/shownAt.
 
-**DB tables**: `insights`, `insight_impressions`, `competitor_map`. Competitor map seeded from `db:seed` (~50 CSR entries).
+**Dismiss suppression**: 3 dismissals of the same pattern (suppression key = dedupKey minus temporal segment) permanently suppresses that insight type. Tracked in `insightDismissals` table.
+
+**Display rules** (in `getInsightsForDisplay`): Returns `{ primary, expanded }`. Primary: score floor ≥ 30, max 1 per benefit, at least 1 Group C if available, A outranks B within 10 points, C0 always first, max 3. Expanded: up to 10 additional insights for "See all" view. Suppressed patterns excluded from both.
+
+**DB tables**: `insights`, `insight_impressions`, `competitor_map`, `insightDismissals`. Competitor map seeded from `db:seed`.
 
 **Integration points**:
 - `generateAndPersistInsights(userId)` called after `processTransactionsForConnection()` in engine orchestrator
-- `getInsightsForDisplay(userId, surface, max)` called in benefits page
+- `getInsightsForDisplay(userId, surface, max)` called in insights page
 - `expireStaleInsights(userId)` called in cron job
+- `/api/insights/dismiss` records dismissals and triggers suppression
 
 ### Points Earn Model (`src/lib/points/`)
 
@@ -294,7 +305,7 @@ src/
 │   └── ThemeProvider.tsx   # Dark mode provider
 ├── lib/
 │   ├── engine/             # Pure matching engine + tests
-│   ├── insights/           # Insights Engine v2 (generators, scoring, orchestrator)
+│   ├── insights/           # Insights Engine v3 (generators, scoring, orchestrator, suppression)
 │   ├── spending/           # Spending analysis (categories, queries)
 │   ├── cards/              # Card definitions registry + auto-detection (30 cards)
 │   ├── points/             # Points earn model (category mapper, earn configs, simulator)
@@ -308,7 +319,7 @@ src/
 │   ├── encryption.ts       # AES-256-GCM for Plaid tokens
 │   └── types.ts            # All TypeScript types
 └── db/
-    ├── schema.ts           # Drizzle schema (17 tables + relations)
+    ├── schema.ts           # Drizzle schema (18 tables + relations)
     ├── seed.ts             # Seed script
     └── index.ts            # DB client (lazy Proxy)
 ```
@@ -321,7 +332,7 @@ src/
 - [x] Phase 4: Auth + user management
 - [x] Phase 5: Dashboard UI
 - [x] Phase 6: Polish, webhooks, cron, deployment
-- [x] Phase 7: Insights Engine v2 — 8 categories, DB persistence, 5-factor scoring, lifecycle, competitor map
+- [x] Phase 7: Insights Engine v3 — 12 categories (A1-A3, P1-P2, B1-B4, C0-C2), dismiss suppression, expandable display, dynamic P2, cross-card A3, 6-cycle streak counting, C0 refresh, competitor staleness
 - [x] Phase 8: Compare Page + Points Earn Model — category mapper, 4 card earn configs, simulator, perk matrix, tabbed UI
 - [x] Phase 9: Amex Platinum — 21 benefits, quarterly cycle types, activeMonths gating, earn config, A2 swap templates, competitor map
 - [x] Phase 10: Citi Strata Elite — time-window conditions (Citi Nights 6x), portal mode toggle, 5-card comparison, datetime from Plaid
@@ -352,7 +363,7 @@ Connection health alerts (`src/lib/notifications.ts`) surface stale/reauth/disco
 
 - `docs/architecture/zurp.md` — Full app spec (data model, matching engine, benefits)
 - `docs/architecture/design-principles.md` — S-tier SaaS dashboard design checklist
-- `docs/engines/insights-engine.md` — Insights Engine v2 spec (categories, scoring, templates, display rules)
+- `docs/engines/insights-engine.md` — Insights Engine v3 spec (categories, scoring, templates, display rules, suppression)
 - `docs/engines/points-engine.md` — Points earn model spec (category taxonomy, earn rates, caps)
 - `docs/styling/style-guide.md` — Brand colors, typography, spacing, motion
 - `docs/catalogs/` — Card benefit catalogs organized by tier (tier-1, tier-2, tier-3) covering 30 cards

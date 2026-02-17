@@ -1,6 +1,6 @@
 // ── Insights Engine v2 types ──
 
-export type InsightCategory = "A1" | "A2" | "P2" | "B1" | "B2" | "B3" | "B4" | "C0" | "C1" | "C2" | "P1";
+export type InsightCategory = "A1" | "A2" | "A3" | "P2" | "B1" | "B2" | "B3" | "B4" | "C0" | "C1" | "C2" | "P1";
 
 export type InsightState = "pending" | "shown" | "expired" | "superseded" | "dismissed";
 
@@ -17,7 +17,8 @@ export type ConfidenceTier =
   | "exact_confirmed"  // 100
   | "exact_inferred"   // 80
   | "category_match"   // 50
-  | "amount_heuristic"; // 30
+  | "amount_heuristic" // 30
+  | "stale_data";      // 15
 
 /** Raw candidate output from a generator (pre-scoring). */
 export interface InsightCandidate {
@@ -73,6 +74,7 @@ export interface InsightImpressionHistory {
 
 export function insightGroup(category: InsightCategory): InsightGroup {
   if (category === "P2") return "A"; // Missed bonus → redirect group
+  if (category === "A3") return "A"; // Wrong card → redirect group
   if (category === "P1") return "C"; // Points highlight → celebrate group
   if (category.startsWith("A")) return "A";
   if (category.startsWith("B")) return "B";

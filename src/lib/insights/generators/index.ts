@@ -11,11 +11,13 @@ import { generateC1 } from "./c1-benefit-maxed";
 import { generateC2 } from "./c2-roi-milestone";
 import { generateP1 } from "./p1-points-highlight";
 import { generateP2 } from "./p2-missed-bonus";
+import { generateA3 } from "./a3-wrong-card";
 
 const generators: InsightGenerator[] = [
   generateA1,
   generateA2,
   generateP2,
+  generateA3,
   generateB1,
   generateB2,
   generateB3,
