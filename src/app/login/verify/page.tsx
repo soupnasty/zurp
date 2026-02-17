@@ -8,7 +8,7 @@ export default async function VerifyPage({
   const { email } = await searchParams;
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
+    <div className="fixed inset-0 flex items-center justify-center px-4 overflow-hidden">
       <div className="w-full max-w-sm text-center">
         <div className="mb-6 flex justify-center">
           <div className="rounded-full bg-[var(--accent)]/10 p-4">
@@ -36,7 +36,10 @@ export default async function VerifyPage({
           )}
         </p>
         <p className="mt-6 text-[var(--text-caption)] text-[var(--text-secondary)]">
-          Should arrive within a minute. Check spam or{" "}
+          Should arrive within a minute.
+          <br className="md:hidden" />
+          <span className="hidden md:inline"> </span>
+          Check spam or{" "}
           <a href="/login" className="text-[var(--accent)] hover:opacity-80">
             try again
           </a>
