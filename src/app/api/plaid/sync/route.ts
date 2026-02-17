@@ -49,6 +49,19 @@ export async function POST(request: Request) {
       );
     }
 
+    // 24-hour cooldown between manual syncs (per connection)
+    const SYNC_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+    if (connection.lastSyncedAt) {
+      const elapsed = Date.now() - new Date(connection.lastSyncedAt).getTime();
+      if (elapsed < SYNC_COOLDOWN_MS) {
+        const hoursLeft = Math.ceil((SYNC_COOLDOWN_MS - elapsed) / (60 * 60 * 1000));
+        return NextResponse.json(
+          { error: `Sync available in ${hoursLeft}h. Data refreshes automatically.` },
+          { status: 429 }
+        );
+      }
+    }
+
     const result = await triggerSync(connectionId);
 
     return NextResponse.json(result);

@@ -108,8 +108,14 @@ export function AppShell({ children, userEmail, dashboardNav }: AppShellProps) {
   const connectionId = activeProfile?.connectionId ?? null;
   const lastSyncedAt = activeProfile?.lastSyncedAt ?? null;
 
+  // 24-hour cooldown between manual syncs
+  const SYNC_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+  const cooldownActive = lastSyncedAt
+    ? Date.now() - new Date(lastSyncedAt).getTime() < SYNC_COOLDOWN_MS
+    : false;
+
   async function handleSync() {
-    if (!connectionId || syncing) return;
+    if (!connectionId || syncing || cooldownActive) return;
     setSyncing(true);
     setSynced(false);
     try {
@@ -135,7 +141,7 @@ export function AppShell({ children, userEmail, dashboardNav }: AppShellProps) {
       {/* Sidebar — desktop only */}
       <aside
         className={`hidden md:flex fixed left-0 top-0 z-40 app-zoom-sidebar flex-col border-r border-[var(--border-default)] bg-[var(--bg-secondary)] transition-all duration-[var(--duration-default)] ease-[var(--ease-default)] ${
-          collapsed ? "w-16" : "w-56"
+          collapsed ? "w-16" : "w-64"
         }`}
       >
         {/* Logo */}
@@ -201,12 +207,12 @@ export function AppShell({ children, userEmail, dashboardNav }: AppShellProps) {
                         </span>
                         <button
                           onClick={handleSync}
-                          disabled={syncing}
+                          disabled={syncing || cooldownActive}
                           className="flex items-center gap-1 text-[11px] font-semibold text-[var(--color-accent-cyan)] transition-colors hover:text-[var(--text-primary)] disabled:opacity-50"
                           style={{ fontFamily: "var(--font-mono)" }}
                         >
                           <RefreshCw size={11} strokeWidth={2} className={syncing ? "animate-spin" : ""} />
-                          {syncing ? "..." : "Sync"}
+                          {syncing ? "..." : cooldownActive ? "Synced" : "Sync"}
                         </button>
                       </>
                     )}
@@ -360,7 +366,7 @@ export function AppShell({ children, userEmail, dashboardNav }: AppShellProps) {
       {/* Main content */}
       <main
         className={`ml-0 min-w-0 flex-1 overflow-x-hidden pb-16 transition-all duration-[var(--duration-default)] ease-[var(--ease-default)] md:pb-0 ${
-          collapsed ? "md:ml-16" : "md:ml-56"
+          collapsed ? "md:ml-16" : "md:ml-64"
         }`}
       >
         {children}

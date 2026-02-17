@@ -63,6 +63,12 @@ export function SyncFooter({ cardProfiles }: SyncFooterProps) {
     }
   }
 
+  // 24-hour cooldown between manual syncs
+  const SYNC_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+  const cooldownActive = lastSyncedAt
+    ? Date.now() - new Date(lastSyncedAt).getTime() < SYNC_COOLDOWN_MS
+    : false;
+
   if (!connectionId) return null;
 
   return (
@@ -81,11 +87,11 @@ export function SyncFooter({ cardProfiles }: SyncFooterProps) {
             <span className="text-[var(--text-dim)]">&middot;</span>
             <button
               onClick={handleSync}
-              disabled={syncing}
+              disabled={syncing || cooldownActive}
               className="flex items-center gap-1.5 text-xs font-semibold text-[var(--color-accent-cyan)] transition-colors hover:text-[var(--text-primary)] disabled:opacity-50"
             >
               <RefreshCw size={12} strokeWidth={2} className={syncing ? "animate-spin" : ""} />
-              {syncing ? "Syncing..." : "Sync now"}
+              {syncing ? "Syncing..." : cooldownActive ? "Synced today" : "Sync now"}
             </button>
           </>
         )}
