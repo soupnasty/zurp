@@ -163,8 +163,8 @@ describe("Points aggregation pipeline", () => {
       (totalPoints * config.valuation.upsideCpp) / 100
     );
 
-    expect(config.valuation.conservativeCpp).toBe(1.25);
-    expect(valueConservative).toBe(125);
+    expect(config.valuation.conservativeCpp).toBe(1.0);
+    expect(valueConservative).toBe(100);
     expect(valueUpside).toBeGreaterThan(valueConservative);
   });
 

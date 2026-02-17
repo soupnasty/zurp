@@ -193,8 +193,8 @@ describe("runSimulation", () => {
     })!;
 
     const csr = result.cards[0];
-    // 1000 * 3 = 3000 pts * 1.25cpp = $37.50
-    const pointsValue = 37.5;
+    // 1000 * 3 = 3000 pts * 1.0cpp = $30
+    const pointsValue = 30;
     expect(csr.pointsValueConservative).toBe(pointsValue);
 
     // netFloor = points - fee (no benefits)

@@ -421,7 +421,7 @@ describe("A2: Subscription Swap", () => {
     expect(results.length).toBe(1);
     expect(results[0].category).toBe("A2");
     expect(results[0].templateKey).toBe("a2_swap");
-    expect(results[0].confidence).toBe("category_match");
+    expect(results[0].confidence).toBe("exact_confirmed");
     expect(results[0].actionability).toBe("plan_future");
     expect(results[0].templateVars.credit_name).toBe("Digital Entertainment Credit");
     expect(results[0].templateVars.credit).toBe(25);
@@ -432,8 +432,8 @@ describe("A2: Subscription Swap", () => {
       {
         benefitKey: "plat_digital_entertainment",
         benefitPartner: "Disney+",
-        competitorMerchant: "Netflix",
-        plaidMerchantPattern: "netflix",
+        competitorMerchant: "SomeNicheApp",
+        plaidMerchantPattern: "somenicheapp",
         category: "streaming",
         insightType: "A2",
         lastVerifiedAt: null,
@@ -441,10 +441,10 @@ describe("A2: Subscription Swap", () => {
     ];
 
     const ctx = makeCtx({
-      // Only 2 charges — fails recurring heuristic (needs 3+)
+      // Only 2 charges at unknown merchant — fails recurring heuristic
       transactions: [
-        makeTx({ id: "tx-1", merchantName: "Netflix", amount: 16 }),
-        makeTx({ id: "tx-2", merchantName: "Netflix", amount: 16 }),
+        makeTx({ id: "tx-1", merchantName: "SomeNicheApp", amount: 16 }),
+        makeTx({ id: "tx-2", merchantName: "SomeNicheApp", amount: 50 }),
       ],
       competitorEntries: competitors,
       cardType: "amex_platinum",
@@ -664,8 +664,8 @@ describe("P2: Missed Bonus Opportunity", () => {
     const ctx = makeCtx({
       cardType: "chase_sapphire_reserve",
       transactions: [
-        makeTx({ id: "tx-1", merchantName: "Uber", amount: 80 }),
-        makeTx({ id: "tx-2", merchantName: "UBER *EATS", amount: 30 }),
+        makeTx({ id: "tx-1", merchantName: "Uber", amount: 120 }),
+        makeTx({ id: "tx-2", merchantName: "UBER *EATS", amount: 60 }),
       ],
       pointsData: {
         totalPoints: 5000,
