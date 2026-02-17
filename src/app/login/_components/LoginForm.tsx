@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Mail } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import Link from "next/link";
 
 export function LoginForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +23,9 @@ export function LoginForm() {
       await signIn("resend", {
         email,
         callbackUrl: "/dashboard",
+        redirect: false,
       });
+      router.push(`/login/verify?email=${encodeURIComponent(email)}`);
     } catch {
       setError("Something went wrong. Please try again.");
       setLoading(false);
@@ -68,11 +71,13 @@ export function LoginForm() {
         loading={loading}
         className="w-full"
       >
-        Continue with Email
+        Send me a sign-in link
       </Button>
 
       <p className="text-center text-[var(--text-caption)] text-[var(--text-secondary)]">
-        We&apos;ll send you a magic link to sign in.
+        We&apos;ll email you a link to sign in.
+        <br />
+        No password needed.
       </p>
     </form>
   );

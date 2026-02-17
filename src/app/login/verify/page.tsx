@@ -1,6 +1,12 @@
 import { Mail } from "lucide-react";
 
-export default function VerifyPage() {
+export default async function VerifyPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ email?: string }>;
+}) {
+  const { email } = await searchParams;
+
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm text-center">
@@ -17,12 +23,20 @@ export default function VerifyPage() {
           Check your email
         </h1>
         <p className="mt-3 text-[var(--text-secondary)]">
-          We sent you a magic link.
-          <br />
-          Click the link in your email to sign in.
+          We sent a sign-in link to{" "}
+          {email ? (
+            <>
+              <span className="text-[var(--text-primary)] font-medium">
+                {email}
+              </span>
+              .
+            </>
+          ) : (
+            "your inbox."
+          )}
         </p>
         <p className="mt-6 text-[var(--text-caption)] text-[var(--text-secondary)]">
-          Didn&apos;t receive it? Check your spam folder or{" "}
+          Should arrive within a minute. Check spam or{" "}
           <a href="/login" className="text-[var(--accent)] hover:opacity-80">
             try again
           </a>

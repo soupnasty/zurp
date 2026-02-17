@@ -3,6 +3,9 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import Resend from "next-auth/providers/resend";
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
+import { Resend as ResendClient } from "resend";
+import { render } from "@react-email/components";
+import { ZurpSignInEmail } from "@/emails/zurp-signin";
 import {
   users,
   accounts,
@@ -27,6 +30,16 @@ const authConfig = () =>
     providers: [
       Resend({
         from: "zurp <noreply@zurp.io>",
+        async sendVerificationRequest({ identifier: email, url }) {
+          const resend = new ResendClient(process.env.AUTH_RESEND_KEY);
+          const html = await render(ZurpSignInEmail({ signInUrl: url }));
+          await resend.emails.send({
+            from: "zurp <noreply@zurp.io>",
+            to: email,
+            subject: "Sign in to zurp",
+            html,
+          });
+        },
       }),
     ],
     pages: {

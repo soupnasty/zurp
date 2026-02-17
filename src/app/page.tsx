@@ -1765,16 +1765,16 @@ export default function Home() {
                 letterSpacing: "-2px",
               }}
             >
-              Insights that pay for&nbsp;themselves
+              What your card isn&apos;t telling you
             </h2>
           </ScrollReveal>
           <ScrollReveal>
             <p
-              className="mx-auto mb-14 max-w-[550px] text-center leading-relaxed text-[var(--text-secondary)]"
+              className="mx-auto mb-14 max-w-[500px] text-center leading-relaxed text-[var(--text-secondary)]"
               style={{ fontSize: "clamp(15px, 1.6vw, 18px)" }}
             >
-              Every insight is based on your card, your transactions, your
-              perks. No generic tips.
+              Personalized recommendations from your spending data. No generic
+              tips.
             </p>
           </ScrollReveal>
 
@@ -2074,7 +2074,7 @@ export default function Home() {
               className="mb-10 text-[var(--text-secondary)]"
               style={{ fontSize: "clamp(15px, 1.6vw, 18px)", maxWidth: 420 }}
             >
-              Two minutes to connect. We&apos;ll take it from there.
+              Two minutes to connect. Free to use.
             </p>
           </ScrollReveal>
 
