@@ -10,60 +10,84 @@ import { AnimatedMockup } from "./_components/AnimatedMockup";
 import { CountUp } from "./_components/CountUp";
 
 /* ── Tracker mockup rows ── */
-const trackerRows = [
+const trackerCadences = [
   {
-    icon: "plane",
-    name: "Travel Credit",
-    detail: "Resets on anniversary",
-    used: "$300",
-    total: "$300",
-    pct: 100,
-    status: "full" as const,
+    label: "ANNUAL",
+    rows: [
+      {
+        icon: "plane",
+        name: "Airline Fee Credit",
+        detail: "Resets on anniversary",
+        used: "$200",
+        total: "$200",
+        pct: 100,
+        status: "full" as const,
+      },
+      {
+        icon: "hotel",
+        name: "Hotel Credit",
+        detail: "Resets on anniversary",
+        used: "$200",
+        total: "$200",
+        pct: 100,
+        status: "full" as const,
+      },
+    ],
   },
   {
-    icon: "ticket",
-    name: "StubHub",
-    detail: "$60 remaining \u00b7 resets Jul 1",
-    used: "$90",
-    total: "$150",
-    pct: 60,
-    status: "partial" as const,
+    label: "QUARTERLY",
+    rows: [
+      {
+        icon: "utensils",
+        name: "Resy Credit",
+        detail: "$35 remaining \u00b7 resets Apr 1",
+        used: "$65",
+        total: "$100",
+        pct: 65,
+        status: "partial" as const,
+      },
+      {
+        icon: "store",
+        name: "Saks Credit",
+        detail: "Resets Jul 1",
+        used: "$50",
+        total: "$50",
+        pct: 100,
+        status: "full" as const,
+      },
+    ],
   },
   {
-    icon: "utensils",
-    name: "Exclusive Tables",
-    detail: "$150 remaining \u00b7 resets Jul 1",
-    used: "$150",
-    total: "$300",
-    pct: 50,
-    status: "partial" as const,
-  },
-  {
-    icon: "bag",
-    name: "DoorDash",
-    detail: "$25/mo \u00b7 resets in 8 days",
-    used: "$25",
-    total: "$25",
-    pct: 100,
-    status: "full" as const,
-  },
-  {
-    icon: "car",
-    name: "Lyft",
-    detail: "$10/mo \u00b7 resets in 8 days",
-    used: "$10",
-    total: "$10",
-    pct: 100,
-    status: "full" as const,
-  },
-  {
-    icon: "bike",
-    name: "Peloton",
-    detail: "$10/mo \u00b7 never used",
-    used: "$0",
-    total: "$10",
-    pct: 0,
-    status: "unused" as const,
+    label: "MONTHLY",
+    rows: [
+      {
+        icon: "car",
+        name: "Uber Cash",
+        detail: "$0 remaining",
+        used: "$15",
+        total: "$15",
+        pct: 100,
+        status: "full" as const,
+      },
+      {
+        icon: "tv",
+        name: "Digital Entertainment",
+        detail: "$4 remaining \u00b7 12 days left",
+        used: "$21",
+        total: "$25",
+        pct: 84,
+        status: "partial" as const,
+      },
+      {
+        icon: "bag",
+        name: "Walmart+",
+        detail: "$12.95/mo \u00b7 never used",
+        used: "$0",
+        total: "$12.95",
+        pct: 0,
+        status: "unused" as const,
+      },
+    ],
   },
 ];
 
@@ -77,14 +101,14 @@ function TrackerIcon({
 }) {
   const colorMap = {
     full: {
-      bg: "rgba(52,211,153,0.08)",
-      border: "rgba(52,211,153,0.12)",
-      color: "#34d399",
+      bg: "rgba(167,139,250,0.08)",
+      border: "rgba(167,139,250,0.12)",
+      color: "#a78bfa",
     },
     partial: {
-      bg: "rgba(248,113,113,0.08)",
-      border: "rgba(248,113,113,0.12)",
-      color: "#f87171",
+      bg: "rgba(196,151,42,0.08)",
+      border: "rgba(196,151,42,0.12)",
+      color: "#C4972A",
     },
     unused: {
       bg: "rgba(255,255,255,0.03)",
@@ -109,12 +133,13 @@ function TrackerIcon({
         <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
       </svg>
     ),
-    ticket: (
+    hotel: (
       <svg {...svgProps}>
-        <path d="M2 7a2 2 0 012-2h16a2 2 0 012 2v3a2 2 0 100 4v3a2 2 0 01-2 2H4a2 2 0 01-2-2v-3a2 2 0 100-4V7z" />
-        <path d="M9 5v2" />
-        <path d="M9 11v2" />
-        <path d="M9 17v2" />
+        <path d="M2 20v-8a2 2 0 012-2h16a2 2 0 012 2v8" />
+        <path d="M2 10V6a2 2 0 012-2h2v6" />
+        <path d="M6 10V4h0" />
+        <circle cx="10" cy="8" r="2" />
+        <path d="M18 20v-6H6v6" />
       </svg>
     ),
     utensils: (
@@ -125,11 +150,13 @@ function TrackerIcon({
         <path d="M18 15v7" />
       </svg>
     ),
-    bag: (
+    store: (
       <svg {...svgProps}>
-        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-        <line x1="3" y1="6" x2="21" y2="6" />
-        <path d="M16 10a4 4 0 01-8 0" />
+        <path d="M3 9l1-4h16l1 4" />
+        <path d="M3 9a3 3 0 003 3 3 3 0 003-3" />
+        <path d="M9 9a3 3 0 003 3 3 3 0 003-3" />
+        <path d="M15 9a3 3 0 003 3 3 3 0 003-3" />
+        <path d="M4 12v8h16v-8" />
       </svg>
     ),
     car: (
@@ -140,16 +167,17 @@ function TrackerIcon({
         <path d="M9 17h6" />
       </svg>
     ),
-    bike: (
+    tv: (
       <svg {...svgProps}>
-        <circle cx="5.5" cy="17.5" r="3.5" />
-        <circle cx="18.5" cy="17.5" r="3.5" />
-        <path
-          d="M15 6a1 1 0 100-2 1 1 0 000 2z"
-          fill="currentColor"
-          stroke="none"
-        />
-        <path d="M12 17.5V14l-3-3 4-3 2 3h3" />
+        <rect x="2" y="7" width="20" height="15" rx="2" ry="2" />
+        <polyline points="17 2 12 7 7 2" />
+      </svg>
+    ),
+    bag: (
+      <svg {...svgProps}>
+        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+        <line x1="3" y1="6" x2="21" y2="6" />
+        <path d="M16 10a4 4 0 01-8 0" />
       </svg>
     ),
   };
@@ -230,68 +258,104 @@ const compareCards = [
 /* ── Insight examples ── */
 const insightCards = [
   {
-    variant: "blue" as const,
-    typeLabel: "Redirect spending",
+    variant: "purple" as const,
+    icon: "swap" as InsightIconType,
+    typeLabel: "Subscription swap",
     body: (
       <>
-        You spent <strong className="font-bold text-white">$87 on Uber</strong>{" "}
-        last month but only used{" "}
-        <span className="font-bold" style={{ color: "#60a5fa" }}>
-          $10
+        You&apos;re paying{" "}
+        <strong className="font-bold text-white">$15.99/mo for Uber Eats</strong>{" "}
+        but your card includes{" "}
+        <span className="font-bold" style={{ color: "#a78bfa" }}>
+          $25/mo
         </span>{" "}
-        of your monthly Lyft credit. Switch your rides to Lyft to capture the
-        full{" "}
-        <span className="font-bold" style={{ color: "#60a5fa" }}>
-          $120/yr
+        in DoorDash credits. Switch your deliveries to DoorDash to save{" "}
+        <span className="font-bold" style={{ color: "#a78bfa" }}>
+          $192/yr
         </span>
         .
       </>
     ),
-    savingsValue: "$120",
-    savingsLabel: "per year in unused credit",
-    meta: "Chase Sapphire Reserve \u00b7 Lyft credit",
+    savingsValue: "$192",
+    savingsLabel: "per year by switching",
+    meta: "Chase Sapphire Reserve \u00b7 DoorDash credit",
   },
   {
-    variant: "red" as const,
+    variant: "amber" as const,
+    icon: "clock" as InsightIconType,
     typeLabel: "Credit expiring",
     body: (
       <>
-        You&apos;ve only used{" "}
-        <span className="font-bold" style={{ color: "#f87171" }}>
-          $5
+        Your{" "}
+        <strong className="font-bold text-white">$50 Saks credit</strong>{" "}
+        resets in{" "}
+        <span className="font-bold" style={{ color: "#C4972A" }}>
+          4 days
         </span>{" "}
-        of your{" "}
-        <strong className="font-bold text-white">$25 DoorDash credit</strong>{" "}
-        &mdash;{" "}
-        <span className="font-bold" style={{ color: "#f87171" }}>
-          3 days
-        </span>{" "}
-        left to use the rest. Order now or lose $20.
+        and you haven&apos;t used any of it. That&apos;s $50 gone &mdash; even a
+        small purchase counts.
       </>
     ),
-    savingsValue: "$20",
-    savingsLabel: "expiring in 3 days",
-    meta: "Chase Sapphire Reserve \u00b7 Monthly credit",
+    savingsValue: "$50",
+    savingsLabel: "expiring in 4 days",
+    meta: "Amex Platinum \u00b7 Semi-annual credit",
   },
   {
     variant: "green" as const,
-    typeLabel: "ROI milestone",
+    icon: "trending" as InsightIconType,
+    typeLabel: "Earning opportunity",
     body: (
       <>
-        You&apos;ve captured{" "}
+        You spent{" "}
+        <strong className="font-bold text-white">$4,200 on dining</strong>{" "}
+        this year. The{" "}
+        <strong className="font-bold text-white">Amex Gold</strong> earns{" "}
         <span className="font-bold" style={{ color: "#34d399" }}>
-          $970
+          4x
         </span>{" "}
-        of $2,700 in benefits this year. Your net value is{" "}
+        vs your{" "}
         <span className="font-bold" style={{ color: "#34d399" }}>
-          +$175
+          1x
         </span>{" "}
-        after the annual fee &mdash; your card is paying for itself.
+        &mdash; that&apos;s{" "}
+        <span className="font-bold" style={{ color: "#34d399" }}>
+          ~$126 more
+        </span>{" "}
+        in points value.
       </>
     ),
-    savingsValue: "+$175",
-    savingsLabel: "net value after $795 fee",
-    meta: "Chase Sapphire Reserve \u00b7 Annual value",
+    savingsValue: "$126",
+    savingsLabel: "more per year on dining",
+    meta: "Amex Platinum \u00b7 Cross-card comparison",
+  },
+  {
+    variant: "blue" as const,
+    icon: "compass" as InsightIconType,
+    typeLabel: "Booking redirect",
+    body: (
+      <>
+        You booked{" "}
+        <strong className="font-bold text-white">$1,800 in hotels</strong>{" "}
+        direct this year. Book through{" "}
+        <strong className="font-bold text-white">Chase Travel Portal</strong>{" "}
+        for{" "}
+        <span className="font-bold" style={{ color: "#60a5fa" }}>
+          10x
+        </span>{" "}
+        instead of{" "}
+        <span className="font-bold" style={{ color: "#60a5fa" }}>
+          3x
+        </span>{" "}
+        &mdash; that&apos;s{" "}
+        <span className="font-bold" style={{ color: "#60a5fa" }}>
+          ~$126 more
+        </span>{" "}
+        in points.
+      </>
+    ),
+    savingsValue: "$126",
+    savingsLabel: "more per year via portal",
+    meta: "Chase Sapphire Reserve \u00b7 Travel portal",
   },
 ];
 
@@ -303,11 +367,17 @@ const insightVariants = {
     border: "rgba(96,165,250,0.15)",
     glow: "rgba(96,165,250,0.25)",
   },
-  red: {
-    color: "#f87171",
-    bg: "rgba(248,113,113,0.08)",
-    border: "rgba(248,113,113,0.15)",
-    glow: "rgba(248,113,113,0.25)",
+  amber: {
+    color: "#C4972A",
+    bg: "rgba(196,151,42,0.08)",
+    border: "rgba(196,151,42,0.15)",
+    glow: "rgba(196,151,42,0.25)",
+  },
+  purple: {
+    color: "#a78bfa",
+    bg: "rgba(167,139,250,0.08)",
+    border: "rgba(167,139,250,0.15)",
+    glow: "rgba(167,139,250,0.25)",
   },
   green: {
     color: "#34d399",
@@ -318,7 +388,9 @@ const insightVariants = {
 };
 
 /* ── Insight SVG icons ── */
-function InsightIcon({ variant }: { variant: "blue" | "red" | "green" }) {
+type InsightIconType = "swap" | "clock" | "trending" | "compass";
+
+function InsightIcon({ variant, icon }: { variant: "blue" | "amber" | "purple" | "green"; icon: InsightIconType }) {
   const v = insightVariants[variant];
   const svgProps = {
     width: 16,
@@ -330,23 +402,31 @@ function InsightIcon({ variant }: { variant: "blue" | "red" | "green" }) {
     strokeLinecap: "round" as const,
     strokeLinejoin: "round" as const,
   };
-  const icons = {
-    blue: (
+  const icons: Record<InsightIconType, React.ReactNode> = {
+    swap: (
       <svg {...svgProps}>
         <path d="M18 8L22 12L18 16" />
         <path d="M2 12H22" />
         <path d="M6 16L2 12L6 8" />
       </svg>
     ),
-    red: (
+    clock: (
       <svg {...svgProps}>
         <circle cx="12" cy="12" r="10" />
         <polyline points="12 6 12 12 16 14" />
       </svg>
     ),
-    green: (
+    trending: (
       <svg {...svgProps}>
-        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+        <polyline points="17 6 23 6 23 12" />
+      </svg>
+    ),
+    compass: (
+      <svg {...svgProps}>
+        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+        <polyline points="15 3 21 3 21 9" />
+        <line x1="10" y1="14" x2="21" y2="3" />
       </svg>
     ),
   };
@@ -361,7 +441,7 @@ function InsightIcon({ variant }: { variant: "blue" | "red" | "green" }) {
         color: v.color,
       }}
     >
-      {icons[variant]}
+      {icons[icon]}
     </div>
   );
 }
@@ -1357,12 +1437,12 @@ export default function Home() {
                           fontFamily: "var(--font-space-mono)",
                         }}
                       >
-                        $970
+                        $465
                       </span>{" "}
                       <span>captured</span>
                     </div>
                     <div className="text-[11px]" style={{ color: "#4a5568" }}>
-                      of $2,628
+                      of $1,760
                     </div>
                   </div>
                   {/* Progress bar */}
@@ -1377,7 +1457,7 @@ export default function Home() {
                           animation: "hiw-fill-bar 1s ease forwards",
                           animationDelay: "1.3s",
                           animationPlayState: "var(--play)",
-                          "--fill-to": "37%",
+                          "--fill-to": "26%",
                         } as React.CSSProperties
                       }
                     />
@@ -1386,18 +1466,18 @@ export default function Home() {
                   <div className="flex flex-col mt-0.5">
                     {[
                       {
-                        name: "Travel Credit",
-                        used: "$300",
-                        total: "$300",
+                        name: "Hotel Credit",
+                        used: "$200",
+                        total: "$200",
                         status: "full" as const,
                         fillPct: "100%",
                       },
                       {
-                        name: "DoorDash",
-                        used: "$5",
-                        total: "$25",
-                        status: "partial" as const,
-                        fillPct: "20%",
+                        name: "Uber Cash",
+                        used: "$15",
+                        total: "$15",
+                        status: "full" as const,
+                        fillPct: "100%",
                       },
                     ].map((b, bi) => (
                       <div
@@ -1432,7 +1512,7 @@ export default function Home() {
                             className="font-bold"
                             style={{
                               color:
-                                b.status === "full" ? "#34d399" : "#f87171",
+                                b.status === "full" ? "#a78bfa" : "#C4972A",
                             }}
                           >
                             {b.used}
@@ -1448,7 +1528,7 @@ export default function Home() {
                               style={
                                 {
                                   background:
-                                    b.status === "full" ? "#34d399" : "#f87171",
+                                    b.status === "full" ? "#a78bfa" : "#C4972A",
                                   width: 0,
                                   animation: "benefit-fill 0.5s ease forwards",
                                   animationDelay: `${1.7 + bi * 0.15}s`,
@@ -1527,7 +1607,7 @@ export default function Home() {
 
             {/* Card header */}
             <div
-              className="flex items-start justify-between border-b border-[rgba(255,255,255,0.06)] px-7 py-6"
+              className="flex items-start justify-between border-b border-[rgba(255,255,255,0.06)] px-7 py-5"
               style={{
                 opacity: 0,
                 animation: "mock-fade-in 0.5s ease forwards",
@@ -1537,42 +1617,32 @@ export default function Home() {
             >
               <div>
                 <div
-                  className="text-[12px] font-bold uppercase tracking-[1.2px]"
+                  className="text-[10px] font-bold uppercase tracking-[2.5px]"
                   style={{
                     fontFamily: "var(--font-space-mono)",
-                    color: "var(--text-primary)",
+                    color: "var(--text-secondary)",
                   }}
                 >
-                  Chase Sapphire Reserve
+                  Your card
                 </div>
-                <div className="mt-1 text-[13px]" style={{ color: "#4a5568" }}>
-                  $795/yr annual fee
+                <div className="mt-1 text-lg font-bold text-[var(--text-primary)]">
+                  Amex Platinum
                 </div>
-              </div>
-              <div className="text-right">
-                <CountUp
-                  target={175}
-                  prefix="+$"
-                  delay={3800}
-                  duration={1800}
-                  className="text-[22px] font-bold"
-                  style={{
-                    fontFamily: "var(--font-space-mono)",
-                    color: "#34d399",
-                  }}
-                />
                 <div
-                  className="mt-0.5 text-[12px]"
-                  style={{ color: "#4a5568" }}
+                  className="mt-0.5 text-[11px]"
+                  style={{
+                    fontFamily: "var(--font-space-mono)",
+                    color: "#4a5568",
+                  }}
                 >
-                  net value this year
+                  Mar 15, 2025 &ndash; Mar 14, 2026 | $695 fee renews Mar 15, 2026
                 </div>
               </div>
             </div>
 
-            {/* Captured summary */}
+            {/* Summary strip */}
             <div
-              className="border-b border-[rgba(255,255,255,0.06)] px-7 py-5"
+              className="grid grid-cols-3 border-b border-[rgba(255,255,255,0.06)]"
               style={{
                 opacity: 0,
                 animation: "mock-fade-in 0.5s ease forwards",
@@ -1580,133 +1650,173 @@ export default function Home() {
                 animationPlayState: "var(--play)",
               }}
             >
-              <div className="mb-3 flex items-baseline justify-between">
-                <div className="text-[15px] font-semibold">
-                  <span
+              {[
+                { label: "POINTS EARNED", value: "$412", color: "#60a5fa" },
+                { label: "BENEFITS USED", value: "$465", color: "#a78bfa", sub: "of $1,760" },
+                { label: "EXPIRING SOON", value: "$39", color: "#C4972A", sub: "within 12 days" },
+              ].map((item, i) => (
+                <div
+                  key={item.label}
+                  className="px-5 py-4 text-center"
+                  style={{
+                    borderRight: i < 2 ? "1px solid rgba(255,255,255,0.06)" : undefined,
+                  }}
+                >
+                  <div
+                    className="text-[9px] font-bold uppercase tracking-[1.5px]"
                     style={{
                       fontFamily: "var(--font-space-mono)",
-                      fontWeight: 700,
-                      color: "#a78bfa",
+                      color: "var(--text-secondary)",
                     }}
                   >
-                    $970
-                  </span>{" "}
-                  captured
+                    {item.label}
+                  </div>
+                  <div
+                    className="mt-1 text-lg font-bold"
+                    style={{
+                      fontFamily: "var(--font-space-mono)",
+                      color: item.color,
+                    }}
+                  >
+                    {item.value}
+                  </div>
+                  {item.sub && (
+                    <div className="mt-0.5 text-[11px]" style={{ color: "#4a5568" }}>
+                      {item.sub}
+                    </div>
+                  )}
                 </div>
-                <div className="text-[13px]" style={{ color: "#4a5568" }}>
-                  of $2,628 available
-                </div>
-              </div>
-              <div className="h-2 overflow-hidden rounded bg-[rgba(255,255,255,0.04)]">
-                <div
-                  className="h-full rounded"
-                  style={
-                    {
-                      background: "linear-gradient(90deg, #a78bfa, #60a5fa)",
-                      width: 0,
-                      animation: "tracker-fill 1.2s ease forwards",
-                      animationDelay: "1.1s",
-                      animationPlayState: "var(--play)",
-                    } as React.CSSProperties
-                  }
-                />
-              </div>
+              ))}
             </div>
 
-            {/* Benefits list */}
-            <div className="py-2">
-              {trackerRows.map((row, i) => {
-                const isUnused = row.status === "unused";
-                const rowDelay = 1.3 + i * 0.12;
-                const barDelay = rowDelay + 0.25;
-                return (
-                  <div
-                    key={row.name}
-                    className="flex items-center gap-3.5 px-7 py-3.5 transition-colors hover:bg-[var(--bg-card-hover)]"
-                    style={
-                      {
+            {/* Benefits list by cadence */}
+            <div className="pb-2">
+              {(() => {
+                let globalIdx = 0;
+                return trackerCadences.map((cadence) => (
+                  <div key={cadence.label}>
+                    {/* Cadence header */}
+                    <div
+                      className="flex items-center gap-2 px-7 py-2.5 border-b border-[rgba(255,255,255,0.06)]"
+                      style={{
                         opacity: 0,
-                        transform: "translateY(10px)",
-                        animation: `fadeUp 0.4s ease forwards${
-                          isUnused
-                            ? ", mock-unused-pulse 2s ease-in-out " +
-                              (rowDelay + 0.8) +
-                              "s 1"
-                            : ""
-                        }`,
-                        animationDelay: `${rowDelay}s`,
+                        animation: "mock-fade-in 0.4s ease forwards",
+                        animationDelay: `${1.0 + globalIdx * 0.12}s`,
                         animationPlayState: "var(--play)",
-                        borderTop:
-                          i > 0
-                            ? "1px solid rgba(255,255,255,0.06)"
-                            : undefined,
-                      } as React.CSSProperties
-                    }
-                  >
-                    <TrackerIcon icon={row.icon} status={row.status} />
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[14px] font-semibold">
-                        {row.name}
-                      </div>
-                      <div
-                        className="mt-0.5 text-[12px]"
-                        style={{ color: "#4a5568" }}
-                      >
-                        {row.detail}
-                      </div>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <div
-                        className="flex items-center gap-[3px] justify-end"
+                      }}
+                    >
+                      <span
+                        className="text-[10px] font-bold uppercase tracking-[2px]"
                         style={{
                           fontFamily: "var(--font-space-mono)",
-                          fontSize: 13,
-                          fontWeight: 700,
+                          color: "var(--text-secondary)",
                         }}
                       >
-                        <span
-                          style={{
-                            color:
-                              row.status === "full"
-                                ? "#34d399"
-                                : row.status === "partial"
-                                ? "#f87171"
-                                : "#4a5568",
-                          }}
-                        >
-                          {row.used}
-                        </span>
-                        <span style={{ color: "#4a5568", fontWeight: 400 }}>
-                          /
-                        </span>
-                        <span style={{ color: "#4a5568", fontWeight: 400 }}>
-                          {row.total}
-                        </span>
-                      </div>
-                      <div className="mt-1.5 ml-auto h-[3px] w-16 overflow-hidden rounded-sm bg-[rgba(255,255,255,0.06)]">
+                        {cadence.label}
+                      </span>
+                      <span
+                        className="text-[10px] font-bold"
+                        style={{
+                          fontFamily: "var(--font-space-mono)",
+                          color: "var(--text-secondary)",
+                        }}
+                      >
+                        {cadence.rows.length}
+                      </span>
+                    </div>
+                    {/* Rows */}
+                    {cadence.rows.map((row) => {
+                      const idx = globalIdx++;
+                      const isUnused = row.status === "unused";
+                      const rowDelay = 1.1 + idx * 0.12;
+                      const barDelay = rowDelay + 0.25;
+                      return (
                         <div
-                          className="h-full rounded-sm"
+                          key={row.name}
+                          className="flex items-center gap-3.5 px-7 py-3.5 transition-colors hover:bg-[var(--bg-card-hover)]"
                           style={
                             {
-                              background:
-                                row.status === "full"
-                                  ? "#34d399"
-                                  : row.status === "partial"
-                                  ? "#f87171"
-                                  : "transparent",
-                              width: 0,
-                              animation: `benefit-fill 0.5s ease forwards`,
-                              animationDelay: `${barDelay}s`,
+                              opacity: 0,
+                              transform: "translateY(10px)",
+                              animation: `fadeUp 0.4s ease forwards${
+                                isUnused
+                                  ? ", mock-unused-pulse 2s ease-in-out " +
+                                    (rowDelay + 0.8) +
+                                    "s 1"
+                                  : ""
+                              }`,
+                              animationDelay: `${rowDelay}s`,
                               animationPlayState: "var(--play)",
-                              "--fill-to": `${row.pct}%`,
                             } as React.CSSProperties
                           }
-                        />
-                      </div>
-                    </div>
+                        >
+                          <TrackerIcon icon={row.icon} status={row.status} />
+                          <div className="flex-1 min-w-0">
+                            <div className="text-[14px] font-semibold">
+                              {row.name}
+                            </div>
+                            <div
+                              className="mt-0.5 text-[12px]"
+                              style={{ color: "#4a5568" }}
+                            >
+                              {row.detail}
+                            </div>
+                          </div>
+                          <div className="text-right shrink-0">
+                            <div
+                              className="flex items-center gap-[3px] justify-end"
+                              style={{
+                                fontFamily: "var(--font-space-mono)",
+                                fontSize: 13,
+                                fontWeight: 700,
+                              }}
+                            >
+                              <span
+                                style={{
+                                  color:
+                                    row.status === "full"
+                                      ? "#a78bfa"
+                                      : row.status === "partial"
+                                      ? "#C4972A"
+                                      : "#4a5568",
+                                }}
+                              >
+                                {row.used}
+                              </span>
+                              <span style={{ color: "#4a5568", fontWeight: 400 }}>
+                                /
+                              </span>
+                              <span style={{ color: "#4a5568", fontWeight: 400 }}>
+                                {row.total}
+                              </span>
+                            </div>
+                            <div className="mt-1.5 ml-auto h-[3px] w-16 overflow-hidden rounded-sm bg-[rgba(255,255,255,0.06)]">
+                              <div
+                                className="h-full rounded-sm"
+                                style={
+                                  {
+                                    background:
+                                      row.status === "full"
+                                        ? "#a78bfa"
+                                        : row.status === "partial"
+                                        ? "#C4972A"
+                                        : "transparent",
+                                    width: 0,
+                                    animation: `benefit-fill 0.5s ease forwards`,
+                                    animationDelay: `${barDelay}s`,
+                                    animationPlayState: "var(--play)",
+                                    "--fill-to": `${row.pct}%`,
+                                  } as React.CSSProperties
+                                }
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                );
-              })}
+                ));
+              })()}
             </div>
 
             {/* Footer — desktop: full row, mobile: centered link only */}
@@ -1715,19 +1825,19 @@ export default function Home() {
               style={{
                 opacity: 0,
                 animation: "mock-fade-in 0.4s ease forwards",
-                animationDelay: "2.1s",
+                animationDelay: "2.4s",
                 animationPlayState: "var(--play)",
               }}
             >
               <span className="text-[12px]" style={{ color: "#4a5568" }}>
-                6 of 12 benefits tracked &middot; Updated today
+                7 of 21 benefits tracked &middot; Updated today
               </span>
               <Link
                 href="/login"
                 className="text-[12px] font-semibold"
                 style={{ color: "#22d3ee" }}
               >
-                See all 12 benefits &rarr;
+                See all 21 benefits &rarr;
               </Link>
             </div>
             <div
@@ -1735,7 +1845,7 @@ export default function Home() {
               style={{
                 opacity: 0,
                 animation: "mock-fade-in 0.4s ease forwards",
-                animationDelay: "2.1s",
+                animationDelay: "2.4s",
                 animationPlayState: "var(--play)",
               }}
             >
@@ -1744,7 +1854,7 @@ export default function Home() {
                 className="text-[12px] font-semibold"
                 style={{ color: "#22d3ee" }}
               >
-                See all 12 benefits &rarr;
+                See all 21 benefits &rarr;
               </Link>
             </div>
           </AnimatedMockup>
@@ -1814,7 +1924,7 @@ export default function Home() {
                   <div className="px-6 pt-5 pb-0">
                     {/* Header */}
                     <div className="flex items-center gap-2.5 mb-2.5">
-                      <InsightIcon variant={card.variant} />
+                      <InsightIcon variant={card.variant} icon={card.icon} />
                       <div
                         style={{
                           fontFamily: "var(--font-space-mono)",
