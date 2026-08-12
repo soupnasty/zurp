@@ -5,6 +5,7 @@ import type { MatcherTransaction, MatchedStatus } from "@/lib/types";
 import { runMatcher } from "./matcher";
 import { detectAnniversary } from "./anniversary-detector";
 import { getCurrentCycleBounds } from "./cycle-utils";
+import { roundCents } from "./money";
 import { getCardDefinition } from "@/lib/cards";
 import { generateAndPersistInsights } from "@/lib/insights/orchestrator";
 import { computeAndPersistPointsSummary, clearPointsSummary } from "@/lib/points/persistence";
@@ -216,8 +217,19 @@ export async function processTransactionsForConnection(
 
     const usageKey = `${benefit.id}:${bounds.periodKey}`;
     const currentUsed = runningUsage.get(usageKey) ?? 0;
-    if (currentUsed >= effectiveCredit) continue;
-    const creditApplied = Math.min(match.creditApplied, effectiveCredit - currentUsed);
+
+    // Purchases consume remaining credit; refunds (negative creditApplied)
+    // release usage, floored at zero.
+    let creditApplied: number;
+    if (match.creditApplied < 0) {
+      creditApplied = -roundCents(Math.min(-match.creditApplied, currentUsed));
+      if (creditApplied === 0) continue;
+    } else {
+      if (currentUsed >= effectiveCredit) continue;
+      creditApplied = roundCents(
+        Math.min(match.creditApplied, effectiveCredit - currentUsed)
+      );
+    }
 
     matchedTxInserts.push({
       transactionId: match.transactionId,
@@ -228,7 +240,7 @@ export async function processTransactionsForConnection(
     });
     matchedTransactionIds.push(match.transactionId);
 
-    const newUsed = currentUsed + creditApplied;
+    const newUsed = roundCents(Math.max(0, currentUsed + creditApplied));
     runningUsage.set(usageKey, newUsed);
     usageFinalState.set(usageRecord.id, { newUsed, effectiveCredit });
   }
@@ -259,12 +271,18 @@ export async function processTransactionsForConnection(
       .where(eq(schema.benefitUsage.id, usageId));
   }
 
-  // Batch mark ambiguous transactions
-  if (result.ambiguousTransactions.length > 0) {
+  // Batch mark ambiguous transactions. Defensively exclude anything that
+  // received a match above — a transaction must never be credited AND
+  // flagged for review at the same time.
+  const matchedIdSet = new Set(matchedTransactionIds);
+  const ambiguousOnly = result.ambiguousTransactions.filter(
+    (id) => !matchedIdSet.has(id)
+  );
+  if (ambiguousOnly.length > 0) {
     await db
       .update(schema.transactions)
       .set({ matchedStatus: "ambiguous" as MatchedStatus })
-      .where(inArray(schema.transactions.id, result.ambiguousTransactions));
+      .where(inArray(schema.transactions.id, ambiguousOnly));
   }
 
   // Replay "skipped" flags — batch override ambiguous back to skipped
@@ -297,18 +315,32 @@ export async function processTransactionsForConnection(
   });
 
   if (addedFlags.length > 0) {
-    // Bulk pre-fetch: existing matchedTx for relevant usage records
+    // Fetch the flagged transactions first: the billing period a manual
+    // match belongs to is determined by the TRANSACTION's date, not by
+    // when this replay happens to run. (Resolving from "now" migrated
+    // old manual matches into the current period on every reprocess.)
+    const flagTransactions = await db.query.transactions.findMany({
+      where: inArray(
+        schema.transactions.id,
+        addedFlags.map((f) => f.transactionId)
+      ),
+    });
+    const flagTxMap = new Map(flagTransactions.map((tx) => [tx.id, tx]));
+
+    // Resolve bounds per flag from its transaction's date
     const flagUsageIds = new Set<string>();
-    const flagTxIds = new Set<string>();
     const flagBoundsMap = new Map<string, ReturnType<typeof getCurrentCycleBounds>>();
 
     for (const flag of addedFlags) {
       const benefitDef = cardDef.benefits.find((b) => b.id === flag.benefitId);
       if (!benefitDef) continue;
 
+      const tx = flagTxMap.get(flag.transactionId);
+      if (!tx) continue;
+
       const bounds = getCurrentCycleBounds(
         benefitDef.cycle,
-        new Date(),
+        tx.date,
         cardProfile.anniversaryDate
       );
       flagBoundsMap.set(flag.id, bounds);
@@ -316,28 +348,23 @@ export async function processTransactionsForConnection(
       const usageRecord = usageLookup.get(`${flag.benefitId}:${bounds.periodKey}`);
       if (usageRecord) {
         flagUsageIds.add(usageRecord.id);
-        flagTxIds.add(flag.transactionId);
       }
     }
 
-    // Bulk fetch existing matches and transactions
-    const [existingMatches, flagTransactions] = await Promise.all([
+    // Bulk fetch existing matches for dedup
+    const existingMatches =
       flagUsageIds.size > 0
-        ? db.query.matchedTx.findMany({
-            where: inArray(schema.matchedTx.benefitUsageId, Array.from(flagUsageIds)),
+        ? await db.query.matchedTx.findMany({
+            where: inArray(
+              schema.matchedTx.benefitUsageId,
+              Array.from(flagUsageIds)
+            ),
           })
-        : Promise.resolve([]),
-      flagTxIds.size > 0
-        ? db.query.transactions.findMany({
-            where: inArray(schema.transactions.id, Array.from(flagTxIds)),
-          })
-        : Promise.resolve([]),
-    ]);
+        : [];
 
     const existingMatchSet = new Set(
       existingMatches.map((m) => `${m.transactionId}:${m.benefitUsageId}`)
     );
-    const flagTxMap = new Map(flagTransactions.map((tx) => [tx.id, tx]));
 
     // Process in-memory, tracking running usage across flags
     const flagMatchInserts: (typeof schema.matchedTx.$inferInsert)[] = [];
@@ -369,7 +396,7 @@ export async function processTransactionsForConnection(
       const currentUsed = runningUsage.get(usageKey) ?? usageRecord.amountUsed;
       const remaining = Math.max(0, effectiveCredit - currentUsed);
 
-      const creditApplied = Math.min(tx.amount, remaining);
+      const creditApplied = roundCents(Math.min(tx.amount, remaining));
       if (creditApplied <= 0) continue;
 
       flagMatchInserts.push({
@@ -381,7 +408,7 @@ export async function processTransactionsForConnection(
       });
       flagMatchedTxIds.push(flag.transactionId);
 
-      const newUsed = currentUsed + creditApplied;
+      const newUsed = roundCents(currentUsed + creditApplied);
       runningUsage.set(usageKey, newUsed);
       flagUsageUpdates.set(usageRecord.id, { newUsed, effectiveCredit });
     }
@@ -492,13 +519,14 @@ export async function initializeBenefitUsage(
   const cardDef = getCardDefinition(cardType);
   if (!cardDef) return;
 
-  // Collect one reference date per (year, month) — current + transaction months
+  // Collect one reference date per (year, month) — current + transaction
+  // months. UTC getters: transaction dates are stored at UTC midnight.
   const refDates = new Map<string, Date>();
   const now = new Date();
-  refDates.set(`${now.getFullYear()}-${now.getMonth()}`, now);
+  refDates.set(`${now.getUTCFullYear()}-${now.getUTCMonth()}`, now);
   if (transactionDates) {
     for (const d of transactionDates) {
-      const key = `${d.getFullYear()}-${d.getMonth()}`;
+      const key = `${d.getUTCFullYear()}-${d.getUTCMonth()}`;
       if (!refDates.has(key)) refDates.set(key, d);
     }
   }
@@ -510,7 +538,7 @@ export async function initializeBenefitUsage(
     if (benefit.type === "subscription") continue;
 
     for (const [, refDate] of refDates) {
-      if (benefit.activeMonths && !benefit.activeMonths.includes(refDate.getMonth())) {
+      if (benefit.activeMonths && !benefit.activeMonths.includes(refDate.getUTCMonth())) {
         continue;
       }
 

@@ -3,12 +3,14 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { ChevronDown, Check, Plus } from "lucide-react";
+import { resolveActiveCard } from "@/lib/resolve-card";
 
 interface CardProfile {
   id: string;
   cardType: string;
   name: string;
   annualFee: number;
+  isActive: boolean;
 }
 
 interface CardSelectorDropdownProps {
@@ -29,8 +31,12 @@ export function CardSelectorDropdown({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  const activeCardId = searchParams.get("card") ?? cardProfiles[0]?.id;
-  const activeCard = cardProfiles.find((c) => c.id === activeCardId) ?? cardProfiles[0];
+  // Same resolution as the server pages (?card → isActive → first)
+  const activeCard = resolveActiveCard(
+    cardProfiles,
+    searchParams.get("card") ?? undefined
+  );
+  const activeCardId = activeCard?.id;
 
   // Total items: cards + "Add another card" button
   const totalItems = cardProfiles.length + 1;

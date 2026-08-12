@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { CardSelectorDropdown } from "./CardSelectorDropdown";
+import { resolveActiveCard } from "@/lib/resolve-card";
 
 type Tab = "compare" | "track" | "insights";
 
@@ -25,6 +26,7 @@ export interface DashboardNavProps {
     cardType: string;
     name: string;
     annualFee: number;
+    isActive: boolean;
     connectionId: string | null;
     connectionStatus: string | null;
     lastSyncedAt: string | null;
@@ -102,9 +104,11 @@ export function AppShell({ children, userEmail, dashboardNav }: AppShellProps) {
   const cardParam = searchParams.get("card");
   const cardSuffix = cardParam ? `?card=${cardParam}` : "";
 
-  // Derive sync info from active card's connection
-  const activeCardId = cardParam ?? dashboardNav?.cardProfiles[0]?.id ?? null;
-  const activeProfile = dashboardNav?.cardProfiles.find((c) => c.id === activeCardId) ?? dashboardNav?.cardProfiles[0];
+  // Derive sync info from active card's connection — same resolution as
+  // the server pages (?card → isActive → first)
+  const activeProfile = dashboardNav
+    ? resolveActiveCard(dashboardNav.cardProfiles, cardParam ?? undefined)
+    : undefined;
   const connectionId = activeProfile?.connectionId ?? null;
   const lastSyncedAt = activeProfile?.lastSyncedAt ?? null;
 

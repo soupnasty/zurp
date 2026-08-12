@@ -104,13 +104,14 @@ export async function computeAndPersistSimulations(
     return { ...tx, assignment };
   });
 
-  // Build MatcherTransaction array for benefit simulation (once, shared across cards)
+  // Build MatcherTransaction array for benefit simulation (once, shared
+  // across cards). Signed amounts: refunds must not count as purchases.
   const matcherTxns: MatcherTransaction[] = yearTxs.map((tx) => ({
     id: tx.id,
     date: tx.date,
     merchantName: tx.merchantName,
     merchantNameRaw: tx.merchantNameRaw,
-    amount: Math.abs(tx.amount),
+    amount: tx.amount,
     plaidCategoryPrimary: tx.plaidCategoryPrimary,
     plaidCategoryDetailed: tx.plaidCategoryDetailed,
     pending: false,

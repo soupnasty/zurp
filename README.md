@@ -2,7 +2,7 @@
 
 A credit card benefits tracker that syncs transactions via Plaid, matches them against card-specific benefit rulesets, and shows users which credits they've used, which are expiring, and whether each card is paying for itself.
 
-Supports Chase Sapphire Reserve, Chase Sapphire Preferred, Amex Gold, and Amex Platinum.
+Supports 30 cards across Chase, Amex, Citi, Capital One, and more — see [Supported Cards](#supported-cards).
 
 ## Tech Stack
 
@@ -51,7 +51,7 @@ cp .env.example .env.local
 | `PLAID_SECRET` | Plaid secret key (sandbox) | Plaid dashboard > Team Settings > Keys |
 | `PLAID_ENV` | Plaid environment | `sandbox` for development |
 | `ENCRYPTION_KEY` | 64-char hex string for AES-256-GCM | Run `openssl rand -hex 32` |
-| `CRON_SECRET` | Bearer token for cron endpoint auth | Any random string, e.g. `openssl rand -base64 32` |
+| `APP_URL` | App base URL (used for Plaid OAuth redirect) | `http://localhost:3000` for development |
 | `NEXT_PUBLIC_ENABLE_SANDBOX` | Enables the `/sandbox` test page | Set to `true` for development |
 
 ### 3. Set up the database
@@ -162,17 +162,16 @@ The core matching engine (`src/lib/engine/`) is a set of **pure functions with n
 
 ### Transaction Sync
 
-Transaction syncing uses a shared `triggerSync()` function (`src/lib/plaid-sync.ts`) called from three entry points:
+Transaction syncing uses a shared `triggerSync()` function (`src/lib/plaid-sync.ts`) called from two entry points:
 
-- **API route** (`POST /api/plaid/sync`) — user-triggered via the dashboard Sync button
-- **Webhook** (`POST /api/plaid/webhook`) — Plaid pushes `SYNC_UPDATES_AVAILABLE` and `ITEM.ERROR` events
-- **Cron** (`GET /api/cron/sync`) — Vercel cron runs every 6 hours, syncs connections that haven't synced in >6h
+- **API route** (`POST /api/plaid/sync`) — user-triggered via the dashboard Sync button, with a 24-hour per-connection cooldown between manual syncs
+- **Webhook** (`POST /api/plaid/webhook`) — Plaid pushes `TRANSACTIONS` events (`INITIAL_UPDATE`, `HISTORICAL_UPDATE`, `SYNC_UPDATES_AVAILABLE`) and `ITEM` events (`NEW_ACCOUNTS_AVAILABLE`, `ERROR`, `PENDING_EXPIRATION`). Webhooks are signature-verified (see [Plaid Webhook](#plaid-webhook)) before any processing.
 
 ### Auth Flow
 
 1. User enters email on `/login`
 2. NextAuth sends a magic link via Resend
-3. User clicks link, lands on `/login/verify`, gets redirected to `/benefits`
+3. User clicks link, lands on `/login/verify`, gets redirected to `/dashboard`
 4. Protected routes use `requireAuth()` helper to enforce authentication
 5. First-time users are redirected to `/onboarding` (select card → link Plaid → set anniversary)
 
@@ -211,6 +210,7 @@ src/
 │   ├── page.tsx                  # Landing page
 │   ├── error.tsx                 # Global error boundary
 │   ├── not-found.tsx             # 404 page
+│   ├── _components/              # Landing page components (AnimatedMockup, MobileNav, ...)
 │   ├── login/                    # Auth pages
 │   │   ├── page.tsx              #   Email input form
 │   │   ├── verify/page.tsx       #   "Check your email" confirmation
@@ -218,63 +218,57 @@ src/
 │   ├── onboarding/               # First-time user setup
 │   │   ├── page.tsx              #   Entry point
 │   │   ├── actions.ts            #   Server actions
-│   │   └── _components/          #   Wizard steps (CardSelection, AnniversarySetup)
-│   ├── benefits/                 # Benefits dashboard
-│   │   ├── page.tsx              #   Server component (data fetching, grouping)
-│   │   ├── layout.tsx            #   AppShell wrapper
-│   │   └── _components/          #   SummaryBar, BenefitCard, CountdownTimer,
-│   │                             #   TransactionFeed, AnniversaryPrompt,
-│   │                             #   SyncButton, CardSwitcher, ConnectionAlerts,
-│   │                             #   InsightsSection, InsightCard
-│   ├── spending/                 # Spending analysis
-│   │   ├── page.tsx              #   Monthly spending breakdown
-│   │   ├── layout.tsx            #   AppShell wrapper
-│   │   └── _components/          #   MonthSelector, SpendingHeadline, CategoryBreakdown
-│   ├── compare/                  # Card comparison
-│   │   ├── page.tsx              #   Points earn simulation, perk matrix
-│   │   ├── layout.tsx            #   AppShell wrapper
-│   │   └── _components/          #   CompareContent (tabbed: Total Value, By Category, Perks)
+│   │   ├── processing/           #   Post-link processing screen
+│   │   └── _components/          #   Wizard steps (OnboardingWizard, CardSelection)
+│   ├── dashboard/                # Main app (tabbed dashboard)
+│   │   ├── page.tsx              #   Dashboard shell (tab routing)
+│   │   ├── layout.tsx            #   Dashboard layout
+│   │   ├── compare/              #   Card comparison (points earn simulation, perk matrix)
+│   │   ├── track/                #   Current-cycle benefit usage + points tracking
+│   │   ├── insights/             #   Generated insights feed
+│   │   ├── _components/          #   CompareTab, TrackTab, InsightsTab, BenefitsSection,
+│   │   │                         #   Leaderboard, HeadToHead, SummaryStrip, SyncBanner, ...
+│   │   └── _lib/                 #   classify-benefits, resolve-card
+│   ├── benefits/                 # Redirect stub → /dashboard
+│   ├── spending/                 # Redirect stub → /dashboard?tab=track
+│   ├── compare/                  # Redirect stub → /dashboard?tab=compare
 │   ├── settings/                 # User settings
-│   │   ├── page.tsx              #   Card types, anniversary, connections, theme
+│   │   ├── page.tsx              #   Card types, anniversary, connections
 │   │   ├── actions.ts            #   Server actions (anniversary, unlink)
-│   │   └── _components/          #   CardTypeEditor, AnniversaryEditor, ThemeToggle,
+│   │   └── _components/          #   CardTypeEditor, AnniversaryEditor,
 │   │                             #   SignOutButton, UnlinkButton
+│   ├── oauth-callback/           # Plaid OAuth redirect landing page
+│   ├── privacy/, terms/, security/  # Legal + security pages
 │   ├── sandbox/                  # Plaid test page (gated by env var)
 │   └── api/
 │       ├── auth/[...nextauth]/   # NextAuth route handler
+│       ├── onboarding/           # Saves lifestyle selections during onboarding
 │       ├── plaid/
 │       │   ├── create-link-token/  # Plaid Link token creation
 │       │   ├── exchange-token/     # Public → access token exchange
-│       │   ├── sync/               # Manual transaction sync
-│       │   └── webhook/            # Plaid webhook receiver
+│       │   ├── sync/               # Manual transaction sync (24h cooldown)
+│       │   ├── sync-status/        # Sync progress polling
+│       │   ├── reauth-complete/    # Marks a reauthorized connection active
+│       │   └── webhook/            # Plaid webhook receiver (signature-verified)
 │       ├── benefits/
 │       │   ├── confirm/            # Manual benefit match confirmation
 │       │   ├── flag/               # Add/remove transaction ↔ benefit matches
-│       │   ├── redeem/             # Mark benefit as redeemed
-│       │   ├── activate/           # Activate subscription benefits
+│       │   ├── redeem/             # Mark/unmark benefit as redeemed
+│       │   ├── activate/           # Activate/deactivate subscription benefits
 │       │   └── usage/              # Benefit usage data
 │       ├── transactions/           # Transaction list with pagination
-│       ├── insights/
-│       │   └── dismiss/            # Dismiss an insight
-│       └── cron/
-│           └── sync/               # Scheduled sync (Vercel cron)
+│       └── insights/
+│           ├── dismiss/            # Dismiss an insight
+│           └── impression/         # Record insight impressions
 ├── components/
-│   ├── ui/                       # Design system primitives
-│   │   ├── Button.tsx            #   Primary, secondary, ghost, danger variants
-│   │   ├── Card.tsx              #   Content container with hover glow
-│   │   ├── Badge.tsx             #   Status indicators (success/warning/danger/info)
-│   │   ├── ProgressBar.tsx       #   Animated fill, auto-colored by percentage
-│   │   ├── Tooltip.tsx           #   Contextual help
-│   │   ├── Skeleton.tsx          #   Pulse-animated loading placeholders
-│   │   ├── Table.tsx             #   Data table (left-align text, right-align numbers)
-│   │   ├── Input.tsx             #   Form inputs with labels and error states
-│   │   ├── Modal.tsx             #   Dialog overlay
-│   │   ├── ToastProvider.tsx     #   Toast notifications with undo
-│   │   └── BenefitIcon.tsx       #   Benefit type icons
+│   ├── ui/                       # Primitives (Button, Modal, ToastProvider)
 │   ├── AppShell.tsx              # Persistent sidebar + top bar layout
+│   ├── CardSelectorDropdown.tsx  # Card switcher
 │   ├── RemoveCardButton.tsx      # Card removal with confirmation
 │   ├── PlaidLink.tsx             # Plaid Link modal wrapper
-│   └── ThemeProvider.tsx         # Dark mode provider (next-themes)
+│   ├── ReauthButton.tsx          # Plaid reauth (update mode) launcher
+│   ├── issuer-logos.tsx          # Issuer logo components
+│   └── useInsightImpression.ts   # Insight impression tracking hook
 ├── lib/
 │   ├── engine/                   # Pure matching engine
 │   │   ├── cycle-utils.ts        #   Date math for 11 cycle types
@@ -294,13 +288,10 @@ src/
 │   │   ├── categories.ts         #   Transaction categorization
 │   │   ├── queries.ts            #   Monthly transaction queries
 │   │   └── __tests__/            #   Unit tests
-│   ├── cards/                    # Card definitions registry
+│   ├── cards/                    # Card definitions registry (30 cards)
 │   │   ├── index.ts              #   Registry exports
 │   │   ├── detect.ts             #   Auto-detect card type from Plaid metadata
-│   │   ├── chase-sapphire-reserve.ts
-│   │   ├── chase-sapphire-preferred.ts
-│   │   ├── amex-gold.ts
-│   │   └── amex-platinum.ts
+│   │   └── *.ts                  #   One CardDefinition file per card
 │   ├── points/                   # Points earn model
 │   │   ├── index.ts              #   Orchestrator (computeComparison)
 │   │   ├── categories.ts         #   3-tier category mapper
@@ -309,25 +300,27 @@ src/
 │   │   ├── simulator.ts          #   Full simulation pipeline
 │   │   ├── perk-matrix.ts        #   Static benefit comparison data
 │   │   ├── queries.ts            #   Server-only DB queries
-│   │   └── earn-configs/         #   Per-card earn rate definitions (CSR, CSP, Gold, Platinum)
+│   │   └── earn-configs/         #   Per-card earn rate definitions (30 cards)
 │   ├── auth.ts                   # NextAuth v5 config (lazy init)
 │   ├── auth-helpers.ts           # getAuthUser(), requireAuth()
 │   ├── actions.ts                # Server actions (updateCardType, removeCardProfile)
 │   ├── queries.ts                # Server-only data fetching
 │   ├── plaid.ts                  # Plaid API client
-│   ├── plaid-sync.ts             # Shared triggerSync() for API/webhook/cron
+│   ├── plaid-sync.ts             # Shared triggerSync() for API route + webhook
+│   ├── plaid-webhook-verify.ts   # Plaid-Verification JWT verification (ES256)
 │   ├── notifications.ts          # Connection health alerts
 │   ├── encryption.ts             # AES-256-GCM for Plaid access tokens
+│   ├── testing/                  # Test fixtures (merchant registry, generators)
 │   └── types.ts                  # All TypeScript types
 └── db/
-    ├── schema.ts                 # Drizzle schema (17 tables + relations)
+    ├── schema.ts                 # Drizzle schema (20 tables + relations)
     ├── seed.ts                   # Seed script (cards + benefits + competitor map)
     └── index.ts                  # DB client (lazy Proxy for build safety)
 ```
 
 ## Testing
 
-Tests cover the matching engine, insights engine, and spending module (195 tests across 12 files):
+Tests cover the matching engine, insights engine, points engine, spending module, and the test-data merchant registry/fixtures:
 
 ```bash
 # Run once
@@ -344,7 +337,6 @@ npm test
 1. Connect your repo to Vercel
 2. Set all environment variables from `.env.example` in the Vercel dashboard
 3. The build command is `npm run build` (default)
-4. `vercel.json` configures a cron job at `0 */6 * * *` (every 6 hours) for `/api/cron/sync`
 
 ### Database Migrations
 
@@ -369,32 +361,41 @@ Set the webhook URL in your Plaid dashboard to:
 https://your-domain.com/api/plaid/webhook
 ```
 
-The handler processes `SYNC_UPDATES_AVAILABLE` (triggers a sync) and `ITEM.ERROR` (updates connection status to `needs_reauth` or `disconnected`).
+The handler verifies every request before processing it: Plaid signs each webhook with an ES256 JWT in the `Plaid-Verification` header, and the handler (`src/lib/plaid-webhook-verify.ts`) fetches the signing key via `/webhook_verification_key/get`, verifies the JWT, and checks the `request_body_sha256` claim against the raw request body. Unsigned or invalid requests are rejected with `401`.
+
+The handler processes `TRANSACTIONS` webhooks (`INITIAL_UPDATE`, `HISTORICAL_UPDATE`, `SYNC_UPDATES_AVAILABLE` — each triggers a sync) and `ITEM` webhooks (`NEW_ACCOUNTS_AVAILABLE` triggers a sync; `ERROR` and `PENDING_EXPIRATION` update connection status to `needs_reauth` or `disconnected`).
 
 ## API Routes
 
 | Method | Route | Auth | Description |
 |---|---|---|---|
 | `*` | `/api/auth/[...nextauth]` | Public | NextAuth handler (magic link flow) |
+| `POST` | `/api/onboarding` | Required | Saves lifestyle selections during onboarding |
 | `POST` | `/api/plaid/create-link-token` | Required | Creates a Plaid Link token |
 | `POST` | `/api/plaid/exchange-token` | Required | Exchanges Plaid public token for access token |
-| `POST` | `/api/plaid/sync` | Required | Triggers manual transaction sync |
-| `POST` | `/api/plaid/webhook` | Plaid | Receives Plaid webhook events |
+| `POST` | `/api/plaid/sync` | Required | Triggers manual transaction sync (24h per-connection cooldown) |
+| `GET` | `/api/plaid/sync-status` | Required | Sync progress for the active connection (polled after onboarding) |
+| `POST` | `/api/plaid/reauth-complete` | Required | Marks a reauthorized connection as active |
+| `POST` | `/api/plaid/webhook` | Plaid signature | Receives Plaid webhook events (`Plaid-Verification` JWT verified; unsigned requests get `401`) |
 | `POST` | `/api/benefits/confirm` | Required | Manually confirms a benefit match |
 | `POST/DELETE` | `/api/benefits/flag` | Required | Add/remove transaction ↔ benefit matches |
-| `POST` | `/api/benefits/redeem` | Required | Mark a benefit as redeemed |
-| `POST` | `/api/benefits/activate` | Required | Activate a subscription benefit |
+| `POST/DELETE` | `/api/benefits/redeem` | Required | Mark/unmark a benefit as redeemed |
+| `POST/DELETE` | `/api/benefits/activate` | Required | Activate/deactivate a subscription benefit |
 | `GET` | `/api/benefits/usage` | Required | Returns benefit usage data |
 | `GET` | `/api/transactions` | Required | Paginated transaction list |
 | `POST` | `/api/insights/dismiss` | Required | Dismiss an insight |
-| `GET` | `/api/cron/sync` | CRON_SECRET | Scheduled sync of stale connections |
+| `POST` | `/api/insights/impression` | Required | Records an insight impression |
 
 ## Supported Cards
 
-- **Chase Sapphire Reserve** — 16 benefits across 7 billing cycle types
-- **Chase Sapphire Preferred** — Core travel and dining benefits
-- **Amex Gold** — Dining and travel credits
-- **Amex Platinum** — 21 benefits across 5 period types including quarterly cycles and `activeMonths` gating
+30 cards:
+
+- **Chase** — Sapphire Reserve, Sapphire Preferred, Freedom Flex, Freedom Unlimited, Ink Business Preferred
+- **Amex** — Gold, Platinum, Business Platinum, Blue Cash Preferred, Blue Cash Everyday, Delta SkyMiles Platinum, Hilton Honors Aspire
+- **Citi** — Strata Elite, Strata Premier, Custom Cash, Double Cash
+- **Capital One** — Venture X, Venture, SavorOne
+- **Wells Fargo** — Active Cash, Autograph Journey
+- **Others** — Robinhood Gold, Bilt Palladium, Discover it Cash Back, US Bank Altitude Connect, Apple Card, IHG One Rewards Premier, Southwest Rapid Rewards Priority, United Explorer, World of Hyatt
 
 Card definitions live in `src/lib/cards/`. See `docs/catalogs/` for full benefit catalogs.
 

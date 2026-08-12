@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth-helpers";
 import { getCardProfiles } from "@/lib/queries";
 import { computeComparison } from "@/lib/points";
 import { getLifestyleSelections } from "@/lib/lifestyle-queries";
-import { resolveActiveCard } from "../_lib/resolve-card";
+import { resolveActiveCard } from "@/lib/resolve-card";
 import { CompareTab } from "../_components/CompareTab";
 
 export const dynamic = "force-dynamic";

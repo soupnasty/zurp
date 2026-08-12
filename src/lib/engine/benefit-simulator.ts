@@ -27,9 +27,10 @@ export function simulateBenefitsForCard(
     autoMatchable: true,
   }));
 
-  // Filter to positive, non-pending transactions (fresh simulation)
+  // Filter to non-pending transactions (fresh simulation). Signed amounts
+  // pass through — the matcher nets refunds against matched purchases.
   const matcherTxns: MatcherTransaction[] = transactions
-    .filter((tx) => tx.amount > 0 && !tx.pending)
+    .filter((tx) => tx.amount !== 0 && !tx.pending)
     .map((tx) => ({
       ...tx,
       matchedStatus: "unmatched" as const,

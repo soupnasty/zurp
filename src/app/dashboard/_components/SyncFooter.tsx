@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { RefreshCw, Check } from "lucide-react";
+import { resolveActiveCard } from "@/lib/resolve-card";
 
 interface CardProfile {
   id: string;
+  isActive: boolean;
   connectionId: string | null;
   connectionStatus: string | null;
   lastSyncedAt: string | null;
@@ -32,10 +34,11 @@ export function SyncFooter({ cardProfiles }: SyncFooterProps) {
   const [syncing, setSyncing] = useState(false);
   const [synced, setSynced] = useState(false);
 
-  // Derive active card's connection from searchParams
-  const cardParam = searchParams.get("card");
-  const activeProfile =
-    cardProfiles.find((c) => c.id === cardParam) ?? cardProfiles[0];
+  // Same resolution as the server pages (?card → isActive → first)
+  const activeProfile = resolveActiveCard(
+    cardProfiles,
+    searchParams.get("card") ?? undefined
+  );
   const connectionId = activeProfile?.connectionId ?? null;
   const lastSyncedAt = activeProfile?.lastSyncedAt ?? null;
 

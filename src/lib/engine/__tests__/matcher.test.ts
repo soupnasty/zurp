@@ -201,8 +201,10 @@ describe("runMatcher", () => {
 
     expect(result.matches).toHaveLength(1);
     expect(result.matches[0].benefitId).toBe("auto");
-    // Should also flag as ambiguous since non-auto could have matched
-    expect(result.ambiguousTransactions).toContain("tx_1");
+    // A matched transaction must NOT also be flagged ambiguous — the two
+    // states collide downstream (credit applied while shown as "needs
+    // review"). Users can reassign via the flag endpoints.
+    expect(result.ambiguousTransactions).not.toContain("tx_1");
   });
 
   it("handles DoorDash combined credits (multiple benefits same merchant)", () => {
@@ -502,5 +504,101 @@ describe("runMatcher", () => {
     const result = runMatcher([tx], config);
 
     expect(result.matches).toHaveLength(1);
+  });
+
+  describe("refunds", () => {
+    it("releases credit from usage in the refund's period", () => {
+      const benefit = makeBenefit({ creditAmount: 25 });
+      const config = makeConfig([benefit], { "test_benefit:2026-01": 20 });
+      const refund = makeTx({ id: "tx_r", amount: -15 });
+
+      const result = runMatcher([refund], config);
+
+      expect(result.matches).toHaveLength(1);
+      expect(result.matches[0].creditApplied).toBe(-15);
+      expect(result.usageUpdates.get("test_benefit:2026-01")).toBe(-15);
+    });
+
+    it("floors the release at existing usage", () => {
+      const benefit = makeBenefit({ creditAmount: 25 });
+      const config = makeConfig([benefit], { "test_benefit:2026-01": 10 });
+      const refund = makeTx({ id: "tx_r", amount: -40 });
+
+      const result = runMatcher([refund], config);
+
+      expect(result.matches).toHaveLength(1);
+      expect(result.matches[0].creditApplied).toBe(-10);
+    });
+
+    it("leaves refunds unmatched when there is no usage to release", () => {
+      const benefit = makeBenefit({ creditAmount: 25 });
+      const config = makeConfig([benefit]); // no usage
+      const refund = makeTx({ id: "tx_r", amount: -15 });
+
+      const result = runMatcher([refund], config);
+
+      expect(result.matches).toHaveLength(0);
+      expect(result.unmatchedTransactionIds).toContain("tx_r");
+      expect(result.ambiguousTransactions).toHaveLength(0);
+    });
+
+    it("nets a same-batch purchase and refund", () => {
+      const benefit = makeBenefit({ creditAmount: 25 });
+      const config = makeConfig([benefit]);
+      const purchase = makeTx({ id: "tx_p", amount: 20, date: new Date(2026, 0, 10) });
+      const refund = makeTx({ id: "tx_r", amount: -20, date: new Date(2026, 0, 15) });
+
+      const result = runMatcher([purchase, refund], config);
+
+      expect(result.matches).toHaveLength(2);
+      expect(result.usageUpdates.get("test_benefit:2026-01")).toBe(0);
+    });
+
+    it("refund against a maxed benefit frees credit for later purchases", () => {
+      const benefit = makeBenefit({ creditAmount: 25 });
+      // Benefit already fully used this period
+      const config = makeConfig([benefit], { "test_benefit:2026-01": 25 });
+      const refund = makeTx({ id: "tx_r", amount: -25, date: new Date(2026, 0, 10) });
+      const purchase = makeTx({ id: "tx_p", amount: 25, date: new Date(2026, 0, 15) });
+
+      const result = runMatcher([refund, purchase], config);
+
+      expect(result.matches).toHaveLength(2);
+      // Refund releases the full $25, purchase re-consumes it
+      expect(result.matches[0].creditApplied).toBe(-25);
+      expect(result.matches[1].creditApplied).toBe(25);
+    });
+
+    it("refunds never mark transactions ambiguous for non-auto benefits", () => {
+      const benefit = makeBenefit({ autoMatchable: false, creditAmount: 25 });
+      const config = makeConfig([benefit], { "test_benefit:2026-01": 20 });
+      const refund = makeTx({ id: "tx_r", amount: -15 });
+
+      const result = runMatcher([refund], config);
+
+      expect(result.matches).toHaveLength(0);
+      expect(result.ambiguousTransactions).toHaveLength(0);
+      expect(result.unmatchedTransactionIds).toContain("tx_r");
+    });
+  });
+
+  describe("cent rounding", () => {
+    it("keeps accumulated usage on the cent grid", () => {
+      const benefit = makeBenefit({ creditAmount: 30 });
+      // Three amounts that sum to 30 exactly but drift in float arithmetic
+      // (0.1 + 0.2 !== 0.3)
+      const txs = [
+        makeTx({ id: "t1", amount: 10.1 }),
+        makeTx({ id: "t2", amount: 10.2 }),
+        makeTx({ id: "t3", amount: 9.7 }),
+      ];
+      const config = makeConfig([benefit]);
+
+      const result = runMatcher(txs, config);
+
+      expect(result.matches).toHaveLength(3);
+      const total = result.usageUpdates.get("test_benefit:2026-01");
+      expect(total).toBe(30); // exactly, not 29.999999999999996
+    });
   });
 });

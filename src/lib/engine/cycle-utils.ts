@@ -1,5 +1,13 @@
 import type { BenefitCycle, CycleBounds } from "@/lib/types";
 
+/**
+ * All date math in this module is UTC-based. Transaction and anniversary
+ * dates are calendar dates stored at UTC midnight (see plaid-sync), so cycle
+ * bounds must be computed with UTC getters/constructors — local-time getters
+ * would shift dates by a day on any non-UTC runtime (production runs UTC;
+ * tests are pinned to TZ=UTC in vitest.config.ts).
+ */
+
 /** Fixed-range cycles: extract year, return a constant month range. */
 const FIXED_RANGES: Partial<
   Record<
@@ -16,6 +24,18 @@ const FIXED_RANGES: Partial<
   annual_calendar: { suffix: "", startMonth: 0, endMonth: 11, endDay: 31 },
 };
 
+function utcDate(
+  year: number,
+  month: number,
+  day: number,
+  h = 0,
+  m = 0,
+  s = 0,
+  ms = 0
+): Date {
+  return new Date(Date.UTC(year, month, day, h, m, s, ms));
+}
+
 /** Previous-cycle mapping: which cycle to query and at what reference date. */
 const PREV_CYCLE_MAP: Partial<
   Record<
@@ -25,35 +45,35 @@ const PREV_CYCLE_MAP: Partial<
 > = {
   monthly: {
     prevCycle: "monthly",
-    getRef: (r) => new Date(r.getFullYear(), r.getMonth() - 1, 1),
+    getRef: (r) => utcDate(r.getUTCFullYear(), r.getUTCMonth() - 1, 1),
   },
   biannual_h1: {
     prevCycle: "biannual_h2",
-    getRef: (r) => new Date(r.getFullYear() - 1, 7, 1),
+    getRef: (r) => utcDate(r.getUTCFullYear() - 1, 7, 1),
   },
   biannual_h2: {
     prevCycle: "biannual_h1",
-    getRef: (r) => new Date(r.getFullYear(), 1, 1),
+    getRef: (r) => utcDate(r.getUTCFullYear(), 1, 1),
   },
   quarterly_q1: {
     prevCycle: "quarterly_q4",
-    getRef: (r) => new Date(r.getFullYear() - 1, 10, 1),
+    getRef: (r) => utcDate(r.getUTCFullYear() - 1, 10, 1),
   },
   quarterly_q2: {
     prevCycle: "quarterly_q1",
-    getRef: (r) => new Date(r.getFullYear(), 1, 1),
+    getRef: (r) => utcDate(r.getUTCFullYear(), 1, 1),
   },
   quarterly_q3: {
     prevCycle: "quarterly_q2",
-    getRef: (r) => new Date(r.getFullYear(), 4, 1),
+    getRef: (r) => utcDate(r.getUTCFullYear(), 4, 1),
   },
   quarterly_q4: {
     prevCycle: "quarterly_q3",
-    getRef: (r) => new Date(r.getFullYear(), 7, 1),
+    getRef: (r) => utcDate(r.getUTCFullYear(), 7, 1),
   },
   annual_calendar: {
     prevCycle: "annual_calendar",
-    getRef: (r) => new Date(r.getFullYear() - 1, 6, 1),
+    getRef: (r) => utcDate(r.getUTCFullYear() - 1, 6, 1),
   },
 };
 
@@ -75,29 +95,21 @@ export function getCurrentCycleBounds(
   // Handle the 7 fixed-range cycles via lookup
   const fixed = FIXED_RANGES[cycle];
   if (fixed) {
-    const year = ref.getFullYear();
+    const year = ref.getUTCFullYear();
     return {
       periodKey: `${year}${fixed.suffix}`,
-      cycleStart: new Date(year, fixed.startMonth, 1),
-      cycleEnd: new Date(
-        year,
-        fixed.endMonth,
-        fixed.endDay,
-        23,
-        59,
-        59,
-        999
-      ),
+      cycleStart: utcDate(year, fixed.startMonth, 1),
+      cycleEnd: utcDate(year, fixed.endMonth, fixed.endDay, 23, 59, 59, 999),
     };
   }
 
   // Special cases with unique logic
   switch (cycle) {
     case "monthly": {
-      const year = ref.getFullYear();
-      const month = ref.getMonth();
-      const cycleStart = new Date(year, month, 1);
-      const cycleEnd = new Date(year, month + 1, 0, 23, 59, 59, 999);
+      const year = ref.getUTCFullYear();
+      const month = ref.getUTCMonth();
+      const cycleStart = utcDate(year, month, 1);
+      const cycleEnd = utcDate(year, month + 1, 0, 23, 59, 59, 999);
       const periodKey = `${year}-${String(month + 1).padStart(2, "0")}`;
       return { periodKey, cycleStart, cycleEnd };
     }
@@ -105,28 +117,27 @@ export function getCurrentCycleBounds(
     case "annual_anniversary": {
       if (!anniversaryDate) {
         // Fallback to calendar year when no anniversary date detected
-        const year = ref.getFullYear();
+        const year = ref.getUTCFullYear();
         return {
           periodKey: `${year}-ANN`,
-          cycleStart: new Date(year, 0, 1),
-          cycleEnd: new Date(year, 11, 31, 23, 59, 59, 999),
+          cycleStart: utcDate(year, 0, 1),
+          cycleEnd: utcDate(year, 11, 31, 23, 59, 59, 999),
         };
       }
 
-      // Use UTC getters — anniversary dates are calendar dates stored at UTC midnight
       const annMonth = anniversaryDate.getUTCMonth();
       const annDay = anniversaryDate.getUTCDate();
 
       // Find the most recent anniversary date relative to referenceDate
-      let cycleStartYear = ref.getFullYear();
-      let cycleStart = new Date(cycleStartYear, annMonth, annDay);
+      let cycleStartYear = ref.getUTCFullYear();
+      let cycleStart = utcDate(cycleStartYear, annMonth, annDay);
 
       if (cycleStart > ref) {
         cycleStartYear--;
-        cycleStart = new Date(cycleStartYear, annMonth, annDay);
+        cycleStart = utcDate(cycleStartYear, annMonth, annDay);
       }
 
-      const cycleEnd = new Date(
+      const cycleEnd = utcDate(
         cycleStartYear + 1,
         annMonth,
         annDay - 1,
@@ -145,20 +156,12 @@ export function getCurrentCycleBounds(
 
     case "quadrennial": {
       // 4-year cycle starting from the calendar year
-      const year = ref.getFullYear();
+      const year = ref.getUTCFullYear();
       const cycleStartYear = year - (year % 4);
       return {
         periodKey: `${cycleStartYear}-Q4`,
-        cycleStart: new Date(cycleStartYear, 0, 1),
-        cycleEnd: new Date(
-          cycleStartYear + 3,
-          11,
-          31,
-          23,
-          59,
-          59,
-          999
-        ),
+        cycleStart: utcDate(cycleStartYear, 0, 1),
+        cycleEnd: utcDate(cycleStartYear + 3, 11, 31, 23, 59, 59, 999),
       };
     }
 
@@ -167,8 +170,8 @@ export function getCurrentCycleBounds(
       // Return a wide range
       return {
         periodKey: "SUB",
-        cycleStart: new Date(2000, 0, 1),
-        cycleEnd: new Date(2099, 11, 31, 23, 59, 59, 999),
+        cycleStart: utcDate(2000, 0, 1),
+        cycleEnd: utcDate(2099, 11, 31, 23, 59, 59, 999),
       };
     }
 
@@ -197,19 +200,19 @@ export function getPreviousCycleBounds(
   switch (cycle) {
     case "annual_anniversary": {
       if (!anniversaryDate) {
-        const prevRef = new Date(ref.getFullYear() - 1, 6, 1);
+        const prevRef = utcDate(ref.getUTCFullYear() - 1, 6, 1);
         return getCurrentCycleBounds(cycle, prevRef);
       }
       const current = getCurrentCycleBounds(cycle, ref, anniversaryDate);
       const prevRef = new Date(current.cycleStart);
-      prevRef.setDate(prevRef.getDate() - 1);
+      prevRef.setUTCDate(prevRef.getUTCDate() - 1);
       return getCurrentCycleBounds(cycle, prevRef, anniversaryDate);
     }
 
     case "quadrennial": {
       const current = getCurrentCycleBounds(cycle, ref);
       const prevRef = new Date(current.cycleStart);
-      prevRef.setFullYear(prevRef.getFullYear() - 1);
+      prevRef.setUTCFullYear(prevRef.getUTCFullYear() - 1);
       return getCurrentCycleBounds(cycle, prevRef);
     }
 

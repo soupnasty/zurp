@@ -23,6 +23,7 @@ export default async function SettingsLayout({
     cardType: c.cardType,
     name: c.name,
     annualFee: c.annualFee,
+    isActive: c.isActive,
     connectionId: c.connectionId,
     connectionStatus: c.connectionStatus,
     lastSyncedAt: c.lastSyncedAt?.toISOString() ?? null,

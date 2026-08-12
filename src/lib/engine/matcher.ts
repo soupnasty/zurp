@@ -8,6 +8,7 @@ import type {
 } from "@/lib/types";
 import { normalizeMerchantName, matchesMerchantPattern } from "./normalize";
 import { getCurrentCycleBounds } from "./cycle-utils";
+import { roundCents } from "./money";
 
 /**
  * Core matching engine — pure function, no DB calls.
@@ -19,7 +20,10 @@ import { getCurrentCycleBounds } from "./cycle-utils";
  * 4. Sort eligible benefits by priority (ascending = higher priority)
  * 5. Assign to highest-priority match
  * 6. Compute credit applied (min of tx amount and remaining benefit)
- * 7. Flag ambiguous transactions (match non-auto benefits)
+ * 7. Flag ambiguous transactions (only non-auto benefits match)
+ *
+ * Refunds (negative amounts) match the same way and release credit from
+ * the benefit's usage in the refund's own period, floored at zero.
  */
 export function runMatcher(
   transactions: MatcherTransaction[],
@@ -35,9 +39,10 @@ export function runMatcher(
   const unmatchedTransactionIds: string[] = [];
   const usageUpdates = new Map<string, number>();
 
-  // Filter eligible transactions (skip pending, already matched, and refunds/negatives)
+  // Filter eligible transactions (skip pending and already matched;
+  // negatives are refunds and release credit)
   const eligibleTx = transactions.filter(
-    (tx) => !tx.pending && tx.matchedStatus === "unmatched" && tx.amount > 0
+    (tx) => !tx.pending && tx.matchedStatus === "unmatched" && tx.amount !== 0
   );
 
   // Sort benefits by priority (ascending)
@@ -47,6 +52,7 @@ export function runMatcher(
 
   for (const tx of eligibleTx) {
     const normalizedName = normalizeMerchantName(tx.merchantName || tx.merchantNameRaw);
+    const isRefund = tx.amount < 0;
 
     // Collect all matching benefits for this transaction
     const eligibleBenefits: Array<{
@@ -60,8 +66,10 @@ export function runMatcher(
       // computes the period key from tx.date. Month gating uses activeMonths.
       // Temporal validity uses sunsetDate.
 
-      // Check if benefit is active in this month
-      if (benefit.activeMonths && !benefit.activeMonths.includes(tx.date.getMonth())) {
+      // Check if benefit is active in this month.
+      // Transaction dates are calendar dates stored at UTC midnight —
+      // always read them with UTC getters.
+      if (benefit.activeMonths && !benefit.activeMonths.includes(tx.date.getUTCMonth())) {
         continue;
       }
 
@@ -70,12 +78,13 @@ export function runMatcher(
         continue;
       }
 
-      // Check if benefit has remaining credit (per-period)
+      // Per-period usage check: purchases need remaining credit;
+      // refunds need existing usage to release.
       const bounds = getCurrentCycleBounds(benefit.cycle, tx.date, anniversaryDate);
       const usageKey = `${benefit.id}:${bounds.periodKey}`;
       const currentUsed = usageMap.get(usageKey) ?? 0;
       const effectiveCredit = getEffectiveCredit(benefit, config);
-      if (currentUsed >= effectiveCredit) continue;
+      if (isRefund ? currentUsed <= 0 : currentUsed >= effectiveCredit) continue;
 
       // Check merchant pattern match
       const merchantMatch = matchesMerchantPattern(
@@ -124,22 +133,19 @@ export function runMatcher(
       continue;
     }
 
-    // Check for non-auto-matchable benefits
-    const nonAutoMatches = eligibleBenefits.filter(
-      (eb) => !eb.benefit.autoMatchable
-    );
-    if (nonAutoMatches.length > 0 && eligibleBenefits.every((eb) => !eb.benefit.autoMatchable)) {
-      ambiguousTransactions.push(tx.id);
-      continue;
-    }
-
     // Pick best auto-matchable benefit (lowest priority number = highest priority)
     const autoMatches = eligibleBenefits.filter(
       (eb) => eb.benefit.autoMatchable
     );
 
     if (autoMatches.length === 0) {
-      ambiguousTransactions.push(tx.id);
+      // Only non-auto benefits match. Purchases go to manual review;
+      // refunds stay unmatched (there's no credit change to review).
+      if (isRefund) {
+        unmatchedTransactionIds.push(tx.id);
+      } else {
+        ambiguousTransactions.push(tx.id);
+      }
       continue;
     }
 
@@ -149,17 +155,24 @@ export function runMatcher(
     const bestMatch = autoMatches[0];
     const { benefit, confidence, usageKey } = bestMatch;
 
-    // Compute credit applied (per-period)
+    // Compute credit applied (per-period). Purchases consume remaining
+    // credit; refunds release usage, floored at zero.
     const currentUsed = usageMap.get(usageKey) ?? 0;
     const effectiveCredit = getEffectiveCredit(benefit, config);
-    const remaining = effectiveCredit - currentUsed;
-    const creditApplied = Math.min(tx.amount, remaining);
+    const creditApplied = isRefund
+      ? -roundCents(Math.min(-tx.amount, currentUsed))
+      : roundCents(Math.min(tx.amount, effectiveCredit - currentUsed));
+
+    if (creditApplied === 0) {
+      unmatchedTransactionIds.push(tx.id);
+      continue;
+    }
 
     // Update usage tracking (per-period)
-    usageMap.set(usageKey, currentUsed + creditApplied);
+    usageMap.set(usageKey, roundCents(currentUsed + creditApplied));
     usageUpdates.set(
       usageKey,
-      (usageUpdates.get(usageKey) ?? 0) + creditApplied
+      roundCents((usageUpdates.get(usageKey) ?? 0) + creditApplied)
     );
 
     matches.push({
@@ -169,11 +182,6 @@ export function runMatcher(
       matchMethod: "auto",
       matchConfidence: confidence,
     });
-
-    // Also flag if non-auto benefits could have matched
-    if (nonAutoMatches.length > 0) {
-      ambiguousTransactions.push(tx.id);
-    }
   }
 
   return {

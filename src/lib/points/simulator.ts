@@ -346,15 +346,17 @@ function simulateBenefitsForCard(
     return { total: 0, perBenefit: {} };
   }
 
-  // Convert to MatcherTransaction format (all treated as unmatched)
+  // Convert to MatcherTransaction format (all treated as unmatched).
+  // Signed amounts pass through — the matcher nets refunds against
+  // matched purchases.
   const matcherTxns: MatcherTransaction[] = transactions
-    .filter((tx) => tx.amount > 0)
+    .filter((tx) => tx.amount !== 0)
     .map((tx) => ({
       id: tx.id,
       date: tx.date,
       merchantName: tx.merchantName,
       merchantNameRaw: tx.merchantNameRaw,
-      amount: Math.abs(tx.amount),
+      amount: tx.amount,
       plaidCategoryPrimary: tx.plaidCategoryPrimary,
       plaidCategoryDetailed: tx.plaidCategoryDetailed,
       pending: false,

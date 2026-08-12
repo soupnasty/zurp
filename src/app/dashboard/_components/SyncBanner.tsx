@@ -1,9 +1,11 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+import { resolveActiveCard } from "@/lib/resolve-card";
 
 interface CardProfile {
   id: string;
+  isActive: boolean;
   syncStatus: "pending" | "initial" | "complete";
 }
 
@@ -14,9 +16,11 @@ interface SyncBannerProps {
 export function SyncBanner({ cardProfiles }: SyncBannerProps) {
   const searchParams = useSearchParams();
 
-  const cardParam = searchParams.get("card");
-  const activeProfile =
-    cardProfiles.find((c) => c.id === cardParam) ?? cardProfiles[0];
+  // Same resolution as the server pages (?card → isActive → first)
+  const activeProfile = resolveActiveCard(
+    cardProfiles,
+    searchParams.get("card") ?? undefined
+  );
 
   if (!activeProfile || activeProfile.syncStatus === "complete") return null;
 

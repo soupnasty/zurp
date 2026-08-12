@@ -8,7 +8,7 @@ import {
 import { getPointsEarningSummary } from "@/lib/points/queries";
 import { getEarnConfig } from "@/lib/points/earn-configs";
 import { groupBenefits } from "@/lib/benefit-grouping";
-import { resolveActiveCard } from "../_lib/resolve-card";
+import { resolveActiveCard } from "@/lib/resolve-card";
 import { classifyBenefitStatus } from "../_lib/classify-benefits";
 import { TrackTab } from "../_components/TrackTab";
 

@@ -30,6 +30,7 @@ export default async function DashboardLayout({
     cardType: c.cardType,
     name: c.name,
     annualFee: c.annualFee,
+    isActive: c.isActive,
     connectionId: c.connectionId,
     connectionStatus: c.connectionStatus,
     syncStatus: c.syncStatus,

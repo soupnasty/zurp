@@ -1,7 +1,7 @@
 import { requireAuth } from "@/lib/auth-helpers";
 import { getCardProfiles } from "@/lib/queries";
 import { getInsightsForDisplay } from "@/lib/insights/orchestrator";
-import { resolveActiveCard } from "../_lib/resolve-card";
+import { resolveActiveCard } from "@/lib/resolve-card";
 import { InsightsTab } from "../_components/InsightsTab";
 
 export const dynamic = "force-dynamic";

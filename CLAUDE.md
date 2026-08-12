@@ -21,7 +21,7 @@ A credit card benefits tracker that syncs transactions via Plaid, matches them a
 ```bash
 npm run dev          # Start dev server
 npm run build        # Production build
-npm run test:run     # Run all tests (257 tests across 13 files)
+npm run test:run     # Run all tests
 npm run db:push      # Push schema to Neon
 npm run db:seed      # Seed cards + benefits + competitor map from registry
 npm run db:studio    # Open Drizzle Studio
@@ -201,7 +201,7 @@ src/lib/insights/
 **Integration points**:
 - `generateAndPersistInsights(userId)` called after `processTransactionsForConnection()` in engine orchestrator
 - `getInsightsForDisplay(userId, surface, max)` called in insights page
-- `expireStaleInsights(userId)` called in cron job
+- `expireStaleInsights(userId)` called at the start of `generateAndPersistInsights` in the insights orchestrator
 - `/api/insights/dismiss` records dismissals and triggers suppression
 
 ### Points Earn Model (`src/lib/points/`)
@@ -288,15 +288,18 @@ src/
 │   ├── layout.tsx          # Root layout (fonts, ThemeProvider)
 │   ├── page.tsx            # Landing page
 │   ├── login/              # Auth pages (login, verify, error)
-│   ├── onboarding/         # Multi-step wizard (card select, Plaid, anniversary)
-│   ├── benefits/           # Benefits dashboard (insights, benefit cards, sync)
-│   ├── spending/           # Spending analysis (categories, monthly breakdown)
-│   ├── compare/            # Card comparison (points earn simulation, perk matrix)
+│   ├── onboarding/         # Multi-step wizard (card select, Plaid, processing)
+│   ├── dashboard/          # Main app: compare/, track/, insights/ + tabbed shell
+│   ├── benefits/           # Redirect stub → /dashboard
+│   ├── spending/           # Redirect stub → /dashboard?tab=track
+│   ├── compare/            # Redirect stub → /dashboard?tab=compare
 │   ├── settings/           # User settings (card type, anniversary, connections)
+│   ├── oauth-callback/     # Plaid OAuth redirect landing
+│   ├── privacy|terms|security/ # Legal + security pages
 │   ├── sandbox/            # Plaid test page (gated by NEXT_PUBLIC_ENABLE_SANDBOX)
 │   ├── error.tsx           # Global error boundary
 │   ├── not-found.tsx       # 404 page
-│   └── api/                # API routes (auth, plaid, benefits, transactions, cron, insights)
+│   └── api/                # API routes (auth, onboarding, plaid, benefits, transactions, insights)
 ├── components/
 │   ├── ui/                 # 11 primitives (Button, Card, Badge, ProgressBar, Table, etc.)
 │   ├── AppShell.tsx        # Sidebar layout
@@ -314,12 +317,13 @@ src/
 │   ├── actions.ts          # Server actions (updateCardType, removeCardProfile)
 │   ├── queries.ts          # Server-only data fetching
 │   ├── plaid.ts            # Plaid API client
-│   ├── plaid-sync.ts       # Shared sync logic (API, webhook, cron)
+│   ├── plaid-sync.ts       # Shared sync logic (API route, webhook)
+│   ├── plaid-webhook-verify.ts # Plaid-Verification JWT verification (ES256)
 │   ├── notifications.ts    # Connection health alerts
 │   ├── encryption.ts       # AES-256-GCM for Plaid tokens
 │   └── types.ts            # All TypeScript types
 └── db/
-    ├── schema.ts           # Drizzle schema (18 tables + relations)
+    ├── schema.ts           # Drizzle schema (20 tables + relations)
     ├── seed.ts             # Seed script
     └── index.ts            # DB client (lazy Proxy)
 ```
@@ -331,7 +335,7 @@ src/
 - [x] Phase 3: Plaid integration (sandbox)
 - [x] Phase 4: Auth + user management
 - [x] Phase 5: Dashboard UI
-- [x] Phase 6: Polish, webhooks, cron, deployment
+- [x] Phase 6: Polish, webhooks, deployment
 - [x] Phase 7: Insights Engine v3 — 12 categories (A1-A3, P1-P2, B1-B4, C0-C2), dismiss suppression, expandable display, dynamic P2, cross-card A3, 6-cycle streak counting, C0 refresh, competitor staleness
 - [x] Phase 8: Compare Page + Points Earn Model — category mapper, 4 card earn configs, simulator, perk matrix, tabbed UI
 - [x] Phase 9: Amex Platinum — 21 benefits, quarterly cycle types, activeMonths gating, earn config, A2 swap templates, competitor map
@@ -350,7 +354,10 @@ src/
 ### Sync Architecture
 
 Transaction syncing uses a shared `triggerSync()` function (`src/lib/plaid-sync.ts`) called from:
-- **API route** (`/api/plaid/sync`) — user-triggered manual sync via dashboard button
+- **API route** (`POST /api/plaid/sync`) — user-triggered manual sync via dashboard button, with a 24-hour per-connection cooldown
+- **Webhook** (`POST /api/plaid/webhook`) — Plaid pushes `TRANSACTIONS` events (`INITIAL_UPDATE`, `HISTORICAL_UPDATE`, `SYNC_UPDATES_AVAILABLE`) and `ITEM` events (`NEW_ACCOUNTS_AVAILABLE`, `ERROR`, `PENDING_EXPIRATION`)
+
+Webhooks are verified before processing: the `Plaid-Verification` header carries an ES256 JWT signed by Plaid; `src/lib/plaid-webhook-verify.ts` fetches the signing key via `/webhook_verification_key/get`, verifies the JWT, and checks the `request_body_sha256` claim against the raw body. Missing/invalid signatures are rejected with `401`. There is NO cron sync endpoint.
 
 Connection health alerts (`src/lib/notifications.ts`) surface stale/reauth/disconnected states as banners in the dashboard.
 
