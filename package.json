@@ -22,6 +22,7 @@
     "@react-email/components": "^1.0.7",
     "@vercel/analytics": "^1.6.1",
     "drizzle-orm": "^0.45.1",
+    "jose": "^6.2.8",
     "lucide-react": "^0.563.0",
     "next": "16.1.6",
     "next-auth": "^5.0.0-beta.30",

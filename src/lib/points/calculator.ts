@@ -25,7 +25,10 @@ interface CalculatorTransaction {
  * 1. Negative amounts shouldn't earn points
  * 2. Payment transactions (e.g., "PAYMENT THANK YOU", "AUTOPAY") are not purchases
  */
-function isPaymentTransaction(tx: CalculatorTransaction): boolean {
+export function isPaymentTransaction(tx: {
+  merchantName: string | null;
+  amount: number;
+}): boolean {
   if (tx.amount >= 0) return false; // Positive amounts are not payments
 
   const merchantName = (tx.merchantName || "").toLowerCase();

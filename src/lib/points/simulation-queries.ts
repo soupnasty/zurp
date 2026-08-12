@@ -1,15 +1,9 @@
 import "server-only";
 import { db } from "@/db";
-import { eq, and, notInArray } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import * as schema from "@/db/schema";
 import type { MatcherTransaction } from "@/lib/types";
-
-const EXCLUDED_CATEGORIES = [
-  "INCOME",
-  "TRANSFER_IN",
-  "LOAN_PAYMENTS",
-  "BANK_FEES",
-];
+import { categoryNotExcluded } from "./tx-filter";
 
 export interface SimulationRow {
   simulatedCardId: string;
@@ -112,10 +106,7 @@ export async function getMatcherTransactionsForProfile(
       eq(schema.transactions.plaidConnectionId, cardProfile.plaidConnectionId),
       eq(schema.transactions.pending, false),
       eq(schema.transactions.isAnnualFee, false),
-      notInArray(
-        schema.transactions.plaidCategoryPrimary,
-        EXCLUDED_CATEGORIES
-      )
+      categoryNotExcluded()
     ),
     orderBy: (t, { asc }) => [asc(t.date)],
     columns: {

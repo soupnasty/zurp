@@ -30,10 +30,11 @@
   --color-glow-cyan: rgba(34, 211, 238, 0.10);
   --color-border-medium: rgba(255, 255, 255, 0.10);
 
-  /* Typography */
-  --font-display: "DM Sans", "Helvetica Neue", Helvetica, sans-serif;
-  --font-body: "DM Sans", "Helvetica Neue", Helvetica, sans-serif;
-  --font-mono: "Space Mono", "Fira Code", "Consolas", monospace;
+  /* Typography — the first entry is the next/font variable set on <html>
+     in layout.tsx; the raw family names only match locally installed fonts. */
+  --font-display: var(--font-dm-sans), "DM Sans", "Helvetica Neue", Helvetica, sans-serif;
+  --font-body: var(--font-dm-sans), "DM Sans", "Helvetica Neue", Helvetica, sans-serif;
+  --font-mono: var(--font-space-mono), "Space Mono", "Fira Code", "Consolas", monospace;
 
   --text-display: 62px;
   --text-h1: 36px;

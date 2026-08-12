@@ -20,9 +20,10 @@ export const metadata: Metadata = {
   description:
     "zurp tracks your credit card benefits automatically — and shows you what you'd gain or lose on every other card.",
   metadataBase: new URL(
-    process.env.APP_URL ?? process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : "http://localhost:3000"
+    process.env.APP_URL ??
+      (process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : "http://localhost:3000")
   ),
   openGraph: {
     title: "zurp",
@@ -45,10 +46,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body
-        className={`${dmSans.variable} ${spaceMono.variable} antialiased`}
-      >
+    <html
+      lang="en"
+      className={`dark ${dmSans.variable} ${spaceMono.variable}`}
+    >
+      <body className="antialiased">
         <ToastProvider>{children}</ToastProvider>
         <Analytics />
       </body>

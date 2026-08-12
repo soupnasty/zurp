@@ -1,14 +1,8 @@
 import "server-only";
 import { db } from "@/db";
-import { eq, and, ne, notInArray, sql, gte } from "drizzle-orm";
+import { eq, and, ne, sql, gte } from "drizzle-orm";
 import * as schema from "@/db/schema";
-
-const EXCLUDED_CATEGORIES = [
-  "INCOME",
-  "TRANSFER_IN",
-  "LOAN_PAYMENTS",
-  "BANK_FEES",
-];
+import { categoryNotExcluded } from "./tx-filter";
 
 export interface CompareTransaction {
   id: string;
@@ -34,7 +28,7 @@ export async function getCompareTransactions(
     eq(schema.transactions.userId, userId),
     eq(schema.transactions.pending, false),
     eq(schema.transactions.isAnnualFee, false),
-    notInArray(schema.transactions.plaidCategoryPrimary, EXCLUDED_CATEGORIES),
+    categoryNotExcluded(),
   ];
   if (options?.since) {
     conditions.push(gte(schema.transactions.date, options.since));
@@ -129,7 +123,7 @@ export async function getTransactionPeriod(
         eq(schema.transactions.userId, userId),
         eq(schema.transactions.pending, false),
         eq(schema.transactions.isAnnualFee, false),
-        notInArray(schema.transactions.plaidCategoryPrimary, EXCLUDED_CATEGORIES)
+        categoryNotExcluded()
       )
     );
 

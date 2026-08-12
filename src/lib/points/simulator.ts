@@ -13,7 +13,10 @@ import type {
   ValuationMode,
 } from "./types";
 import type { MatcherTransaction } from "@/lib/types";
-import { calculatePointsForTransaction } from "./calculator";
+import {
+  calculatePointsForTransaction,
+  isPaymentTransaction,
+} from "./calculator";
 import { valuatePoints, computeBenefitsValue } from "./valuation";
 import { computeLifestyleBenefits } from "./lifestyle-valuation";
 import { EARN_CATEGORY_LABELS, EARN_CATEGORY_ICONS } from "./categories";
@@ -88,8 +91,9 @@ export function runSimulation(input: SimulationInput): ComparisonOutput | null {
     (a, b) => a.date.getTime() - b.date.getTime()
   );
 
+  // Net spend: refunds subtract; card payments are not spend at all.
   const totalSpend = sortedTxns.reduce(
-    (sum, tx) => sum + Math.abs(tx.amount),
+    (sum, tx) => (isPaymentTransaction(tx) ? sum : sum + tx.amount),
     0
   );
 
@@ -202,11 +206,16 @@ function simulateCard(
   let totalPoints = 0;
 
   for (const tx of transactions) {
+    // Card payments ("PAYMENT THANK YOU", autopay) are not spend — skip.
+    if (isPaymentTransaction(tx)) continue;
+
+    // Pass the signed amount: the calculator returns negative points for
+    // refunds and releases their spend from category caps.
     const result = calculatePointsForTransaction(
       {
         id: tx.id,
         merchantName: tx.merchantName,
-        amount: Math.abs(tx.amount),
+        amount: tx.amount,
         category: tx.assignment.category,
         confidence: tx.assignment.confidence,
         date: tx.date,
@@ -216,9 +225,7 @@ function simulateCard(
       capState
     );
 
-    // Handle refunds
-    const effectivePoints = tx.amount < 0 ? -Math.abs(result.points) : result.points;
-    totalPoints += effectivePoints;
+    totalPoints += result.points;
 
     const cat = tx.assignment.category;
     if (!categoryMap.has(cat)) {
@@ -231,12 +238,12 @@ function simulateCard(
       });
     }
     const entry = categoryMap.get(cat)!;
-    entry.spend += Math.abs(tx.amount);
-    entry.points += effectivePoints;
+    entry.spend += tx.amount;
+    entry.points += result.points;
     entry.txCount += 1;
 
     const prevSpend = entry.earnRates.get(result.earnRate) ?? 0;
-    entry.earnRates.set(result.earnRate, prevSpend + Math.abs(tx.amount));
+    entry.earnRates.set(result.earnRate, prevSpend + tx.amount);
 
     if (result.capApplied) {
       const cap = config.caps.find((c) => c.categories.includes(cat));

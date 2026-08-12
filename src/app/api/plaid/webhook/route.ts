@@ -3,10 +3,28 @@ import { db } from "@/db";
 import * as schema from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { triggerSync } from "@/lib/plaid-sync";
+import { verifyPlaidWebhook } from "@/lib/plaid-webhook-verify";
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    // Verify the webhook actually came from Plaid before trusting anything
+    // in the body. Plaid signs each webhook with an ES256 JWT over the raw
+    // body, delivered in the Plaid-Verification header.
+    const rawBody = await request.text();
+    const verificationToken = request.headers.get("plaid-verification");
+
+    if (
+      !verificationToken ||
+      !(await verifyPlaidWebhook(verificationToken, rawBody))
+    ) {
+      console.warn("Rejected webhook with missing/invalid Plaid-Verification");
+      return NextResponse.json(
+        { error: "Invalid webhook signature" },
+        { status: 401 }
+      );
+    }
+
+    const body = JSON.parse(rawBody);
     const { webhook_type, webhook_code, item_id, error } = body;
 
     console.log(`Plaid webhook: ${webhook_type}.${webhook_code}`, {
@@ -95,8 +113,11 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ received: true });
-  } catch (err: any) {
-    console.error("Webhook processing error:", err?.message || err);
+  } catch (err) {
+    console.error(
+      "Webhook processing error:",
+      err instanceof Error ? err.message : err
+    );
     // Always return 200 to Plaid so it doesn't retry endlessly
     return NextResponse.json({ received: true, error: "Processing failed" });
   }

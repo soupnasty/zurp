@@ -1,10 +1,13 @@
 import "server-only";
 import { db } from "@/db";
-import { eq, and, notInArray } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import * as schema from "@/db/schema";
 import { classifyForPoints } from "./categories";
 import { EARN_CATEGORY_LABELS, EARN_CATEGORY_ICONS } from "./category-labels";
-import { calculatePointsForTransaction } from "./calculator";
+import {
+  calculatePointsForTransaction,
+  isPaymentTransaction,
+} from "./calculator";
 import { getAllEarnConfigs } from "./earn-configs";
 import { valuatePoints, computeBenefitsValue } from "./valuation";
 
@@ -17,13 +20,7 @@ import type {
   CategoryEarnSummary,
 } from "./types";
 import type { MatcherTransaction } from "@/lib/types";
-
-const EXCLUDED_CATEGORIES = [
-  "INCOME",
-  "TRANSFER_IN",
-  "LOAN_PAYMENTS",
-  "BANK_FEES",
-];
+import { categoryNotExcluded } from "./tx-filter";
 
 const TRAVEL_CATEGORIES: EarnCategory[] = [
   "travel_flights",
@@ -53,7 +50,7 @@ export async function computeAndPersistSimulations(
       eq(schema.transactions.plaidConnectionId, cardProfile.plaidConnectionId),
       eq(schema.transactions.pending, false),
       eq(schema.transactions.isAnnualFee, false),
-      notInArray(schema.transactions.plaidCategoryPrimary, EXCLUDED_CATEGORIES)
+      categoryNotExcluded()
     ),
     orderBy: (t, { asc }) => [asc(t.date)],
     columns: {
@@ -120,8 +117,9 @@ export async function computeAndPersistSimulations(
     matchedStatus: "unmatched" as const,
   }));
 
+  // Net spend: refunds subtract; card payments are not spend at all.
   const totalSpend = classifiedTxns.reduce(
-    (sum, tx) => sum + Math.abs(tx.amount),
+    (sum, tx) => (isPaymentTransaction(tx) ? sum : sum + tx.amount),
     0
   );
   const totalTransactions = classifiedTxns.length;
@@ -251,11 +249,16 @@ function simulatePointsForCard(
         ? ("travel_portal" as EarnCategory)
         : tx.assignment.category;
 
+    // Card payments ("PAYMENT THANK YOU", autopay) are not spend — skip.
+    if (isPaymentTransaction(tx)) continue;
+
+    // Pass the signed amount: the calculator returns negative points for
+    // refunds and releases their spend from category caps.
     const result = calculatePointsForTransaction(
       {
         id: tx.id,
         merchantName: tx.merchantName,
-        amount: Math.abs(tx.amount),
+        amount: tx.amount,
         category,
         confidence: tx.assignment.confidence,
         date: tx.date,
@@ -265,9 +268,7 @@ function simulatePointsForCard(
       capState
     );
 
-    const isRefund = tx.amount < 0;
-    const effectivePoints = isRefund ? -Math.abs(result.points) : result.points;
-    totalPoints += effectivePoints;
+    totalPoints += result.points;
 
     if (!categoryMap.has(category)) {
       categoryMap.set(category, {
@@ -279,12 +280,12 @@ function simulatePointsForCard(
       });
     }
     const entry = categoryMap.get(category)!;
-    entry.spend += Math.abs(tx.amount);
-    entry.points += effectivePoints;
+    entry.spend += tx.amount;
+    entry.points += result.points;
     entry.txCount += 1;
 
     const prevSpend = entry.earnRates.get(result.earnRate) ?? 0;
-    entry.earnRates.set(result.earnRate, prevSpend + Math.abs(tx.amount));
+    entry.earnRates.set(result.earnRate, prevSpend + tx.amount);
 
     if (result.capApplied) {
       const cap = config.caps.find((c) => c.categories.includes(category));

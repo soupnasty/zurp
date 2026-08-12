@@ -1,20 +1,17 @@
 import "server-only";
 import { db } from "@/db";
-import { eq, and, notInArray } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import * as schema from "@/db/schema";
 import { classifyForPoints } from "./categories";
-import { calculatePointsForTransaction } from "./calculator";
+import {
+  calculatePointsForTransaction,
+  isPaymentTransaction,
+} from "./calculator";
 import { getEarnConfig } from "./earn-configs";
 import { getCurrentCycleBounds } from "@/lib/engine/cycle-utils";
+import { categoryNotExcluded } from "./tx-filter";
 
 import type { CapState, EarnCategory } from "./types";
-
-const EXCLUDED_CATEGORIES = [
-  "INCOME",
-  "TRANSFER_IN",
-  "LOAN_PAYMENTS",
-  "BANK_FEES",
-];
 
 interface PeriodOptions {
   periodType: "anniversary_year" | "rolling_365";
@@ -50,7 +47,7 @@ export async function computeAndPersistPointsSummary(
       eq(schema.transactions.plaidConnectionId, cardProfile.plaidConnectionId),
       eq(schema.transactions.pending, false),
       eq(schema.transactions.isAnnualFee, false),
-      notInArray(schema.transactions.plaidCategoryPrimary, EXCLUDED_CATEGORIES)
+      categoryNotExcluded()
     ),
     orderBy: (t, { asc }) => [asc(t.date)],
     columns: {
@@ -108,8 +105,8 @@ export async function computeAndPersistPointsSummary(
   >();
 
   for (const tx of yearTxs) {
-    const absAmount = Math.abs(tx.amount);
-    const isRefund = tx.amount < 0;
+    // Card payments ("PAYMENT THANK YOU", autopay) are not spend — skip.
+    if (isPaymentTransaction(tx)) continue;
 
     const classification = classifyForPoints(
       tx.merchantName,
@@ -117,11 +114,13 @@ export async function computeAndPersistPointsSummary(
       tx.plaidCategoryDetailed
     );
 
+    // Pass the signed amount: the calculator returns negative points for
+    // refunds and releases their spend from category caps.
     const result = calculatePointsForTransaction(
       {
         id: tx.id,
         merchantName: tx.merchantName,
-        amount: absAmount,
+        amount: tx.amount,
         category: classification.category,
         confidence: classification.confidence,
         date: tx.date,
@@ -131,21 +130,17 @@ export async function computeAndPersistPointsSummary(
       capState
     );
 
-    // Handle refunds: negative amount means subtract
-    const effectivePoints = isRefund ? -Math.abs(result.points) : result.points;
-    const effectiveSpend = isRefund ? -absAmount : absAmount;
-
-    totalSpend += effectiveSpend;
-    totalPoints += effectivePoints;
+    totalSpend += tx.amount;
+    totalPoints += result.points;
 
     const accum = categoryAccum.get(classification.category) ?? {
       spend: 0,
       points: 0,
       rateSpendProduct: 0,
     };
-    accum.spend += effectiveSpend;
-    accum.points += effectivePoints;
-    accum.rateSpendProduct += result.earnRate * effectiveSpend;
+    accum.spend += tx.amount;
+    accum.points += result.points;
+    accum.rateSpendProduct += result.earnRate * tx.amount;
     categoryAccum.set(classification.category, accum);
   }
 

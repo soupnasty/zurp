@@ -466,8 +466,50 @@ describe("runSimulation", () => {
       // Total: 450
       expect(csr.totalPoints).toBe(450);
 
-      // Total spend should be |200| + |-50| + |100| = 350
-      expect(result.totalSpend).toBe(350);
+      // Net spend: 200 - 50 (refund) + 100 = 250
+      expect(result.totalSpend).toBe(250);
+    });
+
+    it("refunds release spend from category caps", () => {
+      // Amex Gold: 4x groceries capped at $25K/yr, then 1x base.
+      const transactions = [
+        makeTx("t1", "2025-01-05", "WHOLE FOODS", 25000, "groceries"), // hits cap
+        makeTx("t2", "2025-02-01", "WHOLE FOODS", -5000, "groceries"), // refund frees $5K
+        makeTx("t3", "2025-03-01", "WHOLE FOODS", 5000, "groceries"), // back under cap → 4x
+      ];
+
+      const result = runSimulation({
+        transactions,
+        configs: [amexGoldEarnConfig],
+        usersCardId: "amex_gold",
+        benefitsCaptured: 0,
+        period,
+        monthCount: 12,
+      })!;
+
+      // 25000*4 - 5000*4 + 5000*4 = 100000 (refunded spend re-earns at 4x)
+      expect(result.cards[0].totalPoints).toBe(100000);
+      expect(result.totalSpend).toBe(25000);
+    });
+
+    it("card payments earn nothing and do not count as spend", () => {
+      const transactions = [
+        makeTx("t1", "2025-01-15", "CHIPOTLE", 100, "dining"),
+        makeTx("t2", "2025-01-31", "PAYMENT THANK YOU - WEB", -600, "other"),
+      ];
+
+      const result = runSimulation({
+        transactions,
+        configs: [csrEarnConfig],
+        usersCardId: "chase_sapphire_reserve",
+        benefitsCaptured: 0,
+        period,
+        monthCount: 12,
+      })!;
+
+      // 100*3 dining; the payment contributes nothing
+      expect(result.cards[0].totalPoints).toBe(300);
+      expect(result.totalSpend).toBe(100);
     });
   });
 
