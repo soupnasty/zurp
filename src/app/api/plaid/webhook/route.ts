@@ -17,7 +17,11 @@ export async function POST(request: Request) {
       !verificationToken ||
       !(await verifyPlaidWebhook(verificationToken, rawBody))
     ) {
-      console.warn("Rejected webhook with missing/invalid Plaid-Verification");
+      console.warn(
+        verificationToken
+          ? "Rejected webhook: Plaid-Verification present but failed verification"
+          : "Rejected webhook: no Plaid-Verification header"
+      );
       return NextResponse.json(
         { error: "Invalid webhook signature" },
         { status: 401 }
