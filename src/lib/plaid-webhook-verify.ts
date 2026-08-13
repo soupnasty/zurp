@@ -61,24 +61,61 @@ export async function verifyPlaidWebhook(
   try {
     const header = decodeProtectedHeader(token);
     if (header.alg !== "ES256" || typeof header.kid !== "string") {
+      console.warn(
+        `[webhook-verify] unexpected header alg=${String(header.alg)} kidType=${typeof header.kid}`
+      );
       return false;
     }
 
-    const jwk = await getVerificationKey(header.kid);
-    if (!jwk) return false;
+    let jwk: Record<string, unknown> | null;
+    try {
+      jwk = await getVerificationKey(header.kid);
+    } catch (e) {
+      console.warn(
+        "[webhook-verify] key fetch failed:",
+        e instanceof Error ? e.message : e
+      );
+      return false;
+    }
+    if (!jwk) {
+      console.warn(`[webhook-verify] no usable key for kid=${header.kid} (expired?)`);
+      return false;
+    }
 
-    const publicKey = await importJWK(jwk, "ES256");
-    const { payload } = await jwtVerify(token, publicKey, {
-      algorithms: ["ES256"],
-      maxTokenAge: MAX_TOKEN_AGE_SECONDS,
-    });
+    let payload: Awaited<ReturnType<typeof jwtVerify>>["payload"];
+    try {
+      const publicKey = await importJWK(jwk, "ES256");
+      ({ payload } = await jwtVerify(token, publicKey, {
+        algorithms: ["ES256"],
+        maxTokenAge: MAX_TOKEN_AGE_SECONDS,
+      }));
+    } catch (e) {
+      console.warn(
+        "[webhook-verify] jwt verify failed:",
+        e instanceof Error ? `${e.name}: ${e.message}` : e
+      );
+      return false;
+    }
 
     const claimedHash = payload.request_body_sha256;
-    if (typeof claimedHash !== "string") return false;
+    if (typeof claimedHash !== "string") {
+      console.warn("[webhook-verify] missing request_body_sha256 claim");
+      return false;
+    }
 
     const bodyHash = createHash("sha256").update(rawBody, "utf8").digest("hex");
-    return timingSafeEqualHex(bodyHash, claimedHash);
-  } catch {
+    const ok = timingSafeEqualHex(bodyHash, claimedHash);
+    if (!ok) {
+      console.warn(
+        `[webhook-verify] body hash mismatch bodyLen=${rawBody.length}`
+      );
+    }
+    return ok;
+  } catch (e) {
+    console.warn(
+      "[webhook-verify] unexpected error:",
+      e instanceof Error ? `${e.name}: ${e.message}` : e
+    );
     return false;
   }
 }
