@@ -8,6 +8,7 @@ import {
   ChevronLeft,
   ChevronRight,
   BarChart3,
+  Home,
   Target,
   Lightbulb,
   RefreshCw,
@@ -17,7 +18,7 @@ import type { ReactNode } from "react";
 import { CardSelectorDropdown } from "./CardSelectorDropdown";
 import { resolveActiveCard } from "@/lib/resolve-card";
 
-type Tab = "compare" | "track" | "insights";
+type Tab = "home" | "compare" | "track" | "insights";
 
 export interface DashboardNavProps {
   hasNewInsights: boolean;
@@ -40,6 +41,7 @@ interface AppShellProps {
 }
 
 const dashboardTabs: { id: Tab; label: string; icon: typeof BarChart3 }[] = [
+  { id: "home", label: "Home", icon: Home },
   { id: "compare", label: "Compare", icon: BarChart3 },
   { id: "track", label: "Track", icon: Target },
   { id: "insights", label: "Insights", icon: Lightbulb },
@@ -91,14 +93,16 @@ export function AppShell({ children, userEmail, dashboardNav }: AppShellProps) {
   const hasDashboardNav = !!dashboardNav;
   const isSettings = pathname.startsWith("/settings");
 
-  // Derive active tab from pathname
+  // Derive active tab from pathname; bare /dashboard is Home
   const activeTab: Tab | null = pathname.startsWith("/dashboard/track")
     ? "track"
     : pathname.startsWith("/dashboard/insights")
       ? "insights"
-      : pathname.startsWith("/dashboard")
+      : pathname.startsWith("/dashboard/compare")
         ? "compare"
-        : null;
+        : pathname.startsWith("/dashboard")
+          ? "home"
+          : null;
 
   // Preserve ?card= param across tab navigation
   const cardParam = searchParams.get("card");
@@ -235,7 +239,7 @@ export function AppShell({ children, userEmail, dashboardNav }: AppShellProps) {
                   return (
                     <li key={id}>
                       <Link
-                        href={`/dashboard/${id}${cardSuffix}`}
+                        href={id === "home" ? `/dashboard${cardSuffix}` : `/dashboard/${id}${cardSuffix}`}
                         className={`flex w-full items-center gap-3 rounded-[var(--radius-md)] px-3 py-2 text-[14px] font-medium transition-colors duration-[var(--duration-fast)] ${
                           active
                             ? "bg-[rgba(34,211,238,0.1)] text-[var(--color-accent-cyan)]"
