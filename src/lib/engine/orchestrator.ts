@@ -448,7 +448,7 @@ export async function processTransactionsForConnection(
  * Called after matching and also when there are no new transactions to match
  * (to pick up changes in date bounds or reprocessing).
  */
-async function recomputeSummaries(
+export async function recomputeSummaries(
   userId: string,
   cardProfile: { id: string; cardType: string; anniversaryDate?: Date | null },
   plaidConnectionId: string

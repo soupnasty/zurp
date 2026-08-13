@@ -1,6 +1,7 @@
 import { requireAuth } from "@/lib/auth-helpers";
 import { getCardProfiles } from "@/lib/queries";
 import { computeComparison } from "@/lib/points";
+import { getUnclassifiedMerchants } from "@/lib/points/overrides";
 import { getLifestyleSelections } from "@/lib/lifestyle-queries";
 import { resolveActiveCard } from "@/lib/resolve-card";
 import { CompareTab } from "../_components/CompareTab";
@@ -17,9 +18,10 @@ export default async function ComparePage({
   const cardProfilesList = await getCardProfiles(user.id!);
   const activeCard = resolveActiveCard(cardProfilesList, params.card);
 
-  const [comparison, lifestyleKeys] = await Promise.all([
+  const [comparison, lifestyleKeys, unclassifiedMerchants] = await Promise.all([
     computeComparison(user.id!),
     getLifestyleSelections(user.id!),
+    getUnclassifiedMerchants(user.id!),
   ]);
 
   const serializedComparison = comparison
@@ -40,6 +42,7 @@ export default async function ComparePage({
       activeCardFee={activeCard.annualFee}
       lifestyleKeys={lifestyleKeys}
       syncStatus={activeCard.syncStatus}
+      unclassifiedMerchants={unclassifiedMerchants}
     />
   );
 }

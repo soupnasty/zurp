@@ -29,7 +29,11 @@ export type EarnCategory =
   | "other";
 
 export type CategoryConfidence = "high" | "medium" | "low";
-export type MatchSource = "merchant_name" | "plaid_category" | "fallback";
+export type MatchSource =
+  | "user_override"
+  | "merchant_name"
+  | "plaid_category"
+  | "fallback";
 
 export interface CategoryAssignment {
   category: EarnCategory;

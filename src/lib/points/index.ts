@@ -2,6 +2,7 @@ import "server-only";
 import { readComparison } from "./comparison-reader";
 import { getCompareTransactions } from "./queries";
 import { classifyForPoints } from "./categories";
+import { getCategoryOverridesMap } from "./overrides";
 import { getAllEarnConfigs } from "./earn-configs";
 import { runSimulation } from "./simulator";
 import { getCardProfiles, getCardSummary } from "@/lib/queries";
@@ -45,8 +46,11 @@ async function computeComparisonOnDemand(
   cutoff.setDate(cutoff.getDate() + 1);
   cutoff.setHours(0, 0, 0, 0);
 
-  // 1. Get qualifying transactions within the 365-day window
-  const rawTxns = await getCompareTransactions(userId, { since: cutoff });
+  // 1. Get qualifying transactions within the 365-day window + user corrections
+  const [rawTxns, overrides] = await Promise.all([
+    getCompareTransactions(userId, { since: cutoff }),
+    getCategoryOverridesMap(userId),
+  ]);
   if (rawTxns.length === 0) return null;
 
   // 2. Derive period from filtered data
@@ -68,7 +72,7 @@ async function computeComparisonOnDemand(
       tx.merchantName,
       tx.plaidCategoryPrimary,
       tx.plaidCategoryDetailed,
-      { paymentChannel: tx.paymentChannel }
+      { paymentChannel: tx.paymentChannel, overrides }
     );
     return {
       id: tx.id,

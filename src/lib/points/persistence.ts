@@ -10,6 +10,7 @@ import {
 import { getEarnConfig } from "./earn-configs";
 import { getCurrentCycleBounds } from "@/lib/engine/cycle-utils";
 import { categoryNotExcluded } from "./tx-filter";
+import { getCategoryOverridesMap } from "./overrides";
 
 import type { CapState, EarnCategory } from "./types";
 
@@ -40,6 +41,8 @@ export async function computeAndPersistPointsSummary(
 
   const config = getEarnConfig(cardType);
   if (!config) return;
+
+  const overrides = await getCategoryOverridesMap(userId);
 
   // Fetch qualifying transactions for this connection
   const txs = await db.query.transactions.findMany({
@@ -113,7 +116,7 @@ export async function computeAndPersistPointsSummary(
       tx.merchantName,
       tx.plaidCategoryPrimary,
       tx.plaidCategoryDetailed,
-      { paymentChannel: tx.paymentChannel }
+      { paymentChannel: tx.paymentChannel, overrides }
     );
 
     // Pass the signed amount: the calculator returns negative points for

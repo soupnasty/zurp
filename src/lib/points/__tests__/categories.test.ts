@@ -338,6 +338,35 @@ describe("classifyForPoints", () => {
     });
   });
 
+  describe("Tier 0: User overrides", () => {
+    it("override beats the merchant map", () => {
+      // User says their "amazon" spend is actually online grocery
+      const result = classifyForPoints("AMAZON.COM*123ABC", null, null, {
+        overrides: new Map([["amazon", "grocery_online"]]),
+      });
+      expect(result.category).toBe("grocery_online");
+      expect(result.confidence).toBe("high");
+      expect(result.matchSource).toBe("user_override");
+      expect(result.matchedValue).toBe("amazon");
+    });
+
+    it("override key matches the normalized merchant name", () => {
+      const result = classifyForPoints("JOE'S AUTO SPA #12345", null, null, {
+        overrides: new Map([["joe's auto spa", "other"]]),
+      });
+      expect(result.matchSource).toBe("user_override");
+      expect(result.category).toBe("other");
+    });
+
+    it("no override → falls through to normal tiers", () => {
+      const result = classifyForPoints("STARBUCKS #123", null, null, {
+        overrides: new Map([["some other merchant", "dining"]]),
+      });
+      expect(result.category).toBe("coffee");
+      expect(result.matchSource).toBe("merchant_name");
+    });
+  });
+
   describe("Tier 1 takes priority over Tier 2", () => {
     it("merchant match wins over Plaid category", () => {
       // Starbucks should be coffee even if Plaid says dining

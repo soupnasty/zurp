@@ -124,11 +124,14 @@ const PLAID_PRIMARY_MAP: Record<string, EarnCategory> = {
 export interface ClassifyContext {
   /** Plaid payment_channel: "online" | "in store" | "other" */
   paymentChannel?: string | null;
+  /** Per-user corrections keyed by normalized merchant name. */
+  overrides?: ReadonlyMap<string, EarnCategory>;
 }
 
 /**
- * 3-tier category classifier for the points engine.
+ * Tiered category classifier for the points engine.
  *
+ * Tier 0: User override (high confidence — the user told us)
  * Tier 1: Merchant name match (high confidence). Entries flagged
  *         `deferToPlaid` (Amazon, Walmart, Target) yield to Plaid's
  *         grocery signal so grocery runs aren't binned as shopping.
@@ -144,8 +147,22 @@ export function classifyForPoints(
 ): CategoryAssignment {
   const paymentChannel = context?.paymentChannel ?? null;
 
-  // Tier 1: Merchant name lookup
   const normalized = normalizeMerchantName(merchantName);
+
+  // Tier 0: User override
+  if (normalized && context?.overrides) {
+    const override = context.overrides.get(normalized);
+    if (override) {
+      return {
+        category: override,
+        confidence: "high",
+        matchSource: "user_override",
+        matchedValue: normalized,
+      };
+    }
+  }
+
+  // Tier 1: Merchant name lookup
   if (normalized) {
     const merchantMatch = matchMerchant(normalized);
     if (merchantMatch) {

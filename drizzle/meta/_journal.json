@@ -15,6 +15,13 @@
       "when": 1786640296267,
       "tag": "0001_naive_mockingbird",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1786642026182,
+      "tag": "0002_nifty_rattler",
+      "breakpoints": true
     }
   ]
 }

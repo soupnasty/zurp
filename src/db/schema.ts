@@ -293,6 +293,38 @@ export const transactionFlags = pgTable(
   ]
 );
 
+/**
+ * User category corrections for the points engine. Keyed by normalized
+ * merchant name so one correction covers every past and future transaction
+ * from that merchant. Checked before the static merchant map.
+ */
+export const categoryOverrides = pgTable(
+  "category_overrides",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    normalizedMerchant: text("normalized_merchant").notNull(),
+    category: text("category").notNull(), // EarnCategory
+    createdAt: timestamp("created_at", { mode: "date" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: timestamp("updated_at", { mode: "date" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => [
+    unique("category_overrides_user_merchant").on(
+      table.userId,
+      table.normalizedMerchant
+    ),
+    index("category_overrides_user_idx").on(table.userId),
+  ]
+);
+
 export const matchedTx = pgTable(
   "matched_tx",
   {

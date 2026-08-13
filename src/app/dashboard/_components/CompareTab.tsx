@@ -10,8 +10,10 @@ import { BenefitAssumptionToggle } from "./BenefitAssumptionToggle";
 import { saveLifestyleSelections } from "@/app/onboarding/actions";
 import { computeLifestyleBenefits } from "@/lib/points/lifestyle-valuation";
 import { isEffectivelyTied } from "@/lib/points/tie-band";
+import { UnclassifiedSpendPanel } from "./UnclassifiedSpendPanel";
 import type { SerializedComparison } from "./types";
 import type { ValuationMode, BenefitAssumptionMode, CardSimulation } from "@/lib/points/types";
+import type { UnclassifiedMerchant } from "@/lib/points/overrides";
 
 interface CompareTabProps {
   comparison: SerializedComparison | null;
@@ -20,6 +22,7 @@ interface CompareTabProps {
   activeCardFee: number;
   lifestyleKeys: string[];
   syncStatus: "pending" | "initial" | "complete";
+  unclassifiedMerchants?: UnclassifiedMerchant[];
 }
 
 /** Get the net value for a card at the given valuation + benefit assumption modes. */
@@ -68,6 +71,7 @@ export function CompareTab({
   activeCardFee,
   lifestyleKeys,
   syncStatus,
+  unclassifiedMerchants,
 }: CompareTabProps) {
   const router = useRouter();
   const [vMode, setVMode] = useState<ValuationMode>("realistic");
@@ -188,6 +192,10 @@ export function CompareTab({
         />
       </div>
       <Leaderboard cards={sorted} activeCardType={activeCardType} vMode={vMode} bMode={bMode} lifestyleKeys={localLifestyleKeys} />
+
+      {unclassifiedMerchants && (
+        <UnclassifiedSpendPanel merchants={unclassifiedMerchants} />
+      )}
 
       {/* Methodology footnote — always present */}
       <p

@@ -20,6 +20,7 @@ import type {
 } from "./types";
 import type { MatcherTransaction } from "@/lib/types";
 import { categoryNotExcluded } from "./tx-filter";
+import { getCategoryOverridesMap } from "./overrides";
 
 const TRAVEL_CATEGORIES: EarnCategory[] = [
   "travel_flights",
@@ -42,6 +43,8 @@ export async function computeAndPersistSimulations(
     columns: { plaidConnectionId: true },
   });
   if (!cardProfile) return;
+
+  const overrides = await getCategoryOverridesMap(userId);
 
   // Fetch qualifying transactions for this connection
   const txs = await db.query.transactions.findMany({
@@ -110,7 +113,7 @@ export async function computeAndPersistSimulations(
       tx.merchantName,
       tx.plaidCategoryPrimary,
       tx.plaidCategoryDetailed,
-      { paymentChannel: tx.paymentChannel }
+      { paymentChannel: tx.paymentChannel, overrides }
     );
     return { ...tx, assignment };
   });

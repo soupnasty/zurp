@@ -61,6 +61,8 @@ export interface CardDefinition {
   feeDescriptor: string;
   imageUrl: string | null;
   isActive: boolean;
+  /** ISO date the card's benefits/fees/rates were last verified against issuer terms */
+  lastVerifiedAt?: string;
   benefits: BenefitDefinition[];
 }
 
