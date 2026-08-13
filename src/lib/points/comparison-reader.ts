@@ -7,6 +7,7 @@ import { getLifestyleSelections } from "@/lib/lifestyle-queries";
 import { getEarnConfig } from "./earn-configs";
 import { computeBenefitsValue, valuatePoints } from "./valuation";
 import { computeLifestyleBenefits } from "./lifestyle-valuation";
+import { isEffectivelyTied } from "./tie-band";
 import type {
   ComparisonOutput,
   CardSimulation,
@@ -170,6 +171,23 @@ export async function readComparison(
   // Use metadata from first row (all rows share the same period/spend data)
   const firstRow = rows[0];
 
+  // Classification coverage, derived from the stored per-category spend:
+  // classification is card-independent, so any row's breakdown gives the
+  // share of spend that fell into the "other" fallback.
+  const firstBreakdown = (firstRow.categoryBreakdown as CategoryEarnSummary[]) ?? [];
+  const breakdownSpend = firstBreakdown.reduce(
+    (s, c) => s + Math.max(0, c.totalSpend),
+    0
+  );
+  const otherSpend = Math.max(
+    0,
+    firstBreakdown.find((c) => c.category === "other")?.totalSpend ?? 0
+  );
+  const classifiedSpendPct =
+    breakdownSpend > 0
+      ? Math.round(((breakdownSpend - otherSpend) / breakdownSpend) * 100)
+      : null;
+
   return {
     analysisPeriod: {
       start: firstRow.analysisPeriodStart,
@@ -183,6 +201,7 @@ export async function readComparison(
     cards: ranked,
     categoryBreakdown,
     headline,
+    classifiedSpendPct,
   };
 }
 
@@ -245,9 +264,10 @@ function buildHeadline(
 ): HeadlineVerdict {
   const bestAlt = alternatives.length > 0 ? alternatives[0] : usersCard;
   const margin = round2(Math.abs(usersCard.netFloor - bestAlt.netFloor));
+  const tied = isEffectivelyTied(usersCard.netFloor, bestAlt.netFloor);
 
   if (alternatives.length === 0 || usersCard.netFloor >= bestAlt.netFloor) {
-    if (margin < 50 && alternatives.length > 0) {
+    if (tied && alternatives.length > 0) {
       return {
         type: "close",
         usersCardName: usersCard.cardName,
@@ -267,7 +287,7 @@ function buildHeadline(
     };
   }
 
-  if (margin < 50) {
+  if (tied) {
     return {
       type: "close",
       usersCardName: usersCard.cardName,

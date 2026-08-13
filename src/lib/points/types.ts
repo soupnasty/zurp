@@ -205,4 +205,9 @@ export interface ComparisonOutput {
   cards: CardSimulation[];
   categoryBreakdown: CategoryWinner[];
   headline: HeadlineVerdict;
+  /**
+   * Share of purchase spend classified into a specific earn category
+   * (i.e. not the "other" fallback), 0-100. Null when there is no spend.
+   */
+  classifiedSpendPct: number | null;
 }

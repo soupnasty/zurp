@@ -492,6 +492,26 @@ describe("runSimulation", () => {
       expect(result.totalSpend).toBe(25000);
     });
 
+    it("reports classification coverage as share of purchase spend", () => {
+      const transactions = [
+        makeTx("t1", "2025-01-15", "CHIPOTLE", 300, "dining"),
+        makeTx("t2", "2025-02-01", "UNKNOWN VENDOR 123", 100, "other"),
+        makeTx("t3", "2025-02-10", "CHIPOTLE", -50, "dining"), // refunds excluded
+      ];
+
+      const result = runSimulation({
+        transactions,
+        configs: [csrEarnConfig],
+        usersCardId: "chase_sapphire_reserve",
+        benefitsCaptured: 0,
+        period,
+        monthCount: 12,
+      })!;
+
+      // 300 of 400 purchase dollars classified → 75%
+      expect(result.classifiedSpendPct).toBe(75);
+    });
+
     it("card payments earn nothing and do not count as spend", () => {
       const transactions = [
         makeTx("t1", "2025-01-15", "CHIPOTLE", 100, "dining"),

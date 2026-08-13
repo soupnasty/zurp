@@ -13,6 +13,7 @@ export interface SerializedComparison {
   cards: CardSimulation[];
   categoryBreakdown: CategoryWinner[];
   headline: HeadlineVerdict;
+  classifiedSpendPct: number | null;
 }
 
 export interface ClassifiedBenefitGroup extends BenefitGroup {

@@ -22,6 +22,7 @@ import { computeLifestyleBenefits } from "./lifestyle-valuation";
 import { EARN_CATEGORY_LABELS, EARN_CATEGORY_ICONS } from "./categories";
 import { runMatcher } from "@/lib/engine/matcher";
 import { getCardDefinition } from "@/lib/cards";
+import { isEffectivelyTied } from "./tie-band";
 
 interface SimulationTransaction {
   id: string;
@@ -96,6 +97,20 @@ export function runSimulation(input: SimulationInput): ComparisonOutput | null {
     (sum, tx) => (isPaymentTransaction(tx) ? sum : sum + tx.amount),
     0
   );
+
+  // Classification coverage: share of purchase spend that landed in a
+  // specific earn category rather than the "other" fallback.
+  let classifiableSpend = 0;
+  let classifiedSpend = 0;
+  for (const tx of sortedTxns) {
+    if (tx.amount <= 0 || isPaymentTransaction(tx)) continue;
+    classifiableSpend += tx.amount;
+    if (tx.assignment.category !== "other") classifiedSpend += tx.amount;
+  }
+  const classifiedSpendPct =
+    classifiableSpend > 0
+      ? Math.round((classifiedSpend / classifiableSpend) * 100)
+      : null;
 
   // Simulate each card
   const simulations: CardSimulation[] = configs.map((config) => {
@@ -182,6 +197,7 @@ export function runSimulation(input: SimulationInput): ComparisonOutput | null {
     cards: ranked,
     categoryBreakdown,
     headline,
+    classifiedSpendPct,
   };
 }
 
@@ -451,9 +467,10 @@ function buildHeadline(
   const bestAlt =
     alternatives.length > 0 ? alternatives[0] : usersCard;
   const margin = round2(Math.abs(usersCard.netFloor - bestAlt.netFloor));
+  const tied = isEffectivelyTied(usersCard.netFloor, bestAlt.netFloor);
 
   if (alternatives.length === 0 || usersCard.netFloor >= bestAlt.netFloor) {
-    if (margin < 50 && alternatives.length > 0) {
+    if (tied && alternatives.length > 0) {
       return {
         type: "close",
         usersCardName: usersCard.cardName,
@@ -473,7 +490,7 @@ function buildHeadline(
     };
   }
 
-  if (margin < 50) {
+  if (tied) {
     return {
       type: "close",
       usersCardName: usersCard.cardName,

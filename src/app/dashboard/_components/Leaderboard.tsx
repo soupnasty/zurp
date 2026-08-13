@@ -132,11 +132,15 @@ function RowComparison({
   bMode: BenefitAssumptionMode;
   lifestyleKeys: Set<string>;
 }) {
-  // Collect all categories across both cards
+  // Collect all categories across both cards. The "other" bucket is
+  // unclassified spend earning base rate — label it as such.
+  const catLabel = (cat: CategoryEarnSummary) =>
+    cat.category === "other" ? "Other (unclassified)" : cat.label;
+
   const allCats = new Map<string, { label: string; user: number; comp: number }>();
   for (const cat of userCard.categories) {
     allCats.set(cat.category, {
-      label: cat.label,
+      label: catLabel(cat),
       user: scaleCatValue(cat, userCard, vMode),
       comp: 0,
     });
@@ -147,7 +151,7 @@ function RowComparison({
       existing.comp = scaleCatValue(cat, comparedCard, vMode);
     } else {
       allCats.set(cat.category, {
-        label: cat.label,
+        label: catLabel(cat),
         user: 0,
         comp: scaleCatValue(cat, comparedCard, vMode),
       });
@@ -740,7 +744,7 @@ export function Leaderboard({ cards, activeCardType, vMode, bMode, lifestyleKeys
                       opacity: isDimmed ? 0.4 : 1,
                     }}
                   >
-                    {fmt(netVal)}
+                    ~{fmt(netVal)}
                   </span>
                   {!isUser && (
                     <ChevronRight

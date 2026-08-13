@@ -9,6 +9,7 @@ import { ValuationToggle } from "./ValuationToggle";
 import { BenefitAssumptionToggle } from "./BenefitAssumptionToggle";
 import { saveLifestyleSelections } from "@/app/onboarding/actions";
 import { computeLifestyleBenefits } from "@/lib/points/lifestyle-valuation";
+import { isEffectivelyTied } from "@/lib/points/tie-band";
 import type { SerializedComparison } from "./types";
 import type { ValuationMode, BenefitAssumptionMode, CardSimulation } from "@/lib/points/types";
 
@@ -159,6 +160,9 @@ export function CompareTab({
           style={{ fontFamily: "var(--font-mono)" }}
         >
           {comparison.totalTransactions.toLocaleString()} transactions | {comparison.monthCount}mo | {formatPeriod(comparison.analysisPeriod.start, comparison.analysisPeriod.end)}
+          {comparison.classifiedSpendPct !== null && (
+            <> | {comparison.classifiedSpendPct}% of spend classified</>
+          )}
         </span>
       </div>
 
@@ -171,6 +175,7 @@ export function CompareTab({
         userRank={typeof userRank === "number" ? userRank : 0}
         totalCards={comparison.totalCards}
         gap={gap}
+        tied={isEffectivelyTied(userNet, bestNet)}
       />
 
       <div className="mt-3 mb-1 md:mt-6 md:mb-2 grid grid-cols-1 md:grid-cols-2 items-end gap-1.5 md:gap-4">
@@ -183,9 +188,40 @@ export function CompareTab({
         />
       </div>
       <Leaderboard cards={sorted} activeCardType={activeCardType} vMode={vMode} bMode={bMode} lifestyleKeys={localLifestyleKeys} />
+
+      {/* Methodology footnote — always present */}
+      <p
+        className="mt-4 md:mt-5"
+        style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: 11,
+          lineHeight: 1.6,
+          color: "var(--text-dim)",
+        }}
+      >
+        ~ All values are simulated from your last {comparison.monthCount} months
+        of transactions ({comparison.totalTransactions.toLocaleString()} transactions
+        {comparison.classifiedSpendPct !== null && (
+          <>, {comparison.classifiedSpendPct}% of spend auto-classified</>
+        )}
+        ). Points valued at {VMODE_FOOTNOTE[vMode]}; benefits {BMODE_FOOTNOTE[bMode]}.
+        Sign-up bonuses and switching costs are not modeled.
+      </p>
     </div>
   );
 }
+
+const VMODE_FOOTNOTE: Record<ValuationMode, string> = {
+  conservative: "cash value (face value)",
+  realistic: "average redemption",
+  upside: "best transfer-partner rates",
+};
+
+const BMODE_FOOTNOTE: Record<BenefitAssumptionMode, string> = {
+  proven: "counted only when matched to your transactions",
+  my_picks: "from your lifestyle picks plus matched transactions",
+  all_credits: "assuming every credit is fully used",
+};
 
 // ── Compare Summary Card ──
 
@@ -197,6 +233,7 @@ function CompareSummary({
   userRank,
   totalCards,
   gap,
+  tied,
 }: {
   userNet: number;
   userPoints: number;
@@ -205,6 +242,7 @@ function CompareSummary({
   userRank: number;
   totalCards: number;
   gap: number;
+  tied: boolean;
 }) {
   const [showNetTip, setShowNetTip] = useState(false);
   const [showNetModal, setShowNetModal] = useState(false);
@@ -274,7 +312,7 @@ function CompareSummary({
               lineHeight: 1.2,
             }}
           >
-            {fmt(userNet)}
+            ~{fmt(userNet)}
           </span>
           {/* Desktop: hover tooltip */}
           <div
@@ -370,11 +408,13 @@ function CompareSummary({
             style={{
               fontFamily: "var(--font-mono)",
               fontWeight: 700,
-              color: "var(--color-danger)",
+              // A gap inside the tie band is assumption noise, not a
+              // verdict — don't paint it as a loss.
+              color: tied ? "var(--text-secondary)" : "var(--color-danger)",
               lineHeight: 1.2,
             }}
           >
-            -${Math.round(gap).toLocaleString()}
+            ~-${Math.round(gap).toLocaleString()}
           </span>
         ) : (
           <span
@@ -389,11 +429,15 @@ function CompareSummary({
             $0
           </span>
         )}
-        {gap === 0 && (
+        {gap === 0 ? (
           <span style={{ display: "block", fontSize: 11, color: "var(--text-secondary)", marginTop: 2 }}>
             You&apos;re #1
           </span>
-        )}
+        ) : tied ? (
+          <span style={{ display: "block", fontSize: 11, color: "var(--text-secondary)", marginTop: 2 }}>
+            effectively tied — within assumption noise
+          </span>
+        ) : null}
       </div>
 
     </div>
