@@ -102,14 +102,22 @@ export function runSimulation(input: SimulationInput): ComparisonOutput | null {
   // specific earn category rather than the "other" fallback.
   let classifiableSpend = 0;
   let classifiedSpend = 0;
+  let lowConfidenceSpend = 0;
   for (const tx of sortedTxns) {
     if (tx.amount <= 0 || isPaymentTransaction(tx)) continue;
     classifiableSpend += tx.amount;
-    if (tx.assignment.category !== "other") classifiedSpend += tx.amount;
+    if (tx.assignment.category !== "other") {
+      classifiedSpend += tx.amount;
+      if (tx.assignment.confidence === "low") lowConfidenceSpend += tx.amount;
+    }
   }
   const classifiedSpendPct =
     classifiableSpend > 0
       ? Math.round((classifiedSpend / classifiableSpend) * 100)
+      : null;
+  const lowConfidenceSpendPct =
+    classifiableSpend > 0
+      ? Math.round((lowConfidenceSpend / classifiableSpend) * 100)
       : null;
 
   // Simulate each card
@@ -198,6 +206,7 @@ export function runSimulation(input: SimulationInput): ComparisonOutput | null {
     categoryBreakdown,
     headline,
     classifiedSpendPct,
+    lowConfidenceSpendPct,
   };
 }
 

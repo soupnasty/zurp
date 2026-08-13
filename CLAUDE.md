@@ -366,7 +366,7 @@ Connection health alerts (`src/lib/notifications.ts`) surface stale/reauth/disco
 ### Deployment (Vercel)
 
 - Sandbox page gated behind `NEXT_PUBLIC_ENABLE_SANDBOX=true` env var
-- DB migrations: `npm run db:generate && npm run db:migrate` in build pipeline
+- Schema changes: apply with `npm run db:push` (diffs `schema.ts` against live Neon). The build is plain `next build` — no migration step. **Never run `db:migrate`**: the files in `drizzle/` were never applied and contain tables that already exist (see `drizzle/README.md`).
 
 ## Spec Documents
 

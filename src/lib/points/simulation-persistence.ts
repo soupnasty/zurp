@@ -139,6 +139,29 @@ export async function computeAndPersistSimulations(
   );
   const totalTransactions = classifiedTxns.length;
 
+  // Classification coverage over gross purchase spend — must mirror the
+  // on-demand computation in simulator.ts so both paths report the same
+  // number.
+  let classifiableSpend = 0;
+  let classifiedSpend = 0;
+  let lowConfidenceSpend = 0;
+  for (const tx of classifiedTxns) {
+    if (tx.amount <= 0 || isPaymentTransaction(tx)) continue;
+    classifiableSpend += tx.amount;
+    if (tx.assignment.category !== "other") {
+      classifiedSpend += tx.amount;
+      if (tx.assignment.confidence === "low") lowConfidenceSpend += tx.amount;
+    }
+  }
+  const classifiedSpendPct =
+    classifiableSpend > 0
+      ? Math.round((classifiedSpend / classifiableSpend) * 100)
+      : null;
+  const lowConfidenceSpendPct =
+    classifiableSpend > 0
+      ? Math.round((lowConfidenceSpend / classifiableSpend) * 100)
+      : null;
+
   const configs = getAllEarnConfigs();
   const upserts: (typeof schema.cardSimulations.$inferInsert)[] = [];
 
@@ -193,6 +216,8 @@ export async function computeAndPersistSimulations(
         monthCount,
         totalSpend: round2(totalSpend),
         totalTransactions,
+        classifiedSpendPct,
+        lowConfidenceSpendPct,
         updatedAt: new Date(),
       });
     }

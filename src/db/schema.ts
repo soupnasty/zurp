@@ -606,6 +606,11 @@ export const cardSimulations = pgTable(
     monthCount: integer("month_count").notNull().default(0),
     totalSpend: real("total_spend").notNull().default(0),
     totalTransactions: integer("total_transactions").notNull().default(0),
+    // Authoritative classification coverage, computed once at simulation
+    // time from gross purchase spend. The reader must NOT re-derive these
+    // from categoryBreakdown (net spend — refund handling differs).
+    classifiedSpendPct: real("classified_spend_pct"),
+    lowConfidenceSpendPct: real("low_confidence_spend_pct"),
     updatedAt: timestamp("updated_at", { mode: "date" })
       .notNull()
       .$defaultFn(() => new Date()),

@@ -171,22 +171,28 @@ export async function readComparison(
   // Use metadata from first row (all rows share the same period/spend data)
   const firstRow = rows[0];
 
-  // Classification coverage, derived from the stored per-category spend:
-  // classification is card-independent, so any row's breakdown gives the
-  // share of spend that fell into the "other" fallback.
-  const firstBreakdown = (firstRow.categoryBreakdown as CategoryEarnSummary[]) ?? [];
-  const breakdownSpend = firstBreakdown.reduce(
-    (s, c) => s + Math.max(0, c.totalSpend),
-    0
-  );
-  const otherSpend = Math.max(
-    0,
-    firstBreakdown.find((c) => c.category === "other")?.totalSpend ?? 0
-  );
-  const classifiedSpendPct =
-    breakdownSpend > 0
-      ? Math.round(((breakdownSpend - otherSpend) / breakdownSpend) * 100)
-      : null;
+  // Classification coverage: use the value persisted at simulation time
+  // (computed over gross purchase spend, identical to the on-demand path
+  // in simulator.ts). Rows written before the column existed fall back to
+  // reconstructing from the stored per-category NET spend — close, but
+  // refund handling differs, which is why the persisted value wins.
+  let classifiedSpendPct = firstRow.classifiedSpendPct;
+  if (classifiedSpendPct == null) {
+    const firstBreakdown = (firstRow.categoryBreakdown as CategoryEarnSummary[]) ?? [];
+    const breakdownSpend = firstBreakdown.reduce(
+      (s, c) => s + Math.max(0, c.totalSpend),
+      0
+    );
+    const otherSpend = Math.max(
+      0,
+      firstBreakdown.find((c) => c.category === "other")?.totalSpend ?? 0
+    );
+    classifiedSpendPct =
+      breakdownSpend > 0
+        ? Math.round(((breakdownSpend - otherSpend) / breakdownSpend) * 100)
+        : null;
+  }
+  const lowConfidenceSpendPct = firstRow.lowConfidenceSpendPct ?? null;
 
   return {
     analysisPeriod: {
@@ -202,6 +208,7 @@ export async function readComparison(
     categoryBreakdown,
     headline,
     classifiedSpendPct,
+    lowConfidenceSpendPct,
   };
 }
 

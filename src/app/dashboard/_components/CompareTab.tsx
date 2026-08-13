@@ -167,6 +167,10 @@ export function CompareTab({
           {comparison.classifiedSpendPct !== null && (
             <> | {comparison.classifiedSpendPct}% of spend classified</>
           )}
+          {comparison.lowConfidenceSpendPct !== null &&
+            comparison.lowConfidenceSpendPct >= 1 && (
+              <> ({comparison.lowConfidenceSpendPct}% low confidence)</>
+            )}
         </span>
       </div>
 
@@ -212,6 +216,13 @@ export function CompareTab({
         {comparison.classifiedSpendPct !== null && (
           <>, {comparison.classifiedSpendPct}% of spend auto-classified</>
         )}
+        {comparison.lowConfidenceSpendPct !== null &&
+          comparison.lowConfidenceSpendPct >= 1 && (
+            <>
+              {" "}of which {comparison.lowConfidenceSpendPct}% at low
+              confidence from coarse category data
+            </>
+          )}
         ). Points valued at {VMODE_FOOTNOTE[vMode]}; benefits {BMODE_FOOTNOTE[bMode]}.
         Sign-up bonuses and switching costs are not modeled.
       </p>

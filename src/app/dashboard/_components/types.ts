@@ -14,6 +14,7 @@ export interface SerializedComparison {
   categoryBreakdown: CategoryWinner[];
   headline: HeadlineVerdict;
   classifiedSpendPct: number | null;
+  lowConfidenceSpendPct: number | null;
 }
 
 export interface ClassifiedBenefitGroup extends BenefitGroup {

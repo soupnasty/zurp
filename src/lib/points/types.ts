@@ -214,4 +214,10 @@ export interface ComparisonOutput {
    * (i.e. not the "other" fallback), 0-100. Null when there is no spend.
    */
   classifiedSpendPct: number | null;
+  /**
+   * Share of purchase spend classified at low confidence (coarse Plaid
+   * primary fallback), 0-100. Subset of classifiedSpendPct. Null when
+   * there is no spend or the value predates this field.
+   */
+  lowConfidenceSpendPct: number | null;
 }
