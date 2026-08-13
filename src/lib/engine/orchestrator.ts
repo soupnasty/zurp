@@ -503,6 +503,32 @@ export async function recomputeSummaries(
       console.error("Debug report failed:", err);
     }
   }
+
+  // Tier L: classify newly-seen unclassified merchants via LLM cache.
+  // Runs last, never blocks or fails the sync; no-op without ANTHROPIC_API_KEY.
+  try {
+    const { runLlmClassification } = await import("@/lib/points/llm-classifier");
+    const { categoryNotExcluded } = await import("@/lib/points/tx-filter");
+    const txs = await db.query.transactions.findMany({
+      where: and(
+        eq(schema.transactions.plaidConnectionId, plaidConnectionId),
+        eq(schema.transactions.pending, false),
+        eq(schema.transactions.isAnnualFee, false),
+        categoryNotExcluded()
+      ),
+      columns: {
+        merchantName: true,
+        merchantEntityId: true,
+        amount: true,
+        plaidCategoryPrimary: true,
+        plaidCategoryDetailed: true,
+        paymentChannel: true,
+      },
+    });
+    await runLlmClassification(txs);
+  } catch (err) {
+    console.error("LLM classification failed:", err);
+  }
 }
 
 /**

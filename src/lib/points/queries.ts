@@ -10,6 +10,7 @@ export interface CompareTransaction {
   datetime: Date | null;
   merchantName: string | null;
   merchantNameRaw: string | null;
+  merchantEntityId: string | null;
   amount: number;
   plaidCategoryPrimary: string | null;
   plaidCategoryDetailed: string | null;
@@ -44,6 +45,7 @@ export async function getCompareTransactions(
       datetime: true,
       merchantName: true,
       merchantNameRaw: true,
+      merchantEntityId: true,
       amount: true,
       plaidCategoryPrimary: true,
       plaidCategoryDetailed: true,

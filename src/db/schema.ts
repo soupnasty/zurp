@@ -325,6 +325,24 @@ export const categoryOverrides = pgTable(
   ]
 );
 
+/**
+ * LLM merchant-classification cache (Tier L). Global — one row per unique
+ * merchant, shared across users. See docs/engines/llm-classification-tier.md.
+ */
+export const merchantClassifications = pgTable("merchant_classifications", {
+  // "ent:<plaid merchant_entity_id>" or a normalized merchant name
+  merchantKey: text("merchant_key").primaryKey(),
+  // EarnCategory; "other" is a recorded abstention ("not bonus-eligible"),
+  // not a failure — it prevents re-submitting the merchant every sync.
+  category: text("category").notNull(),
+  plaidHint: text("plaid_hint"),
+  // Exact model ID that produced this row — enables selective re-runs.
+  model: text("model").notNull(),
+  classifiedAt: timestamp("classified_at", { mode: "date" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+});
+
 export const matchedTx = pgTable(
   "matched_tx",
   {

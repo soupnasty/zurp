@@ -3,6 +3,7 @@ import { readComparison } from "./comparison-reader";
 import { getCompareTransactions } from "./queries";
 import { classifyForPoints } from "./categories";
 import { getCategoryOverridesMap } from "./overrides";
+import { getMerchantClassificationsMap } from "./llm-classifier";
 import { getAllEarnConfigs } from "./earn-configs";
 import { runSimulation } from "./simulator";
 import { getCardProfiles, getCardSummary } from "@/lib/queries";
@@ -46,10 +47,12 @@ async function computeComparisonOnDemand(
   cutoff.setDate(cutoff.getDate() + 1);
   cutoff.setHours(0, 0, 0, 0);
 
-  // 1. Get qualifying transactions within the 365-day window + user corrections
-  const [rawTxns, overrides] = await Promise.all([
+  // 1. Get qualifying transactions within the 365-day window + user
+  //    corrections + the global LLM merchant cache
+  const [rawTxns, overrides, llmClassifications] = await Promise.all([
     getCompareTransactions(userId, { since: cutoff }),
     getCategoryOverridesMap(userId),
+    getMerchantClassificationsMap(),
   ]);
   if (rawTxns.length === 0) return null;
 
@@ -72,7 +75,12 @@ async function computeComparisonOnDemand(
       tx.merchantName,
       tx.plaidCategoryPrimary,
       tx.plaidCategoryDetailed,
-      { paymentChannel: tx.paymentChannel, overrides }
+      {
+        paymentChannel: tx.paymentChannel,
+        merchantEntityId: tx.merchantEntityId,
+        overrides,
+        llmClassifications,
+      }
     );
     return {
       id: tx.id,

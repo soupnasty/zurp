@@ -5,13 +5,11 @@ import { classifyForPoints } from "./categories";
 import { isPaymentTransaction } from "./calculator";
 import { categoryNotExcluded } from "./tx-filter";
 import { normalizeMerchantName } from "@/lib/engine/normalize";
-import { EARN_CATEGORY_LABELS } from "./category-labels";
+import { getMerchantClassificationsMap } from "./llm-classifier";
+import { isEarnCategory } from "./category-labels";
 import type { EarnCategory } from "./types";
 
-/** Runtime guard for the EarnCategory union. */
-export function isEarnCategory(value: string): value is EarnCategory {
-  return value in EARN_CATEGORY_LABELS;
-}
+export { isEarnCategory };
 
 /**
  * Load a user's category corrections as a lookup map keyed by normalized
@@ -53,7 +51,10 @@ export async function getUnclassifiedMerchants(
   userId: string,
   limit = 12
 ): Promise<UnclassifiedMerchant[]> {
-  const overrides = await getCategoryOverridesMap(userId);
+  const [overrides, llmClassifications] = await Promise.all([
+    getCategoryOverridesMap(userId),
+    getMerchantClassificationsMap(),
+  ]);
 
   const txs = await db.query.transactions.findMany({
     where: and(
@@ -64,6 +65,7 @@ export async function getUnclassifiedMerchants(
     ),
     columns: {
       merchantName: true,
+      merchantEntityId: true,
       amount: true,
       plaidCategoryPrimary: true,
       plaidCategoryDetailed: true,
@@ -83,7 +85,12 @@ export async function getUnclassifiedMerchants(
       tx.merchantName,
       tx.plaidCategoryPrimary,
       tx.plaidCategoryDetailed,
-      { paymentChannel: tx.paymentChannel, overrides }
+      {
+        paymentChannel: tx.paymentChannel,
+        merchantEntityId: tx.merchantEntityId,
+        overrides,
+        llmClassifications,
+      }
     );
     if (assignment.category !== "other") continue;
     if (assignment.matchSource === "user_override") continue;
