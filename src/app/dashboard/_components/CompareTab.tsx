@@ -70,7 +70,10 @@ export function CompareTab({
 }: CompareTabProps) {
   const router = useRouter();
   const [vMode, setVMode] = useState<ValuationMode>("realistic");
-  const [bMode, setBMode] = useState<BenefitAssumptionMode>("my_picks");
+  // Default to "proven" — the only benefits mode grounded in matched
+  // transactions. "My Lifestyle" depends on picks a first-run user may
+  // never have curated, and it shouldn't be the first number they see.
+  const [bMode, setBMode] = useState<BenefitAssumptionMode>("proven");
   const [localLifestyleKeys, setLocalLifestyleKeys] = useState(lifestyleKeys);
 
   const handleLifestyleChange = useCallback(
@@ -155,7 +158,7 @@ export function CompareTab({
           className="text-[10px] md:text-[12px] text-[var(--text-secondary)] whitespace-nowrap"
           style={{ fontFamily: "var(--font-mono)" }}
         >
-          {comparison.totalTransactions.toLocaleString()} transactions | {comparison.monthCount}{comparison.monthCount === 1 ? "mo" : "mo"} | {formatPeriod(comparison.analysisPeriod.start, comparison.analysisPeriod.end)}
+          {comparison.totalTransactions.toLocaleString()} transactions | {comparison.monthCount}mo | {formatPeriod(comparison.analysisPeriod.start, comparison.analysisPeriod.end)}
         </span>
       </div>
 

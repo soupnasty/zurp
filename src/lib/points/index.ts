@@ -56,8 +56,8 @@ async function computeComparisonOnDemand(
     12,
     Math.max(
       1,
-      (end.getFullYear() - start.getFullYear()) * 12 +
-        (end.getMonth() - start.getMonth()) +
+      (end.getUTCFullYear() - start.getUTCFullYear()) * 12 +
+        (end.getUTCMonth() - start.getUTCMonth()) +
         1
     )
   );

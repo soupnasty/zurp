@@ -12,7 +12,6 @@ import { getAllEarnConfigs } from "./earn-configs";
 import { valuatePoints, computeBenefitsValue } from "./valuation";
 
 import { simulateBenefitsForCard } from "@/lib/engine/benefit-simulator";
-import { getTransactionPeriod } from "./queries";
 import type {
   CapState,
   EarnCategory,
@@ -88,11 +87,21 @@ export async function computeAndPersistSimulations(
 
   if (yearTxs.length === 0) return;
 
-  // Get transaction period for month count
-  const period = await getTransactionPeriod(userId);
-  const monthCount = Math.min(12, period?.monthCount ?? 1);
-  const analysisPeriodStart = period?.start ?? bounds.cycleStart;
-  const analysisPeriodEnd = period?.end ?? bounds.cycleEnd;
+  // The displayed analysis period must describe the transactions actually
+  // simulated (the windowed set) — not the full synced history, which can
+  // reach back further than the rolling 365-day window. (yearTxs is sorted
+  // ascending by date.)
+  const analysisPeriodStart = yearTxs[0].date;
+  const analysisPeriodEnd = yearTxs[yearTxs.length - 1].date;
+  const monthCount = Math.min(
+    12,
+    Math.max(
+      1,
+      (analysisPeriodEnd.getUTCFullYear() - analysisPeriodStart.getUTCFullYear()) * 12 +
+        (analysisPeriodEnd.getUTCMonth() - analysisPeriodStart.getUTCMonth()) +
+        1
+    )
+  );
 
   // Pre-classify all transactions (portal-independent)
   const classifiedTxns = yearTxs.map((tx) => {
