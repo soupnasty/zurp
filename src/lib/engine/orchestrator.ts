@@ -8,6 +8,7 @@ import { getCurrentCycleBounds } from "./cycle-utils";
 import { roundCents } from "./money";
 import { getCardDefinition } from "@/lib/cards";
 import { generateAndPersistInsights } from "@/lib/insights/orchestrator";
+import { generateAndPersistAlerts } from "@/lib/alerts/orchestrator";
 import { computeAndPersistPointsSummary, clearPointsSummary } from "@/lib/points/persistence";
 import { computeAndPersistSimulations, clearSimulations } from "@/lib/points/simulation-persistence";
 
@@ -491,6 +492,14 @@ export async function recomputeSummaries(
     await generateAndPersistInsights(userId);
   } catch (err) {
     console.error("Insight generation failed:", err);
+    // Non-fatal: don't block transaction processing
+  }
+
+  // Refresh the alert stream after matching + insights
+  try {
+    await generateAndPersistAlerts(userId);
+  } catch (err) {
+    console.error("Alert generation failed:", err);
     // Non-fatal: don't block transaction processing
   }
 

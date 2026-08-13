@@ -1,6 +1,7 @@
 import { requireAuth } from "@/lib/auth-helpers";
 import { getCardProfiles } from "@/lib/queries";
 import { hasUnseenInsights } from "@/lib/insights/queries";
+import { getUnreadAlertCount } from "@/lib/alerts/queries";
 import { AppShell } from "@/components/AppShell";
 
 export const dynamic = "force-dynamic";
@@ -12,9 +13,10 @@ export default async function SettingsLayout({
 }) {
   const user = await requireAuth();
 
-  const [cardProfilesList, hasNew] = await Promise.all([
+  const [cardProfilesList, hasNew, unreadAlerts] = await Promise.all([
     getCardProfiles(user.id!),
     hasUnseenInsights(user.id!),
+    getUnreadAlertCount(user.id!),
   ]);
 
   // Serialize dates for client components
@@ -32,7 +34,7 @@ export default async function SettingsLayout({
   return (
     <AppShell
       userEmail={user.email ?? undefined}
-      dashboardNav={{ hasNewInsights: hasNew, cardProfiles }}
+      dashboardNav={{ hasNewInsights: hasNew, unreadAlerts, cardProfiles }}
     >
       {children}
     </AppShell>

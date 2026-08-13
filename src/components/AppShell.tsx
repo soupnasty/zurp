@@ -11,6 +11,7 @@ import {
   Home,
   Target,
   Lightbulb,
+  Bell,
   RefreshCw,
   Check,
 } from "lucide-react";
@@ -18,10 +19,11 @@ import type { ReactNode } from "react";
 import { CardSelectorDropdown } from "./CardSelectorDropdown";
 import { resolveActiveCard } from "@/lib/resolve-card";
 
-type Tab = "home" | "compare" | "track" | "insights";
+type Tab = "home" | "compare" | "track" | "insights" | "alerts";
 
 export interface DashboardNavProps {
   hasNewInsights: boolean;
+  unreadAlerts: number;
   cardProfiles: Array<{
     id: string;
     cardType: string;
@@ -45,6 +47,7 @@ const dashboardTabs: { id: Tab; label: string; icon: typeof BarChart3 }[] = [
   { id: "compare", label: "Compare", icon: BarChart3 },
   { id: "track", label: "Track", icon: Target },
   { id: "insights", label: "Insights", icon: Lightbulb },
+  { id: "alerts", label: "Alerts", icon: Bell },
 ];
 
 function relativeTime(iso: string): string {
@@ -98,8 +101,10 @@ export function AppShell({ children, userEmail, dashboardNav }: AppShellProps) {
     ? "track"
     : pathname.startsWith("/dashboard/insights")
       ? "insights"
-      : pathname.startsWith("/dashboard/compare")
-        ? "compare"
+      : pathname.startsWith("/dashboard/alerts")
+        ? "alerts"
+        : pathname.startsWith("/dashboard/compare")
+          ? "compare"
         : pathname.startsWith("/dashboard")
           ? "home"
           : null;
@@ -249,8 +254,24 @@ export function AppShell({ children, userEmail, dashboardNav }: AppShellProps) {
                       >
                         <span className="relative">
                           <Icon size={20} strokeWidth={1.75} />
+                          {id === "alerts" && (dashboardNav?.unreadAlerts ?? 0) > 0 && collapsed && (
+                            <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-[var(--color-warning)]" />
+                          )}
                         </span>
                         {!collapsed && <span>{label}</span>}
+                        {!collapsed && id === "alerts" && (dashboardNav?.unreadAlerts ?? 0) > 0 && (
+                          <span
+                            className="ml-auto rounded-full px-2 py-0.5 text-[9px]"
+                            style={{
+                              fontFamily: "var(--font-mono)",
+                              fontWeight: 700,
+                              background: "rgba(251,191,36,0.15)",
+                              color: "var(--color-warning)",
+                            }}
+                          >
+                            {dashboardNav!.unreadAlerts}
+                          </span>
+                        )}
                       </Link>
                     </li>
                   );
@@ -321,7 +342,7 @@ export function AppShell({ children, userEmail, dashboardNav }: AppShellProps) {
               return (
                 <Link
                   key={id}
-                  href={`/dashboard/${id}${cardSuffix}`}
+                  href={id === "home" ? `/dashboard${cardSuffix}` : `/dashboard/${id}${cardSuffix}`}
                   className={`flex flex-col items-center gap-0.5 rounded-[var(--radius-md)] px-3 py-1.5 text-[10px] font-medium transition-colors duration-[var(--duration-fast)] ${
                     active
                       ? "text-[var(--color-accent-cyan)]"
@@ -330,6 +351,9 @@ export function AppShell({ children, userEmail, dashboardNav }: AppShellProps) {
                 >
                   <span className="relative">
                     <Icon size={20} strokeWidth={1.75} />
+                    {id === "alerts" && (dashboardNav?.unreadAlerts ?? 0) > 0 && (
+                      <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-[var(--color-warning)]" />
+                    )}
                   </span>
                   <span>{label}</span>
                 </Link>

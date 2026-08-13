@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { requireAuth } from "@/lib/auth-helpers";
 import { getCardProfiles } from "@/lib/queries";
 import { hasUnseenInsights } from "@/lib/insights/queries";
+import { getUnreadAlertCount } from "@/lib/alerts/queries";
 import { AppShell } from "@/components/AppShell";
 import { SyncFooter } from "./_components/SyncFooter";
 import { SyncBanner } from "./_components/SyncBanner";
@@ -15,9 +16,10 @@ export default async function DashboardLayout({
 }) {
   const user = await requireAuth();
 
-  const [cardProfilesList, hasNew] = await Promise.all([
+  const [cardProfilesList, hasNew, unreadAlerts] = await Promise.all([
     getCardProfiles(user.id!),
     hasUnseenInsights(user.id!),
+    getUnreadAlertCount(user.id!),
   ]);
 
   if (cardProfilesList.length === 0) {
@@ -40,7 +42,7 @@ export default async function DashboardLayout({
   return (
     <AppShell
       userEmail={user.email ?? undefined}
-      dashboardNav={{ hasNewInsights: hasNew, cardProfiles }}
+      dashboardNav={{ hasNewInsights: hasNew, unreadAlerts, cardProfiles }}
     >
       <div className="mx-auto max-w-[960px] px-4 pt-8 pb-24 md:pb-8 md:px-8">
         <SyncBanner cardProfiles={cardProfiles} />

@@ -868,3 +868,60 @@ export const lifestyleSelectionsRelations = relations(
     }),
   })
 );
+
+// ── Alerts ──────────────────────────────────────────────────────────
+// Calendar-born, deduped alert stream. The in-app Alerts page, the Home
+// tile, and email delivery are all views of these rows.
+
+export const alerts = pgTable(
+  "alerts",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    cardProfileId: text("card_profile_id").references(() => cardProfiles.id, {
+      onDelete: "cascade",
+    }),
+    // 'credit_expiring' | 'renewal_verdict' | 'connection_broken' | ...
+    type: text("type").notNull(),
+    // One alert per subject per period, e.g. "credit_expiring:csr_stubhub:2026-H2"
+    dedupKey: text("dedup_key").notNull(),
+    // 'action' (badges) | 'notice' | 'report'
+    severity: text("severity").notNull(),
+    title: text("title").notNull(),
+    body: text("body").notNull(),
+    payload: jsonb("payload")
+      .notNull()
+      .$type<Record<string, unknown>>()
+      .default({}),
+    // When the alert became true / stops mattering
+    effectiveAt: timestamp("effective_at", { mode: "date" }).notNull(),
+    expiresAt: timestamp("expires_at", { mode: "date" }),
+    // 'active' | 'resolved' | 'dismissed' | 'expired'
+    state: text("state").notNull().default("active"),
+    readAt: timestamp("read_at", { mode: "date" }),
+    emailedAt: timestamp("emailed_at", { mode: "date" }),
+    resolvedAt: timestamp("resolved_at", { mode: "date" }),
+    createdAt: timestamp("created_at", { mode: "date" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: timestamp("updated_at", { mode: "date" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (t) => [
+    unique("alerts_user_dedup").on(t.userId, t.dedupKey),
+    index("alerts_user_state_idx").on(t.userId, t.state),
+  ]
+);
+
+export const alertsRelations = relations(alerts, ({ one }) => ({
+  user: one(users, { fields: [alerts.userId], references: [users.id] }),
+  cardProfile: one(cardProfiles, {
+    fields: [alerts.cardProfileId],
+    references: [cardProfiles.id],
+  }),
+}));
