@@ -33,9 +33,15 @@ async function getVerificationKey(
     return cached.jwk;
   }
 
-  const response = await plaidClient.webhookVerificationKeyGet({
-    key_id: keyId,
-  });
+  // A transient failure here fails closed into a 401, so retry once —
+  // Plaid re-delivers rejected webhooks, but not indefinitely.
+  let response;
+  try {
+    response = await plaidClient.webhookVerificationKeyGet({ key_id: keyId });
+  } catch {
+    await new Promise((r) => setTimeout(r, 300));
+    response = await plaidClient.webhookVerificationKeyGet({ key_id: keyId });
+  }
   const key = response.data.key;
   if (!key) return null;
 
