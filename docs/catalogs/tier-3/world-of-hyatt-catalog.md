@@ -1,5 +1,7 @@
 # World of Hyatt Chase Card Catalog
 
+*Last verified: 2026-08-13*
+
 ## Card Overview
 
 | Attribute | Details |
@@ -17,13 +19,13 @@
 
 ```benefit_key: earning_structure_hyatt
 4x points on all purchases at Hyatt properties including room rates, food and beverage, and resort incidentals
-2x points on dining, airline tickets, car rentals, and eligible transit (public transportation, taxis, ride-sharing)
+2x points on dining, airline tickets, and eligible transit (public transportation, taxis, ride-sharing)
 2x points on fitness club and gym memberships
-1x point on all other purchases
+1x point on all other purchases, including groceries and car rentals
 ```
 
 ```benefit_key: dining_scope_hyatt
-Dining earning includes restaurants, bars, and food delivery services worldwide.
+Dining earning includes restaurants, bars, and coffee shops worldwide. Food delivery services earn the 1x base rate.
 ```
 
 ### Elite Status & Benefits
@@ -89,11 +91,12 @@ No airline credit or incidental airline benefits included beyond the 2x earning 
 | Category | Multiplier | Notes |
 |----------|-----------|-------|
 | Hyatt Hotels | 4x | Room rates, F&B, resort fees |
-| Dining | 2x | Restaurants, bars, food delivery |
+| Dining | 2x | Restaurants, bars, coffee shops |
 | Airline Tickets | 2x | All airlines |
-| Car Rentals | 2x | All rental agencies |
 | Transit & Ride-Share | 2x | Public transportation, taxis, Uber |
 | Fitness & Gym | 2x | Gym memberships |
+| Car Rentals | 1x | Base rate (2x only on the World of Hyatt Business card) |
+| Groceries | 1x | Base rate — no grocery bonus |
 | All Other Purchases | 1x | Base earning rate |
 
 ## Insurance & Protection Coverage
@@ -111,9 +114,9 @@ No airline credit or incidental airline benefits included beyond the 2x earning 
 
 ## Zurp Relevance
 
-The World of Hyatt Chase represents the mid-tier hotel loyalty card in the Chase premium ecosystem, delivering strong value for committed Hyatt frequent travelers without requiring the elevated annual fees of luxury alternatives. The $95 annual fee is reasonable given the annual free night certificate (Categories 1-4) and potential second FNC at $15K spend. The 4x earning on Hyatt properties combined with 2x on dining and travel aligns well with the typical Hyatt traveler demographic. The integration with Chase Ultimate Rewards allows points flexibility and transferability to other Chase transfer partners, creating optionality absent in single-brand-only cards. Tier-qualifying night credits accelerate elite progression for frequent spenders. The card's primary limitation is the lower free night certificate cap (Category 1-4) compared to premium competitors and the absence of annual resort or airline credits. Best suited for Hyatt loyalists with annual Hyatt spending exceeding $10,000 and who appreciate the flexibility of the Chase rewards ecosystem.
+The World of Hyatt Chase represents the mid-tier hotel loyalty card in the Chase premium ecosystem, delivering strong value for committed Hyatt frequent travelers without requiring the elevated annual fees of luxury alternatives. The $95 annual fee is reasonable given the annual free night certificate (Categories 1-4) and potential second FNC at $15K spend. The 4x earning on Hyatt properties combined with 2x on dining, flights, and transit aligns well with the typical Hyatt traveler demographic. The integration with Chase Ultimate Rewards allows points flexibility and transferability to other Chase transfer partners, creating optionality absent in single-brand-only cards. Tier-qualifying night credits accelerate elite progression for frequent spenders. The card's primary limitation is the lower free night certificate cap (Category 1-4) compared to premium competitors and the absence of annual resort or airline credits. Best suited for Hyatt loyalists with annual Hyatt spending exceeding $10,000 and who appreciate the flexibility of the Chase rewards ecosystem.
 
 ---
 
 **card_type:** world_of_hyatt
-**Last Updated:** February 2025
+**Last Updated:** August 2026

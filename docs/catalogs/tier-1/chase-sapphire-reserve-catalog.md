@@ -1,5 +1,7 @@
 # Zurp Benefit Catalog — Chase Sapphire Reserve (CSR)
 
+*Last verified: 2026-08-13*
+
 ## Card Overview
 
 | Field | Value |
@@ -10,7 +12,7 @@
 | Authorized user fee | $195 |
 | card_type | `csr` |
 | Points currency | Chase Ultimate Rewards |
-| Points valuation | 1.25cpp (conservative; Points Boost can yield up to 2.0cpp on select hotels/flights) |
+| Points valuation | 1.0cpp base (conservative; Points Boost can yield up to 2.0cpp on select hotels/flights — the flat 1.25cpp portal era is over) |
 | Transfer partners | 14 airlines + hotels (1:1 ratio) |
 | Fee anniversary | Account open date (NOT calendar year) |
 | Benefit period | Varies — see individual benefits. Mix of calendar year, semi-annual, monthly, and anniversary year. |
@@ -91,7 +93,7 @@
 | Period | Semi-annual ($150 Jan–Jun, $150 Jul–Dec) |
 | Reset | January 1 and July 1 |
 | Activation | Must verify card on OpenTable and add to account |
-| Expiration | Terms through 06/30/2026 (may be renewed) |
+| Expiration | Ongoing — no sunset date in config (earlier published terms ran through 06/30/2026; benefit verified still active 2026-08-13) |
 | Trackable | Yes — statement credits from qualifying restaurants appear on Plaid. |
 | Confidence | High |
 | Notes | Includes access to primetime reservations at top restaurants. Available in major U.S. cities via Visa Dining Collection on OpenTable. Two separate $150 credits per half-year — unused balance does NOT roll over. Restaurants are curated in collaboration with The Infatuation. |
@@ -207,7 +209,7 @@
 | Expiration | Through 6/22/2027 |
 | Trackable | Not directly — absence of Apple Music charge on statement indicates benefit is active. |
 | Confidence | Low |
-| Notes | If user already subscribes, they should cancel paid plan and switch to complimentary one. CSP does NOT receive this. Combined with Apple TV+, valued at ~$250/year. |
+| Notes | If user already subscribes, they should cancel paid plan and switch to complimentary one. CSP does NOT receive this. Combined with Apple TV+, valued at ~$290/year. |
 
 ---
 
@@ -217,7 +219,7 @@
 |---|---|
 | Name | Complimentary Apple TV+ Subscription |
 | benefit_key | `csr_apple_tv` |
-| Annual value | ~$100 (Individual plan $9.99/month) |
+| Annual value | ~$156 (Individual plan $12.99/month) |
 | Type | Complimentary subscription (NOT statement credit) |
 | Period | Continuous through expiration |
 | Reset | N/A |
@@ -243,7 +245,7 @@
 | Expiration | Permanent benefit |
 | Trackable | Yes — one-time charge from CBP or TSA. |
 | Confidence | High |
-| Notes | Covers Global Entry ($120), NEXUS ($120), or TSA PreCheck ($78). One application per 4-year period. |
+| Notes | Covers Global Entry ($120), TSA PreCheck ($78-$98), or NEXUS ($50). One application per 4-year period. |
 
 ### Points Multipliers
 
@@ -438,7 +440,20 @@
 
 ---
 
-**27. csr_no_ftf**
+**27. csr_return_protection**
+
+| Field | Value |
+|---|---|
+| Name | Return Protection |
+| benefit_key | `csr_return_protection` |
+| Coverage | $500 per item, $1,000 per year |
+| Type | Insurance |
+| Trackable | No |
+| Notes | Reimburses eligible items a merchant won't take back within the return window. Confirmed in the August 2026 audit (was previously missing from the perk matrix). Note: the CSR has NEVER had cell phone protection — do not list one. |
+
+---
+
+**28. csr_no_ftf**
 
 | Field | Value |
 |---|---|
@@ -450,7 +465,7 @@
 
 ---
 
-**28. csr_transfer_partners**
+**29. csr_transfer_partners**
 
 | Field | Value |
 |---|---|
@@ -458,11 +473,11 @@
 | benefit_key | `csr_transfer_partners` |
 | Type | Redemption benefit |
 | Trackable | No |
-| Notes | 14 airlines + hotels at 1:1 ratio. Shared with CSP. Key partners: World of Hyatt, United, Southwest, British Airways, Air France/KLM. Key differentiator vs Amex: Chase has United and Southwest (Amex does not). Amex has Delta (Chase does not). |
+| Notes | 14 airlines + hotels at 1:1 ratio — CSR keeps Hyatt at 1:1 (CSP's Hyatt transfers devalued to 4:3 in the June 2026 CSP refresh, making 1:1 Hyatt a CSR-exclusive advantage). Key partners: World of Hyatt, United, Southwest, British Airways, Air France/KLM. Key differentiator vs Amex: Chase has United and Southwest (Amex does not). Amex has Delta (Chase does not). |
 
 ---
 
-**29. csr_ihg_platinum_status**
+**30. csr_ihg_platinum_status**
 
 | Field | Value |
 |---|---|
@@ -475,7 +490,7 @@
 
 ---
 
-**30. csr_reserve_travel_designer**
+**31. csr_reserve_travel_designer**
 
 | Field | Value |
 |---|---|
@@ -488,7 +503,7 @@
 
 ---
 
-**31. csr_points_boost**
+**32. csr_points_boost**
 
 | Field | Value |
 |---|---|
@@ -502,7 +517,7 @@
 
 ---
 
-**32. csr_high_spend_shops_credit**
+**33. csr_high_spend_shops_credit**
 
 | Field | Value |
 |---|---|
@@ -515,7 +530,7 @@
 
 ---
 
-**33. csr_high_spend_southwest**
+**34. csr_high_spend_southwest**
 
 | Field | Value |
 |---|---|
@@ -528,7 +543,7 @@
 
 ---
 
-**34. csr_high_spend_ihg_diamond**
+**35. csr_high_spend_ihg_diamond**
 
 | Field | Value |
 |---|---|
@@ -540,13 +555,13 @@
 
 ---
 
-**Total benefit count: 34**
+**Total benefit count: 35**
 
 ### Value Summary
 
 | Category | Annual Value | Notes |
 |---|---|---|
-| Hard credits (trackable) | ~$2,060 | Travel $300 + Edit $500 + Select Hotels $250 + Exclusive Tables $300 + StubHub $300 + DoorDash promos $300 + DashPass $120 + Lyft $120 + Peloton $120 + Apple subs ~$250 |
+| Hard credits (trackable) | ~$2,060 | Travel $300 + Edit $500 + Select Hotels $250 + Exclusive Tables $300 + StubHub $300 + DoorDash promos $300 + DashPass $120 + Lyft $120 + Peloton $120 + Apple subs ~$290 |
 | Points multipliers | ~$500–1,000+ | Highly variable based on spend. 8x Chase Travel, 4x direct flights/hotels, 3x dining. |
 | Insurance/access | ~$700+ | Lounge access, travel protections, elite status. |
 | High-spend tier | ~$750+ | Only for $75K+ spenders. |
@@ -603,7 +618,7 @@
 
 | # | Benefit Partner | Competitor | Plaid Pattern | Category | Type | Dollar Signal | Notes |
 |---|---|---|---|---|---|---|---|
-| 15 | Lyft | Uber (rides) | `UBER \*TRIP\|UBER BV` | rideshare | A1 | $10/month credit + 5x points value | Must distinguish rides from Uber Eats. Dollar signal = credit amount + incremental points (4 bonus pts × amount × 1.25cpp). |
+| 15 | Lyft | Uber (rides) | `UBER \*TRIP\|UBER BV` | rideshare | A1 | $10/month credit + 5x points value | Must distinguish rides from Uber Eats. Dollar signal = credit amount + incremental points (4 bonus pts × amount × 1.0cpp). |
 
 ### Category 5: Fitness — Peloton Redirect (A1)
 
@@ -697,9 +712,9 @@ The CSR has the most complex reset schedule of any supported card:
 | Dimension | CSR | CSP |
 |---|---|---|
 | Annual fee | $795 | $95 |
-| Hard credits | ~$2,060 | ~$290 |
+| Hard credits | ~$2,060 | ~$340 |
 | Competitor map entries | 25 catalog / 51 in code seed | 4 active |
-| Benefits requiring activation | 7 | 2 |
+| Benefits requiring activation | 7 | 3 |
 | Points on Chase Travel | 8x | 5x |
 | Points on direct flights/hotels | 4x | 2x |
 | Points on dining | 3x | 3x |
@@ -708,8 +723,10 @@ The CSR has the most complex reset schedule of any supported card:
 | DoorDash promos | $300/yr ($25/mo) | $120/yr ($10/mo) |
 | Lyft credit | $120/yr ($10/mo) | $0 |
 | Peloton credit | $120/yr ($10/mo) | $0 |
-| Apple subs | ~$250/yr | $0 |
-| 10% anniversary bonus | No | Yes |
+| Apple subs | ~$290/yr | Apple TV+ only (12 months, one-time; activate by 12/31/2026) |
+| 10% anniversary bonus | No | No (DISCONTINUED June 2026; final bonus posts Jan 2027) |
+| Global Entry/TSA credit | $120/4yr | $120/4yr (NEW June 2026) |
+| Hyatt transfer ratio | 1:1 | 4:3 (devalued June 2026) |
 | 3x streaming | No | Yes |
 | Estimated insights/user | 25–40 | 10–18 |
 
@@ -759,6 +776,6 @@ For new CSR users, the B1 onboarding checklist should surface these in order of 
 2. **StubHub** ($300/yr — requires activation to earn credits)
 3. **Exclusive Tables** ($300/yr — requires OpenTable verification)
 4. **Apple Music** (~$120/yr)
-5. **Apple TV+** (~$100/yr)
+5. **Apple TV+** (~$156/yr)
 6. **Peloton** ($120/yr — only if user has/wants Peloton)
 7. **IHG Platinum Status** (variable value — only if user stays at IHG)

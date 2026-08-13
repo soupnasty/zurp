@@ -1,5 +1,7 @@
 # United Explorer Chase Card Catalog
 
+*Last verified: 2026-08-13*
+
 ## Card Overview
 
 | Attribute | Details |
@@ -16,15 +18,15 @@
 ### Points & Earning Structure
 
 ```benefit_key: earning_united_flights_combined
-5x Ultimate Rewards points per $1 spent on United Airlines flights purchased directly through United.com or United ticket counters, including both economy and premium cabin bookings. This is the highest earning rate on the card.
+3x MileagePlus miles per $1 spent on United Airlines purchases made directly through United.com or United ticket counters, including both economy and premium cabin bookings. This is the highest card earning rate. Note: United advertises up to 9x for MileagePlus members, but that headline includes base MileagePlus member miles that are not card earnings — the card itself earns 3x.
 ```
 
 ```benefit_key: earning_dining_hotels
-2x Ultimate Rewards points per $1 spent at all dining establishments and eligible hotel reservations. This includes restaurants, bars, cafes, and hotel bookings made directly or through third-party platforms.
+2x MileagePlus miles per $1 spent at all dining establishments and eligible hotel reservations. This includes restaurants, bars, cafes, and hotel bookings made directly or through third-party platforms.
 ```
 
 ```benefit_key: earning_other_purchases
-1x Ultimate Rewards point per $1 spent on all other eligible purchases not listed in the premium earning categories, establishing consistent baseline earning across all remaining spending.
+1x MileagePlus mile per $1 spent on all other eligible purchases not listed in the premium earning categories, establishing consistent baseline earning across all remaining spending.
 ```
 
 ### Purchase Qualification Multipliers (PQP)
@@ -66,15 +68,23 @@ Two complimentary United Club one-time passes per calendar year, granting access
 ### Annual Travel Credits
 
 ```benefit_key: united_travel_credit_annual
-$100 annual United travel credit applied toward any eligible United purchase including airfare, baggage fees, seat selections, and other airline incidentals. The credit is issued each cardmember anniversary.
+$100 in United TravelBank cash awarded once per calendar year after spending $10,000 on the card in that calendar year. The cash is deposited into the cardholder's MileagePlus TravelBank account (not issued as statement credits) and can be applied toward United flight purchases. Spend-gated — the counter resets each January 1.
 ```
 
 ```benefit_key: rideshare_airport_credit
-$60 annual airport rideshare credit for ground transportation to and from the airport on rides booked through designated rideshare apps. Credit is automatically applied as statement credits for eligible airport trips.
+Up to $5 per month (up to $60 per calendar year) in statement credits for rideshare purchases (Uber, Lyft, etc.). Requires annual enrollment each calendar year; unused monthly value is forfeited and does not roll over.
 ```
 
 ```benefit_key: instacart_credit_annual
-Up to $120 annually in Instacart credits for grocery delivery and convenience item purchases on the Instacart platform. Credits are typically distributed as periodic credits throughout the year.
+Up to $10 per month (up to $120 per calendar year) in statement credits for Instacart purchases. Requires Instacart+ activation with the card; unused monthly credit does not roll over. Benefit ends 12/31/2027.
+```
+
+```benefit_key: united_hotels_credit_annual
+$100 annual United Hotels credit: up to $50 in statement credits per qualifying stay booked through United Hotels on united.com, for up to 2 stays per calendar year.
+```
+
+```benefit_key: global_entry_tsa_credit
+Up to $120 statement credit every four years to reimburse the application fee for Global Entry ($120), TSA PreCheck ($78–$98), or NEXUS ($50). Pay the fee with the card and the credit posts automatically; one program per 4-year cycle.
 ```
 
 ### Welcome Bonus
@@ -111,17 +121,21 @@ Extended warranty protection extends the manufacturer's warranty by an additiona
 Travel accident insurance provides coverage for serious accidents occurring during covered trips, including trip delay reimbursement and other travel-related accident protections.
 ```
 
+```benefit_key: car_rental_damage_waiver_primary
+Auto rental collision damage waiver provides PRIMARY coverage (no need to file with personal insurance first) for damage or theft of a rental vehicle paid with the card, up to $60,000.
+```
+
 ### Rewards Ecosystem
 
-```benefit_key: ultimate_rewards_transfer_partners
-Ultimate Rewards points can be transferred to United Airlines and partner airlines at 1:1 redemption rate, enabling flexible award bookings and providing alternative redemption pathways beyond United bookings.
+```benefit_key: mileageplus_miles_ecosystem
+The card earns United MileagePlus miles directly (it is not an Ultimate Rewards card). Miles are redeemable on United and Star Alliance / partner airlines award charts (ANA, Lufthansa, etc.), typically valued around 1.0–1.5 cents per mile.
 ```
 
 ## Points Multipliers Summary
 
 | Category | Multiplier | Notes |
 |----------|-----------|-------|
-| United Flights | 5x | Highest earning category |
+| United Purchases | 3x | Highest card earning rate (9x headline includes non-card member miles) |
 | Dining | 2x | All restaurants and bars |
 | Hotels | 2x | Eligible hotel bookings |
 | All Other Purchases | 1x | Base earning rate |
@@ -131,7 +145,7 @@ Ultimate Rewards points can be transferred to United Airlines and partner airlin
 
 | Benefit | Details |
 |---------|---------|
-| Annual Fee Offset | $100 travel credit + $60 rideshare credit + $120 Instacart credit = $280 value |
+| Annual Fee Offset | $100 TravelBank cash (after $10K spend) + up to $60 rideshare ($5/mo, enrollment) + up to $120 Instacart (through 2027) + $100 United Hotels credit = up to $380 potential value |
 | Baggage Savings | First checked bag for cardholder + companion = $70/year minimum savings |
 | Priority Boarding | Early boarding Group 2 ensures overhead bin access |
 | PQP Acceleration | 1,000 bonus PQP annually + spend-based earning |
@@ -144,12 +158,14 @@ Ultimate Rewards points can be transferred to United Airlines and partner airlin
 | Purchase Protection | Item damage/loss reimbursement | $10,000/claim, $50,000/year |
 | Extended Warranty | Manufacturer warranty extension | 1 year additional coverage |
 | Travel Accident | Accident and delay coverage | Standard terms |
+| Rental Car CDW | PRIMARY collision damage waiver | Up to $60,000 |
+| Global Entry / TSA PreCheck | Application fee credit | $120 every 4 years |
 
 ## Detailed Benefit Analysis
 
-The United Explorer Chase card represents a mid-tier option for frequent United Airlines flyers seeking a balance between affordable annual fees and practical travel benefits. At $150 annually, the card is offset by approximately $280 in direct credits (travel credit, rideshare credit, Instacart credit), creating immediate value proposition for active cardholders.
+The United Explorer Chase card represents a mid-tier option for frequent United Airlines flyers seeking a balance between affordable annual fees and practical travel benefits. At $150 annually, the card can be offset by up to $380 in credits (the $100 TravelBank cash requires $10,000 calendar-year spend; the rideshare credit is capped at $5/month and requires annual enrollment; the Instacart credit runs through 12/31/2027; the $100 United Hotels credit requires qualifying stays), creating a solid value proposition for active cardholders.
 
-The 5x earning on United flights is among the highest in the co-branded airline card category, making the card particularly attractive for those consolidating United travel. Combined with 2x on dining and hotels, the card provides reasonable earning across common travel categories. The 1,000 bonus PQP annually combined with $1 PQP per $20 spend creates meaningful elite status acceleration without exorbitant spending requirements.
+The 3x card earning on United purchases is competitive for the co-branded airline card category (United's 9x headline includes base MileagePlus member miles that are not card earnings), making the card attractive for those consolidating United travel. Combined with 2x on dining and hotels, the card provides reasonable earning across common travel categories. The 1,000 bonus PQP annually combined with $1 PQP per $20 spend creates meaningful elite status acceleration without exorbitant spending requirements.
 
 The checked bag benefit for cardholder and one companion, combined with priority boarding, creates tangible travel convenience benefits. The annual United Club passes, while limited to two per year, provide periodic lounge access for connections and international travel scenarios. The 25% rebate on in-flight food/beverage/WiFi encourages use of United services within existing travel budgets.
 
@@ -160,4 +176,4 @@ Best suited for United loyalists who consolidate 70% or more of their airline tr
 ---
 
 **card_type:** united_explorer
-**Last Updated:** February 2025
+**Last Updated:** August 2026

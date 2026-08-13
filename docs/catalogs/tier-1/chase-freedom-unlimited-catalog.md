@@ -1,5 +1,7 @@
 # Chase Freedom Unlimited Catalog
 
+*Last verified: 2026-08-13*
+
 **Card Type:** chase_freedom_unlimited
 **Network:** Visa
 **Annual Fee:** $0
@@ -146,10 +148,11 @@ value: Excellent for large purchases with 15-month repayment plan
 
 ```benefit_key: doordash_benefit
 name: DoorDash DashPass Benefit
-description: 6 months of complimentary DoorDash DashPass membership
-dashpass_value: 6 months free delivery (normally $9.99/month = $60 value)
-terms: Benefit automatically applied to card-holder account
-value: Nice add-on for delivery users
+description: 6-month complimentary DashPass trial plus $10 per quarter in DoorDash non-restaurant credits (grocery, convenience, retail) through 12/31/2027
+dashpass_value: 6-month trial of free delivery (normally $9.99/month = ~$60 value); NOT an ongoing complimentary membership
+quarterly_promo: $10 non-restaurant credit per quarter (4 quarterly credits = $40/year); unused value forfeited; ends 12/31/2027
+terms: Requires activation through DoorDash with the card; DashPass trial must be activated between 2/1/2025 and 12/31/2027; after 6 free months you are auto-enrolled at the paid monthly rate unless you cancel
+value: Nice add-on for delivery users — set a cancellation reminder for the trial
 ```
 
 ### Foreign Transaction Fee
@@ -306,9 +309,9 @@ value: Avoid overpaying for earn rate
 | **Total Earning (excl. welcome)** | **$20,000** | **~1.68% avg** | **$390** | |
 | **Annual Fee** | | | **$0** | |
 | **Net Annual Value** | | | **$390** | |
-| **DoorDash Benefit** | | | **+$60** | 6 months free DashPass |
+| **DoorDash Benefit** | | | **+$100** | 6mo DashPass trial + $10/qtr credits (through 2027) |
 | **Welcome Bonus (Year 1)** | | | **+$300** | One-time, limited-time offer |
-| **Year 1 Total Value** | | | **$750** | |
+| **Year 1 Total Value** | | | **$790** | |
 
 ### Comparison Against Alternatives
 
@@ -357,7 +360,7 @@ If pooled with Chase Sapphire Preferred (1.25x redemption value):
 3. **Future Upgrade Path:** Later add CSP/CSR to unlock premium features and transfer partners
 4. **Pool Points (if eligible):** Link to CSP/CSR for redemption flexibility
 5. **Portal Booking:** Use Chase Travel for 5% when pricing is competitive
-6. **DoorDash Bonus:** Free DashPass benefit adds ~$60 value annually
+6. **DoorDash Bonus:** 6-month DashPass trial + $10/quarter non-restaurant credits add ~$100 value in year one (through 12/31/2027)
 7. **No Fee Management:** Simple retention decision; keep unless better flat-rate card emerges
 
 ---
@@ -370,7 +373,7 @@ If pooled with Chase Sapphire Preferred (1.25x redemption value):
 - **No Activation Required:** Unlike CFF, no quarterly management burden
 - **Ultimate Rewards Pool:** Can combine with CSP/CSR later for premium redemptions
 - **3% FTF Limitation:** Keep CSR or another 0% FTF card for international travel
-- **DoorDash Integration:** 6-month free DashPass is understated benefit for frequent users
+- **DoorDash Integration:** 6-month DashPass trial (activate by 12/31/2027; auto-enrolls at paid rate after) plus $10/quarter non-restaurant credits through 12/31/2027
 - **Entry Card to Sapphire Ecosystem:** Often used as entry point before upgrading to CSP/CSR
 
 ---

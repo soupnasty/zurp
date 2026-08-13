@@ -1,5 +1,7 @@
 # Citi Custom Cash Catalog
 
+*Last verified: 2026-08-13*
+
 ## Card Overview
 
 | Attribute | Value |
@@ -8,8 +10,10 @@
 | Network | Mastercard |
 | Annual Fee | $0 |
 | Card Type | `citi_custom_cash` |
-| Issue Date | Ongoing |
-| Status | Active |
+| Issue Date | Discontinued for new applications May 28, 2026 |
+| Status | DISCONTINUED for new applications (May 28, 2026) — existing cardholders keep the card and its earn structure |
+
+> **Note:** Citi closed the Custom Cash to new applications on May 28, 2026. Existing cardholders retain the card, its 5% auto-select category, and ThankYou Points pooling. Everything below still applies to existing cardholders; new-applicant items (welcome bonus, intro APR) are no longer obtainable.
 
 ## Benefit Catalog
 
@@ -141,7 +145,7 @@ category: all_other
 terms: "1% cash back on all other eligible purchases not in the automatically selected top category or after category limit is reached"
 ```
 
-### Welcome Offer
+### Welcome Offer (DISCONTINUED — card closed to new applications May 28, 2026)
 
 ```benefit_key
 benefit_id: citi_custom_cash_welcome
@@ -149,10 +153,11 @@ benefit_name: Welcome Bonus
 bonus_amount: $200
 minimum_spend: $1,500
 time_window_days: 180
-terms: "$200 cash back after you spend $1,500 in purchases in the first 6 months of account opening"
+status: discontinued_2026-05-28
+terms: "$200 cash back after you spend $1,500 in purchases in the first 6 months of account opening. No longer obtainable — card discontinued for new applications May 28, 2026"
 ```
 
-### Introductory Offer
+### Introductory Offer (DISCONTINUED — card closed to new applications May 28, 2026)
 
 ```benefit_key
 benefit_id: citi_custom_cash_intro_apr
@@ -160,7 +165,8 @@ benefit_name: 0% Intro APR
 intro_rate: 0%
 duration_months: 15
 applies_to: purchases_and_balance_transfers
-terms: "0% intro APR for 15 months on purchases and balance transfers from account opening"
+status: discontinued_2026-05-28
+terms: "0% intro APR for 15 months on purchases and balance transfers from account opening. No longer obtainable — card discontinued for new applications May 28, 2026"
 ```
 
 ### ThankYou Points Program
@@ -270,7 +276,7 @@ terms: "No trip-related insurance protections included with this card"
 
 | Rule | Details |
 |------|---------|
-| Merchant Codes | Earnings determined by Discover merchant category codes (MCC) |
+| Merchant Codes | Earnings determined by Citi merchant category codes (MCC) |
 | Category Flexibility | Wide range of merchant types within each category |
 | Disputed Transactions | Disputed purchases may impact category calculation if removed mid-cycle |
 | Manual Categorization | Limited user control; system relies on merchant classification |

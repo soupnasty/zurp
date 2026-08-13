@@ -1,5 +1,7 @@
 # US Bank Altitude Connect Card Catalog
 
+*Last verified: 2026-08-13*
+
 ## Card Overview
 
 | Attribute | Details |
@@ -34,6 +36,10 @@ Priority Pass Select membership with 4 free airport lounge visits per year. Addi
 
 ```benefit_key: global_entry_tsa_precheck
 Up to $100 credit toward Global Entry, TSA PreCheck, or trusted traveler programs, provided once every 4 years.
+```
+
+```benefit_key: gigsky_esim_data
+Complimentary GigSky global eSIM data for international travel. Enroll your Altitude Connect card with GigSky (via the GigSky app) to redeem the complimentary data plan. Requires enrollment; redeemable through November 30, 2026.
 ```
 
 ### Trip Protection Coverage
@@ -123,5 +129,5 @@ The US Bank Altitude Connect serves as a strong value-tier, no-annual-fee altern
 
 ---
 
-**card_type:** usb_altitude_connect
-**Last Updated:** February 2025
+**card_type:** us_bank_altitude_connect
+**Last Updated:** August 2026

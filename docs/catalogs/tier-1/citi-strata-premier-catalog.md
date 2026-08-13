@@ -1,5 +1,7 @@
 # Citi Strata Premier Catalog
 
+*Last verified: 2026-08-13*
+
 **Card Type:** citi_strata_premier
 **Network:** Mastercard World Elite
 **Annual Fee:** $95
@@ -11,7 +13,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| Card Name | Citi Strata Premier X |
+| Card Name | Citi Strata Premier |
 | Network | Mastercard World Elite |
 | Annual Fee | $95 |
 | Foreign Transaction Fee | 0% (NO FTF!) |
@@ -19,7 +21,7 @@
 | Welcome Bonus | 60,000 points after $4,000 spend in 3 months |
 | Target User | Premium frequent travelers seeking premium hotel/airline credits and no FTF |
 | Best For | Hotels, flights, restaurants, travel redemptions via transfer partners |
-| Transfer Partners | 22 airlines including AA, Singapore, Turkish, JetBlue, Etihad, Emirates, Flying Blue |
+| Transfer Partners | 22 partners (15 airlines + 5 hotels + retail/rewards club) including AA 1:1, Singapore, JetBlue, Etihad, Emirates (1:0.8), Flying Blue; Choice Hotels 1:2 |
 | Points Pool | Yes - can combine with Citi Double Cash and Citi Custom Cash |
 
 ---
@@ -46,8 +48,18 @@ description: Earn 10x points on hotel bookings made through Citi Travel portal; 
 rate: 10x points
 category: Hotels (Citi Travel portal only)
 cap: None (uncapped)
-terms: Must book through Citi Travel site, not direct hotel reservation systems
+terms: Must book through Citi Travel site; direct hotel bookings earn 3x (see below)
 value: Premium earn rate for hotel spending
+```
+
+```benefit_key: earn_hotels_direct
+name: Direct Hotel Purchases Earn Rate
+description: Earn 3x points on hotel purchases booked directly with hotels (air travel and other hotel purchases category)
+rate: 3x points
+category: Hotels (direct bookings)
+cap: None (uncapped)
+terms: Applies to hotel stays booked directly with the property or hotel chain (outside the Citi Travel portal)
+value: Solid earn rate when portal booking isn't practical
 ```
 
 ```benefit_key: earn_cars_citi_travel
@@ -101,13 +113,13 @@ value: Solid earning on essential spending
 ```
 
 ```benefit_key: earn_gas_stations
-name: Gas Station Earn Rate
-description: Earn 3x points at gas stations
+name: Gas Station & EV Charging Earn Rate
+description: Earn 3x points at gas stations and EV charging stations
 rate: 3x points
-category: Gas Stations
+category: Gas Stations & EV Charging
 cap: None (uncapped)
-terms: Fuel pumps and station convenience items
-value: Standard earn on essential fuel spending
+terms: Fuel pumps and station convenience items; includes EV charging networks (ChargePoint, EVgo, Electrify America, Blink, Tesla Supercharger)
+value: Standard earn on essential fuel/charging spending
 ```
 
 ```benefit_key: earn_other
@@ -136,10 +148,10 @@ value: Premium transfer flexibility vs cash-back cards
 name: Citi Strata Premier Transfer Partners
 description: 22 transfer partners include major global carriers
 partners:
-  - Airlines (1:1): American Airlines, Turkish Airlines, JetBlue, Avianca, Qatar Airways, Etihad, Flying Blue (Air France/KLM), Virgin Atlantic, Singapore Airlines
+  - Airlines (1:1): American Airlines, Aeromexico, Flying Blue (Air France/KLM), Avianca, Cathay Pacific, Etihad, EVA Air, JetBlue, Qantas, Qatar Airways, Singapore Airlines, Thai Airways, Virgin Atlantic, Virgin Red
   - Airlines (special): Emirates (1:0.8 - unfavorable)
-  - Hotels: Hilton Honors, IHG Club, Marriott Bonvoy, Hyatt
-  - Other: American Express Travel Bank
+  - Hotels: Choice Privileges (1:2 - points double), I Prefer Hotels (1:4), Wyndham Rewards (1:1), Accor Live Limitless (2:1 - poor), Leading Hotels of the World (5:1 - poor)
+  - Retail: Shop Your Way (1:10 - poor)
 flexibility: Broad choice across major carriers and hotel programs
 value: Highest flexibility among premium travel cards in US market
 ```
@@ -149,7 +161,7 @@ name: Welcome Bonus
 description: Earn 60,000 Citi Strata Premier points after spending $4,000 in qualifying purchases within 3 months
 bonus: 60,000 points
 requirement: $4,000 spend in 3 months
-valuation: ~$600-900 depending on redemption (at 1-1.5 cpp)
+valuation: ~$600-1,140 depending on redemption (at 1.0-1.9 cpp)
 terms: One-time bonus per approved application
 value: Substantial welcome offer; strong opening value
 ```
@@ -261,9 +273,10 @@ value: Eliminates largest fee burden for travelers
 | Car Rentals (Citi Travel) | 10x | None | 10x | None | Portal bookings only |
 | Attractions (Citi Travel) | 10x | None | 10x | None | Portal bookings only |
 | Flights | 3x | None | 3x | None | All booking methods |
+| Hotels (direct) | 3x | None | 3x | None | Direct bookings outside portal |
 | Restaurants | 3x | None | 3x | None | Uncapped dining |
 | Supermarkets | 3x | None | 3x | None | Uncapped grocery |
-| Gas Stations | 3x | None | 3x | None | Uncapped fuel |
+| Gas Stations & EV Charging | 3x | None | 3x | None | Uncapped fuel + EV charging |
 | All Other | 1x | None | 1x | None | Default category |
 
 **Points Flexibility:** Citi Points are transferable to 22 partners; strong flexibility comparable to Chase UR or AmEx MR programs.
@@ -401,7 +414,7 @@ requirement: $4,000 spend within 3 months
 action: Track spending toward $4,000 threshold
 alerting: Alert at $3,000 spend
 action: Ensure 60,000 bonus points post within 60 days
-valuation: 60,000 points = $600-900 value at 1-1.5 cpp redemption
+valuation: 60,000 points = $600-1,140 value at 1.0-1.9 cpp redemption
 claim_process: Contact Citi if bonus doesn't post automatically
 value: Capture substantial welcome benefit
 ```
@@ -420,7 +433,7 @@ value: Capture substantial welcome benefit
 | Flights | $6,000 | 3x | 18,000 pts | $216 | Frequent flier |
 | Restaurants | $5,000 | 3x | 15,000 pts | $180 | Dining out |
 | Supermarkets | $4,000 | 3x | 12,000 pts | $144 | Groceries |
-| Gas/Other | $6,000 | 1x | 6,000 pts | $72 | Baseline |
+| Other (non-bonus) | $6,000 | 1x | 6,000 pts | $72 | Baseline (gas & EV charging earn 3x, not modeled here) |
 | **Total Points Earning** | **$25,000** | **~2.8x avg** | **91,000 pts** | **$1,092** | |
 | **Less Annual Fee** | | | | **-$95** | |
 | **Hotel Credit Value** | | | | **+$100** | Annual credit |

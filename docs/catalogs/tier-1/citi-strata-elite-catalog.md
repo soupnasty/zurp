@@ -1,5 +1,7 @@
 # Zurp Benefit Catalog — Citi Strata Elite
 
+*Last verified: 2026-08-13*
+
 ## Card Overview
 
 | Field | Value |
@@ -89,7 +91,7 @@
 | Type | Statement credit |
 | Period | 4-year cycle |
 | Reset | After credit used; next eligible after ~4 years |
-| Activation | Charge Global Entry ($120) or TSA PreCheck ($85) application fee to card |
+| Activation | Charge Global Entry ($120), TSA PreCheck ($78–$98), or NEXUS ($50) application fee to card |
 | Expiration | Permanent benefit |
 | Trackable | Yes — Plaid can detect CBP/TSA charges + corresponding statement credit |
 | Confidence | High |
@@ -638,9 +640,9 @@
 ### CRITICAL: Calendar Year = First-Year Double-Dip
 
 Because all major credits reset on **calendar year** (not anniversary), a cardholder who opens mid-year gets:
-- **Year 1** (partial): $300 hotel + $200 Splurge + $200 Blacklane (H2 only = $100) + 4 Admirals Club passes = **$800+ in first partial year**
-- **Year 2** (full): Same credits reset January 1 = another **$900**
-- Combined first-year value before anniversary fee hits: up to **$1,700** in credits across two calendar years
+- **Year 1** (partial): $300 hotel + $200 Splurge + $200 Blacklane (H2 only = $100) = **$600 in credits** (plus 4 Admirals Club passes)
+- **Year 2** (full): Same credits reset January 1 = another **$700** ($300 hotel + $200 Splurge + $200 Blacklane)
+- Combined first-year value before anniversary fee hits: up to **$1,300** in credits across two calendar years (plus 8 Admirals Club passes)
 
 This is a significant advantage over anniversary-based cards like Venture X.
 

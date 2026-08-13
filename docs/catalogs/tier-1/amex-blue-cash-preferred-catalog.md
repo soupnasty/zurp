@@ -1,5 +1,7 @@
 # Amex Blue Cash Preferred Catalog
 
+*Last verified: 2026-08-13*
+
 **Card Type:** amex_bcp
 **Network:** American Express
 **Annual Fee:** $95
@@ -49,12 +51,12 @@ value: Excellent for cord-cutters
 
 ```benefit_key: earn_transit
 name: Transit Earn Rate
-description: Earn 3% cash back on eligible transit including taxis, rideshare, parking, trains, buses, and airlines
+description: Earn 3% cash back on eligible transit including taxis, rideshare, parking, tolls, trains, buses, and ferries — EXCLUDES airfare, cruises, and car rentals (those earn 1%)
 rate: 3%
-category: Transit/Travel
+category: Transit (ground)
 cap: None (uncapped)
-terms: Broad category definition; includes Uber, Lyft, public transit
-value: Solid for frequent travelers
+terms: Includes Uber, Lyft, public transit, parking, tolls; airfare, cruises, and car rentals fall to the 1% base rate
+value: Solid for commuters and ground-transit users
 ```
 
 ```benefit_key: earn_us_gas
@@ -75,6 +77,19 @@ category: Other
 cap: None (uncapped)
 terms: Default category for uncategorized spending
 value: Baseline earning
+```
+
+### Statement Credits
+
+```benefit_key: disney_streaming_credit
+name: Disney Streaming Credit
+description: Up to $10 per month in statement credits for eligible subscription purchases at Disneyplus.com, Hulu.com, or ESPN — individual services qualify, not just the Disney Bundle
+credit: $10/month ($120/year)
+period: Monthly (calendar month reset, no rollover)
+activation: Enrollment required (Amex app → Benefits tab)
+merchants: Disney+, Hulu, ESPN
+terms: Eligible active subscription must be charged to the card; credit posts automatically after enrollment
+value: Up to $120/yr — more than offsets the $95 annual fee for streaming subscribers
 ```
 
 ### Rewards Structure
@@ -178,7 +193,7 @@ value: Significant disadvantage for frequent travelers
 |----------|-----------|-----------------|----------|-----------|
 | US Supermarkets | 6% | None | 6% | $6,000 spend → $360/yr |
 | Streaming Services | 6% | None | 6% | Unlimited |
-| US Transit | 3% | None | 3% | Unlimited |
+| US Transit (ground only; excl. airfare/cruises/car rentals) | 3% | None | 3% | Unlimited |
 | US Gas Stations | 3% | None | 3% | Unlimited |
 | All Other | 1% | None | 1% | Unlimited |
 
@@ -246,8 +261,9 @@ value: Ensure expected 6% rate on critical subscriptions
 ```rule: transit_categorization
 trigger: Ensure rideshare/transit coded correctly
 action: Monitor transaction codes for rideshare (Uber, Lyft)
-action: Monitor airline tickets, taxis, parking
+action: Monitor taxis, parking, tolls, trains, buses
 alerting: Identify and dispute miscoded 1% transactions
+alerting: Remind users that airfare, cruises, and car rentals earn only 1% (excluded from 3% transit)
 optimization: Use merchant selection to ensure 3% coding
 value: Prevent loss of 3% earning on transit purchases
 ```
@@ -296,7 +312,7 @@ value: Capture one-time $250 benefit
 | Supermarkets (capped) | $6,000 | 6% | $360 | After $6,000, drops to 1% |
 | Streaming | $2,000 | 6% | $120 | Uncapped, high value |
 | Gas Stations | $3,000 | 3% | $90 | Standard rate |
-| Transit/Airlines | $4,000 | 3% | $120 | Broad category |
+| Ground Transit | $4,000 | 3% | $120 | Excludes airfare/cruises/car rentals (1%) |
 | Other Purchases | $5,000 | 1% | $50 | Low value category |
 | **Total Earning (excl. welcome)** | **$20,000** | **~2.4% avg** | **$740** | |
 | **Less Annual Fee** | | | **-$95** | |
@@ -342,6 +358,7 @@ value: Capture one-time $250 benefit
 
 ## Card-Specific Notes
 
+- **Disney Streaming Credit:** Up to $10/mo ($120/yr) statement credit for Disney+, Hulu, or ESPN subscriptions — individual services qualify, not just the bundle. Enrollment required.
 - **Supermarket Cap Trap:** The $6,000 annual supermarket cap is the key limiting factor; earning drops to 1% after threshold
 - **Streaming Sweet Spot:** Uncapped 6% streaming rate is best-in-class and excellent for cord-cutters
 - **Cash Back Only:** No transfer partner flexibility limits redemption options and long-term value

@@ -1,5 +1,7 @@
 # Delta SkyMiles Platinum American Express Card Catalog
 
+*Last verified: 2026-08-13*
+
 ## Card Overview
 
 | Attribute | Details |
@@ -29,12 +31,24 @@
 
 ### Annual Travel Credits
 
+```benefit_key: delta_stays_credit_annual
+$150 annual Delta Stays credit in statement credits for prepaid Delta Stays bookings (hotels and vacation rentals) made on delta.com. Credits apply automatically to eligible prepaid bookings charged to the card, per calendar year.
+```
+
+```benefit_key: resy_credit_monthly
+$120 annual Resy credit delivered as up to $10 per month in statement credits for purchases at U.S. restaurants on Resy or on Resy.com/app. Enrollment required before first purchase; unused monthly credit does not roll over.
+```
+
+```benefit_key: rideshare_credit_monthly
+$120 annual rideshare credit delivered as up to $10 per month in statement credits for U.S. rideshare purchases with eligible providers including Uber, Lyft, Curb, Revel, and Alto. Enrollment required before first purchase; unused monthly credit does not roll over.
+```
+
 ```benefit_key: delta_flight_credit_annual
-$200 annual Delta flight credit automatically applied to eligible Delta Air Lines purchases including airfare, baggage fees, seat selections, and other airline incidentals. This credit requires $10,000 in annual card spending to be activated and becomes available each cardmember anniversary year.
+DISCONTINUED (removed in error — August 2026 audit): The "$200 annual Delta flight credit after $10,000 spend" was a Delta SkyMiles Gold Amex benefit and never applied to the Delta Platinum card. It was previously listed here in error and is retained only for historical reference; no flight credit exists on this card.
 ```
 
 ```benefit_key: uber_one_credit_monthly
-Monthly Uber One credit up to $9.99 per month through June 2026, providing ride-sharing and delivery service value to cardholders who actively use the Uber platform for transportation, grocery delivery, or restaurant food delivery.
+DISCONTINUED (enrollment closed June 25, 2026): Monthly Uber One credit up to $9.99 per month. The enrollment window closed 6/25/2026 and no new activations are accepted; cardmembers who enrolled before the deadline continue receiving trailing monthly credits into 2027.
 ```
 
 ### Companion Travel Benefits
@@ -63,12 +77,8 @@ Priority boarding extended to up to 8 companions traveling with the primary card
 
 ### Delta Sky Club Access
 
-```benefit_key: delta_sky_club_10_visits
-10 complimentary Delta Sky Club lounge visits per year during the cardmember year, providing access to premium airport lounges with dining, beverage, shower facilities, workspaces, and business amenities. Visits must be used during the 12-month cardmember anniversary period and do not roll over to the next year.
-```
-
-```benefit_key: delta_sky_club_unlimited_threshold
-Unlimited Delta Sky Club access granted automatically upon accumulation of $75,000 in eligible card spending during the calendar year, allowing unrestricted lounge access for the remainder of the 12-month period with no visit limits.
+```benefit_key: delta_sky_club_access
+NO Sky Club access — Delta Sky Club access for Delta SkyMiles Platinum cardmembers was eliminated in January 2024. The card includes no complimentary visits and no reduced-rate access. (Complimentary visit allowances belong to the Delta Reserve and Amex Platinum cards, not this card.)
 ```
 
 ### SkyMiles Elite Accelerators
@@ -99,8 +109,8 @@ No foreign transaction fees assessed on purchases made outside the United States
 
 ### American Express Protection Benefits
 
-```benefit_key: trip_cancellation_insurance
-Trip cancellation insurance covers prepaid, non-refundable trip costs if the trip is cancelled for covered reasons (illness, injury, family death), providing reimbursement of eligible expenses under stated policy terms.
+```benefit_key: trip_delay_reimbursement
+Trip delay reimbursement covers reasonable expenses when a covered trip charged to the card is delayed, under stated policy terms. NOTE: This card does NOT include trip cancellation/interruption insurance — trip delay coverage only.
 ```
 
 ```benefit_key: purchase_protection_platinum
@@ -112,7 +122,7 @@ Return protection covers eligible merchandise if the merchant refuses to accept 
 ```
 
 ```benefit_key: car_rental_damage_waiver
-Car rental damage waiver provides primary coverage for vehicle damage when renting a car with the card, up to the vehicle's actual cash value, subject to policy exclusions and coverage limits.
+Car rental loss and damage insurance provides SECONDARY coverage (pays after your personal auto insurance) for vehicle damage or theft when the rental is charged to the card, subject to policy exclusions and coverage limits.
 ```
 
 ## Points Multipliers Summary
@@ -129,35 +139,36 @@ Car rental damage waiver provides primary coverage for vehicle damage when renti
 
 | Benefit | Details |
 |---------|---------|
-| Annual Fee Offset | $200 Delta flight credit + $9.99/mo Uber credit offset annual costs effectively |
+| Annual Fee Offset | $150 Delta Stays + $120 Resy + $120 rideshare credits ($390 total) offset the $350 annual fee |
 | Medallion Acceleration | $2,500 MQD headstart + $1/20 spend ratio accelerates elite progression substantially |
 | Family Travel Value | Companion certificate + domestic baggage waiver for 8 companions creates family travel value |
-| Lounge Access | 10 annual visits scale to unlimited at $75K annual spend threshold |
+| Lounge Access | None — Sky Club access eliminated January 2024 |
 | Multi-Year Planning | MQD accumulation strategy particularly valuable for mid-tier elite status seekers |
 
 ## Insurance & Protection Coverage
 
 | Coverage Type | Benefit | Limit |
 |---------------|---------|-------|
-| Trip Cancellation | Prepaid trip cost reimbursement | Standard Amex terms and conditions |
+| Trip Cancellation | Not included (trip delay coverage only) | — |
+| Trip Delay | Delay expense reimbursement | Standard Amex terms and conditions |
 | Purchase Protection | Item damage/loss reimbursement | Standard Amex terms and conditions |
 | Return Protection | Merchant refusal coverage | Standard Amex terms and conditions |
-| Car Rental Damage | Primary rental vehicle coverage | Vehicle actual cash value |
+| Car Rental Damage | Secondary rental vehicle coverage | Standard Amex terms and conditions |
 | Extended Warranty | Standard protective terms | Standard Amex protective terms |
 
 ## Detailed Benefit Analysis
 
-The Delta SkyMiles Platinum American Express card targets frequent Delta flyers and elite status aspirants through a combination of earning acceleration, companion travel benefits, and lounge access. The $350 annual fee is partially offset by the $200 Delta flight credit and $9.99 monthly Uber One credit (through June 2026), totaling approximately $320 in annual benefits when the Uber credit is fully utilized.
+The Delta SkyMiles Platinum American Express card targets frequent Delta flyers and elite status aspirants through a combination of earning acceleration, companion travel benefits, and monthly statement credits. The $350 annual fee is more than offset by the $150 annual Delta Stays credit, $120 annual Resy credit ($10/mo), and $120 annual rideshare credit ($10/mo), totaling $390 in annual credits when fully utilized. (The previously listed $200 flight credit was a Delta Gold benefit and never applied to this card; the Uber One credit closed to new enrollments 6/25/2026.)
 
 The card's primary value derives from 3x earning on Delta flights and hotel purchases, the annual companion certificate for main cabin economy travel, and the critically important $2,500 annual MQD headstart which accelerates elite tier progression without requiring corresponding spending. For status-focused travelers, this headstart can reduce the spending required to reach mid-tier elite status significantly.
 
-The 10 annual Delta Sky Club visits provide reliable lounge access, scaling to unlimited access at the $75,000 annual spending threshold—a realistic target for business travelers and frequent leisure travelers who consolidate their travel on Delta. The free checked bag benefit for the cardholder and up to 8 companions creates substantial baggage savings, particularly valuable for families or group travel scenarios.
+The card carries no Delta Sky Club access — lounge access for Delta Platinum cardmembers was eliminated in January 2024, so travelers who prioritize lounges must look to the Delta Reserve. The free checked bag benefit for the cardholder and up to 8 companions creates substantial baggage savings, particularly valuable for families or group travel scenarios.
 
 Elite status progression mechanics favor high-spend cardholders: the combination of $2,500 MQD headstart, $1 MQD per $20 spend, and 3x SkyMiles earning on Delta flights accelerates medallion tier qualification significantly. The card's weakness lies in limited earning outside the Delta ecosystem and the relatively modest 2x earning on restaurants and supermarkets compared to competing airline cards.
 
-Best suited for Delta loyalists with annual spending exceeding $50,000 who can maximize the companion certificate, flight credits, and sky club benefits. The card deteriorates in value for casual Delta travelers or those divided between multiple airline programs.
+Best suited for Delta loyalists with annual spending exceeding $50,000 who can maximize the companion certificate and the Delta Stays, Resy, and rideshare credits. The card deteriorates in value for casual Delta travelers or those divided between multiple airline programs.
 
 ---
 
 **card_type:** delta_platinum
-**Last Updated:** February 2025
+**Last Updated:** August 2026

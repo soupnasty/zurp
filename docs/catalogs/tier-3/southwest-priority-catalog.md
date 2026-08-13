@@ -1,5 +1,7 @@
 # Southwest Rapid Rewards Priority Visa Card Catalog
 
+*Last verified: 2026-08-13*
+
 ## Card Overview
 
 | Attribute | Details |
@@ -16,11 +18,15 @@
 ### Points & Earning Structure
 
 ```benefit_key: earning_southwest_flights
-2x Rapid Rewards points per $1 spent on Southwest Airlines flight bookings made directly through Southwest.com or Southwest ticket counters. This is the highest earning category on the card.
+4x Rapid Rewards points per $1 spent on Southwest Airlines flight bookings made directly through Southwest.com or Southwest ticket counters. This is the highest earning category on the card.
 ```
 
 ```benefit_key: earning_dining
 2x Rapid Rewards points per $1 spent at all dining establishments including restaurants, bars, cafes, and food delivery services. This category encourages everyday spending on dining when not traveling.
+```
+
+```benefit_key: earning_gas_stations
+2x Rapid Rewards points per $1 spent at gas stations, added in the July 2025 card refresh alongside the move to 4x on Southwest flights.
 ```
 
 ```benefit_key: earning_other_purchases
@@ -30,7 +36,7 @@
 ### Annual Travel Credits
 
 ```benefit_key: southwest_travel_credit_annual
-$75 annual Southwest travel credit applied toward any eligible Southwest Airlines purchase including airfare, baggage fees, seat selections, early check-in, and other airline incidentals. Credit is issued each cardmember anniversary.
+DISCONTINUED: The $75 annual Southwest travel credit was removed in the July 2025 card refresh and ended 12/31/2025. It previously applied toward eligible Southwest Airlines purchases including airfare, baggage fees, seat selections, early check-in, and other airline incidentals. Retained here for historical usage tracking only.
 ```
 
 ### Companion Pass Pathway Benefits
@@ -56,7 +62,11 @@ Priority boarding Group 5 extended to up to 8 companions traveling on the same r
 ### Upgraded Boarding Benefits
 
 ```benefit_key: upgraded_boarding_annual
-4 complimentary upgraded boardings per year (valid through 2026) allowing the cardholder to secure earlier boarding positions than the standard Group 5 priority boarding entitlement. Boarding upgrades expire at year-end.
+DISCONTINUED January 27, 2026: The 4 complimentary Upgraded Boardings per year were eliminated when Southwest moved to assigned seating. Replaced by unlimited Extra Legroom seat upgrades (see below). Retained here for historical reference only.
+```
+
+```benefit_key: extra_legroom_seat_upgrades
+Unlimited complimentary Extra Legroom seat upgrades within 48 hours of departure, subject to availability, plus Group 5 boarding. Introduced January 27, 2026 as the replacement for the discontinued Upgraded Boardings benefit.
 ```
 
 ### Baggage Benefits
@@ -121,8 +131,9 @@ Secondary collision damage waiver provides supplemental rental car damage covera
 
 | Category | Multiplier | Notes |
 |----------|-----------|-------|
-| Southwest Flights | 2x | Direct bookings on Southwest.com |
+| Southwest Flights | 4x | Direct bookings on Southwest.com |
 | Dining | 2x | All restaurants and food establishments |
+| Gas Stations | 2x | Added in July 2025 refresh |
 | All Other Purchases | 1x | Base earning rate |
 | Companion Pass Progress | 17,500/yr | 10K spend + 7.5K anniversary bonus |
 
@@ -132,7 +143,7 @@ Secondary collision damage waiver provides supplemental rental car damage covera
 |---------|---------|
 | Companion Pass Progress | 10,000 annual points + 7,500 anniversary = 17,500/year toward status |
 | Family Value Multiplier | 8 companions with free bags + Group 5 boarding = significant family value |
-| Annual Credits | $75 travel credit + 4 upgraded boardings |
+| Annual Credits | None — $75 travel credit discontinued 12/31/2025; Upgraded Boardings replaced by unlimited Extra Legroom upgrades Jan 27, 2026 |
 | Two-Person Travel | Companion Pass allows companion to fly free on paid tickets |
 
 ## Insurance & Protection Coverage
@@ -148,13 +159,13 @@ Secondary collision damage waiver provides supplemental rental car damage covera
 
 ## Detailed Benefit Analysis
 
-The Southwest Rapid Rewards Priority Visa Signature card targets dedicated Southwest loyalists and family travel groups through a combination of boarding privileges, companion benefits, and Companion Pass pathway acceleration. At $229 annually, the card is offset by approximately $75 in travel credit, 4 upgraded boardings, and the pathway value of 17,500 annual Companion Pass qualifying points.
+The Southwest Rapid Rewards Priority Visa Signature card targets dedicated Southwest loyalists and family travel groups through a combination of boarding privileges, companion benefits, and Companion Pass pathway acceleration. At $229 annually, the card is offset by unlimited Extra Legroom seat upgrades, free checked bags, and the pathway value of 17,500 annual Companion Pass qualifying points. Note: the July 2025 refresh discontinued the $75 annual travel credit (dead 12/31/2025), and the 4 annual Upgraded Boardings were eliminated January 27, 2026.
 
-The card's primary strength lies in its unmatched family travel benefits: free checked bags for the cardholder and up to 8 companions combined with priority boarding Group 5 for the same group creates significant value for families and traveling groups. The 4 annual upgraded boarding certificates provide tactical flexibility for important trips requiring premium boarding positions.
+The card's primary strength lies in its unmatched family travel benefits: free checked bags for the cardholder and up to 8 companions combined with priority boarding Group 5 for the same group creates significant value for families and traveling groups. The unlimited Extra Legroom seat upgrades (bookable within 48 hours of departure, subject to availability) provide tactical flexibility for important trips requiring premium seating.
 
 The Companion Pass pathway is critical: earning 17,500 qualifying points annually (10,000 from spend + 7,500 anniversary bonus) means cardholders need only $42,500 in annual card spending to reach the 110,000 point Companion Pass threshold—far more achievable than the standard $30,000 in ticket purchases required to earn Companion Pass. Once achieved, Companion Pass allows a designated companion to fly free on all paid Southwest tickets for a full year.
 
-The 2x earning on dining adds meaningful redemption velocity for everyday spending, particularly valuable when combined with the flexible Southwest award booking system that allows point redemptions on any flight with no blackout dates.
+The 4x earning on Southwest flights plus 2x on dining and gas stations adds meaningful redemption velocity for everyday spending, particularly valuable when combined with the flexible Southwest award booking system that allows point redemptions on any flight with no blackout dates.
 
 Critical weakness: the card notably excludes trip cancellation insurance, a standard inclusion on most premium travel cards. Additionally, the limited checked bag companion benefit (only applies to those on same reservation) restricts flexibility for coordinating travel within family groups traveling on different itineraries.
 
@@ -163,4 +174,4 @@ Best suited for households with multiple Southwest travelers and annual combined
 ---
 
 **card_type:** southwest_priority
-**Last Updated:** February 2025
+**Last Updated:** August 2026

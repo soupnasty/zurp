@@ -1,13 +1,16 @@
-# Capital One SavorOne/Savor Card Catalog
+# Capital One Savor Cash Rewards Card Catalog
+
+*Last verified: 2026-08-13*
 
 ## Card Overview
 
 | Attribute | Details |
 |-----------|---------|
-| Card Name | Capital One SavorOne (no fee) / Savor (premium tier) |
+| Card Name | Capital One Savor Cash Rewards (renamed from "SavorOne" in October 2024; card_type stays capital_one_savor) |
 | Issuer | Capital One |
 | Network | Mastercard |
-| Annual Fee | $0 (SavorOne) |
+| Annual Fee | $0 |
+| Naming Note | Capital One later reused the "SavorOne" name for a *different* fair-credit card that carries an annual fee — a card-detection collision risk (documented in detect.ts) |
 | Welcome Bonus | $200 cash back after $500 spend within 3 months |
 | Primary Use Case | Lifestyle cash back on dining, entertainment, streaming, and groceries |
 
@@ -17,7 +20,7 @@
 
 ```benefit_key: earning_structure_savor
 3% cash back on dining restaurants, entertainment venues, streaming services, and grocery stores
-5% cash back on hotels and rental cars booked through Capital One Travel
+5% cash back on hotels and vacation rentals booked through Capital One Travel
 8% cash back on Capital One Entertainment purchases
 1% cash back on all other purchases
 ```
@@ -29,7 +32,7 @@ Dining encompasses all restaurant and bar purchases. Entertainment includes movi
 ### Travel & Booking Credits
 
 ```benefit_key: capital_one_travel_credit
-First-year Capital One Travel credit of $100 toward hotel, airline, and rental car bookings made through the Capital One Travel portal.
+DISCONTINUED (August 2026 audit): the $100 first-year Capital One Travel credit found in older perk data is no longer offered. Retained here for historical reference only.
 ```
 
 ### Return & Purchase Protection
@@ -81,7 +84,7 @@ Extended warranty and additional purchase protection benefits beyond return prot
 | Streaming Services | 3% | All streaming subscriptions |
 | Grocery Stores | 3% | Traditional grocers only |
 | Hotels (via Capital One Travel) | 5% | Must book through portal |
-| Rental Cars (via Capital One Travel) | 5% | Must book through portal |
+| Vacation Rentals (via Capital One Travel) | 5% | Must book through portal |
 | Capital One Entertainment | 8% | Portal bookings only |
 | All Other Purchases | 1% | Base cash back rate |
 
@@ -99,9 +102,9 @@ Extended warranty and additional purchase protection benefits beyond return prot
 
 ## Zurp Relevance
 
-Capital One SavorOne/Savor occupies the lifestyle cash back category, optimized for everyday consumer spending in dining, entertainment, streaming, and groceries rather than travel accumulation. As a cashback-only card with no transfer partners, it appeals to users who prefer immediate, tangible rewards without the complexity of points transfer ecosystems. The 3% earning across lifestyle categories competes with American Express cards but lacks the premium protections and lounge access of higher-tier offerings. The absence of travel insurance and trip protection makes this unsuitable for frequent business travelers, positioning it instead for casual leisure users and entertainment-focused consumers. No foreign transaction fees provide modest international utility, though the card's value diminishes significantly outside US-based spending.
+Capital One Savor Cash Rewards (formerly SavorOne, renamed October 2024) occupies the lifestyle cash back category, optimized for everyday consumer spending in dining, entertainment, streaming, and groceries rather than travel accumulation. As a cashback-only card with no transfer partners, it appeals to users who prefer immediate, tangible rewards without the complexity of points transfer ecosystems. The 3% earning across lifestyle categories competes with American Express cards but lacks the premium protections and lounge access of higher-tier offerings. The absence of travel insurance and trip protection makes this unsuitable for frequent business travelers, positioning it instead for casual leisure users and entertainment-focused consumers. No foreign transaction fees provide modest international utility, though the card's value diminishes significantly outside US-based spending.
 
 ---
 
 **card_type:** capital_one_savor
-**Last Updated:** February 2025
+**Last Updated:** August 2026

@@ -1,5 +1,7 @@
 # Amex Blue Cash Everyday Catalog
 
+*Last verified: 2026-08-13*
+
 ## Card Overview
 
 | Attribute | Value |
@@ -81,11 +83,22 @@ terms: "0% intro APR for 15 months on purchases and balance transfers from accou
 
 ```benefit_key
 benefit_id: amex_bce_streaming_credit
-benefit_name: Disney+ Bundle Credit
+benefit_name: Disney Streaming Credit
 credit_amount_monthly: $7
 annual_value: $84
-applies_to: disney_hulu_espn_bundle
-terms: "Up to $7 per month ($84 per year) Disney+, Hulu, and ESPN+ bundle credit for eligible subscriptions"
+applies_to: disney_hulu_espn_individual_or_bundle
+terms: "Up to $7 per month ($84 per year) in statement credits for eligible Disney+, Hulu, or ESPN subscriptions — individual services qualify, not bundle-only; enrollment required"
+```
+
+### Home Chef Credit
+
+```benefit_key
+benefit_id: amex_bce_home_chef_credit
+benefit_name: Home Chef Monthly Credit
+credit_amount_monthly: $15
+annual_value: $180
+applies_to: home_chef_meal_kits
+terms: "Up to $15 per month ($180 per year) in statement credits for Home Chef meal kit subscription and deliveries charged to the card; enrollment required"
 ```
 
 ## Points Multipliers
@@ -118,8 +131,8 @@ status: included
 benefit_id: amex_bce_car_rental_cdw
 benefit_name: Car Rental Damage Waiver
 coverage_limit: $50,000
-type: primary_international_secondary_domestic
-geographic_scope: "Primary coverage for international rentals, secondary for domestic"
+type: secondary
+geographic_scope: "Secondary coverage — pays after your personal auto insurance"
 activation_days: 30
 terms: "Covers collision and theft damage for car rentals when you rent for up to 30 days and charge the full cost to the card"
 status: included
@@ -155,14 +168,15 @@ status: included
 | Cap Reset Timing | Annual caps reset January 1st each year |
 | Grace Period Application | Intro 0% APR applies to both purchases and balance transfers for first 15 months |
 | Welcome Bonus Timing | Must meet $2K spending within first 180 days to receive $200 bonus |
-| Streaming Credit | Automatic monthly credit up to $7 when eligible Disney+/Hulu/ESPN+ subscription is active |
+| Streaming Credit | Automatic monthly credit up to $7 when an eligible Disney+, Hulu, or ESPN subscription is active (individual services qualify); enrollment required |
+| Home Chef Credit | Automatic monthly credit up to $15 for Home Chef meal kit charges; enrollment required |
 | Foreign Transaction Fee | 2.7% FTF applied to all non-USD transactions |
 
 ### Card Earning Limitations
 
 - Once spending reaches annual caps on supermarket/gas/online retail categories, earn rate drops to 1%
 - FTF of 2.7% reduces net cash back on international purchases
-- Streaming credit only applies to official Disney bundle (not individual services beyond bundle)
+- Streaming credit applies to individual Disney+, Hulu, or ESPN subscriptions as well as the bundle (enrollment required)
 
 ## Valuation
 
@@ -175,7 +189,8 @@ status: included
 - Other: $12,000 × 1% = $120
 - Welcome Bonus: $200
 - Streaming Credit: $84
-- **Total Annual Value: $944**
+- Home Chef Credit: $180
+- **Total Annual Value: $1,124**
 
 **Realistic Scenario** (average cardholder):
 - Supermarkets: $4,000 × 3% = $120
@@ -184,7 +199,8 @@ status: included
 - Other: $10,000 × 1% = $100
 - Welcome Bonus (Year 1): $200
 - Streaming Credit: $84
-- **Total Annual Value (Year 1): $669 | Ongoing: $469**
+- Home Chef Credit: $180
+- **Total Annual Value (Year 1): $849 | Ongoing: $649**
 
 ### Fee Impact
 
@@ -196,7 +212,7 @@ status: included
 
 **Strengths:**
 - No annual fee with 3% cash back on high-spend categories
-- Disney+ bundle credit adds meaningful value ($84/year)
+- Disney streaming ($84/yr) + Home Chef ($180/yr) credits add $264/yr in tracked credit value
 - Competitive against no-annual-fee alternatives
 - 0% intro APR valuable for balance transfer strategy
 
@@ -209,7 +225,7 @@ status: included
 ### Target User Profile
 
 - Domestic U.S. spenders in supermarkets, gas, and online retail
-- Disney+ subscribers (bundle credit maximizes value)
+- Disney+, Hulu, or ESPN subscribers (individual services qualify for the credit) and Home Chef users
 - Low international travel frequency
 - Limited need for premium protections
 - Preference for no-annual-fee card

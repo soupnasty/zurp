@@ -1,5 +1,7 @@
 # Robinhood Gold Card — Benefit Catalog & Competitor Map
 
+*Last verified: 2026-08-13*
+
 Implementation-ready data for the Zurp insight engine.
 
 ## Card Overview
@@ -11,7 +13,7 @@ Implementation-ready data for the Zurp insight engine.
 | Annual fee | $0 card fee + $50 Robinhood Gold membership required |
 | Authorized user fee | $0 (up to 7 minor users with spending controls) |
 | card_type | `robinhood_gold` |
-| Points currency | Robinhood Points (1 point = 1 cent) |
+| Points currency | Robinhood Points (1 point = 1 cent ONLY via brokerage redemption) |
 | Points valuation | 1.0cpp (to brokerage), 0.7cpp (statement credit redemption) |
 | Transfer partners | NONE |
 | Fee anniversary | Calendar year (Robinhood Gold membership renews annually) |
@@ -31,13 +33,14 @@ Implementation-ready data for the Zurp insight engine.
 
 | Field | Value |
 |---|---|
-| Name | No Foreign Transaction Fees |
+| Name | No Foreign Transaction Fees (grandfathered — pre-7/2026 accounts only) |
 | benefit_key | `rh_gold_no_ftf` |
 | Annual value | Variable (depends on international spend) |
 | Type | Fee waiver |
+| Status | SPLIT BY OPEN DATE — accounts opened on/after 2026-07-01 pay a 3% FTF; accounts opened before 2026-07-01 are grandfathered into no FTF (config sunsets this benefit 2026-06-30) |
 | Trackable | Yes — Plaid international merchant detection |
 | Confidence | High |
-| Notes | Standard on Visa Signature. No FTF on international purchases. Shared across all Robinhood Gold card spending. |
+| Notes | No FTF only for accounts opened before July 1, 2026. New accounts (opened on/after 7/1/2026) pay a 3% foreign transaction fee. Benefit retained (sunset), not deleted, mirroring the config. |
 
 ---
 
@@ -113,11 +116,11 @@ Implementation-ready data for the Zurp insight engine.
 | Type | Points multiplier (bonus rate) |
 | Multiplier | 5x (5 Robinhood Points per $1 spent via portal, vs 3x base) |
 | Bonus multiplier | 2x bonus (on top of base 3x) |
-| Annual cap | $3,500 spend = max 17,500 bonus points from portal |
+| Annual cap | $3,500 portal spend per calendar year = max 17,500 total portal points (7,000 bonus points vs 3x base) |
 | Annual cap reset | Calendar year (January 1) |
 | Trackable | Partial — can identify Robinhood Travel portal merchant, but not cash-back value |
 | Confidence | High |
-| Notes | Portal bookings earn 5x total (3x base + 2x bonus). Cap = $3,500/calendar year. After cap is hit, subsequent travel portal bookings revert to 3x base. Portal likely includes flights, hotels, car rentals, packages. Value = $3,500 × 5 points × 1.0cpp = $175 incremental (vs 3x earning). |
+| Notes | Portal bookings earn 5x total (3x base + 2x bonus). Cap = $3,500/calendar year — CONFIRMED CORRECT in the Aug 2026 audit against Robinhood's own terms. After cap is hit, subsequent travel portal bookings revert to 3x base. Portal likely includes flights, hotels, car rentals, packages. Incremental value vs 3x base = $3,500 × 2 bonus points × 1.0cpp = $70/yr max. |
 
 ---
 
@@ -137,75 +140,55 @@ Implementation-ready data for the Zurp insight engine.
 
 ---
 
-**8. rh_gold_cell_phone_protection**
+**8. rh_gold_travel_accident**
 
 | Field | Value |
 |---|---|
-| Name | Cell Phone Protection Insurance |
-| benefit_key | `rh_gold_cell_phone_protection` |
-| Coverage | $600 per claim |
-| Deductible | $25 per claim |
-| Covered events | Theft, accidental damage (drop, liquid, hardware failure) |
-| Period | 12 months from card charge date |
+| Name | Travel Accident Insurance |
+| benefit_key | `rh_gold_travel_accident` |
+| Coverage | $250,000 |
 | Type | Insurance |
 | Trackable | No |
 | Confidence | High |
-| Notes | Covers smartphones and tablets purchased with Robinhood Gold Card. Requires device to be reported lost/stolen or damaged within 90 days of incident. Max $600 payout per claim; up to 2 claims per calendar year (implied — standard). Must have active cell service or device on family plan. |
+| Notes | Travel accident coverage on trips charged to the card. NOTE: this card has NO cell phone protection (verified against Robinhood's official Visa benefits page in the Aug 2026 audit) — earlier $600/$800 cell phone protection figures were spurious and have been removed from this catalog. |
 
 ---
 
-**9. rh_gold_trip_cancellation_interruption**
-
-| Field | Value |
-|---|---|
-| Name | Trip Cancellation & Interruption Insurance |
-| benefit_key | `rh_gold_trip_cancellation` |
-| Coverage | $2,000 per insured person |
-| Annual aggregate | Not specified — assume per-trip basis |
-| Covered events | Sudden illness, injury, death of immediate family, natural disaster, airline bankruptcy |
-| Period | Valid for trips charged to card, up to 120 days post-booking |
-| Type | Insurance |
-| Trackable | No |
-| Confidence | High |
-| Notes | Reimburses prepaid, non-refundable trip costs (flights, hotels, tours, deposits) if trip must be cancelled due to covered reason. Requires proof (medical records, death certificate, airline communication). Deductible not specified (likely $100–250). Does NOT cover pre-existing conditions or high-risk activities. Common exclusions: pandemics, government travel warnings, airline strikes (if disclosed before booking). |
-
----
-
-**10. rh_gold_auto_rental_cdw**
+**9. rh_gold_auto_rental_cdw**
 
 | Field | Value |
 |---|---|
 | Name | Auto Rental Collision Damage Waiver (CDW) |
 | benefit_key | `rh_gold_auto_rental_cdw` |
 | Coverage | Full rental value, no stated maximum |
-| Coverage type | PRIMARY (pays before personal auto insurance) |
+| Coverage type | SECONDARY (pays after personal auto insurance) |
 | Domestic coverage | 15 consecutive days per rental |
 | International coverage | 31 consecutive days per rental |
 | Covered rentals | Cars rented from major U.S./international agencies (Hertz, Avis, Budget, Enterprise, National, Alamo, etc.) |
 | Type | Insurance |
 | Trackable | No |
 | Confidence | High |
-| Notes | PRIMARY — card holder does not need to file claim against personal auto insurance first. Covers collision, theft, vandalism, glass damage. Excludes off-road vehicles, exotic cars, commercial use. Rental must be charged entirely to Robinhood Gold Card. Some agencies offer optional CDW at checkout; using card benefit declines that extra fee (saves $20–50/day). |
+| Notes | SECONDARY — coverage applies to costs not covered by the card holder's personal auto insurance. Covers collision, theft, vandalism, glass damage. Excludes off-road vehicles, exotic cars, commercial use. Rental must be charged entirely to Robinhood Gold Card. Some agencies offer optional CDW at checkout; using card benefit declines that extra fee (saves $20–50/day). |
 
 ---
 
-**11. rh_gold_purchase_security**
+**10. rh_gold_purchase_security**
 
 | Field | Value |
 |---|---|
 | Name | Purchase Security / Item Protection |
 | benefit_key | `rh_gold_purchase_security` |
-| Coverage | $1,000 per claim, $10,000 annual maximum |
+| Coverage | $500 per claim |
 | Covered events | Theft or accidental damage within 90 days of purchase |
 | Period | 90 days from purchase date |
 | Type | Insurance |
 | Trackable | No |
 | Confidence | High |
-| Notes | Covers items purchased with Robinhood Gold Card that are lost, stolen, or damaged through accident (e.g., laptop stolen from car, phone dropped in water). Excludes intentional damage, wear-and-tear, mysterious disappearance, collectibles. Deductible likely $10–50 per claim (not specified). Requires purchase receipt and proof of damage. Same item cannot claim twice; applies once per item per year. |
+| Notes | Covers items purchased with Robinhood Gold Card that are lost, stolen, or damaged through accident (e.g., laptop stolen from car, phone dropped in water). Excludes intentional damage, wear-and-tear, mysterious disappearance, collectibles. Requires purchase receipt and proof of damage. Same item cannot claim twice; applies once per item per year. |
 
 ---
 
-**12. rh_gold_return_protection**
+**11. rh_gold_return_protection**
 
 | Field | Value |
 |---|---|
@@ -222,7 +205,7 @@ Implementation-ready data for the Zurp insight engine.
 
 ---
 
-**13. rh_gold_extended_warranty**
+**12. rh_gold_extended_warranty**
 
 | Field | Value |
 |---|---|
@@ -235,6 +218,32 @@ Implementation-ready data for the Zurp insight engine.
 | Trackable | No |
 | Confidence | High |
 | Notes | If manufacturer warranty = 1 year, this extends to 2 years total. If manufacturer warranty = 2 years, this extends to 3 years total. If manufacturer warranty = 3 years, this extends to 4 years total. Cannot exceed 4 years total even if manufacturer warranty >2 years. Requires proof of warranty (receipt, warranty card). Does NOT cover accidental damage, misuse, or normal wear. Claim process: contact card issuer with proof of defect and warranty details. |
+
+---
+
+**13. rh_gold_roadside_assistance**
+
+| Field | Value |
+|---|---|
+| Name | Roadside Assistance |
+| benefit_key | `rh_gold_roadside_assistance` |
+| Type | Service (per-event) |
+| Trackable | No |
+| Confidence | High |
+| Notes | Roadside dispatch service (tow, jump-start, lockout, flat tire, fuel delivery). Service call costs may apply. Verified against Robinhood's official Visa benefits page (Aug 2026 audit). |
+
+---
+
+**14. rh_gold_zero_liability**
+
+| Field | Value |
+|---|---|
+| Name | Zero Liability Protection |
+| benefit_key | `rh_gold_zero_liability` |
+| Type | Fraud protection |
+| Trackable | No |
+| Confidence | High |
+| Notes | Card holder is not responsible for unauthorized charges. Verified against Robinhood's official Visa benefits page (Aug 2026 audit). |
 
 ---
 
@@ -256,7 +265,7 @@ These entries flag when users spend on cards earning less than 3%, redirecting t
 
 ### Category 2: Travel Portal — Robinhood vs OTA Redirect (A1)
 
-These entries flag when users book flights/hotels through OTA instead of Robinhood Travel portal, surfacing the 2x bonus multiplier ($60–175/booking).
+These entries flag when users book flights/hotels through OTA instead of Robinhood Travel portal, surfacing the 2x bonus multiplier (up to $70/yr at the $3,500 portal cap).
 
 | # | Benefit Partner | Competitor | Plaid Pattern | Category | Type | Dollar Signal | Notes |
 |---|---|---|---|---|---|---|---|
@@ -289,9 +298,10 @@ These entries flag when users book flights/hotels through OTA instead of Robinho
 |---|---|---|---|
 | rh_gold_3x_all | ALL Plaid transactions | Continuous (no reset) | High |
 | rh_gold_5x_travel_portal | Plaid: "ROBINHOOD TRAVEL" merchant OR Robinhood portal spend logged | Calendar year; Jan 1 reset, $3,500 cap | Medium |
-| rh_gold_cell_phone_protection | Card member manual claim submission (not statement-visible) | 12 months from purchase date | Low |
-| rh_gold_trip_cancellation | Card member manual claim submission | Per-trip basis (up to 120 days from booking) | Low |
+| rh_gold_travel_accident | Card member manual claim submission (not statement-visible) | Per-trip basis | Low |
 | rh_gold_auto_rental_cdw | Plaid: car rental merchants (Hertz, Avis, Enterprise, etc.) + card documentation | Per-rental basis (15 or 31 days) | Medium |
+| rh_gold_roadside_assistance | Card member service call (not statement-visible) | Per-event basis | Low |
+| rh_gold_zero_liability | Fraud dispute process | Continuous | Low |
 | rh_gold_purchase_security | Card member manual claim submission | 90 days from purchase date | Low |
 | rh_gold_return_protection | Card member manual claim submission | 90 days from purchase date | Low |
 | rh_gold_extended_warranty | Card member manual claim submission | Duration of extended warranty (up to 4 years) | Low |
@@ -308,7 +318,7 @@ These entries flag when users book flights/hotels through OTA instead of Robinho
 | **Calendar year** | 5x travel portal earn cap ($3,500 spend) | January 1 reset. Track cumulative Robinhood Travel portal spend YTD. |
 | **Per-transaction** | 3x base earning on all spend | Continuous — no reset. Every charge earns 3 Robinhood Points per $1. |
 | **Per-item** | Purchase protection, return protection, extended warranty | Triggered by purchase date + 90 days or warranty duration. Multi-claim limits apply. |
-| **Per-event** | Trip cancellation, auto rental CDW, cell phone protection | Triggered by trip date, rental date, or incident date. Manual claim required. |
+| **Per-event** | Travel accident, auto rental CDW, roadside assistance | Triggered by trip date, rental date, or incident date. Manual claim required. |
 
 ---
 
@@ -323,7 +333,7 @@ These entries flag when users book flights/hotels through OTA instead of Robinho
 | Earning on travel | 5% via portal (capped at $3,500/yr) | 2% (uncapped) |
 | Earning on categories | Flat 3x, no category bonus | Flat 2x, no category bonus |
 | Redemption | 1.0cpp to brokerage, 0.7cpp statement credit | Cash (100% value) |
-| Travel insurance | Yes (trip cancel, auto rental CDW) | Limited |
+| Travel insurance | Yes (travel accident, auto rental CDW) | Limited |
 | Unique features | Virtual cards, minor AU, extended warranty | Straightforward cash back |
 | Best for | Robinhood investors, portfolio builders | Cash-back absolutists, simplicity seekers |
 | Dollar impact ($30K/yr) | $900 earning - $50 fee = $850 net | $600 earning |
@@ -339,7 +349,7 @@ These entries flag when users book flights/hotels through OTA instead of Robinho
 | Earning on all purchases | 3% (3x base) | 2% (2x base on travel/dining only; 1x other) |
 | Earning on travel | 5% via portal (capped) | 3x (5x via portal) |
 | Earning on dining | 3% (3x) | 3x (same rate) |
-| Travel insurance | Trip cancel $2K; auto rental CDW (PRIMARY) | Trip cancel $10K; auto rental CDW (SECONDARY) |
+| Travel insurance | Travel accident $250K; auto rental CDW (secondary) | Trip cancel $10K; auto rental CDW (SECONDARY) |
 | Lounge access | No | No (Sapphire Reserve only) |
 | Points flexibility | Robinhood-locked (no transfers) | 14 transfer partners (1:1) |
 | Bonus welcome | None | None mentioned |
@@ -360,7 +370,7 @@ These entries flag when users book flights/hotels through OTA instead of Robinho
 | Earning on dining | 3% (3x) | 4% (4x) |
 | Earning on groceries | 3% (3x) | 4% (up to $25K/yr, then 1x) |
 | Earning on flights (direct) | 5% via portal (capped) or 3% | 3% (3x) |
-| Travel insurance | Trip cancel $2K; auto rental CDW (PRIMARY) | Trip cancel $10K; auto rental CDW (SECONDARY) |
+| Travel insurance | Travel accident $250K; auto rental CDW (secondary) | Trip cancel $10K; auto rental CDW (SECONDARY) |
 | Lounge access | No | No |
 | Transfer partners | None | 21+ partners (variable ratios) |
 | Bonus welcome | None | None mentioned |
@@ -380,7 +390,7 @@ These entries flag when users book flights/hotels through OTA instead of Robinho
 - Brokerage conversion (1.0cpp) is 10% more valuable than statement credit (0.7cpp)
 
 **For travel-focused spenders:**
-- 5% on Robinhood Travel portal (capped $3,500/yr = $175 max incremental) is secondary to base 3% earning
+- 5% on Robinhood Travel portal (capped $3,500/yr = $70 max incremental) is secondary to base 3% earning
 - Portal should be positioned as "bonus rate" for OTA alternatives, not primary differentiation
 - CSR and CSP offer higher absolute earning ($300+ travel credits + higher multipliers), making them superior for travel-first profiles
 
@@ -393,7 +403,7 @@ These entries flag when users book flights/hotels through OTA instead of Robinho
 
 The Robinhood Gold Card generates **moderate-to-low insight volume** compared to CSR or Gold:
 - **8–12 insights per user per month** (vs CSR 25–40, CSP 10–18, Gold 12–20)
-- This is driven by: 5 A1 spend redirects (3% earning edge), 7 A1 travel portal redirects (2x bonus cap), and 8 trackable insurance benefits (low-frequency claims)
+- This is driven by: 5 A1 spend redirects (3% earning edge), 7 A1 travel portal redirects (2x bonus cap), and 7 insurance/protection benefits (low-frequency claims)
 - Insurance benefits are **infrequently triggered** (unlike DoorDash credits on CSR)
 - No semi-annual, monthly, or time-decay credits means lower urgency_score insights
 
@@ -405,19 +415,19 @@ The Robinhood Gold Card generates **moderate-to-low insight volume** compared to
 
 3. **Points-to-brokerage redemption**: Unlike traditional cash-back cards, Robinhood Points have dual valuation (1.0cpp brokerage vs 0.7cpp statement credit). Insight engine should surface the higher-value conversion path in recommendations: "Convert $300 in Points to fractional shares (+10% value vs statement credit)."
 
-4. **Insurance claim detection**: Most insurance benefits (trip cancel, auto rental CDW, purchase protection, extended warranty) are manually claimed by card members and do NOT appear on statements. Unlike CSR benefits which auto-credit and appear as statement credits, these require B1 "activation" insights at onboarding: "You have $2K trip cancellation insurance — file a claim if your trip is cancelled."
+4. **Insurance claim detection**: Most insurance benefits (travel accident, auto rental CDW, purchase protection, extended warranty) are manually claimed by card members and do NOT appear on statements. Unlike CSR benefits which auto-credit and appear as statement credits, these require B1 "activation" insights at onboarding: "You have $500/claim purchase protection — file a claim if a recent purchase is stolen or damaged."
 
 5. **Robinhood ecosystem integration**: Tracking Robinhood account features (virtual cards, minor AU, brokerage conversion) requires API integration with Robinhood Dashboard, not Plaid alone. This is unique vs all other cards. Implementation: Robinhood OAuth + custom API field in card schema.
 
-6. **Travel portal comparison**: Unlike CSR (Edit hotel credit) or Amex (Hilton status), Robinhood's portal incentive is purely earning-based (2x bonus on specific OTA merchants). This is a lower-friction redirect than credit-based messaging but also lower-impact ($60–175/yr vs $300–500/yr).
+6. **Travel portal comparison**: Unlike CSR (Edit hotel credit) or Amex (Hilton status), Robinhood's portal incentive is purely earning-based (2x bonus on specific OTA merchants). This is a lower-friction redirect than credit-based messaging but also lower-impact (up to $70/yr vs $300–500/yr).
 
 ### Activation Checklist Priority (Onboarding)
 
 For new Robinhood Gold users, the B1 onboarding checklist should surface these in order of dollar impact:
 
-1. **Robinhood Travel Portal Setup** ($175/yr max @ $3,500 cap = 2% bonus earning) — quick win
+1. **Robinhood Travel Portal Setup** ($70/yr max @ $3,500 cap = 2% bonus earning) — quick win
 2. **Virtual Card Creation** (security benefit for subscriptions) — one-time setup
-3. **Insurance Benefit Awareness** (trip cancellation, auto rental CDW, purchase protection) — informational, low-friction
+3. **Insurance Benefit Awareness** (travel accident, auto rental CDW, purchase protection) — informational, low-friction
 4. **Minor AU Enrollment** (if user has children/family spending) — family feature
 5. **Robinhood Brokerage Integration** (convert points at 1.0cpp vs 0.7cpp) — long-term wealth builder
 6. **Solid Gold Card Option** (optional prestige upgrade) — low priority
@@ -427,11 +437,11 @@ For new Robinhood Gold users, the B1 onboarding checklist should surface these i
 | Dimension | Annual Value | Notes |
 |---|---|---|
 | Base earning (3% on $30K/yr) | $900 | Flat 3x on all purchases. No category complexity. Uncapped. |
-| Travel portal bonus (5x on capped $3,500) | $0–$175 | Up to $175 incremental (vs 3x base) if user maxes $3,500 portal spend. Most users will earn $40–100. |
-| Insurance benefits (trip cancel, CDW, purchase, return, warranty) | $200–1,000 | Highly variable and infrequently triggered. Conservative estimate $200/yr (0.5% claim rate). Premium estimate $1,000/yr (power users with frequent claims). |
+| Travel portal bonus (5x on capped $3,500) | $0–$70 | Up to $70 incremental (vs 3x base) if user maxes $3,500 portal spend. |
+| Insurance benefits (travel accident, CDW, purchase, return, warranty) | $200–1,000 | Highly variable and infrequently triggered. Conservative estimate $200/yr (0.5% claim rate). Premium estimate $1,000/yr (power users with frequent claims). |
 | Virtual cards & minor AU | Qualitative | Cost avoidance (fraud from shared card) + family spend control. No direct dollar value. |
 | Robinhood membership value | Variable | Paid separately ($50/yr). Includes stock/crypto trading, cash/securities accounts, premium research. Cards benefit from membership tier. |
-| **Total estimated value** | **$1,100–2,075/yr** | Net value after $50 Robinhood Gold fee: ~$1,050–2,025/yr. High-end estimate assumes frequent travel portal usage + claim activity. Low-end assumes flat 3% + minimal add-ons. |
+| **Total estimated value** | **$1,100–1,970/yr** | Net value after $50 Robinhood Gold fee: ~$1,050–1,920/yr. High-end estimate assumes frequent travel portal usage + claim activity. Low-end assumes flat 3% + minimal add-ons. |
 
 ---
 
@@ -445,7 +455,7 @@ For new Robinhood Gold users, the B1 onboarding checklist should surface these i
 
 3. **Virtual cards & minor AU** — Fraud protection + family spend control unavailable on competitor cards.
 
-4. **Primary auto rental CDW (15–31 days)** — Better than Amex Gold (secondary coverage) for car rental protection.
+4. **Auto rental CDW, secondary (15–31 days)** — Standard rental protection when the rental is charged entirely to the card.
 
 5. **Brokerage integration** — Points convert at 1.0cpp to investments (vs 0.7cpp statement credit, 0.1cpp cash). Unique to Robinhood ecosystem.
 
@@ -461,7 +471,7 @@ For new Robinhood Gold users, the B1 onboarding checklist should surface these i
 
 4. **Travel portal earning cap ($3,500/yr)** — Limits upside for frequent travelers. CSR 8x on Chase Travel (uncapped). Portal 5x earning is only 2% bonus incremental gain (vs 3% base).
 
-5. **Trip cancellation limited ($2,000/person)** — CSR $10K, CSP $10K. Robinhood is 1/5th the coverage for high-value trips.
+5. **No trip cancellation insurance** — CSR and CSP cover up to $10K per person; Robinhood offers travel accident coverage ($250K) only.
 
 6. **No bonus category multipliers** — Flat 3% everywhere. Amex Gold 4x dining + 4x groceries (up to $25K) beats Robinhood 3x for high-spenders in those categories. CSR 8x Chase Travel, 4x flights/hotels direct.
 
@@ -484,7 +494,7 @@ For new Robinhood Gold users, the B1 onboarding checklist should surface these i
 ### Phase 1 (MVP)
 
 - [ ] `rh_gold_3x_all` — Track all Plaid transactions, apply 3x multiplier universally
-- [ ] `rh_gold_no_ftf` — Detect international merchants (Plaid currency != USD), flag $0 FTF benefit active
+- [ ] `rh_gold_no_ftf` — Detect international merchants (Plaid currency != USD), flag $0 FTF benefit active (pre-7/2026 accounts only; accounts opened on/after 7/1/2026 pay 3% FTF)
 - [ ] `rh_gold_virtual_cards` — Binary flag (Robinhood account API check)
 - [ ] A1 redirects (entries 1–5) — Spend on Citi Double Cash, Venture X, CSP, Amex Gold competitors; surface 1% earning delta
 
@@ -493,7 +503,7 @@ For new Robinhood Gold users, the B1 onboarding checklist should surface these i
 - [ ] `rh_gold_5x_travel_portal` — Track Robinhood Travel merchant + cumulative YTD spend; cap at $3,500
 - [ ] A1 redirects (entries 6–12) — OTA competitor detection (Expedia, Hotels.com, etc.); surface 2% bonus earning for portal alternative
 - [ ] `rh_gold_minor_au` — Robinhood account API for authorized user list
-- [ ] Insight messaging framework for insurance benefits (trip cancel, CDW, purchase protection, return, warranty) — low-frequency B1 activation reminders
+- [ ] Insight messaging framework for insurance benefits (travel accident, CDW, purchase protection, return, warranty) — low-frequency B1 activation reminders
 
 ### Phase 3 (Future)
 

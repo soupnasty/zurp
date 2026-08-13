@@ -1,5 +1,7 @@
 # Wells Fargo Autograph Journey Credit Card Catalog
 
+*Last verified: 2026-08-13*
+
 ## Card Overview
 
 | Attribute | Value |
@@ -9,13 +11,13 @@
 | **Annual Fee** | $95 |
 | **Rewards Currency** | Points |
 | **Earn Rate (Standard)** | 1x point on all other purchases (uncapped) |
-| **Earn Rate (Travel/Dining)** | 5x hotels, 4x airlines/rental cars/dining, 3x travel/transit/streaming/phone |
+| **Earn Rate (Travel/Dining)** | 5x hotels, 4x airlines, 3x restaurants + other travel (incl. rental cars) |
 | **Welcome Bonus** | 60,000 points after $4,000 spend within 3 months |
-| **Annual Airline Credit** | $50 (minimum $50 airline purchase required) |
+| **Annual Airline Credit** | $50 per anniversary-based credit year (minimum $50 airline purchase required) |
 | **Foreign Transaction Fee** | 0% (No FTF) |
 | **Lounge Access** | None included |
-| **Preferred Partner Benefits** | Choice Hotels (1:2), Aer Lingus, Flying Blue, Avianca, BA, Iberia, Virgin Atlantic (1:1) |
-| **Card Type ID** | wf_autograph_journey |
+| **Preferred Partner Benefits** | 8 airlines at 1:1 (Aer Lingus, Flying Blue, Avianca, BA, Iberia, Virgin Atlantic, JetBlue added Nov 2025, Cathay Pacific added Apr 2026); Choice Hotels (1:2), Wyndham |
+| **Card Type ID** | wells_fargo_autograph_journey |
 
 ---
 
@@ -30,10 +32,9 @@ description: "Category-based earning structure with no caps or restrictions"
 details:
   - Hotels: 5x points per $1
   - Airlines: 4x points per $1
-  - Rental cars: 4x points per $1
-  - Dining: 4x points per $1
-  - Travel/transit/streaming/phone: 3x points per $1
-  - All other purchases: 1x point per $1
+  - Restaurants: 3x points per $1
+  - Other travel (rental cars, cruises, travel agencies, etc.): 3x points per $1
+  - All other purchases (incl. gas, streaming, phone): 1x point per $1
   - No annual spending caps
   - No category rotation
   - Points pool separate from other Wells Fargo cards (non-pooled)
@@ -68,14 +69,15 @@ details:
   - No annual cap
 ```
 
-### benefit_key: rental_car_earning
+### benefit_key: other_travel_earning
 
 ```yaml
-category: rental_car_earning
-benefit_name: "4x Points on Rental Cars"
-description: "Enhanced earning on vehicle rentals"
+category: other_travel_earning
+benefit_name: "3x Points on Other Travel (incl. Rental Cars)"
+description: "Bonus earning on non-flight, non-hotel travel purchases"
 details:
-  - 4x points per dollar for all car rental companies
+  - 3x points per dollar on other travel purchases
+  - Includes rental cars (all car rental companies), cruises, travel agencies
   - Covers Economy through Premium/Luxury rentals
   - Includes insurance add-ons and equipment rentals (GPS, etc.)
   - Applies to direct bookings and third-party platforms
@@ -86,32 +88,32 @@ details:
 
 ```yaml
 category: dining_category_earning
-benefit_name: "4x Points on Dining"
-description: "Premium earning on restaurant and food service"
+benefit_name: "3x Points on Restaurants"
+description: "Bonus earning on restaurant and food service"
 details:
-  - 4x points per dollar at restaurants, cafes, bars
+  - 3x points per dollar at restaurants, cafes, bars
   - Includes meal delivery services (DoorDash, Uber Eats, etc.)
   - Fast casual and fine dining both eligible
   - Worldwide applicability
   - No annual dining bonus cap
 ```
 
-### benefit_key: travel_transit_streaming
+### benefit_key: base_rate_categories
 
 ```yaml
-category: travel_transit_streaming
-benefit_name: "3x Points on Travel/Transit/Streaming/Phone"
-description: "Bonus points on diverse service categories"
+category: base_rate_categories
+benefit_name: "1x Base Rate on Everything Else"
+description: "Non-bonus categories earn the standard base rate"
 details:
-  - 3x points per dollar on:
+  - 1x point per dollar on all non-bonus purchases, including:
     * Gas stations
     * Parking and tolls
     * Public transportation (buses, trains, ferries)
     * Taxis and rideshare (Uber, Lyft)
     * Streaming services (Netflix, Spotify, Disney+, etc.)
     * Phone services (cell phone, internet, landline)
-  - No caps or limits
-  - Includes international equivalents
+  - CORRECTION (2026-08-13 audit): this card has never had a 3x gas/transit/streaming/phone
+    bonus — earlier catalog versions mistakenly copied the no-fee Autograph's structure
 ```
 
 ### benefit_key: welcome_bonus
@@ -135,20 +137,21 @@ category: annual_airline_credit
 benefit_name: "$50 Annual Airline Credit"
 description: "Annual statement credit for airline purchases"
 details:
-  - $50 statement credit per calendar year
-  - Applies to base airline ticket purchases only
-  - Must meet minimum threshold: credit only posts for airline charges $50+
+  - $50 statement credit per anniversary-based credit year (NOT calendar year)
+  - Credit period begins the first day of the month after the annual fee is assessed, then renews every 12 months
+  - Applies to any airline-MCC charge — flights, baggage fees, seat fees, upgrades, lounge passes (charter/private jet excluded)
+  - Must meet minimum threshold: credit only posts for a single airline charge of $50+
   - Eligible airlines: All major carriers (United, Delta, American, Southwest, etc.)
   - Includes international carriers
-  - Non-transferable; credit forfeits if unused
-  - Automatically renewed each calendar year
+  - Non-transferable; unused credit does not carry over
+  - Automatically renewed each 12-month credit period
 ```
 
 ### benefit_key: transfer_partners_premium
 
 ```yaml
 category: transfer_partners_premium
-benefit_name: "Transfer Partners (6 programs at variable rates)"
+benefit_name: "Transfer Partners (10 programs at variable rates)"
 description: "Ability to transfer points to airline and hotel loyalty programs"
 details:
   - Points can be transferred to:
@@ -158,7 +161,10 @@ details:
     * British Airways Avios (1:1)
     * Iberia Plus (1:1)
     * Virgin Atlantic Flying Club (1:1)
+    * JetBlue TrueBlue (1:1 - added Nov 2025)
+    * Cathay Pacific (1:1 - added Apr 2026)
     * Choice Hotels (1:2 - unfavorable for redemption)
+    * Wyndham Rewards
   - Transfer minimums: typically 1,000 points
   - Processing: Usually instantaneous to 24 hours
   - No transfer fees
@@ -278,11 +284,9 @@ details:
 |----------|-----------|---------|
 | **Hotels** | 5x points | Highest earning category; applies to all hotel bookings |
 | **Airlines** | 4x points | All airline ticket purchases, directly or via OTA |
-| **Rental Cars** | 4x points | All car rental companies and platforms |
-| **Dining** | 4x points | Restaurants, cafes, meal delivery services worldwide |
-| **Travel/Transit** | 3x points | Gas, parking, tolls, public transit, rideshare |
-| **Streaming/Phone** | 3x points | Streaming services, cell phone, internet bills |
-| **All Other Purchases** | 1x point | Default rate for non-bonus categories |
+| **Restaurants** | 3x points | Restaurants, cafes, meal delivery services worldwide |
+| **Other Travel** | 3x points | Rental cars, cruises, travel agencies, other travel purchases |
+| **All Other Purchases** | 1x point | Default rate — includes gas, transit, rideshare, streaming, phone (no bonus) |
 | **No Category Caps** | Unlimited | No annual limits on any category |
 
 ---
@@ -309,7 +313,7 @@ details:
 
 | Card | Annual Fee | Top Earn Rate | Welcome Bonus | Transfer Partners | Airline Credit |
 |------|-----------|---------------|---------------|------------------|----------------|
-| **Wells Fargo Autograph Journey** | $95 | 5x hotels, 4x flights/dining | 60K points | 6 at 1:1 | $50 annual |
+| **Wells Fargo Autograph Journey** | $95 | 5x hotels, 4x flights, 3x dining | 60K points | 8 airlines at 1:1 + 2 hotels | $50 annual |
 | **Chase Sapphire Preferred** | $95 | 3x travel/dining, 2x other | 60K UR | 35+ partners | None |
 | **American Express Gold** | $250 | 4x flights/dining, 1x other | 75K MR | 15+ partners | $300 annual |
 | **Capital One Venture** | $95 | 2x all (5x via portal) | 75K miles + $250 | 22+ at 1:1 | None |
@@ -317,17 +321,17 @@ details:
 
 ### Value Positioning
 
-- **Sweet Spot:** Mid-tier travel rewards card with strong earning on hotels and dining
+- **Sweet Spot:** Mid-tier travel rewards card with strong earning on hotels and airlines
 - **Key Advantages:**
   - Excellent hotel earning rate (5x, highest in mid-tier)
-  - Strong dining earning (4x, tied for highest)
+  - Solid dining earning (3x, matches Sapphire Preferred)
   - Trip Cancellation insurance (valuable for advance bookings)
   - $50 annual airline credit (offsets ~52% of annual fee)
   - No foreign transaction fees
   - Clear category structure (no rotating categories)
 
 - **Key Disadvantages:**
-  - Smaller transfer partner network (6 vs. 35+ for competitors)
+  - Smaller transfer partner network (10 vs. 35+ for competitors)
   - No lounge access (vs. Sapphire Reserve or Amex Platinum)
   - Trip Cancellation limited compared to premium cards
   - No purchase protection or extended warranty
@@ -352,25 +356,20 @@ earning_rules:
       applies_to: "All airline tickets"
       notes: "Direct bookings and OTA purchases both eligible"
 
-    - category: "Rental Cars"
-      rate: 4x
-      applies_to: "All car rental companies"
-      notes: "Includes fees and insurance add-ons"
-
-    - category: "Dining"
-      rate: 4x
+    - category: "Restaurants"
+      rate: 3x
       applies_to: "Restaurants, cafes, meal delivery"
       notes: "Worldwide; includes DoorDash, Uber Eats"
 
-    - category: "Travel/Transit/Streaming/Phone"
+    - category: "Other Travel"
       rate: 3x
-      applies_to: "Gas, parking, tolls, transit, rideshare, streaming, phone"
-      notes: "Broad convenience category"
+      applies_to: "Rental cars, cruises, travel agencies, other travel"
+      notes: "Includes fees and insurance add-ons on rentals"
 
     - category: "All Other Purchases"
       rate: 1x
-      applies_to: "Everything not listed above"
-      notes: "Default rate"
+      applies_to: "Everything not listed above (incl. gas, transit, rideshare, streaming, phone)"
+      notes: "Default rate — no gas/streaming/phone bonus on this card"
 
   earning_exclusions:
     - "Cash advances"
@@ -388,13 +387,14 @@ earning_rules:
 credit_tracking:
   airline_credit:
     - description: "$50 annual airline credit"
-    - reset_period: "Calendar year (Jan 1 - Dec 31)"
+    - reset_period: "Anniversary cycle — 12-month period begins the first of the month after the annual fee is assessed"
     - minimum_purchase: "$50 (credit only posts if single charge is $50+)"
     - eligible_charges:
-        - "Base airline tickets"
+        - "Airline tickets"
         - "Seat upgrades"
         - "Baggage fees"
         - "Airline change fees"
+        - "Lounge passes (any airline-MCC charge; charter/private jet excluded)"
     - airline_restrictions: "All major US and international carriers eligible"
     - use_it_or_lose_it: "True"
 ```
@@ -472,8 +472,14 @@ transfer_tracking:
           ratio: "1:1"
         - name: "Virgin Atlantic Flying Club"
           ratio: "1:1"
+        - name: "JetBlue TrueBlue (added Nov 2025)"
+          ratio: "1:1"
+        - name: "Cathay Pacific (added Apr 2026)"
+          ratio: "1:1"
         - name: "Choice Hotels"
           ratio: "1:2"
+        - name: "Wyndham Rewards"
+          ratio: "see program terms"
     - minimum_transfer: "1,000 points typical"
     - processing_time: "Instantaneous to 24 hours"
     - reversibility: "No—transfers permanent once posted"
@@ -499,7 +505,7 @@ valuation_methodology:
     airline_transfer:
       - value: "$0.012-0.018 per point"
       - method: "Transfer to partner airlines at 1:1 ratio"
-      - partners: "Aer Lingus, Flying Blue, Avianca, BA, Iberia, Virgin Atlantic"
+      - partners: "Aer Lingus, Flying Blue, Avianca, BA, Iberia, Virgin Atlantic, JetBlue, Cathay Pacific"
       - sweet_spot: "International economy or domestic business awards"
 
     hotel_transfer:
@@ -543,14 +549,14 @@ annual_value_scenarios:
     breakdown:
       - "Hotels: $5,000 (5x) = 25,000 points"
       - "Airlines: $5,000 (4x) = 20,000 points"
-      - "Dining: $5,000 (4x) = 20,000 points"
+      - "Dining: $5,000 (3x) = 15,000 points"
       - "Other: $15,000 (1x) = 15,000 points"
-    total_points: 80000
-    value_at_1.2cpp: 960
+    total_points: 75000
+    value_at_1.2cpp: 900
     annual_airline_credit: 50
-    total_value: 1010
-    net_gain: 915
-    roi_percent: 963
+    total_value: 950
+    net_gain: 855
+    roi_percent: 900
     suitable_for: "Regular business travelers and frequent diners"
 
   high_usage:
@@ -558,15 +564,15 @@ annual_value_scenarios:
     breakdown:
       - "Hotels: $12,000 (5x) = 60,000 points"
       - "Airlines: $15,000 (4x) = 60,000 points"
-      - "Dining: $12,000 (4x) = 48,000 points"
+      - "Dining: $12,000 (3x) = 36,000 points"
       - "Other: $36,000 (1x) = 36,000 points"
-    total_points: 204000
-    value_at_1.3cpp: 2652
+    total_points: 192000
+    value_at_1.3cpp: 2496
     annual_airline_credit: 50
     lounge_costs_saved: 0
-    total_value: 2702
-    net_gain: 2607
-    roi_percent: 2744
+    total_value: 2546
+    net_gain: 2451
+    roi_percent: 2580
     suitable_for: "Heavy business travelers; frequent international trips"
 ```
 
@@ -577,8 +583,8 @@ competitive_analysis:
   vs_sapphire_preferred:
     annual_fee: "Equal ($95)"
     hotel_earning: "Wells Fargo 5x vs. Chase 3x (WF wins)"
-    dining_earning: "Wells Fargo 4x vs. Chase 3x (WF wins)"
-    transfer_partners: "Chase 35+ vs. Wells Fargo 6 (Chase wins significantly)"
+    dining_earning: "Wells Fargo 3x vs. Chase 3x (tie)"
+    transfer_partners: "Chase 35+ vs. Wells Fargo 10 (Chase wins significantly)"
     travel_credit: "Wells Fargo $50 airline vs. Chase $50 (equal)"
     trip_cancellation: "Both offered ($15K)"
     verdict: "WF better for hotel/dining focus; Chase better for flexibility and transfer options"
@@ -588,15 +594,15 @@ competitive_analysis:
     base_earning: "Wells Fargo tiered (1-5x) vs. Capital One 2x flat"
     hotel_earning: "Wells Fargo 5x vs. Capital One 2x (WF wins)"
     complexity: "Wells Fargo more complex; Capital One simpler"
-    transfer_partners: "Capital One 22 vs. Wells Fargo 6 (Capital One wins)"
+    transfer_partners: "Capital One 22 vs. Wells Fargo 10 (Capital One wins)"
     airline_credit: "Wells Fargo $50 vs. Capital One $0 (WF wins)"
     verdict: "WF better for hotel/dining travelers; Capital One better for simplicity and transfer options"
 
   vs_amex_gold:
     annual_fee_delta: "-$155 (WF $95 vs. Amex $250)"
-    earning: "Comparable; Amex 4x flights/dining, WF 4x flights/dining"
+    earning: "Amex 4x flights/dining vs. WF 4x flights, 3x dining (Amex edges dining)"
     airline_credit: "Amex $300 vs. WF $50 (Amex wins)"
-    transfer_partners: "Amex 15 vs. WF 6 (Amex wins)"
+    transfer_partners: "Amex 15 vs. WF 10 (Amex wins)"
     verdict: "WF better for budget-conscious; Amex better for frequent travelers with higher spend"
 ```
 
@@ -605,8 +611,8 @@ competitive_analysis:
 | Spending Pattern | Annual Spend | Points Earned | Value Generated | Net After Fee | ROI % |
 |------------------|--------------|---------------|-----------------|---------------|-------|
 | Minimal | $10,000 | 10,000+ | $200 | $105 | 111% |
-| Moderate | $30,000 | 80,000+ | $1,010 | $915 | 963% |
-| Heavy | $75,000+ | 204,000+ | $2,702+ | $2,607+ | 2,744%+ |
+| Moderate | $30,000 | 75,000+ | $950 | $855 | 900% |
+| Heavy | $75,000+ | 192,000+ | $2,546+ | $2,451+ | 2,580%+ |
 
 **Note:** ROI calculations assume:
 - Base valuation of 1.0 cpp with variations to 1.3 cpp depending on redemption method

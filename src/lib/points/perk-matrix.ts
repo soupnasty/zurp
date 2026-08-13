@@ -1428,7 +1428,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         cards: {
           chase_sapphire_reserve: { value: "Hyatt, IHG, Marriott" },
           amex_platinum: { value: "Hilton, Marriott, Choice" },
-          amex_gold: { value: "Hilton, Choice" },
+          amex_gold: { value: "Hilton, Marriott, Choice" },
           amex_blue_cash_preferred: { value: null },
           chase_sapphire_preferred: { value: "Hyatt, IHG, Marriott" },
           chase_freedom_flex: { value: "Hyatt, IHG, Marriott", detail: "via CSR/CSP" },
@@ -1464,7 +1464,7 @@ export const PERK_SECTIONS: PerkSection[] = [
         cards: {
           chase_sapphire_reserve: { value: "United, SW, BA, Air France" },
           amex_platinum: { value: "Delta, JetBlue, ANA, Singapore, Virgin Atlantic" },
-          amex_gold: { value: "Delta, JetBlue, ANA, Singapore" },
+          amex_gold: { value: "Delta, JetBlue, ANA, Singapore, Virgin Atlantic" },
           amex_blue_cash_preferred: { value: null },
           chase_sapphire_preferred: { value: "United, SW, BA, Air France" },
           chase_freedom_flex: { value: "United, SW, BA, Air France", detail: "via CSR/CSP" },

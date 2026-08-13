@@ -1,5 +1,7 @@
 # Citi Double Cash Credit Card Catalog
 
+*Last verified: 2026-08-13*
+
 ## Card Overview
 
 | Attribute | Value |
@@ -11,6 +13,7 @@
 | **Earn Rate (Purchase)** | 1% point on all purchases |
 | **Earn Rate (Payment)** | 1% point on all payments (dual earning) |
 | **Total Effective Earn Rate** | 2% cash back equivalent on all purchases |
+| **Citi Travel Portal Earn** | 5% total on hotels, car rentals, and attractions booked through the Citi Travel portal (2% base + 3% portal bonus) |
 | **Welcome Bonus** | $200 cash back after $1,500 spend within 6 months |
 | **Foreign Transaction Fee** | 3% (FTF applies) |
 | **Lounge Access** | None |
@@ -69,6 +72,20 @@ details:
   - Can strategically time payments to maximize earning
   - Must pay full or partial balance to earn (minimum payment eligible)
   - Double-earning advantage: Purchase at merchant + earn at payment
+```
+
+### benefit_key: citi_travel_portal_earning
+
+```yaml
+category: citi_travel_portal_earning
+benefit_name: "5% Total on Hotels, Car Rentals & Attractions via Citi Travel"
+description: "Bonus earning on travel booked through the Citi Travel portal"
+details:
+  - 5% total cash back on hotels, car rentals, and attractions booked through the Citi Travel portal (2% base + 3% extra)
+  - Flights booked through the portal earn the standard 2% (no portal bonus)
+  - Must book through cititravel.com; direct and OTA bookings earn the flat 2%
+  - Uncapped earning
+  - Only bonus category on this otherwise flat-rate card
 ```
 
 ### benefit_key: welcome_bonus
@@ -198,7 +215,8 @@ details:
 | **All Purchases (Earning)** | 1x point | Every dollar spent earns 1 point |
 | **All Payments (Earning)** | 1x point | Every dollar paid earns 1 additional point |
 | **Effective Total Rate** | 2% | Combined purchase + payment earning |
-| **No Category Rotation** | Flat | No special categories; all purchases treated equally |
+| **Citi Travel Portal (hotels/cars/attractions)** | 5% total | 2% base + 3% portal bonus; portal flights earn 2% |
+| **No Category Rotation** | Flat | No rotating categories; only exception is the Citi Travel portal bonus above |
 | **No Annual Caps** | Unlimited | Uncapped earning across all categories |
 | **Cash Advances** | 0x | No earning on cash advances (not eligible) |
 | **Balance Transfers** | 0x | No earning on balance transfers themselves |
@@ -239,6 +257,7 @@ details:
 - **Key Advantages:**
   - Zero annual fee
   - 2% flat effective rate (tied best among no-fee cards)
+  - 5% total on hotels, car rentals, and attractions booked through the Citi Travel portal
   - Unique dual-earning structure rewards payment behavior
   - Extended warranty benefit (valuable for no-fee card)
   - 18-month 0% APR on balance transfers

@@ -16,11 +16,11 @@ export const capitalOneSavorEarnConfig: EarnConfig = {
         merchant_match: ["capital one entertainment"],
       },
     },
-    // 5x on hotels & rental cars booked through Capital One Travel
+    // 5x on hotels, vacation rentals & rental cars booked through Capital One Travel
     {
       categories: ["travel_portal"],
       earnRate: 5,
-      label: "Capital One Travel hotels & rental cars",
+      label: "Capital One Travel hotels, vacation rentals & rental cars",
     },
     {
       categories: ["dining", "coffee", "food_delivery"],

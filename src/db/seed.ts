@@ -287,17 +287,9 @@ async function seed() {
     { cardType: "robinhood_gold", benefitKey: "rh_gold_no_ftf", benefitPartner: "Robinhood Travel", competitorMerchant: "Alaska Airlines", plaidMerchantPattern: "alaska air", category: "flights", insightType: "A1" },
 
     // ── Capital One Venture entries ──
-    // Hotels (OTA/direct) → Capital One Travel (A1 — portal redirect for 5x vs 2x)
-    { cardType: "capital_one_venture", benefitKey: "cov_annual_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Hotels.com", plaidMerchantPattern: "hotels.com", category: "hotels", insightType: "A1" },
-    { cardType: "capital_one_venture", benefitKey: "cov_annual_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Booking.com", plaidMerchantPattern: "booking.com", category: "hotels", insightType: "A1" },
-    { cardType: "capital_one_venture", benefitKey: "cov_annual_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Expedia", plaidMerchantPattern: "expedia", category: "hotels", insightType: "A1" },
-    { cardType: "capital_one_venture", benefitKey: "cov_annual_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Priceline", plaidMerchantPattern: "priceline", category: "hotels", insightType: "A1" },
-    { cardType: "capital_one_venture", benefitKey: "cov_annual_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Marriott", plaidMerchantPattern: "marriott", category: "hotels", insightType: "A1" },
-    { cardType: "capital_one_venture", benefitKey: "cov_annual_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Hilton", plaidMerchantPattern: "hilton", category: "hotels", insightType: "A1" },
-    { cardType: "capital_one_venture", benefitKey: "cov_annual_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Hyatt", plaidMerchantPattern: "hyatt", category: "hotels", insightType: "A1" },
-    { cardType: "capital_one_venture", benefitKey: "cov_annual_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "IHG", plaidMerchantPattern: "ihg", category: "hotels", insightType: "A1" },
-    { cardType: "capital_one_venture", benefitKey: "cov_annual_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "Airbnb", plaidMerchantPattern: "airbnb", category: "hotels", insightType: "A1" },
-    { cardType: "capital_one_venture", benefitKey: "cov_annual_travel_credit", benefitPartner: "Capital One Travel", competitorMerchant: "VRBO", plaidMerchantPattern: "vrbo", category: "hotels", insightType: "A1" },
+    // (removed 2026-08 audit: the $250 "annual" travel credit was a one-time
+    // first-year welcome offer — cov_annual_travel_credit is sunset, so there is
+    // no live credit to redirect hotel spend toward)
 
     // ── Citi Strata Premier entries ──
     // Hotels (OTA/direct) → Citi Travel (A1 — hotel credit redirect for 10x portal)
@@ -353,10 +345,14 @@ async function seed() {
     { cardType: "amex_business_platinum", benefitKey: "biz_plat_dell_credit", benefitPartner: "Dell", competitorMerchant: "Newegg", plaidMerchantPattern: "newegg", category: "shopping", insightType: "A1" },
 
     // Delta Platinum — flight credit redirect + Uber One swap
-    { cardType: "delta_platinum", benefitKey: "delta_flight_credit", benefitPartner: "Delta", competitorMerchant: "United Airlines", plaidMerchantPattern: "united", category: "travel_flights", insightType: "A1" },
-    { cardType: "delta_platinum", benefitKey: "delta_flight_credit", benefitPartner: "Delta", competitorMerchant: "Southwest Airlines", plaidMerchantPattern: "southwest", category: "travel_flights", insightType: "A1" },
-    { cardType: "delta_platinum", benefitKey: "delta_flight_credit", benefitPartner: "Delta", competitorMerchant: "American Airlines", plaidMerchantPattern: "american air", category: "travel_flights", insightType: "A1" },
-    { cardType: "delta_platinum", benefitKey: "delta_uber_one", benefitPartner: "Uber One", competitorMerchant: "Lyft", plaidMerchantPattern: "lyft", category: "rideshare", insightType: "A1" },
+    // (2026-08 audit: delta_flight_credit removed — it was a Delta Gold benefit,
+    // never Platinum; delta_uber_one removed — enrollment window closed 6/25/2026.
+    // Replaced with Delta Stays hotel-redirect entries for the live $150 credit.)
+    { cardType: "delta_platinum", benefitKey: "delta_stays_credit", benefitPartner: "Delta Stays", competitorMerchant: "Hotels.com", plaidMerchantPattern: "hotels.com", category: "hotels", insightType: "A1" },
+    { cardType: "delta_platinum", benefitKey: "delta_stays_credit", benefitPartner: "Delta Stays", competitorMerchant: "Booking.com", plaidMerchantPattern: "booking.com", category: "hotels", insightType: "A1" },
+    { cardType: "delta_platinum", benefitKey: "delta_stays_credit", benefitPartner: "Delta Stays", competitorMerchant: "Expedia", plaidMerchantPattern: "expedia", category: "hotels", insightType: "A1" },
+    { cardType: "delta_platinum", benefitKey: "delta_stays_credit", benefitPartner: "Delta Stays", competitorMerchant: "Marriott", plaidMerchantPattern: "marriott", category: "hotels", insightType: "A1" },
+    { cardType: "delta_platinum", benefitKey: "delta_stays_credit", benefitPartner: "Delta Stays", competitorMerchant: "Hilton", plaidMerchantPattern: "hilton", category: "hotels", insightType: "A1" },
 
     // Hilton Aspire — resort credit redirect + airline fee redirect
     { cardType: "hilton_aspire", benefitKey: "hilton_resort_h1", benefitPartner: "Hilton", competitorMerchant: "Marriott", plaidMerchantPattern: "marriott", category: "travel", insightType: "A1" },
@@ -364,9 +360,8 @@ async function seed() {
     { cardType: "hilton_aspire", benefitKey: "hilton_resort_h1", benefitPartner: "Hilton", competitorMerchant: "IHG", plaidMerchantPattern: "ihg", category: "travel", insightType: "A1" },
 
     // Southwest Priority — travel credit redirect
-    { cardType: "southwest_priority", benefitKey: "southwest_travel_credit", benefitPartner: "Southwest", competitorMerchant: "United Airlines", plaidMerchantPattern: "united", category: "travel_flights", insightType: "A1" },
-    { cardType: "southwest_priority", benefitKey: "southwest_travel_credit", benefitPartner: "Southwest", competitorMerchant: "Delta Air Lines", plaidMerchantPattern: "delta", category: "travel_flights", insightType: "A1" },
-    { cardType: "southwest_priority", benefitKey: "southwest_travel_credit", benefitPartner: "Southwest", competitorMerchant: "American Airlines", plaidMerchantPattern: "american air", category: "travel_flights", insightType: "A1" },
+    // (2026-08 audit: southwest_travel_credit entries removed — the $75 credit
+    // was discontinued in the July 2025 refresh, dead 12/31/2025)
 
     // United Explorer — flight credit + rideshare + Instacart redirect
     { cardType: "united_explorer", benefitKey: "united_travel_credit", benefitPartner: "United", competitorMerchant: "Delta Air Lines", plaidMerchantPattern: "delta", category: "travel_flights", insightType: "A1" },

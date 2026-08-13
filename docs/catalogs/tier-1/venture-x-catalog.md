@@ -1,5 +1,7 @@
 # Zurp Benefit Catalog — Capital One Venture X
 
+*Last verified: 2026-08-13*
+
 ## Card Overview
 
 | Field | Value |
@@ -71,7 +73,7 @@
 | Type | Statement credit |
 | Period | 4-year cycle |
 | Reset | After credit used; next eligible after ~4 years |
-| Activation | Charge Global Entry ($120) or TSA PreCheck ($85) application fee to card |
+| Activation | Charge Global Entry ($120) or TSA PreCheck ($78–$98) application fee to card |
 | Expiration | Permanent benefit |
 | Trackable | Yes — Plaid can detect CBP/TSA charges + corresponding statement credit |
 | Confidence | High |
@@ -409,7 +411,7 @@
 | Expiration | Permanent benefit |
 | Trackable | No |
 | Confidence | N/A |
-| Notes | 5x miles per $1 on flights and vacation rentals booked through Capital One Travel. Also 5x on Capital One Entertainment purchases. Direct flight purchases earn only 2x. |
+| Notes | 5x miles per $1 on flights and vacation rentals booked through Capital One Travel (verified 2026-08-13: vacation rentals earn 5x with flights, NOT the 10x hotels/rental-cars rate). Direct flight purchases earn only 2x. |
 
 ---
 
@@ -501,9 +503,9 @@
 | Reset | N/A |
 | Activation | Access through Capital One Entertainment platform |
 | Expiration | Permanent benefit |
-| Trackable | Plaid can detect Capital One Entertainment purchases (5x earn) |
+| Trackable | Plaid can detect Capital One Entertainment purchases |
 | Confidence | N/A |
-| Notes | Exclusive access to pre-sales, VIP packages, events across music, sports, dining. Earns 5x miles on purchases. Not a statement credit — but provides access to otherwise unavailable tickets/experiences. |
+| Notes | Exclusive access to pre-sales, VIP packages, events across music, sports, dining. Not a statement credit — but provides access to otherwise unavailable tickets/experiences. (Earn config models these purchases at the 2x base rate; no Entertainment earn bonus is configured.) |
 
 ---
 

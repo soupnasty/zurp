@@ -1,5 +1,7 @@
 # American Express Business Platinum Card Catalog
 
+*Last verified: 2026-08-13*
+
 ## Card Overview
 
 | Attribute | Details |
@@ -30,7 +32,11 @@
 ### Annual Hotel Credits
 
 ```benefit_key: hotel_credit_annual_600
-$600 annual hotel credit distributed as two $300 semi-annual credits for eligible bookings at Fine Hotels and Resorts properties (complimentary upgrade and late checkout) or The Hotel Collection luxury properties. Credits reset semi-annually and do not roll over if unused.
+$600 annual hotel credit distributed as two $300 semi-annual credits for eligible bookings at Fine Hotels and Resorts properties (complimentary upgrade and late checkout) or The Hotel Collection luxury properties booked through AmexTravel.com. Credits reset semi-annually and do not roll over if unused.
+```
+
+```benefit_key: hilton_business_credit_quarterly
+$200 annual Hilton for Business credit distributed as four $50 quarterly credits for qualifying stays at Hilton for Business properties worldwide when booked directly (hiltonbusiness.com or by phone). Enrollment required; unused quarterly credits do not roll over.
 ```
 
 ### Technology Credits
@@ -41,6 +47,34 @@ $150 automatic annual Dell Technologies credit applied toward qualifying Dell pu
 
 ```benefit_key: dell_credit_bonus_spending
 Additional Dell credit up to $1,000 earned upon accumulation of $5,000 in annual card spending, allowing total Dell benefits to reach $1,150 annually for high-spend cardholders who utilize the technology credit fully.
+```
+
+```benefit_key: adobe_credit_annual_250
+Up to $250 in annual statement credits for purchases made directly with Adobe per calendar year on adobe.com or through Adobe. Requires a minimum of $600 in qualifying U.S. purchases per calendar year.
+```
+
+### Business Services Credits
+
+```benefit_key: wireless_telephone_credit_monthly
+Up to $10 per month in statement credits for wireless telephone service purchases made directly with a U.S. wireless provider (AT&T, T-Mobile, Verizon, etc.), totaling up to $120 back per year.
+```
+
+```benefit_key: indeed_recruiting_credit_quarterly
+Up to $360 in annual statement credits for recruiting services on Indeed.com, available as up to $90 back per quarter through sponsored job postings and other Indeed services. Enrollment required.
+```
+
+### Travel & Airport Credits
+
+```benefit_key: airline_fee_credit_annual_200
+$200 annual statement credit for qualifying airline incidental fees — baggage fees, seat selection, in-flight beverages, and seat upgrades — charged with participating airlines (Delta, United, American, Southwest, Alaska, JetBlue, Spirit, Frontier). Resets each calendar year.
+```
+
+```benefit_key: clear_plus_credit_annual_219
+Up to $219 per year in statement credits covering a CLEAR Plus membership ($219/year as of the July 1, 2026 CLEAR price increase; credit raised from $209). CLEAR provides expedited security screening at 50+ airports.
+```
+
+```benefit_key: global_entry_tsa_credit
+Up to $120 statement credit every 4 years for Global Entry or TSA PreCheck application fees. Covers the application fee only.
 ```
 
 ### Lounge Access Benefits
@@ -54,7 +88,7 @@ Priority Pass membership included providing access to 1,550+ lounges globally at
 ```
 
 ```benefit_key: delta_sky_club_lounge_access
-Complimentary access to Delta Sky Club lounges at select airports when flying Delta Air Lines, providing additional lounge optionality on Delta flights.
+Complimentary access to Delta Sky Club lounges when flying Delta Air Lines, capped at 10 visits per year; unlimited visits unlock only with $75,000 in calendar-year card spend.
 ```
 
 ### Welcome Bonus
@@ -120,8 +154,8 @@ Access to American Express business travel management tools including transactio
 
 | Benefit | Details |
 |---------|---------|
-| Annual Fee Offset | $600 hotel credit + $150 Dell credit = $750 direct value |
-| Lounge Access | Centurion + Priority Pass + Delta Sky Club (1,550+ lounges) |
+| Annual Fee Offset | $600 hotel + $150 Dell + $200 airline + $219 CLEAR + $120 wireless + $250 Adobe + $360 Indeed + $200 Hilton for Business = up to $2,099 direct value |
+| Lounge Access | Centurion + Priority Pass + Delta Sky Club (1,550+ lounges; Sky Club capped 10 visits/yr) |
 | High-Spend Bonus | $1,200 airline credit + $2,400 airline partner credits at $250K |
 | Hotel Credits | $600/year ($300 semi-annual) for luxury properties |
 | Travel Insurance | $5M emergency medical + $500K accident coverage |
@@ -141,13 +175,13 @@ Access to American Express business travel management tools including transactio
 
 The American Express Business Platinum represents the ultra-premium tier of business credit cards, engineered for high-spend executives and entrepreneurs who prioritize travel benefits and premium experiences over casual earning rates. At $895 annually, the card's value proposition depends entirely on optimized utilization of its substantial credits and benefits.
 
-The core offset analysis reveals immediate value: $600 hotel credit + $150 Dell credit = $750 in direct annual benefits, reducing net annual cost to $145. For cardholders utilizing the hotel credit at Fine Hotels and Resorts or The Hotel Collection properties (which provide complimentary suite upgrades, late checkout, and lounge access), the actual value proposition expands significantly beyond the stated credit.
+The core offset analysis reveals immediate value: the full credit suite — $600 hotel, $150 Dell, $200 airline incidental, $219 CLEAR Plus, $120 wireless, $250 Adobe, $360 Indeed, and $200 Hilton for Business — totals up to $2,099 in direct annual credits, more than offsetting the $895 fee for businesses that utilize it. For cardholders utilizing the hotel credit at Fine Hotels and Resorts or The Hotel Collection properties (which provide complimentary suite upgrades, late checkout, and lounge access), the actual value proposition expands significantly beyond the stated credit.
 
 The 5x earning on Amex Travel bookings represents exceptional acceleration for business travel, though the restriction to Amex Travel (rather than general travel) limits flexibility. For a business traveler booking $100,000 in flights and hotels annually through Amex Travel, this generates 500,000 Membership Rewards points—worth approximately $5,000-$8,000 depending on redemption method. This alone justifies the annual fee for many business users.
 
 The 2x earning on purchases $5,000+ opens interesting possibilities for businesses with significant equipment purchases, business acquisitions, or large operational expenses. Capped at $2,000,000 annually, this applies to most business profiles but limits earning for extremely large enterprises.
 
-Lounge access through Centurion + Priority Pass + Delta Sky Club provides comprehensive airport lounge coverage globally, with primary value for frequent business travelers. Priority Pass access to 1,550+ lounges is particularly valuable internationally.
+Lounge access through Centurion + Priority Pass + Delta Sky Club provides comprehensive airport lounge coverage globally, with primary value for frequent business travelers (note: Delta Sky Club access is capped at 10 visits per year unless $75,000 in calendar-year spend unlocks unlimited visits). Priority Pass access to 1,550+ lounges is particularly valuable internationally.
 
 The high-spend bonus at $250,000 annual spend triggers $1,200 airline credit + $2,400 in Oneworld Alliance Partner airline credits. This represents an additional $3,600 in benefits for spending-focused businesses, essentially adding a supplementary annual fee offset.
 
@@ -158,4 +192,4 @@ Best suited for business executives with annual business spending exceeding $250
 ---
 
 **card_type:** amex_business_platinum
-**Last Updated:** February 2025
+**Last Updated:** August 2026

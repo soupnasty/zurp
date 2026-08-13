@@ -1,5 +1,7 @@
 # Bilt Palladium Card — Benefit Catalog & Competitor Map
 
+*Last verified: 2026-08-13*
+
 Implementation-ready data for the Zurp insight engine. New card launched February 7, 2026. Format matches Chase Sapphire Preferred, Reserve, and Amex Platinum catalogs.
 
 ---
@@ -60,22 +62,23 @@ notes:                Automatic $200 Bilt Cash deposit on Jan 1 each year.
 ```
 benefit_key:          bilt_palladium_priority_pass
 card_type:            bilt_palladium
-benefit_name:         Priority Pass Lounge Access + 2 Guests
+benefit_name:         Priority Pass Lounge Access (Unlimited Visits, 2 Free Guests Per Visit)
 benefit_partner:      Priority Pass
 benefit_type:         lounge_access
-annual_value:         0 (lounge access valued separately; guests incur $32/each redeem cost)
+annual_value:         0 (lounge access valued separately; extra guests beyond 2 cost $32/each)
 period_type:          annual
-period_value:         2 guest passes
-max_per_period:       2 guest passes (cardholder unlimited lounge visits)
+period_value:         2 free guests per visit
+max_per_period:       unlimited visits (2 free guests per visit)
 activation_required:  true
 activation_method:    portal (download Priority Pass app, register card)
 expiration_date:      null (permanent card benefit)
 trackable_via_plaid:  false (lounge visits not on statement)
 reset_basis:          calendar_year
-rollover:             false (unused guest passes expire Dec 31)
+rollover:             n/a (guest allowance is per visit, not an annual pass count)
 notes:                Cardholder gets unlimited Priority Pass lounge visits globally.
-                      2 complimentary guest passes per year (valued at $32 each if purchased separately).
-                      Additional guests cost $32/guest via Bilt Cash redemption (redeem 1,000 Bilt Points = $32 guest pass).
+                      2 complimentary guests per visit (NOT "2 guest passes/yr" — per-visit allowance).
+                      Additional guests beyond 2 cost $32/guest via Bilt Cash redemption (redeem 1,000 Bilt Points = $32 guest pass).
+                      Authorized users receive full Priority Pass membership.
                       Requires Priority Pass membership enrollment (free with card).
                       Not directly trackable but high cardholder engagement signal.
                       Differentiator: most new rental cards do NOT include Priority Pass.
@@ -159,14 +162,39 @@ notes:                2x Bilt Points earned on all purchases EXCEPT rent/mortgag
                       Earned SIMULTANEOUSLY with 4% Bilt Cash.
                       Includes: dining, travel, groceries, retail, utilities, gas, subscriptions, etc.
                       EXCLUDES: rent and mortgage payments (unless unlocked via tiered bonus).
-                      Baseline earn rate (no category bonus). All purchases earn at least 2x.
+                      Baseline earn rate — bonus categories (Bilt Dining, Bilt Travel, Lyft) earn more.
+                      All purchases earn at least 2x. NOT a flat-2x card: 2x is the floor, not the ceiling.
                       Plaid signal: all transactions except RENT/MORTGAGE category.
+```
+
+```
+benefit_key:          bilt_palladium_bonus_category_multipliers
+card_type:            bilt_palladium
+benefit_name:         Bonus Category Multipliers (up to 5x Dining, 4x Hotels, 3x Flights, 4x Lyft)
+benefit_partner:      Bilt Dining / Bilt Travel / Lyft
+benefit_type:         points_multiplier
+annual_value:         variable
+period_type:          ongoing
+period_value:         null
+max_per_period:       null (uncapped)
+activation_required:  partial (Lyft bonus requires linked Lyft account)
+activation_method:    auto (Lyft: link account in Bilt app)
+expiration_date:      null (permanent)
+trackable_via_plaid:  true
+reset_basis:          n/a
+rollover:             n/a
+notes:                Bonus rates on top of the 2x baseline:
+                      - Up to 5x at Bilt Dining network restaurants
+                      - 4x on hotels booked through Bilt Travel
+                      - 3x on flights booked through Bilt Travel
+                      - 4x on Lyft rides (requires linked Lyft account)
+                      Plaid signals: dining merchants, Bilt Travel bookings, Lyft transactions.
 ```
 
 ```
 benefit_key:          bilt_palladium_tiered_rent_multiplier
 card_type:            bilt_palladium
-benefit_name:         Tiered Rent/Mortgage Points Multiplier (1.25x unlock)
+benefit_name:         Tiered Rent/Mortgage/HOA Points Multiplier (up to 1.25x unlock)
 benefit_partner:      null
 benefit_type:         points_multiplier_conditional
 annual_value:         variable (depends on housing spend and unlock achievement)
@@ -182,7 +210,7 @@ rollover:             n/a
 notes:                Tiered structure (details inferred from research data):
                       - Baseline: 0x on rent/mortgage (no points on housing)
                       - Unlock: Spend ≥100% of housing amount in a calendar month on other purchases
-                      - Unlocked rate: 1.25x on all rent/mortgage in that month
+                      - Unlocked rate: up to 1.25x on all rent/mortgage/HOA in that month
                       Example: $2,000/mo rent + $2,000 other spend = unlocked 1.25x on housing
                       Example: $2,000/mo rent + $3,000 other spend = still unlocked 1.25x (threshold met)
                       Example: $2,000/mo rent + $1,500 other spend = 0x on housing (threshold NOT met)
@@ -224,9 +252,9 @@ notes:                Premium spend accelerator feature:
 benefit_key:          bilt_palladium_points_valuation
 card_type:            bilt_palladium
 benefit_name:         Bilt Points Valuation & Transfer Partners
-benefit_partner:      23 airline + hotel transfer partners
+benefit_partner:      24-25 airline + hotel transfer partners
 benefit_type:         transfer_partners
-annual_value:         variable (2.2cpp via transfers, TPG estimate)
+annual_value:         variable (1.5-2.2cpp via transfers)
 period_type:          ongoing
 period_value:         null
 max_per_period:       null
@@ -236,13 +264,15 @@ expiration_date:      null (permanent)
 trackable_via_plaid:  false (partner transfers not on statement)
 reset_basis:          n/a
 rollover:             n/a
-notes:                Bilt Points transfer to 23+ partners at 1:1 ratio (except Accor: 3:2 ratio).
-                      Transfer partner list (verified Feb 2026):
-                        Airlines: United, American (via Amtrak), Southwest (via Amtrak), Alaska (via Amtrak),
-                                  Air Canada Aeroplan, Emirates, Singapore Airlines, JAL, Lufthansa, Air France-KLM, Iberia, TAP
-                        Hotels: World of Hyatt, Marriott Bonvoy, Hilton Honors, IHG Club, Accor (3:2 ratio, all brands)
-                      Estimated transfer value: 2.2cpp (TPG estimate via transfer partners).
-                      Actual value ranges 1.5cpp-3.0+cpp depending on transfer strategy and airline policies.
+notes:                Bilt Points transfer to 24-25 partners (17-19 airlines + 7 hotels), mostly 1:1
+                      (Wyndham 1:1; I Prefer 1:2; Accor 3:2, NOT 1:1).
+                      Transfer partner list (verified Aug 2026):
+                        Airlines (17-19): United, American (via Amtrak), Southwest (via Amtrak), Alaska (via Amtrak),
+                                  Air Canada Aeroplan, Emirates, Singapore Airlines, JAL, Lufthansa, Air France-KLM, Iberia, TAP, others
+                        Hotels (7): World of Hyatt, Marriott Bonvoy, Hilton Honors, IHG Club, Accor (3:2 ratio, all brands),
+                                  Wyndham (1:1, added Mar 2026), Preferred Hotels "I Prefer" (1:2, added Jun 2026)
+                      Estimated transfer value: up to 2.2cpp via transfer partners.
+                      Actual value ranges 1.5cpp-2.2cpp depending on transfer strategy and airline policies.
                       Rent Day (1st of month): 75% transfer bonus to all partners (Palladium grants Gold status).
                       Example: Transfer 10,000 pts on rent day = 10,000 + 7,500 bonus = 17,500 airline miles.
                       Key advantage: Hyatt transfers are widely considered best value (40+ hours at premium properties).
@@ -253,7 +283,7 @@ notes:                Bilt Points transfer to 23+ partners at 1:1 ratio (except 
 benefit_key:          bilt_palladium_rent_day_bonus
 card_type:            bilt_palladium
 benefit_name:         Rent Day (1st of Month) Transfer Bonus: 75%
-benefit_partner:      23 transfer partners
+benefit_partner:      24-25 transfer partners
 benefit_type:         points_bonus_conditional
 annual_value:         variable (depends on transfer volume and timing)
 period_type:          monthly
@@ -383,16 +413,17 @@ notes:                No 3% foreign transaction fee on purchases abroad or in fo
 | 4 | bilt_palladium_bilt_cash_earn | cash_back | Variable | Ongoing | Yes | No |
 | 5 | bilt_palladium_bilt_cash_redemptions | flexible_redemption | Variable | Ongoing | Partial | No |
 | 6 | bilt_palladium_2x_points_everyday | points_multiplier | Variable | Ongoing | Yes | No |
-| 7 | bilt_palladium_tiered_rent_multiplier | points_multiplier_conditional | Variable | Monthly (unlock) | Yes | No |
-| 8 | bilt_palladium_point_accelerator | points_multiplier_conditional | Variable | Per-activation (5x/yr) | Yes | No |
-| 9 | bilt_palladium_points_valuation | transfer_partners | Variable | Ongoing | No | No |
-| 10 | bilt_palladium_rent_day_bonus | points_bonus_conditional | Variable | Monthly (1st) | No | No |
-| 11 | bilt_palladium_cell_phone_insurance | insurance | $0 (per-claim) | Per event | No | No |
-| 12 | bilt_palladium_rental_car_cdw | insurance | $0 (per-event) | Per event | No | No |
-| 13 | bilt_palladium_trip_delay | insurance | $0 (per-event) | Per event | No | No |
-| 14 | bilt_palladium_no_ftf | fee_waiver | Variable | Ongoing | Yes | No |
+| 7 | bilt_palladium_bonus_category_multipliers | points_multiplier | Variable | Ongoing | Yes | Partial (Lyft link) |
+| 8 | bilt_palladium_tiered_rent_multiplier | points_multiplier_conditional | Variable | Monthly (unlock) | Yes | No |
+| 9 | bilt_palladium_point_accelerator | points_multiplier_conditional | Variable | Per-activation (5x/yr) | Yes | No |
+| 10 | bilt_palladium_points_valuation | transfer_partners | Variable | Ongoing | No | No |
+| 11 | bilt_palladium_rent_day_bonus | points_bonus_conditional | Variable | Monthly (1st) | No | No |
+| 12 | bilt_palladium_cell_phone_insurance | insurance | $0 (per-claim) | Per event | No | No |
+| 13 | bilt_palladium_rental_car_cdw | insurance | $0 (per-event) | Per event | No | No |
+| 14 | bilt_palladium_trip_delay | insurance | $0 (per-event) | Per event | No | No |
+| 15 | bilt_palladium_no_ftf | fee_waiver | Variable | Ongoing | Yes | No |
 
-**Total: 14 benefits**
+**Total: 15 benefits**
 
 **Hard credits total: $600/yr** ($400 hotel + $200 Bilt Cash)
 
@@ -489,7 +520,7 @@ notes:                  Copy: "You spent $3,200 on furniture. For your next big 
 ```
 card_type:              bilt_palladium
 benefit_key:            bilt_palladium_rent_day_bonus
-benefit_partner:        23 transfer partners
+benefit_partner:        24-25 transfer partners
 competitor_merchant:    (N/A — internal Bilt)
 plaid_merchant_pattern: (N/A)
 category:               points_strategy
@@ -633,20 +664,19 @@ notes:                  Copy: "You spent $380 on dining last month. Redeem $30-5
 | Hard credits | $600 | $400 hotel + $200 Bilt Cash (guaranteed) |
 | Bilt Cash earning value | $480 | Conservative 50% redemption rate |
 | Bilt Points value (2.2cpp) | $1,455 | Includes rent unlock + accelerator + rent day bonus |
-| Priority Pass (estimated) | $300 | Lounge visits + 2 guest passes (not trackable, estimated) |
+| Priority Pass (estimated) | $300 | Unlimited lounge visits + 2 free guests per visit (not trackable, estimated) |
 | **Total estimated value** | **~$2,835** | |
 | **Annual fee** | **($495)** | |
 | **Net value** | **~$2,340** | |
 
 ### Points Valuation Detail
 
-**Points valuation: 2.2cpp** (Bilt estimate via transfer partners, TPG Jan 2026). Actual value ranges 1.5cpp-3.0+cpp depending on transfer strategy:
+**Points valuation: 1.5-2.2cpp** (verified Aug 2026). Value depends on transfer strategy:
 
 - **Conservative (1.5cpp):** Cash-back redemption or low-value airline transfers
-- **Moderate (2.2cpp):** Hyatt transfers, strategic airline bookings
-- **Aggressive (3.0+cpp):** Premium hotel category transfers, off-peak sweet-spots
+- **Upside (2.2cpp):** Transfer partners (Hyatt, United) + Rent Day 75% bonus
 
-Recommend using 2.2cpp for Zurp baseline, with messaging that users can achieve higher value through strategic transfers.
+Zurp models 1.5cpp conservative / 2.2cpp upside, with messaging that users can achieve higher value through strategic transfers.
 
 ### Housing Payment Spend Impact
 
@@ -685,7 +715,7 @@ If cardholder pays rent/mortgage with Bilt card AND unlocks 1.25x multiplier:
 - Platinum: $695 fee, ~$5,000+ net value
 - Bilt Palladium: $495 fee, ~$2,340 net value
 
-**Positioning:** Bilt Palladium slots between CSP and CSR in terms of fee/value ratio. Premium positioning justified by: dual-currency earning (points + cash), rent optimization, 23 transfer partners, $600 hard credits.
+**Positioning:** Bilt Palladium slots between CSP and CSR in terms of fee/value ratio. Premium positioning justified by: dual-currency earning (points + cash), rent optimization, 24-25 transfer partners, $600 hard credits.
 
 ---
 
@@ -717,10 +747,11 @@ network:                  Mastercard World Legend
 annual_fee:               495
 launch_date:              2026-02-07
 research_date:            2026-02-11
+last_verified:            2026-08-13
 
 points_currency:          bilt_points (primary) + bilt_cash (secondary)
-points_valuation:         2.2 (cpp, via transfer partners)
-transfer_partners:        23 (airlines + hotels)
+points_valuation:         1.5-2.2 (cpp; conservative 1.5, upside 2.2 via transfer partners)
+transfer_partners:        24-25 (17-19 airlines + 7 hotels; Wyndham 1:1, I Prefer 1:2, Accor 3:2)
 transfer_bonus:           75% on Rent Day (1st of month, Gold status)
 
 hard_credits_annual:      600 (hotel 400 + cash 200)

@@ -1,5 +1,7 @@
 # IHG One Rewards Premier Chase Card Catalog
 
+*Last verified: 2026-08-13*
+
 ## Card Overview
 
 | Attribute | Details |
@@ -17,13 +19,12 @@
 
 ```benefit_key: earning_structure_ihg
 10x IHG One Rewards points on all eligible IHG One Rewards member purchases at IHG hotels worldwide
-5x IHG One Rewards points on travel purchases including airline tickets, car rentals, and dining at restaurants
-3x IHG One Rewards points on all other eligible purchases
-Base rate: 1x point per dollar on remaining transactions
+5x IHG One Rewards points on travel purchases including airline tickets, car rentals, gas stations, and dining at restaurants
+3x IHG One Rewards points on all other eligible purchases (base rate)
 ```
 
 ```benefit_key: travel_category_scope
-Travel purchases include tickets booked with airlines, car rental agencies, and restaurants (both inside and outside hotels).
+5x purchases include tickets booked with airlines, car rental agencies, gas stations, and restaurants (both inside and outside hotels).
 ```
 
 ### Elite Status Benefits
@@ -64,6 +65,12 @@ Cardholders progress through IHG's elite tiers (Platinum → Gold Elite → Diam
 $120 statement credit every 4 years toward Global Entry, TSA PreCheck, or other trusted traveler programs.
 ```
 
+### United TravelBank Credit
+
+```benefit_key: united_travelbank_cash_50
+$50 in United TravelBank cash each calendar year. Requires registering your MileagePlus number for the benefit. The cash is deposited into your United TravelBank account (not issued as a statement credit) and can be applied toward United flight purchases.
+```
+
 ### International Features
 
 ```benefit_key: no_foreign_transaction_fee
@@ -87,7 +94,7 @@ Lounge access (Priority Pass, airline clubs) is not included except through elit
 ```
 
 ```benefit_key: no_airline_credit
-No standalone annual airline credit beyond the 5x earning on airline ticket purchases.
+No general annual airline incidental credit. The only airline-related credit is the $50/year United TravelBank cash benefit (MileagePlus registration required).
 ```
 
 ## Points Multipliers
@@ -98,7 +105,8 @@ No standalone annual airline credit beyond the 5x earning on airline ticket purc
 | Airline Tickets | 5x | All airlines |
 | Car Rentals | 5x | All rental agencies |
 | Dining | 5x | Restaurants worldwide |
-| All Other Purchases | 3x | General category |
+| Gas Stations | 5x | All gas stations |
+| All Other Purchases | 3x | Base rate |
 
 ## Insurance & Protection Coverage
 
@@ -112,12 +120,13 @@ No standalone annual airline credit beyond the 5x earning on airline ticket purc
 | Trip Delay | Not included | N/A |
 | Lost Luggage | Not included | N/A |
 | Global Entry Credit | Every 4 years | $120 credit |
+| United TravelBank Cash | Annual (MileagePlus registration required) | $50/year |
 
 ## Zurp Relevance
 
-The IHG One Rewards Premier Chase occupies the value-oriented hotel loyalty card segment, delivering robust earning potential and elite acceleration for IHG-focused travelers without premium-tier pricing. The $99 annual fee is quickly offset by the $120 Global Entry credit (every 4 years), the annual free night certificate (up to 40K points value), and the milestone benefits structure. The 10x earning on IHG properties is among the highest in the hotel card category, paired with solid 5x on travel and dining purchases. The fourth night free benefit on award stays provides unlimited value for bulk redemptions, particularly valuable for extended stays or business travel. The escalating milestone benefits ($100 + 10K points at $20K spend, Diamond Elite at $40K spend) create strong incentive to maximize card utilization. The card's primary limitations are the lack of annual incidental credits (resort, airline) and relatively modest 40,000-point free night certificate ceiling compared to luxury competitors. Best suited for IHG loyalists with annual IHG spending exceeding $8,000 or high-volume award stay redemption patterns who benefit from the fourth night free feature.
+The IHG One Rewards Premier Chase occupies the value-oriented hotel loyalty card segment, delivering robust earning potential and elite acceleration for IHG-focused travelers without premium-tier pricing. The $99 annual fee is quickly offset by the $120 Global Entry credit (every 4 years), the $50/year United TravelBank cash (MileagePlus registration required), the annual free night certificate (up to 40K points value), and the milestone benefits structure. The 10x earning on IHG properties is among the highest in the hotel card category, paired with solid 5x on travel, gas, and dining purchases. The fourth night free benefit on award stays provides unlimited value for bulk redemptions, particularly valuable for extended stays or business travel. The escalating milestone benefits ($100 + 10K points at $20K spend, Diamond Elite at $40K spend) create strong incentive to maximize card utilization. The card's primary limitations are the lack of a resort or broad airline incidental credit (the $50 United TravelBank cash is the only annual credit) and the relatively modest 40,000-point free night certificate ceiling compared to luxury competitors. Best suited for IHG loyalists with annual IHG spending exceeding $8,000 or high-volume award stay redemption patterns who benefit from the fourth night free feature.
 
 ---
 
 **card_type:** ihg_premier
-**Last Updated:** February 2025
+**Last Updated:** August 2026

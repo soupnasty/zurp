@@ -1,5 +1,7 @@
 # Amex Gold Card — Benefit Catalog & Competitor Map
 
+*Last verified: 2026-08-13*
+
 Implementation-ready data for the Zurp insight engine. Format matches CSR and CSP catalogs.
 
 ---
@@ -12,7 +14,7 @@ Implementation-ready data for the Zurp insight engine. Format matches CSR and CS
 benefit_key:          gold_dining_credit
 card_type:            amex_gold
 benefit_name:         Monthly Dining Credit
-benefit_partner:      Grubhub, The Cheesecake Factory, Goldbelly, Wine.com, Five Guys
+benefit_partner:      Grubhub, Seamless, The Cheesecake Factory, Five Guys, Buffalo Wild Wings, Wonder
 benefit_type:         statement_credit
 annual_value:         120
 period_type:          monthly
@@ -24,7 +26,8 @@ expiration_date:      null (ongoing benefit, no announced end date)
 trackable_via_plaid:  true
 reset_basis:          calendar_month
 rollover:             false
-notes:                Credit applies to purchases at ANY of the 5 eligible merchants.
+notes:                Credit applies to purchases at ANY of the 6 eligible merchants.
+                      Partner lineup changed 6/30/2026: Goldbelly and Wine.com ended; Seamless, Buffalo Wild Wings, and Wonder added.
                       Shared across primary + authorized users ($10 total, not $10 each).
                       Credit posts within days, up to 8 weeks per terms.
                       Gift card and merchandise purchases at these merchants do NOT qualify.
@@ -199,9 +202,9 @@ notes:                Flights booked directly with airlines OR through AmexTrave
 ```
 
 ```
-benefit_key:          gold_2x_amex_travel
+benefit_key:          gold_5x_amex_hotels
 card_type:            amex_gold
-benefit_name:         2x Membership Rewards on AmexTravel.com (Non-Flight)
+benefit_name:         5x Membership Rewards on Prepaid Hotels via AmexTravel.com
 benefit_partner:      AmexTravel.com
 benefit_type:         points_multiplier
 annual_value:         variable
@@ -214,7 +217,8 @@ expiration_date:      null
 trackable_via_plaid:  false (AmexTravel.com charges may code as AMERICAN EXPRESS TRAVEL or the underlying hotel/car brand)
 reset_basis:          n/a
 rollover:             n/a
-notes:                Hotels, car rentals, and other travel booked through AmexTravel.com (excluding flights, which earn 3x).
+notes:                Prepaid hotels booked through AmexTravel.com earn 5x (2026 refresh — previously 2x on non-flight AmexTravel bookings).
+                      Flights booked via AmexTravel.com earn 3x (see gold_3x_flights).
                       Difficult to track in Plaid — merchant name varies. Lower priority for insight engine.
 ```
 
@@ -234,7 +238,7 @@ expiration_date:      null
 trackable_via_plaid:  true
 reset_basis:          n/a
 rollover:             n/a
-notes:                Base earn rate. All purchases not captured by 4x/3x/2x categories.
+notes:                Base earn rate. All purchases not captured by 4x/3x/5x categories.
                       Used as baseline for competitor redirect dollar_impact calculations.
 ```
 
@@ -372,23 +376,22 @@ notes:                Extends manufacturer's warranty by 1 additional year on wa
 ```
 benefit_key:          gold_return_protection
 card_type:            amex_gold
-benefit_name:         Return Protection
+benefit_name:         Return Protection (REMOVED Jan 2020)
 benefit_partner:      null
 benefit_type:         insurance
 annual_value:         0
 period_type:          per_event
-period_value:         300
-max_per_period:       1000 (per calendar year)
+period_value:         null
+max_per_period:       null
 activation_required:  false
 activation_method:    null
-expiration_date:      null
+expiration_date:      2020-01 (benefit removed)
 trackable_via_plaid:  false
-reset_basis:          calendar_year
+reset_basis:          n/a
 rollover:             n/a
-notes:                Refund for eligible purchases that the merchant won't take back, within 90 days.
-                      Up to $300 per item, $1,000 per calendar year.
-                      UNIQUE TO GOLD — CSR and CSP do NOT have return protection.
-                      Good Compare page differentiator.
+notes:                REMOVED — Amex discontinued Return Protection on the Gold Card in January 2020.
+                      Earlier versions of this catalog listed it as active in error; retained here only as a correction marker.
+                      Do NOT surface as a live benefit or Compare page differentiator.
 ```
 
 ### Other Benefits
@@ -462,6 +465,26 @@ notes:                Airlines (17): Delta, ANA, Air Canada Aeroplan, Air France
                       This matters for the Compare page — a Delta loyalist gets more value from Gold than from CSR.
 ```
 
+```
+benefit_key:          gold_hertz_five_star
+card_type:            amex_gold
+benefit_name:         Hertz Gold Plus Rewards Five Star Status
+benefit_partner:      Hertz
+benefit_type:         access
+annual_value:         variable
+period_type:          ongoing
+period_value:         null
+max_per_period:       null
+activation_required:  true
+activation_method:    enrollment (link Gold Card to Hertz Gold Plus Rewards)
+expiration_date:      null
+trackable_via_plaid:  false
+reset_basis:          n/a
+rollover:             n/a
+notes:                Complimentary Hertz Five Star elite status, added in the 2026 refresh. Enrollment required.
+                      Awareness-only benefit for Zurp (C1).
+```
+
 ### Benefit Catalog Summary
 
 | # | Benefit Key | Type | Annual Value | Period | Trackable | Enrollment |
@@ -474,7 +497,7 @@ notes:                Airlines (17): Delta, ANA, Air Canada Aeroplan, Air France
 | 6 | gold_4x_restaurants | points_multiplier | Variable | Ongoing | Yes | No |
 | 7 | gold_4x_supermarkets | points_multiplier | Variable | Ongoing | Yes | No |
 | 8 | gold_3x_flights | points_multiplier | Variable | Ongoing | Yes | No |
-| 9 | gold_2x_amex_travel | points_multiplier | Variable | Ongoing | No | No |
+| 9 | gold_5x_amex_hotels | points_multiplier | Variable | Ongoing | No | No |
 | 10 | gold_1x_other | points_multiplier | Variable | Ongoing | Yes | No |
 | 11 | gold_trip_delay | insurance | $300/event | Per event | No | No |
 | 12 | gold_baggage_insurance | insurance | $1,250/$500 | Per event | No | No |
@@ -482,18 +505,19 @@ notes:                Airlines (17): Delta, ANA, Air Canada Aeroplan, Air France
 | 14 | gold_travel_accident | insurance | $100K/event | Per event | No | No |
 | 15 | gold_purchase_protection | insurance | $1K/event | Per event | No | No |
 | 16 | gold_extended_warranty | insurance | $10K/item | Per event | No | No |
-| 17 | gold_return_protection | insurance | $300/item | Per event | No | No |
+| 17 | gold_return_protection | insurance | REMOVED Jan 2020 | — | No | No |
 | 18 | gold_no_ftf | fee_waiver | Variable | Ongoing | Yes | No |
 | 19 | gold_global_assist | access | $0 | Ongoing | No | No |
 | 20 | gold_transfer_partners | access | Variable | Ongoing | No | No |
+| 21 | gold_hertz_five_star | access | Variable | Ongoing | No | Yes |
 
-**Total: 20 benefits** (18 from research doc + 2 additional: global_assist and transfer_partners broken out as distinct entries for completeness)
+**Total: 21 benefits** (18 from research doc + 2 additional: global_assist and transfer_partners broken out as distinct entries for completeness + gold_hertz_five_star added in the 2026 refresh; gold_return_protection is retained only as a REMOVED marker — the benefit was discontinued Jan 2020)
 
 **Hard credits total: $424/yr** (Dining $120 + Uber $120 + Resy $100 + Dunkin' $84) + $100/stay Hotel Collection
 
 **Benefits requiring enrollment: 3** (Dining, Dunkin', Resy) + 1 setup (Uber — add card to Uber account)
 
-**Card definition entries: 3** — Only gold_dining_credit, gold_resy_credit, and gold_dunkin_credit are trackable statement credits that map to the current CardDefinition benefit type system. gold_uber_cash is non-trackable (in-app credit), gold_hotel_collection is a property credit (not statement credit). Same pattern as CSP (3 implementable benefits).
+**Card definition entries: 4** — gold_dining_credit, gold_resy_credit (H1/H2), gold_uber_cash, and gold_dunkin_credit are tracked in the CardDefinition. gold_uber_cash is modeled as an auto-matchable monthly credit (matched via Uber charges, though Uber Cash usage itself cannot be confirmed). gold_hotel_collection is a property credit (not statement credit) and stays out of the card definition.
 
 **Network: amex** — First non-Visa card in Zurp. CardDefinition.network already supports `"amex"` in the type union.
 
@@ -524,7 +548,7 @@ insight_type:           A1 (dual-benefit)
 dollar_signal:          $10 credit + 4x points on order total
 notes:                  DUAL-BENEFIT template. User gets dining credit ($10) AND 4x restaurant points.
                         Copy: "You ordered $35 from DoorDash. On Grubhub, you'd get $10 off (dining credit) AND earn 4x points on $35 — that's $10 + $2.24 = $12.24 in missed value."
-                        Grubhub is one of the 5 Dining Credit merchants AND codes as restaurant for 4x.
+                        Grubhub is one of the 6 Dining Credit merchants AND codes as restaurant for 4x.
                         This is the highest-value single redirect in the Gold Card catalog.
 ```
 
@@ -740,9 +764,9 @@ competitor_merchant:    Hotels.com / Booking.com / third-party hotel OTAs
 plaid_merchant_pattern: HOTELS\.COM|BOOKING\.COM|BOOKING COM|HOTELS COM|TRIVAGO
 category:               hotels
 insight_type:           A1 + C1 (awareness)
-dollar_signal:          $100 property credit + 2x points (vs 1x at OTA)
-notes:                  MULTI-BENEFIT redirect: user gets Hotel Collection $100 property credit AND 2x points by booking through AmexTravel.com.
-                        Copy: "You booked $400 at Hotels.com. If you book a 2+ night stay at a Hotel Collection property through AmexTravel.com, you get a $100 on-property credit AND 2x points. That's $100 + $6.40 = $106.40 in potential value."
+dollar_signal:          $100 property credit + 5x points on prepaid hotels (vs 1x at OTA)
+notes:                  MULTI-BENEFIT redirect: user gets Hotel Collection $100 property credit AND 5x points on prepaid hotels booked through AmexTravel.com (2026 refresh; was 2x).
+                        Copy: "You booked $400 at Hotels.com. If you book a 2+ night prepaid stay at a Hotel Collection property through AmexTravel.com, you get a $100 on-property credit AND 5x points. That's $100 + $25.60 = $125.60 in potential value."
                         Lower confidence: Hotel Collection properties are a subset of all hotels. User's specific hotel may not be in the collection.
                         Consider this a C1 (awareness) insight unless we can match the hotel to the Hotel Collection.
                         Throttle: 1x per hotel OTA transaction.
@@ -783,7 +807,7 @@ notes:                  Copy: "You made a reservation through OpenTable. Your Go
 | 11 | HelloFresh etc. | Supermarket | grocery | A1 | 4.8cpp/$ (4x vs 1x) | No |
 | 12 | Uber (no setup) | Uber (with Uber Cash) | rideshare | C0 | $10/mo ($120/yr) | No | ← Not a competitor_map row; C0 reference data |
 | 13 | Expedia/Kayak etc. | Direct airline | flights | A1 | 3.2cpp/$ (3x vs 1x) | No |
-| 14 | Hotels.com etc. | AmexTravel.com | hotels | A1+C1 | $100 credit + 2x pts | Yes |
+| 14 | Hotels.com etc. | AmexTravel.com | hotels | A1+C1 | $100 credit + 5x pts | Yes |
 | 15 | OpenTable | Resy | dining_reservation | A1/C1 | Up to $50/half | No |
 
 **Total: 15 entries in catalog, 14 competitor_map DB rows** (Entry 12 is C0 reference data for the enrollment insight generator, not an A1 competitor redirect)

@@ -1,5 +1,7 @@
 # Chase Freedom Flex Catalog
 
+*Last verified: 2026-08-13*
+
 **Card Type:** chase_freedom_flex
 **Network:** Mastercard World Elite
 **Annual Fee:** $0
@@ -14,7 +16,7 @@
 | Card Name | Chase Freedom Flex |
 | Network | Mastercard World Elite |
 | Annual Fee | $0 |
-| Foreign Transaction Fee | 3% |
+| Foreign Transaction Fee | 3% (dropped 9/20/2026 — no FTF from that date) |
 | Intro APR | 0% for 15 months on purchases |
 | Welcome Bonus | $200 cash back after $500 spend in 3 months |
 | Target User | Flexible spenders seeking rotating 5% categories without annual fee |
@@ -166,27 +168,28 @@ value: Moderate protection for trip investments
 ### Cell Phone Protection
 
 ```benefit_key: cell_phone_protection
-name: Cell Phone Protection
-description: Covers damage or theft of mobile phones against accidental damage, fire, theft, and vandalism
+name: Cell Phone Protection (DISCONTINUED 9/20/2026)
+status: DISCONTINUED — benefit ends 9/20/2026; retained here for historical reference
+description: Covered damage or theft of mobile phones against accidental damage, fire, theft, and vandalism
 coverage: Up to $800 per claim, $1,000 per calendar year maximum
 deductible: $50 per claim
 frequency: Up to 2 claims per calendar year
 requirement: Phone must be charged to card
 exclusions: Mechanical failure, normal wear, lost phones, intentional damage
-claim_process: File claim within 60 days of incident
-value: Useful for expensive phone protection
+claim_process: File claim within 60 days of incident (incidents on or before 9/20/2026 only)
+value: No longer available after 9/20/2026; the card drops its 3% FTF the same date
 ```
 
 ### Additional Travel Benefits
 
 ```benefit_key: doordash_benefit
 name: DoorDash DashPass Benefit
-description: 6 months of complimentary DoorDash DashPass membership plus $10 in quarterly non-restaurant promos
-dashpass_value: 6 months free delivery (normally $9.99/month = $60 value)
-quarterly_promo: $10 non-restaurant promotions (4x $2.50 per quarter)
-total_value: ~$70 annually
-terms: Benefit automatically applied to card-holder account
-value: Excellent add-on for frequent delivery users
+description: 6-month complimentary DashPass trial plus $10 per quarter in DoorDash non-restaurant credits (grocery, convenience, retail) through 12/31/2027
+dashpass_value: 6-month trial of free delivery (normally $9.99/month = ~$60 value); NOT an ongoing complimentary membership
+quarterly_promo: $10 non-restaurant credit per quarter (4 quarterly credits = $40/year); unused value forfeited; ends 12/31/2027
+total_value: ~$100 in year one (trial + quarterly credits)
+terms: Requires activation through DoorDash with the card; DashPass trial must be activated between 2/1/2025 and 12/31/2027; after 6 free months you are auto-enrolled at the paid monthly rate unless you cancel
+value: Excellent add-on for frequent delivery users — set a cancellation reminder for the trial
 ```
 
 ### Introductory Offer
@@ -207,10 +210,10 @@ value: Excellent for large purchases with 15-month repayment plan
 ```benefit_key: ftf_fee
 name: Foreign Transaction Fee
 description: Charged on all transactions made outside the United States
-fee: 3%
-applies_to: All foreign transactions
-note: Standard for non-premium cards; impacts international travel value
-value: Significant disadvantage for frequent travelers
+fee: 3% (through 9/19/2026); dropped effective 9/20/2026 — no FTF from that date
+applies_to: All foreign transactions before 9/20/2026
+note: FTF is eliminated 9/20/2026, the same date cell phone protection ends
+value: Disadvantage for frequent travelers only until 9/20/2026
 ```
 
 ---
@@ -236,9 +239,9 @@ value: Significant disadvantage for frequent travelers
 | Purchase Protection | $500/item | 120 days | None | Unlimited |
 | Extended Warranty | 1-year extension | On ≤3yr warranties | None | $10K/claim, $50K/account |
 | Trip Cancellation | $1,500/person | Prepaid trip cost | None | $6,000/trip |
-| Cell Phone Protection | $800/claim | 2 claims/year | $50/claim | $1,000/yr |
+| Cell Phone Protection (ends 9/20/2026) | $800/claim | 2 claims/year | $50/claim | $1,000/yr |
 
-**Total Insurance Value:** Strong; best-in-class cell phone protection and reasonable trip cancellation coverage among no-fee cards.
+**Total Insurance Value:** Reasonable trip cancellation coverage among no-fee cards; cell phone protection is DISCONTINUED effective 9/20/2026.
 
 ---
 
@@ -332,10 +335,10 @@ value: No fee justification required
 
 ```rule: ftf_avoidance
 trigger: International travel planning
-action: Flag card for 3% FTF on all foreign transactions
-action: Use alternative (CSR 0% FTF) for overseas travel
-optimization: Switch cards for international trips
-value: Save 3% on all foreign spending
+action: Flag card for 3% FTF on foreign transactions before 9/20/2026
+action: Use alternative (CSR 0% FTF) for overseas travel before that date
+optimization: From 9/20/2026 the card has no FTF — safe for international use
+value: Save 3% on foreign spending until the FTF is dropped
 ```
 
 ### Welcome Bonus Tracking
@@ -379,9 +382,9 @@ value: Unlock premium point values via transfers
 | **Total Earning (excl. welcome)** | **$20,000** | **~2.35% avg** | **$640** | |
 | **Annual Fee** | | | **$0** | |
 | **Net Annual Value** | | | **$640** | |
-| **DoorDash Benefit** | | | **+$70** | 6mo DashPass + quarterly promos |
+| **DoorDash Benefit** | | | **+$100** | 6mo DashPass trial + $10/qtr credits (through 2027) |
 | **Welcome Bonus (Year 1)** | | | **+$200** | One-time |
-| **Year 1 Total Value** | | | **$910** | |
+| **Year 1 Total Value** | | | **$940** | |
 
 ### With Points Pooling (CSP/CSR Pairing)
 
@@ -444,8 +447,8 @@ If pooled with Chase Sapphire Preferred (2x multiplier on dining/travel):
 - **Dining Strong Spot:** Uncapped 3% dining is consistent earn without complexity
 - **Points Pooling:** Ultimate Rewards pooling with CSP/CSR unlocks transfer partners and premium redemptions
 - **Q1 2026 Categories:** Dining is excellent; Donations/Norwegian Cruise less universally valuable
-- **DoorDash Bonus:** $70 annual value is understated benefit for frequent delivery users
-- **3% FTF:** Standard but notable; use CSR (0% FTF) for international travel
+- **DoorDash Bonus:** ~$100 year-one value (6-month DashPass trial + $10/quarter non-restaurant credits through 12/31/2027); trial auto-enrolls at the paid rate after 6 months unless cancelled
+- **3% FTF:** Applies only until 9/20/2026 — the card drops its FTF that date (cell phone protection ends the same day)
 
 ---
 

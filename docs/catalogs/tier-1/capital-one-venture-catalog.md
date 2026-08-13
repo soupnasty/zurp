@@ -1,5 +1,7 @@
 # Capital One Venture Rewards Credit Card Catalog
 
+*Last verified: 2026-08-13*
+
 ## Card Overview
 
 | Attribute | Value |
@@ -10,10 +12,10 @@
 | **Rewards Currency** | Miles |
 | **Earn Rate (Standard)** | 2x miles on all purchases (uncapped) |
 | **Earn Rate (Bonus)** | 5x miles on hotels/rental cars booked via Capital One Travel portal |
-| **Welcome Bonus** | 75,000 miles after $4,000 spend within 3 months + $250 first-year travel credit |
+| **Welcome Bonus** | 75,000 miles after $4,000 spend within 3 months (the $250 first-year travel credit component of this offer expired April 2026) |
 | **Foreign Transaction Fee** | 0% (No FTF) |
-| **Lounge Access** | $45 discounted visits (not complimentary) |
-| **Global Entry Credit** | $120 reimbursement |
+| **Lounge Access** | None |
+| **Global Entry Credit** | $120 reimbursement every 4 years |
 | **Card Type ID** | capital_one_venture |
 
 ---
@@ -50,12 +52,11 @@ details:
 
 ```yaml
 category: welcome_bonus
-benefit_name: "75,000 Miles Welcome Bonus + $250 Travel Credit"
+benefit_name: "75,000 Miles Welcome Bonus"
 description: "Introductory offer for new cardholders"
 details:
   - 75,000 bonus miles awarded after meeting $4,000 spend threshold within 3 months
-  - $250 first-year travel credit for any eligible travel purchase
-  - Credit posts annually if card remains open
+  - DISCONTINUED — the $250 first-year travel credit component of this offer expired April 2026; it was a one-time first-year credit, never recurring
   - Bonus miles are free (not earned through organic spend)
   - Equivalent to ~$750-900 in travel value depending on redemption partner
 ```
@@ -64,14 +65,13 @@ details:
 
 ```yaml
 category: travel_credits
-benefit_name: "$250 Annual Travel Credit"
-description: "Annual statement credit for travel purchases"
+benefit_name: "$250 Travel Credit (DISCONTINUED — expired April 2026)"
+description: "One-time first-year welcome-offer credit; never a recurring annual benefit"
 details:
-  - $250 credit applied annually to eligible travel expenses
-  - Covers airline tickets, hotels, rental cars, vacation rentals, tour operators
-  - Credit resets each calendar year
-  - Must use or lose within 12-month period
-  - First-year credit included with welcome offer
+  - DISCONTINUED — this was a one-time first-year welcome-offer component, not a recurring annual credit
+  - The welcome offer that included it expired ~April 2026 (sunset 2026-04-30 in card config)
+  - Applied to Capital One Travel bookings during the first cardholder year only
+  - Retained for usage history of cardholders who redeemed it during their first year
 ```
 
 ### benefit_key: trip_delay_reimbursement
@@ -169,15 +169,14 @@ details:
 
 ```yaml
 category: transfer_partners
-benefit_name: "Transfer Partners (22+ programs at 1:1 ratio)"
+benefit_name: "Transfer Partners (22 programs, most at 1:1 ratio)"
 description: "Ability to transfer miles to airline and hotel partners"
 details:
-  - Transfer miles to 22+ loyalty programs at fixed 1:1 ratio
+  - Transfer miles to 22 loyalty programs, most at a 1:1 ratio (same Capital One miles pool and partner list as Venture X)
   - Participating programs include:
-    * Airlines: Air Canada Aeroplan, Avianca LifeMiles, British Airways Avios, Emirates, Turkish Airlines Miles, Singapore Airlines KrisFlyer
-    * Airlines: United MileagePlus, Delta SkyMiles, American Airlines AAdvantage, Southwest Rapid Rewards, Alaska Mileage Plan
-    * Airlines: Qantas Frequent Flyer, Virgin Atlantic Flying Club, Lufthansa Miles & More
-    * Hotels: Marriott Bonvoy, Hyatt World of Hyatt, IHG One Rewards
+    * Airlines (1:1): Aeromexico, Air Canada Aeroplan, Air France-KLM Flying Blue, Avianca LifeMiles, British Airways Avios, Cathay Pacific Asia Miles, Etihad Guest, Finnair Avios, Qantas, Qatar Airways Avios, Singapore Airlines KrisFlyer, TAP Air Portugal, Turkish Airlines Miles&Smiles, Virgin Red
+    * Airlines (reduced ratio): Emirates Skywards (2:1.5), EVA Air (2:1.5), Japan Airlines (2:1.5), JetBlue TrueBlue (5:3)
+    * Hotels: Accor Live Limitless (2:1), Choice Privileges (1:1), I Prefer Hotels (1:1), Wyndham Rewards (1:1)
   - Instant transfer processing to most partners
   - Transfers are non-refundable once posted
   - No blackout dates on most partner awards
@@ -196,33 +195,30 @@ details:
   - Fee savings compound on high-volume international spending
 ```
 
-### benefit_key: discounted_lounge_access
+### benefit_key: no_lounge_access
 
 ```yaml
-category: discounted_lounge_access
-benefit_name: "$45 Discounted Lounge Visit Passes"
-description: "Discounted pricing for airport lounge access via LoungeKey"
+category: no_lounge_access
+benefit_name: "No Lounge Access"
+description: "The Venture card does not include airport lounge access"
 details:
-  - Access to 1,000+ airport lounges globally via LoungeKey program
-  - $45 per visit (compared to typical $27-35 for Venture X at no cost)
-  - Not complimentary—fees apply for each visit
-  - Includes food, beverages, Wi-Fi, business services
-  - Can purchase passes on-demand or through standing arrangement
-  - Family members can accompany cardholder
+  - No complimentary or discounted lounge access is included with this card
+  - The previously listed "$45/visit LoungeKey" benefit does not exist (corrected in the August 2026 audit)
+  - Lounge access (Capital One Lounges + Priority Pass) is a Venture X feature, not a Venture feature
 ```
 
 ### benefit_key: global_entry_credit
 
 ```yaml
 category: global_entry_credit
-benefit_name: "$120 Global Entry Credit"
-description: "Reimbursement for TSA Global Entry enrollment or NEXUS/SENTRI"
+benefit_name: "$120 Global Entry / TSA PreCheck Credit"
+description: "Reimbursement for Global Entry, TSA PreCheck, or NEXUS application fee every 4 years"
 details:
-  - $120 statement credit per authorization period
-  - Covers TSA Global Entry ($100 fee), NEXUS ($120), or SENTRI ($99)
-  - Reimburses credential renewal costs (valid for 5-year period)
-  - Automatic credit posts upon approval of application
-  - Family members not covered under this benefit
+  - Up to $120 statement credit every 4 years
+  - Covers Global Entry ($120), TSA PreCheck ($78-$98), or NEXUS ($50) application fee
+  - Global Entry includes TSA PreCheck, making it the better value
+  - Credit posts automatically within 1-2 billing cycles of paying the fee with the card
+  - Covers the primary cardmember only
 ```
 
 ### benefit_key: concierge_services
@@ -280,7 +276,7 @@ details:
 
 | Card | Annual Fee | Base Earn | Welcome Bonus | Transfer Partners | Key Differentiator |
 |------|-----------|-----------|---------------|------------------|-------------------|
-| **Capital One Venture** | $95 | 2x all | 75K miles + $250 credit | 22+ at 1:1 | Lowest barrier; simple rate structure |
+| **Capital One Venture** | $95 | 2x all | 75K miles | 22 (most 1:1) | Lowest barrier; simple rate structure |
 | **Chase Sapphire Preferred** | $95 | 2x travel + 3x dining/cat | 60K UR + $50 credit | 35+ at varying rates | Higher earning potential; better partners |
 | **American Express Gold** | $250 | 4x flights/dining, 1x other | 75K MR | 15+ airline partners | Higher annual fee; higher earning rates |
 | **Ink Business Preferred** | $95 | 3x in 3 categories | 100K UR | 35+ partners via UR | Business focus; higher signup bonus |
@@ -291,13 +287,14 @@ details:
 - **Advantages vs. Competitors:**
   - Lower annual fee ($95 vs. $250 for Amex Gold)
   - No foreign transaction fees (vs. many competitors)
-  - Strong welcome bonus (75K miles + $250 credit)
-  - Good transfer partner list (22+ programs)
+  - Strong welcome bonus (75K miles)
+  - Good transfer partner list (22 programs)
   - Accessible to broader range of credit profiles
 
 - **Disadvantages vs. Competitors:**
   - Lower earn rates than Sapphire Preferred (2x vs. 3x on dining)
   - Smaller transfer partner network than Chase (22 vs. 35+)
+  - No annual travel credit (the $250 credit was a first-year welcome-offer component, expired April 2026)
   - No complimentary lounge access (vs. Sapphire Reserve or Amex Platinum)
   - Limited premium insurance compared to higher-tier cards
 
@@ -351,20 +348,10 @@ miles_pooling:
 ```yaml
 credit_tracking:
   travel_credit:
-    - description: "$250 annual travel credit"
-    - reset_period: "Calendar year (Jan-Dec)"
+    - description: "$250 travel credit — DISCONTINUED (one-time first-year welcome-offer component; offer expired April 2026; config sunset 2026-04-30)"
+    - status: "Do not track for new activity — retained for usage history only"
     - eligible_categories:
-        - "Airlines"
-        - "Hotels"
-        - "Rental cars"
-        - "Vacation rentals"
-        - "Tour operators"
-        - "Travel agents"
-    - not_eligible:
-        - "Rideshare (Uber, Lyft)"
-        - "Gas and parking"
-        - "Meals during travel"
-    - use_it_or_lose_it: "True"
+        - "Capital One Travel bookings (first cardholder year only, under the expired offer)"
 ```
 
 ### Insurance Claim Tracking
@@ -408,7 +395,7 @@ claim_rules:
 ```yaml
 transfer_tracking:
   transfer_mechanics:
-    - ratio: "1:1 (1 Capital One mile = 1 partner point)"
+    - ratio: "1:1 for most partners (some transfer at 2:1.5 or 5:3)"
     - minimum_transfer: "1,000 miles typical"
     - processing_time: "Instant to 24 hours"
     - reversibility: "No—transfers are permanent"
@@ -452,9 +439,9 @@ valuation_methodology:
     annual_fee: 95
     welcome_bonus_miles: 75000
     welcome_bonus_value_at_1cpp: 750
-    first_year_travel_credit: 250
-    total_first_year_value: 1000
-    net_gain_first_year: 905
+    total_first_year_value: 750
+    net_gain_first_year: 655
+    note: "The $250 first-year travel credit formerly part of this offer expired April 2026"
     breakeven_annual_spending: "$4,750"
     calculation: "Annual fee ($95) ÷ base earn rate (2x miles, $0.02 per $1) = $4,750 annual spend at 1cpp valuation"
 ```
@@ -469,11 +456,10 @@ annual_value_scenarios:
     miles_earned_bonus: 0
     total_miles: 20000
     value_at_1cpp: 200
-    travel_credit: 250
-    total_value: 450
-    net_gain: 355
-    roi_percent: 374
-    suitable_for: "Light spenders, benefit from travel credit"
+    total_value: 200
+    net_gain: 105
+    roi_percent: 111
+    suitable_for: "Light spenders; flat 2x still beats 1x cards"
 
   medium_usage:
     annual_spend: "$25,000"
@@ -481,10 +467,9 @@ annual_value_scenarios:
     miles_earned_bonus: 5000
     total_miles: 55000
     value_at_1.2cpp: 660
-    travel_credit: 250
-    total_value: 910
-    net_gain: 815
-    roi_percent: 858
+    total_value: 660
+    net_gain: 565
+    roi_percent: 595
     suitable_for: "Regular travelers, utilizes transfer partners effectively"
 
   high_usage:
@@ -493,12 +478,10 @@ annual_value_scenarios:
     miles_earned_bonus_via_portal: 10000
     total_miles: 130000
     value_at_1.3cpp: 1690
-    travel_credit: 250
-    lounge_savings: 180
     global_entry_credit: 120
-    total_value: 2240
-    net_gain: 2145
-    roi_percent: 2258
+    total_value: 1810
+    net_gain: 1715
+    roi_percent: 1805
     suitable_for: "Heavy travelers, maximizes all benefits"
 ```
 
@@ -515,7 +498,7 @@ competitive_analysis:
   vs_sapphire_reserve:
     annual_fee_delta: "-$155 (Capital One $95 vs. Chase $550)"
     earn_rate_delta: "-1x on travel (Capital One 2x vs. Chase 3x)"
-    lounge_access: "Capital One paid ($45/visit) vs. Chase unlimited"
+    lounge_access: "Capital One none vs. Chase unlimited"
     value_proposition: "Much lower fee; significantly fewer benefits"
     crossover_point: "Would need to value miles at 1.5+ cpp to justify Reserve's fee"
 ```
@@ -524,12 +507,11 @@ competitive_analysis:
 
 | Spending Pattern | Annual Spend | Value Generated | Net After Fee | ROI % |
 |------------------|--------------|-----------------|---------------|-------|
-| Minimal | $5,000 | $465 | $370 | 389% |
-| Moderate | $25,000 | $910 | $815 | 858% |
-| Heavy | $60,000+ | $2,240+ | $2,145+ | 2,258%+ |
+| Minimal | $5,000 | $100 | $5 | 5% |
+| Moderate | $25,000 | $660 | $565 | 595% |
+| Heavy | $60,000+ | $1,810+ | $1,715+ | 1,805%+ |
 
 **Note:** ROI calculations assume 1.0-1.3 cpp valuation depending on redemption methods. Actual returns vary based on:
 - Transfer partner timing and availability
 - Award pricing at desired airlines
-- Ability to leverage $250 travel credit
 - Whether Global Entry credit is used

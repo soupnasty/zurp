@@ -1,5 +1,7 @@
 # Discover it Cash Back Catalog
 
+*Last verified: 2026-08-13*
+
 ## Card Overview
 
 | Attribute | Value |
@@ -7,7 +9,7 @@
 | Card Name | Discover it Cash Back |
 | Network | Discover |
 | Annual Fee | $0 |
-| Card Type | `discover_it` |
+| Card Type | `discover_it_cash_back` |
 | Issue Date | Ongoing |
 | Status | Active |
 

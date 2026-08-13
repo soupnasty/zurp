@@ -1,10 +1,12 @@
 # Wells Fargo Active Cash Credit Card Catalog
 
+*Last verified: 2026-08-13*
+
 ## Card Overview
 
 | Attribute | Value |
 |-----------|-------|
-| **Card Name** | Wells Fargo Active Cash Rewards Card |
+| **Card Name** | Wells Fargo Active Cash® Card |
 | **Network** | Visa Signature |
 | **Annual Fee** | $0 (No annual fee) |
 | **Rewards Currency** | Cash Back |
@@ -15,7 +17,7 @@
 | **Intro APR Offer** | 0% for 12 months on both purchases and balance transfers |
 | **Cell Phone Protection** | $600/claim, $25 deductible, 2 claims/year ($1,200/yr max) |
 | **Collision Damage Waiver** | $50,000 limit, secondary coverage, 15 days domestic / 31 days international |
-| **Card Type ID** | wf_active_cash |
+| **Card Type ID** | wells_fargo_active_cash |
 
 ---
 

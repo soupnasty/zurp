@@ -1,5 +1,7 @@
 # Amex Platinum Card — Benefit Catalog & Competitor Map
 
+*Last verified: 2026-08-13*
+
 Implementation-ready data for the Zurp insight engine. Format matches CSR, CSP, and Amex Gold catalogs.
 
 ---
@@ -14,7 +16,7 @@ Implementation-ready data for the Zurp insight engine. Format matches CSR, CSP, 
 | Authorized user fee | $195 (up to 3 additional cards at $195 each) |
 | card_type | `amex_platinum` |
 | Points currency | Membership Rewards |
-| Points valuation | 2.0cpp (TPG/UP consensus; conservative: 1.6cpp) |
+| Points valuation | 2.0cpp with transfer partners (ANA, Virgin Atlantic); conservative: 1.0cpp |
 | Transfer partners | 21+ airlines & hotels (varies by partner; mostly 1:1 ratio) |
 | Fee anniversary | Account open date |
 | Benefit period | Varies — see individual benefits. Mix of calendar year, semi-annual, quarterly, monthly, and per-event. |
@@ -387,7 +389,7 @@ period_value:         50
 max_per_period:       50
 activation_required:  true
 activation_method:    enrollment (Amex app → Benefits tab)
-expiration_date:      null (ongoing benefit)
+expiration_date:      2026-06-30 (DISCONTINUED July 1, 2026)
 trackable_via_plaid:  true (Plaid merchant: "SAKS FIFTH AVENUE", "SAKS DIRECT", "SAKSFIFTHAVENUE.COM")
 reset_basis:          calendar_half (H1: Jan 1 – Jun 30)
 rollover:             false
@@ -396,9 +398,9 @@ notes:                Valid at Saks Fifth Avenue stores and saks.com.
                       Gift card purchases do NOT qualify (changed ~2023).
                       No minimum purchase required.
                       Saks charges $9.95 shipping under $300 — effectively reduces credit to ~$40.
-                      NOTE: Saks Global filed Chapter 11 bankruptcy Jan 13, 2026.
-                      Amex confirmed benefit continues to work during restructuring.
-                      Recommend users use credit sooner rather than later given uncertainty.
+                      DISCONTINUED July 1, 2026 (config sunset 2026-06-30), replaced by
+                      non-guaranteed Amex Offers. Entry retained for historical usage tracking —
+                      do NOT delete. (Saks Global had filed Chapter 11 bankruptcy Jan 13, 2026.)
 ```
 
 ```
@@ -413,12 +415,13 @@ period_value:         50
 max_per_period:       50
 activation_required:  true
 activation_method:    enrollment (Amex app → Benefits tab)
-expiration_date:      null
+expiration_date:      2026-06-30 (DISCONTINUED July 1, 2026)
 trackable_via_plaid:  true
 reset_basis:          calendar_half (H2: Jul 1 – Dec 31)
 rollover:             false
-notes:                Same terms as H1. Saks charges card when items SHIP, not when ordered.
-                      Order placed in June but shipped in July counts toward H2 credit.
+notes:                Same terms as H1. DISCONTINUED July 1, 2026 (config sunset 2026-06-30) —
+                      the H2 window never opens from 2026 onward. Retained for historical usage only.
+                      (Historically: Saks charged the card when items shipped, not when ordered.)
 ```
 
 ---
@@ -433,8 +436,8 @@ annual_value:         300
 period_type:          annual
 period_value:         300
 max_per_period:       300
-activation_required:  true
-activation_method:    enrollment (visit platinum.equinox.com to enroll)
+activation_required:  false
+activation_method:    null (auto-applies when Equinox membership is charged to card)
 expiration_date:      null (ongoing benefit)
 trackable_via_plaid:  true (Plaid merchant: "EQUINOX")
 reset_basis:          calendar_year
@@ -485,23 +488,23 @@ card_type:            amex_platinum
 benefit_name:         CLEAR+ Membership Credit
 benefit_partner:      CLEAR
 benefit_type:         statement_credit
-annual_value:         209
+annual_value:         219
 period_type:          annual
-period_value:         209
-max_per_period:       209
-activation_required:  true
-activation_method:    enrollment (Amex app → Benefits tab, then purchase CLEAR+ membership)
+period_value:         219
+max_per_period:       219
+activation_required:  false
+activation_method:    null (auto-applies when CLEAR+ membership is charged to card)
 expiration_date:      null (ongoing benefit)
 trackable_via_plaid:  true (Plaid merchant: "CLEAR", "CLEARME")
 reset_basis:          calendar_year (credit applies to annual CLEAR+ renewal)
 rollover:             false
-notes:                CLEAR+ membership costs $209/year (increased from $199 in July 2025).
+notes:                CLEAR+ membership costs $219/year (increased from $209 on July 1, 2026).
                       Credit fully covers membership cost.
                       Subject to auto-renewal.
                       CLEAR+ provides expedited identity verification at 50+ airports and venues.
                       Works alongside TSA PreCheck/Global Entry (CLEAR skips ID line,
                       PreCheck skips screening line).
-                      Updated from $199 to $209 credit in Sept 2025 refresh to match price increase.
+                      Credit raised from $209 to $219 effective July 1, 2026 to match CLEAR price increase.
 ```
 
 ---
@@ -516,14 +519,14 @@ annual_value:         200
 period_type:          annual
 period_value:         200
 max_per_period:       200
-activation_required:  true
-activation_method:    enrollment (Amex app → Benefits tab)
+activation_required:  false
+activation_method:    null (auto-applies when Oura purchase/membership is charged to card)
 expiration_date:      null (ongoing; added in Sept 2025 refresh)
 trackable_via_plaid:  true (Plaid merchant: "OURA", "OURARING")
 reset_basis:          calendar_year
 rollover:             false
-notes:                Valid ONLY for Oura Ring hardware purchases through ouraring.com.
-                      Does NOT cover Oura Ring monthly/annual membership ($5.99/mo or $69.99/yr).
+notes:                Valid for Oura Ring hardware purchases through ouraring.com AND Oura
+                      membership fees ($5.99/mo or $69.99/yr) — both covered per card config.
                       Oura Ring 4 starts at $349 — after credit, effective cost is $149.
                       Purchases through third parties (Amazon, Best Buy) do NOT qualify.
                       NEW in Sept 2025 refresh.
@@ -641,7 +644,7 @@ notes:                Most extensive lounge network of any credit card — 1,550
                       - Amex Centurion Lounges (30 locations, including upcoming Salt Lake City,
                         Newark, Amsterdam)
                       - 10 complimentary Delta Sky Club visits/year when flying eligible Delta flight
-                        (subject to visit limitations)
+                        (unlimited visits unlock only with $75,000 in calendar-year spend)
                       - Priority Pass Select membership (enrollment required; 1,300+ lounges)
                       - Plaza Premium Lounges
                       - Select Escape Lounges
@@ -1144,7 +1147,7 @@ notes:                  Copy: "You booked $400 directly with Marriott. If this p
 
 ### Category 9: Shopping — Saks Awareness (C1)
 
-> No direct competitor redirects for Saks — it's a specific retailer credit. Generate B2 (unused credit with time pressure) insights, especially given Saks bankruptcy uncertainty.
+> Saks credit DISCONTINUED July 1, 2026 (config sunset 2026-06-30) — do NOT generate new B2/C1 Saks insights. Entries retained for historical usage tracking only.
 
 ### Category 10: Uber (No Setup) → Uber (With Uber Cash) (Activation Reminder)
 
@@ -1213,7 +1216,7 @@ When multiple entries match a single transaction:
 | plat_uber_cash | Infer from Uber/Uber Eats transaction presence | Monthly ($15 Jan-Nov, $35 Dec) | Low |
 | plat_uber_one | Plaid: "UBER ONE" subscription charge + statement credit | Calendar year | High |
 | plat_airline_fee_credit | Airline incidental charges + Amex statement credit | Calendar year | Medium |
-| plat_saks_h1 / h2 | Plaid: "SAKS" + statement credit | Semi-annual (Jan-Jun, Jul-Dec) | High |
+| plat_saks_h1 / h2 — DISCONTINUED 7/1/2026 | Plaid: "SAKS" + statement credit (historical only) | Semi-annual (Jan-Jun, Jul-Dec) | High |
 | plat_equinox | Plaid: "EQUINOX" recurring charge + statement credit | Calendar year | High |
 | plat_walmart_plus | Plaid: "WALMART+" recurring charge + statement credit | Monthly | High |
 | plat_clear | Plaid: "CLEAR" annual charge + statement credit | Calendar year | High |
@@ -1231,9 +1234,9 @@ The Amex Platinum has the most complex reset schedule of any supported card — 
 | Reset Type | Benefits | Detection |
 |---|---|---|
 | **Quarterly** | Resy credit ($100×4), Lululemon credit ($75×4) | Jan 1, Apr 1, Jul 1, Oct 1 reset |
-| **Semi-annual** | Hotel credit ($300×2), Saks credit ($50×2) | Jan 1 / Jul 1 reset |
+| **Semi-annual** | Hotel credit ($300×2), Saks credit ($50×2 — DISCONTINUED 7/1/2026) | Jan 1 / Jul 1 reset |
 | **Monthly** | Digital entertainment ($25), Uber Cash ($15/$35), Walmart+ (~$13) | 1st of each month |
-| **Calendar year** | Uber One ($120), Airline fee credit ($200), Equinox ($300), CLEAR ($209), Oura ($200) | Jan 1 reset |
+| **Calendar year** | Uber One ($120), Airline fee credit ($200), Equinox ($300), CLEAR ($219), Oura ($200) | Jan 1 reset |
 | **4-year cycle** | Global Entry/TSA PreCheck ($120) | Track from first use |
 | **Ongoing** | Lounge access, hotel status, insurance benefits | No reset — active while card is open |
 
@@ -1253,7 +1256,7 @@ The Amex Platinum has the most complex reset schedule of any supported card — 
 | Dimension | Amex Platinum | CSR |
 |---|---|---|
 | Annual fee | $895 | $795 |
-| Hard credits (total) | ~$3,284 | ~$2,060 |
+| Hard credits (total) | ~$3,024 | ~$2,060 |
 | Points on flights | 5x (direct + AmexTravel) | 4x direct / 8x Chase Travel |
 | Points on hotels | 5x (AmexTravel only); 1x direct | 4x direct / 8x Chase Travel |
 | Points on dining | 1x | 3x |
@@ -1265,8 +1268,8 @@ The Amex Platinum has the most complex reset schedule of any supported card — 
 | Entertainment credit | — | $300/yr StubHub |
 | Fitness credit | $300/yr Equinox | $120/yr Peloton |
 | Lifestyle credit | $300/yr lululemon + $200 Oura | — |
-| Shopping credit | $100/yr Saks | — |
-| Membership credit | $155/yr Walmart+ + $209 CLEAR | $120/yr DashPass |
+| Shopping credit | — (Saks $100/yr DISCONTINUED 7/1/2026) | — |
+| Membership credit | $155/yr Walmart+ + $219 CLEAR | $120/yr DashPass |
 | Airline fee credit | $200/yr (incidentals only) | $300/yr (all travel) |
 | Lounge access | Centurion + Delta Sky Club + Priority Pass (1,550+) | Chase Sapphire Lounge + Priority Pass (1,300+) |
 | Hotel status | Hilton Gold + Marriott Gold + Leaders Club Sterling | IHG Platinum |
@@ -1281,7 +1284,7 @@ The Amex Platinum has the most complex reset schedule of any supported card — 
 | Dimension | Amex Platinum | Amex Gold |
 |---|---|---|
 | Annual fee | $895 | $325 |
-| Hard credits (total) | ~$3,284 | ~$424 |
+| Hard credits (total) | ~$3,024 | ~$424 |
 | Points on dining | 1x | 4x (up to $50K/yr) |
 | Points on groceries | 1x | 4x (up to $25K/yr) |
 | Points on flights | 5x | 3x |
@@ -1319,10 +1322,10 @@ The Amex Platinum generates the most insights of any supported card:
    5. Equinox ($300/yr — enrollment required, niche)
    6. Uber Cash ($200/yr — add card to Uber)
    7. Uber One ($120/yr — enrollment + purchase)
-   8. CLEAR ($209/yr — enrollment + purchase)
+   8. CLEAR ($219/yr — enrollment + purchase)
    9. Airline fee credit ($200/yr — select airline)
    10. Walmart+ ($155/yr — enrollment + subscribe)
-   11. Saks ($100/yr — enrollment required)
+   11. Saks ($100/yr — DISCONTINUED 7/1/2026, no longer applicable)
    12. Oura Ring ($200/yr — enrollment required, niche)
    13. Global Entry ($120/4yr — enrollment required)
    14. Hotel status: Hilton Gold, Marriott Gold, Leaders Club Sterling (enrollment required each)
@@ -1333,7 +1336,7 @@ The Amex Platinum generates the most insights of any supported card:
 
 5. **Portal lock-in for hotels**: Unlike CSR (4x on direct hotel bookings), Platinum earns only 1x on direct hotel bookings. The 5x rate requires booking through AmexTravel.com. This makes the A1 hotel redirect insight much more impactful for Platinum users — the delta between 5x and 1x is 4 points per dollar.
 
-6. **Saks bankruptcy risk**: Saks Global filed Chapter 11 on Jan 13, 2026. Amex confirmed benefit continues, but Zurp should flag time sensitivity: "Your $50 Saks credit is available now. Given Saks' restructuring, consider using it sooner rather than later."
+6. **Saks credit discontinued**: The Saks credit ($50×2 semi-annual) was killed July 1, 2026 (config sunset 2026-06-30), replaced by non-guaranteed Amex Offers. Do not generate new Saks insights; the benefit entries are retained for historical usage tracking only. (Saks Global had filed Chapter 11 on Jan 13, 2026.)
 
 7. **Low everyday earn rates**: Platinum earns only 1x on dining, groceries, and most purchases. Amex explicitly positions it as a companion to the Gold Card. For users who have BOTH cards, cross-card optimization is Phase 2 but would be extremely valuable.
 
@@ -1346,9 +1349,9 @@ For new Platinum users, the B1 onboarding checklist should surface in order of d
 3. **Digital entertainment** ($300/yr — enroll, then set up streaming subscriptions)
 4. **Lululemon** ($300/yr — enroll, then shop)
 5. **Airline fee credit** ($200/yr — select airline in Amex account)
-6. **CLEAR** ($209/yr — enroll + subscribe, only if airport frequent)
+6. **CLEAR** ($219/yr — enroll + subscribe, only if airport frequent)
 7. **Walmart+** ($155/yr — enroll + subscribe)
-8. **Saks** ($100/yr — enroll, then shop)
+8. **Saks** ($100/yr — DISCONTINUED 7/1/2026, skip)
 9. **Equinox** ($300/yr — only if user has/wants Equinox, otherwise skip)
 10. **Oura Ring** ($200/yr — only if user wants smart ring, otherwise skip)
 11. **Hilton Gold status** (variable — enroll, link Hilton number)
@@ -1365,14 +1368,14 @@ For new Platinum users, the B1 onboarding checklist should surface in order of d
 | Lululemon credit | $300 | Quarterly ($75×4) | Yes |
 | Digital entertainment | $300 | Monthly ($25×12) | Yes |
 | Equinox | $300 | Calendar year | Yes |
-| CLEAR+ | $209 | Calendar year | Yes |
+| CLEAR+ | $219 | Calendar year | No |
 | Uber Cash | $200 | Monthly ($15/$35) | Yes |
 | Airline fee credit | $200 | Calendar year | Yes |
 | Oura Ring | $200 | Calendar year | Yes |
 | Walmart+ | $155 | Monthly (~$13) | Yes |
 | Uber One | $120 | Calendar year | Yes |
 | Global Entry/TSA | ~$30/yr amortized | 4-year | No |
-| Saks Fifth Avenue | $100 | Semi-annual ($50×2) | Yes |
-| **Total hard credits** | **~$3,114** | | |
+| Saks Fifth Avenue | $100 — DISCONTINUED 7/1/2026 | Semi-annual ($50×2) | Yes |
+| **Total hard credits** | **~$3,024** (excl. discontinued Saks) | | |
 
 Note: Total hard credit value is theoretical maximum. Actual realized value depends on user's spending patterns and willingness to use all enrolled benefits. Amex's "breakage" model assumes most users won't maximize all credits.

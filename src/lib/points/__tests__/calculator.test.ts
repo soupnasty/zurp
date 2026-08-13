@@ -2162,7 +2162,7 @@ describe("Capital One SavorOne earn rates", () => {
     );
     expect(result.earnRate).toBe(5);
     expect(result.points).toBe(1500);
-    expect(result.bonusLabel).toBe("Capital One Travel hotels & rental cars");
+    expect(result.bonusLabel).toBe("Capital One Travel hotels, vacation rentals & rental cars");
   });
 
   it("earns 3x on dining", () => {

@@ -1,5 +1,7 @@
 # Chase Ink Business Preferred Visa Card Catalog
 
+*Last verified: 2026-08-13*
+
 ## Card Overview
 
 | Attribute | Details |
@@ -56,11 +58,21 @@ Ultimate Rewards point pooling with other Chase business and personal Sapphire c
 ```
 
 ```benefit_key: transfer_partners_14_plus
-Transfer Ultimate Rewards points to 14+ airline and hotel transfer partners at 1:1 redemption rate, including United Airlines, Southwest Airlines, Delta Air Lines, American Airlines, Marriott Bonvoy, and other premium travel partners. Transfers occur without devaluation and provide strategic redemption options.
+Transfer Ultimate Rewards points to 14+ airline and hotel transfer partners at 1:1 redemption rate, including United Airlines, Southwest Airlines, World of Hyatt, Marriott Bonvoy, and other premium travel partners. Transfers occur without devaluation and provide strategic redemption options.
 ```
 
 ```benefit_key: points_redemption_flexibility
 Ultimate Rewards points can be redeemed for travel at 1x per point through Chase Travel Portal, transferred to airline/hotel partners, or redeemed for cash back at 1 cent per point, providing multiple redemption pathways.
+```
+
+### DoorDash Benefits
+
+```benefit_key: dashpass_complimentary
+Complimentary DashPass subscription providing $0 delivery fees and lower service fees on eligible DoorDash orders through 12/31/2027. Must be activated through DoorDash using the Ink Business Preferred card.
+```
+
+```benefit_key: doordash_nonrestaurant_credit
+Up to $10 per month in DoorDash credit on non-restaurant orders (grocery, convenience, retail) through 12/31/2027. Requires activation through DoorDash with the card; unused monthly value is forfeited and does not roll over.
 ```
 
 ### Business Services
@@ -91,6 +103,10 @@ Baggage delay reimbursement provides $100 per day up to 5 days (maximum $500 per
 Lost baggage coverage reimburses the cardholder for lost or damaged baggage up to $3,000 per trip on business travel, providing essential protection for travel necessities and business materials.
 ```
 
+```benefit_key: cell_phone_protection_business
+Cell phone protection covers damage or theft of phones listed on the monthly bill paid with the card, up to $1,000 per claim, with a maximum of 3 claims per 12-month period and a $100 deductible per claim.
+```
+
 ### Card Management
 
 ```benefit_key: business_account_management
@@ -105,7 +121,7 @@ Chase business services dashboard provides business-specific account management 
 | Shipping | 3x | UPS, FedEx, USPS, courier services |
 | Internet & Phone | 3x | Broadband, wireless, telecommunications |
 | Advertising | 3x | Digital ads, marketing platforms, traditional advertising |
-| Lyft | 5x | Through September 2027 |
+| Lyft | 5x | Through September 30, 2027 |
 | All Other Purchases | 1x | Base earning rate |
 | Category Cap | $150K/yr | Combined cap on 3x categories |
 
@@ -114,8 +130,9 @@ Chase business services dashboard provides business-specific account management 
 | Benefit | Details |
 |---------|---------|
 | Earning Efficiency | 3x on major business expense categories |
-| Lyft Premium | 5x through Sep 2027 on ride-sharing |
+| Lyft Premium | 5x through Sep 30, 2027 on ride-sharing |
 | Transfer Partners | 14+ partners for flexible redemption |
+| DoorDash Benefits | Complimentary DashPass + $10/month non-restaurant credit (both through 12/31/2027) |
 | Annual Fee Value | $95 offset by welcome bonus value |
 | Business Services | Dedicated tools and reporting |
 
@@ -128,6 +145,7 @@ Chase business services dashboard provides business-specific account management 
 | Car Rental Damage | Primary rental vehicle coverage | $60,000 limit, up to $125K MSRP |
 | Baggage Delay | Essential item reimbursement | $100/day up to 5 days |
 | Lost Luggage | Baggage reimbursement | $3,000 per trip |
+| Cell Phone Protection | Damage/theft coverage for phones on card-paid bill | $1,000/claim, 3 claims/12 months, $100 deductible |
 
 ## Detailed Benefit Analysis
 
@@ -135,9 +153,9 @@ The Chase Ink Business Preferred represents an excellent option for small busine
 
 The card's core strength lies in its versatility across common business expense categories. The 3x earning on travel, shipping, internet/phone, and advertising addresses four critical small business spending categories simultaneously. For example, a business spending $100,000 across these categories would earn 300,000 points annually, far exceeding the welcome bonus value. The $150,000 annual cap on combined 3x earning is generous for many small businesses but may underperform for high-volume businesses with significant category spending.
 
-The 5x Lyft earning extends through September 2027, providing accelerated earning on ride-sharing and commute expenses during a multi-year promotional window. This temporary multiplier should influence card selection timing, as the return period is defined.
+The 5x Lyft earning extends through September 30, 2027, providing accelerated earning on ride-sharing and commute expenses during a multi-year promotional window. This temporary multiplier should influence card selection timing, as the return period is defined. The card also carries DoorDash partner benefits through 12/31/2027: a complimentary DashPass subscription and a $10/month credit on non-restaurant DoorDash orders (grocery, convenience, retail).
 
-The Ultimate Rewards ecosystem stands out as the primary differentiator: point pooling with other Sapphire cards allows household members to consolidate points for strategic redemptions, and the 14+ transfer partners at 1:1 rate provide flexibility approaching premium card programs. The ability to transfer points to United, Southwest, Delta, American, and Marriott creates premium redemption opportunities.
+The Ultimate Rewards ecosystem stands out as the primary differentiator: point pooling with other Sapphire cards allows household members to consolidate points for strategic redemptions, and the 14+ transfer partners at 1:1 rate provide flexibility approaching premium card programs. The ability to transfer points to United, Southwest, Hyatt, and Marriott creates premium redemption opportunities.
 
 Weaknesses include the $150,000 annual category cap, which limits earning velocity for high-spend businesses (though unusual for most small operations), and the absence of business-specific perks like purchasing power discounts or merchant partnerships. The card also lacks employee cardholder provisioning, limiting enterprise suitability for larger organizations.
 
@@ -146,4 +164,4 @@ Best suited for small business owners with annual spending of $30,000-$150,000 a
 ---
 
 **card_type:** ink_business_preferred
-**Last Updated:** February 2025
+**Last Updated:** August 2026

@@ -1,5 +1,7 @@
 # Apple Card Catalog
 
+*Last verified: 2026-08-13*
+
 ## Card Overview
 
 | Attribute | Details |
@@ -8,7 +10,7 @@
 | **Card Type** | apple_card |
 | **Network** | Mastercard |
 | **Annual Fee** | $0 |
-| **Status** | Active (Issuer transitioning from Goldman Sachs to Chase in 2026) |
+| **Status** | Active (Chase acquisition announced Jan 2026; ~24-month migration, Goldman Sachs still services accounts) |
 | **Key Differentiator** | Daily Cash rewards paid daily + interest-free device financing |
 
 ---
@@ -36,8 +38,9 @@ merchants:
   - "Walgreens"
   - "Duane Reade"
   - "ChargePoint"
+  - "Hertz"
 frequency: "daily"
-notes: "Daily Cash credited to Apple Cash or applied to Apple Card balance daily, not monthly"
+notes: "Daily Cash credited to Apple Cash or applied to Apple Card balance daily, not monthly. ChargePoint and Hertz added to the 3% partner list Mar 2026"
 ```
 
 ```benefit_key
@@ -203,7 +206,7 @@ Apple Card is a lifestyle-focused, mobile-first credit card designed for iOS use
 - **Savings APY**: 4.15% APY on Daily Cash funds provides additional value on top of base rewards
 - **Apple Ecosystem Integration**: Seamless UX for Apple Pay users; interest-free device financing locks in loyal customers
 - **Zero Fee Structure**: No annual fee, no FTF, no penalty APR removes friction
-- **Issuer Stability**: Transition from Goldman Sachs to Chase in 2026 signals long-term commitment; no feature changes expected
+- **Issuer Stability**: Chase acquisition (announced Jan 2026, ~24-month migration; Goldman Sachs still services) signals long-term commitment; no feature changes expected
 
 ### Competitive Weaknesses
 
@@ -218,7 +221,7 @@ Apple Card is a lifestyle-focused, mobile-first credit card designed for iOS use
 
 | Card | Annual Fee | Base Rewards | 3% Categories | Welcome Bonus | Key Advantage |
 |------|-----------|--------------|---------------|---------------|----------------|
-| **Apple Card** | $0 | 1% (physical) / 2% (Apple Pay) | 3% (11 merchants) | None | Daily cash + ecosystem lock-in |
+| **Apple Card** | $0 | 1% (physical) / 2% (Apple Pay) | 3% (12 merchants) | None | Daily cash + ecosystem lock-in |
 | **Chase Sapphire Preferred** | $95 | 1% base | 3% (dining, travel, streaming) | 50,000 UR (~$625 value) | Flexible point transfers |
 | **American Express Gold** | $250 | 1% base | 4% (dining, airfare, streaming); 1% (flights, hotels) | 75,000 MR (~$750 value) | Premium protections + lounge access |
 | **Chase Freedom Unlimited** | $0 | 1.5% all | — | 5% for 12 months (up to $500) | Flat-rate cash back, bonus category |
@@ -227,7 +230,7 @@ Apple Card is a lifestyle-focused, mobile-first credit card designed for iOS use
 ### Zurp Strategic Relevance
 
 **Segment**: Consumer discretionary / Lifestyle credit
-**Use Case**: Mobile-first, Apple-centric consumers; high Uber/Eats/Apple spending; travel booking via Booking.com; EV drivers (ChargePoint)
+**Use Case**: Mobile-first, Apple-centric consumers; high Uber/Eats/Apple spending; travel booking via Booking.com; EV drivers (ChargePoint); car renters (Hertz)
 **Positioning Tier**: Mid-market aspirational (free card, premium UX, but weaker protections than AmEx/Chase premium tiers)
 **Growth Driver**: Apple Pay adoption; Apple device financing tie-in
 **Risk Factor**: Issuer transition in 2026; no welcome bonus reduces market penetration vs. competitors
@@ -236,7 +239,7 @@ Apple Card is a lifestyle-focused, mobile-first credit card designed for iOS use
 
 ---
 
-**Document Version**: 1.0
-**Last Updated**: 2026-02-11
-**Issuer**: Apple Card (Goldman Sachs Bank USA / Chase from 2026)
+**Document Version**: 1.1
+**Last Updated**: 2026-08-13
+**Issuer**: Apple Card (Goldman Sachs Bank USA; Chase acquisition announced Jan 2026, ~24-month migration — Goldman still services)
 **Format**: Zurp Card Catalog v2.0
