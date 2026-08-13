@@ -74,25 +74,94 @@ const PLAID_CATEGORY_MAP: Record<string, EarnCategory> = {
 
   // Insurance
   SERVICE_INSURANCE: "insurance",
+  GENERAL_SERVICES_INSURANCE: "insurance",
+
+  // Modern Plaid taxonomy (personal_finance_category) additions
+  FOOD_AND_DRINK_BEER_WINE_AND_LIQUOR: "other", // liquor stores don't earn dining/grocery bonuses
+  TRANSPORTATION_BIKES_AND_SCOOTERS: "transit",
+  TRAVEL_OTHER_TRAVEL: "travel_other",
+  ENTERTAINMENT_CASINOS_AND_GAMBLING: "entertainment",
+  ENTERTAINMENT_VIDEO_GAMES: "entertainment",
+  ENTERTAINMENT_OTHER_ENTERTAINMENT: "entertainment",
+  GENERAL_MERCHANDISE_ONLINE_MARKETPLACES: "shopping_online",
+  GENERAL_MERCHANDISE_BOOKSTORES_AND_NEWSSTANDS: "shopping_instore",
+  GENERAL_MERCHANDISE_CLOTHING_AND_ACCESSORIES: "shopping_instore",
+  GENERAL_MERCHANDISE_CONVENIENCE_STORES: "shopping_instore",
+  GENERAL_MERCHANDISE_DEPARTMENT_STORES: "shopping_instore",
+  GENERAL_MERCHANDISE_DISCOUNT_STORES: "shopping_instore",
+  GENERAL_MERCHANDISE_ELECTRONICS: "shopping_instore",
+  GENERAL_MERCHANDISE_GIFTS_AND_NOVELTIES: "shopping_instore",
+  GENERAL_MERCHANDISE_OFFICE_SUPPLIES: "shopping_instore",
+  GENERAL_MERCHANDISE_PET_SUPPLIES: "shopping_instore",
+  GENERAL_MERCHANDISE_SPORTING_GOODS: "shopping_instore",
+  GENERAL_MERCHANDISE_SUPERSTORES: "shopping_instore",
+  HOME_IMPROVEMENT_HARDWARE: "home_improvement",
+  RENT_AND_UTILITIES_GAS_AND_ELECTRICITY: "bills_utilities",
+  RENT_AND_UTILITIES_WATER: "bills_utilities",
+  RENT_AND_UTILITIES_SEWAGE_AND_WASTE_MANAGEMENT: "bills_utilities",
+  RENT_AND_UTILITIES_INTERNET_AND_CABLE: "bills_utilities",
+  RENT_AND_UTILITIES_OTHER_UTILITIES: "bills_utilities",
+  RENT_AND_UTILITIES_TELEPHONE: "phone_services",
+  RENT_AND_UTILITIES_RENT: "other", // rent is not bonus-eligible spend
 };
+
+/**
+ * Plaid PRIMARY category → EarnCategory mapping.
+ * Coarser than the detailed map — used only when the detailed value is
+ * missing or unmapped. Only primaries with an unambiguous earn category
+ * are listed; ambiguous ones (TRANSPORTATION spans gas/transit/parking,
+ * RENT_AND_UTILITIES includes rent) intentionally fall through to "other".
+ */
+const PLAID_PRIMARY_MAP: Record<string, EarnCategory> = {
+  FOOD_AND_DRINK: "dining",
+  TRAVEL: "travel_other",
+  ENTERTAINMENT: "entertainment",
+  HOME_IMPROVEMENT: "home_improvement",
+  // GENERAL_MERCHANDISE handled separately — payment channel decides
+  // shopping_online vs shopping_instore.
+};
+
+export interface ClassifyContext {
+  /** Plaid payment_channel: "online" | "in store" | "other" */
+  paymentChannel?: string | null;
+}
 
 /**
  * 3-tier category classifier for the points engine.
  *
- * Tier 1: Merchant name match (high confidence)
+ * Tier 1: Merchant name match (high confidence). Entries flagged
+ *         `deferToPlaid` (Amazon, Walmart, Target) yield to Plaid's
+ *         grocery signal so grocery runs aren't binned as shopping.
  * Tier 2: Plaid detailed category (medium confidence)
+ * Tier 2b: Plaid primary category (low confidence — coarse but real)
  * Tier 3: Fallback → "other" (low confidence)
  */
 export function classifyForPoints(
   merchantName: string | null,
   plaidCategoryPrimary: string | null,
-  plaidCategoryDetailed: string | null
+  plaidCategoryDetailed: string | null,
+  context?: ClassifyContext
 ): CategoryAssignment {
+  const paymentChannel = context?.paymentChannel ?? null;
+
   // Tier 1: Merchant name lookup
   const normalized = normalizeMerchantName(merchantName);
   if (normalized) {
     const merchantMatch = matchMerchant(normalized);
     if (merchantMatch) {
+      // Ambiguous mega-merchants: when Plaid says this specific purchase
+      // was groceries, believe Plaid over the static default.
+      if (
+        merchantMatch.deferToPlaid &&
+        plaidCategoryDetailed === "FOOD_AND_DRINK_GROCERIES"
+      ) {
+        return {
+          category: paymentChannel === "in store" ? "groceries" : "grocery_online",
+          confidence: "medium",
+          matchSource: "plaid_category",
+          matchedValue: plaidCategoryDetailed,
+        };
+      }
       return {
         category: merchantMatch.category,
         confidence: "high",
@@ -115,13 +184,22 @@ export function classifyForPoints(
     }
   }
 
-  // Also try primary category as fallback
+  // Tier 2b: Plaid primary category — coarse fallback, low confidence
   if (plaidCategoryPrimary) {
-    const mapped = PLAID_CATEGORY_MAP[plaidCategoryPrimary];
+    if (plaidCategoryPrimary === "GENERAL_MERCHANDISE") {
+      return {
+        category:
+          paymentChannel === "online" ? "shopping_online" : "shopping_instore",
+        confidence: "low",
+        matchSource: "plaid_category",
+        matchedValue: plaidCategoryPrimary,
+      };
+    }
+    const mapped = PLAID_PRIMARY_MAP[plaidCategoryPrimary];
     if (mapped) {
       return {
         category: mapped,
-        confidence: "medium",
+        confidence: "low",
         matchSource: "plaid_category",
         matchedValue: plaidCategoryPrimary,
       };

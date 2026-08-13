@@ -8,6 +8,13 @@
       "when": 1771011141073,
       "tag": "0000_warm_gargoyle",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1786640296267,
+      "tag": "0001_naive_mockingbird",
+      "breakpoints": true
     }
   ]
 }

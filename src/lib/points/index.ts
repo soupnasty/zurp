@@ -67,7 +67,8 @@ async function computeComparisonOnDemand(
     const assignment = classifyForPoints(
       tx.merchantName,
       tx.plaidCategoryPrimary,
-      tx.plaidCategoryDetailed
+      tx.plaidCategoryDetailed,
+      { paymentChannel: tx.paymentChannel }
     );
     return {
       id: tx.id,

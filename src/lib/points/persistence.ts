@@ -58,6 +58,7 @@ export async function computeAndPersistPointsSummary(
       amount: true,
       plaidCategoryPrimary: true,
       plaidCategoryDetailed: true,
+      paymentChannel: true,
     },
   });
 
@@ -111,7 +112,8 @@ export async function computeAndPersistPointsSummary(
     const classification = classifyForPoints(
       tx.merchantName,
       tx.plaidCategoryPrimary,
-      tx.plaidCategoryDetailed
+      tx.plaidCategoryDetailed,
+      { paymentChannel: tx.paymentChannel }
     );
 
     // Pass the signed amount: the calculator returns negative points for

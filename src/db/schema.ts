@@ -196,9 +196,17 @@ export const transactions = pgTable(
     datetime: timestamp("datetime", { mode: "date" }),
     merchantName: text("merchant_name"),
     merchantNameRaw: text("merchant_name_raw"),
+    // Stable Plaid merchant entity ID — present only for Plaid-enriched
+    // merchants. A far better join key than the merchant name string.
+    merchantEntityId: text("merchant_entity_id"),
     amount: real("amount").notNull(),
     plaidCategoryPrimary: text("plaid_category_primary"),
     plaidCategoryDetailed: text("plaid_category_detailed"),
+    // Plaid's own confidence in the personal_finance_category assignment:
+    // "VERY_HIGH" | "HIGH" | "MEDIUM" | "LOW" | "UNKNOWN"
+    plaidCategoryConfidence: text("plaid_category_confidence"),
+    // "online" | "in store" | "other" — authoritative online/in-store signal
+    paymentChannel: text("payment_channel"),
     isAnnualFee: boolean("is_annual_fee").notNull().default(false),
     pending: boolean("pending").notNull().default(false),
     matchedStatus: text("matched_status")

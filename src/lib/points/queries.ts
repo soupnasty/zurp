@@ -13,6 +13,7 @@ export interface CompareTransaction {
   amount: number;
   plaidCategoryPrimary: string | null;
   plaidCategoryDetailed: string | null;
+  paymentChannel: string | null;
 }
 
 /**
@@ -46,6 +47,7 @@ export async function getCompareTransactions(
       amount: true,
       plaidCategoryPrimary: true,
       plaidCategoryDetailed: true,
+      paymentChannel: true,
     },
   });
 

@@ -7,6 +7,7 @@ import * as schema from "@/db/schema";
 export const EXCLUDED_CATEGORIES = [
   "INCOME",
   "TRANSFER_IN",
+  "TRANSFER_OUT", // P2P transfers, savings sweeps, ATM withdrawals, crypto buys — not purchase spend
   "LOAN_PAYMENTS",
   "BANK_FEES",
 ];

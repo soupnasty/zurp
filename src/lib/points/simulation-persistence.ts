@@ -61,6 +61,7 @@ export async function computeAndPersistSimulations(
       amount: true,
       plaidCategoryPrimary: true,
       plaidCategoryDetailed: true,
+      paymentChannel: true,
     },
   });
 
@@ -108,7 +109,8 @@ export async function computeAndPersistSimulations(
     const assignment = classifyForPoints(
       tx.merchantName,
       tx.plaidCategoryPrimary,
-      tx.plaidCategoryDetailed
+      tx.plaidCategoryDetailed,
+      { paymentChannel: tx.paymentChannel }
     );
     return { ...tx, assignment };
   });

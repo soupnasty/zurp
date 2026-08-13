@@ -167,24 +167,158 @@ describe("classifyForPoints", () => {
       expect(result.confidence).toBe("medium");
     });
 
-    it("tries primary category when detailed doesn't match", () => {
-      const result = classifyForPoints(
-        "MYSTERY MERCHANT",
-        "TRANSPORTATION_GAS",
-        "UNKNOWN_DETAILED"
-      );
-      expect(result.category).toBe("gas_stations");
-      expect(result.confidence).toBe("medium");
-    });
-
     it("maps Plaid parking to parking", () => {
       const result = classifyForPoints(
-        "PARKING GARAGE",
+        "DOWNTOWN LOT 7",
         null,
         "TRANSPORTATION_PARKING"
       );
       expect(result.category).toBe("parking");
       expect(result.confidence).toBe("medium");
+    });
+
+    it("excludes liquor stores from dining via explicit detailed mapping", () => {
+      const result = classifyForPoints(
+        "CITY WINE & SPIRITS",
+        "FOOD_AND_DRINK",
+        "FOOD_AND_DRINK_BEER_WINE_AND_LIQUOR"
+      );
+      expect(result.category).toBe("other");
+      expect(result.matchSource).toBe("plaid_category");
+    });
+  });
+
+  describe("Tier 2b: Plaid primary category fallback", () => {
+    it("maps FOOD_AND_DRINK primary to dining at low confidence", () => {
+      const result = classifyForPoints(
+        "MYSTERY MERCHANT",
+        "FOOD_AND_DRINK",
+        "UNKNOWN_DETAILED"
+      );
+      expect(result.category).toBe("dining");
+      expect(result.confidence).toBe("low");
+      expect(result.matchSource).toBe("plaid_category");
+      expect(result.matchedValue).toBe("FOOD_AND_DRINK");
+    });
+
+    it("maps TRAVEL primary to travel_other", () => {
+      const result = classifyForPoints("MYSTERY TRAVEL CO", "TRAVEL", null);
+      expect(result.category).toBe("travel_other");
+      expect(result.confidence).toBe("low");
+    });
+
+    it("splits GENERAL_MERCHANDISE by payment channel", () => {
+      const online = classifyForPoints(
+        "MYSTERY SHOP",
+        "GENERAL_MERCHANDISE",
+        null,
+        { paymentChannel: "online" }
+      );
+      expect(online.category).toBe("shopping_online");
+
+      const inStore = classifyForPoints(
+        "MYSTERY SHOP",
+        "GENERAL_MERCHANDISE",
+        null,
+        { paymentChannel: "in store" }
+      );
+      expect(inStore.category).toBe("shopping_instore");
+    });
+
+    it("leaves ambiguous primaries (TRANSPORTATION) unclassified", () => {
+      const result = classifyForPoints(
+        "MYSTERY MERCHANT",
+        "TRANSPORTATION",
+        null
+      );
+      expect(result.category).toBe("other");
+      expect(result.matchSource).toBe("fallback");
+    });
+  });
+
+  describe("Defer-to-Plaid grocery override (Amazon/Walmart/Target)", () => {
+    it("classifies Amazon grocery purchases as grocery_online", () => {
+      const result = classifyForPoints(
+        "AMAZON.COM*123ABC",
+        "FOOD_AND_DRINK",
+        "FOOD_AND_DRINK_GROCERIES"
+      );
+      expect(result.category).toBe("grocery_online");
+      expect(result.confidence).toBe("medium");
+      expect(result.matchSource).toBe("plaid_category");
+    });
+
+    it("classifies in-store Walmart grocery runs as groceries", () => {
+      const result = classifyForPoints(
+        "WALMART SUPERCENTER",
+        "FOOD_AND_DRINK",
+        "FOOD_AND_DRINK_GROCERIES",
+        { paymentChannel: "in store" }
+      );
+      expect(result.category).toBe("groceries");
+    });
+
+    it("keeps Walmart as shopping_instore when Plaid doesn't say groceries", () => {
+      const result = classifyForPoints(
+        "WALMART SUPERCENTER",
+        "GENERAL_MERCHANDISE",
+        "GENERAL_MERCHANDISE_SUPERSTORES"
+      );
+      expect(result.category).toBe("shopping_instore");
+      expect(result.confidence).toBe("high");
+      expect(result.matchSource).toBe("merchant_name");
+    });
+  });
+
+  describe("Word-boundary matching", () => {
+    it("does not match short hotel prefixes inside longer words", () => {
+      // "tru" (Hilton brand) must not claim TRUCKEE anything
+      const result = classifyForPoints("TRUCKEE HARDWARE", null, null);
+      expect(result.category).not.toBe("travel_hotels");
+    });
+
+    it("still matches TRU as a standalone hotel token", () => {
+      const result = classifyForPoints("TRU BY HILTON DENVER", null, null);
+      expect(result.category).toBe("travel_hotels");
+    });
+
+    it("matches bare BP as gas", () => {
+      const result = classifyForPoints("BP#9012 FUEL", null, null);
+      expect(result.category).toBe("gas_stations");
+    });
+
+    it("does not match MOBIL inside MOBILE", () => {
+      const result = classifyForPoints("MOBILE NOTARY SERVICE", null, null);
+      expect(result.category).not.toBe("gas_stations");
+    });
+
+    it("does not let MAX claim possessive names", () => {
+      const result = classifyForPoints("MAX'S DELI", null, null);
+      expect(result.category).not.toBe("streaming");
+    });
+  });
+
+  describe("Dining coverage", () => {
+    it("maps national chains to dining", () => {
+      expect(classifyForPoints("CHIPOTLE 2280", null, null).category).toBe("dining");
+      expect(classifyForPoints("MCDONALD'S F32812", null, null).category).toBe("dining");
+      expect(classifyForPoints("SWEETGREEN NOMAD", null, null).category).toBe("dining");
+    });
+
+    it("maps generic dining descriptor words for independents", () => {
+      expect(classifyForPoints("JOE'S PIZZA BROOKLYN", null, null).category).toBe("dining");
+      expect(classifyForPoints("HILLSTONE RESTAURANT", null, null).category).toBe("dining");
+      expect(classifyForPoints("BLUE OAK BBQ", null, null).category).toBe("dining");
+    });
+
+    it("maps generic coffee descriptor words", () => {
+      expect(classifyForPoints("TRUCKEE COFFEE ROASTERS", null, null).category).toBe("coffee");
+    });
+
+    it("named chains outrank generic words", () => {
+      // "pizza hut" (10) must win over generic "pizza" (3)
+      const result = classifyForPoints("PIZZA HUT 035421", null, null);
+      expect(result.matchedValue).toBe("pizza hut");
     });
   });
 

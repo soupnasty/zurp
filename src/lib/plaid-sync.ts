@@ -116,11 +116,15 @@ export async function triggerSync(connectionId: string): Promise<SyncResult> {
                 : null,
             merchantName: tx.merchant_name || tx.name,
             merchantNameRaw: tx.name,
+            merchantEntityId: tx.merchant_entity_id || null,
             amount: tx.amount,
             plaidCategoryPrimary:
               tx.personal_finance_category?.primary || null,
             plaidCategoryDetailed:
               tx.personal_finance_category?.detailed || null,
+            plaidCategoryConfidence:
+              tx.personal_finance_category?.confidence_level || null,
+            paymentChannel: tx.payment_channel || null,
             pending: tx.pending,
             matchedStatus: "unmatched",
           }))
@@ -142,11 +146,15 @@ export async function triggerSync(connectionId: string): Promise<SyncResult> {
               : null,
           merchantName: tx.merchant_name || tx.name,
           merchantNameRaw: tx.name,
+          merchantEntityId: tx.merchant_entity_id || null,
           amount: tx.amount,
           plaidCategoryPrimary:
             tx.personal_finance_category?.primary || null,
           plaidCategoryDetailed:
             tx.personal_finance_category?.detailed || null,
+          plaidCategoryConfidence:
+            tx.personal_finance_category?.confidence_level || null,
+          paymentChannel: tx.payment_channel || null,
           pending: tx.pending,
         })
         .where(eq(schema.transactions.id, tx.transaction_id));
