@@ -67,6 +67,24 @@ export const appleCardEarnConfig: EarnConfig = {
         merchant_match: ["booking.com"],
       },
     },
+    // ChargePoint & Hertz added to the 3% partner list Mar 2026 (support.apple.com).
+    // EV charging is grouped under gas_stations in our taxonomy.
+    {
+      categories: ["gas_stations"],
+      earnRate: 3,
+      label: "ChargePoint",
+      conditions: {
+        merchant_match: ["chargepoint"],
+      },
+    },
+    {
+      categories: ["car_rentals"],
+      earnRate: 3,
+      label: "Hertz",
+      conditions: {
+        merchant_match: ["hertz"],
+      },
+    },
   ],
   caps: [],
   annualFee: 0,

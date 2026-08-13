@@ -9,8 +9,9 @@ export const worldOfHyatt: CardDefinition = {
   feeDescriptor: "annual membership fee",
   imageUrl: null,
   isActive: true,
+  lastVerifiedAt: "2026-08-13",
   // Non-tracked benefits (certificates, tracked in perk matrix only):
-  // - Category 1-4 Free Night Certificate (annual, after $15K spend)
-  // - Category 1-7 Free Night Certificate (annual, automatic)
+  // - Category 1-4 Free Night Certificate (automatic, each cardmember anniversary)
+  // - Additional Category 1-4 Free Night Certificate (after $15K calendar-year spend)
   benefits: [],
 };

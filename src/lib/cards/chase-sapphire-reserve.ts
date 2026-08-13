@@ -131,6 +131,7 @@ export const chaseSapphireReserve: CardDefinition = {
   feeDescriptor: "annual membership fee",
   imageUrl: null,
   isActive: true,
+  lastVerifiedAt: "2026-08-13",
   benefits: [
     // ── Travel Credit ($300/anniversary year) ──
     b({

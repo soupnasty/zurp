@@ -1,5 +1,7 @@
 # Card Config Audit — August 13, 2026
 
+> **Status: FIXES APPLIED (2026-08-13).** All Severity 1–3 findings below were applied to the card definitions, earn configs, and perk matrix the same day. All 30 cards now carry `lastVerifiedAt: "2026-08-13"`. Discontinued benefits were sunset (past `sunsetDate` + DISCONTINUED copy), never deleted, to preserve `benefitUsage` history. The calculator gained overnight time-window support for the corrected Citi Nights window. Full suite green (1,399 tests) and production build passes. Remaining follow-up: run `npm run db:seed` to sync the new/changed benefit definitions into the database.
+
 **Scope:** All 30 cards. Deep audit of high/medium-churn cards (card definitions, earn configs, perk matrix); fee + rate spot-checks on low-churn flat-rate cards.
 **Method:** 7 parallel research agents (grouped by issuer) verified configs against current issuer pages, with blogs treated as leads only; 2 adversarial verification agents re-checked every consequential claim that lacked primary-source confirmation.
 **Baseline:** Configs last materially updated ~Feb 2026. This audit found significant drift, concentrated in the June 2026 CSP refresh, the July 2025 Southwest refresh, the mid-2026 Amex coupon-book churn, and two earn configs that were wrong from the start (Bilt Palladium, WF Autograph Journey).

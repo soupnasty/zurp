@@ -2,7 +2,8 @@ import type { EarnConfig } from "../types";
 
 export const capitalOneSavorEarnConfig: EarnConfig = {
   cardId: "capital_one_savor",
-  cardName: "Capital One SavorOne",
+  // Renamed "Savor Cash Rewards" in Oct 2024 (formerly "SavorOne")
+  cardName: "Capital One Savor",
   pointsCurrency: "cash_back",
   baseRate: 1,
   bonusCategories: [
@@ -43,7 +44,7 @@ export const capitalOneSavorEarnConfig: EarnConfig = {
     },
   ],
   caps: [],
-  annualFee: 0, // SavorOne has $0 fee (original Savor was $95)
+  annualFee: 0, // Savor (formerly SavorOne) has $0 fee
   valuation: {
     conservativeCpp: 1.0,
     upsideCpp: 1.0,

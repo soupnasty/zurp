@@ -8,12 +8,10 @@ const b = (input: BenefitInput) => defineBenefit(CARD_ID, input);
 
 const southwestTravelCreditDetails: BenefitDetails = {
   description:
-    "$75 annual Southwest travel credit applied toward any eligible Southwest Airlines purchase including airfare, baggage fees, seat selections, early check-in, and other airline incidentals. Credit is issued each cardmember anniversary.",
+    "DISCONTINUED: The $75 annual Southwest travel credit was removed in the July 2025 card refresh and ended 12/31/2025. It previously applied toward eligible Southwest Airlines purchases including airfare, baggage fees, seat selections, and other airline incidentals.",
   howToUse: [
-    "Make any Southwest Airlines purchase using your card",
-    "Up to $75 in statement credits apply automatically",
-    "Credit covers airfare, baggage, seat upgrades, and incidentals",
-    "New credit issued each cardmember anniversary",
+    "This benefit ended 12/31/2025 and is no longer available",
+    "Historical usage before that date remains tracked",
   ],
   links: [
     { label: "Southwest Airlines", url: "https://www.southwest.com" },
@@ -53,8 +51,14 @@ export const southwestPriority: CardDefinition = {
   feeDescriptor: "annual membership fee",
   imageUrl: null,
   isActive: true,
+  lastVerifiedAt: "2026-08-13",
   benefits: [
-    // Upgraded Boardings (certificate) tracked in perk matrix only.
+    // Extra Legroom seat upgrades (unlimited, within 48h of departure) + Group 5
+    // boarding (replaced Upgraded Boardings on Jan 27, 2026) tracked in perk
+    // matrix only.
+    // ── Southwest Travel Credit (DISCONTINUED 12/31/2025) ──
+    // Kept (not deleted) because users may have usage history. sunsetDate in
+    // the past deactivates it going forward.
     b({
       id: "southwest_travel_credit",
       name: "Southwest Travel Credit",
@@ -67,8 +71,10 @@ export const southwestPriority: CardDefinition = {
       autoMatchable: true,
       requiresActivation: false,
       priority: 30,
-      description: "Up to $75/year for eligible Southwest purchases.",
-      notes: "Covers airfare, baggage, seats, and incidentals.",
+      description: "Discontinued: $75/year Southwest travel credit ended 12/31/2025.",
+      notes:
+        "DISCONTINUED in the July 2025 card refresh; last valid 12/31/2025. Retained for historical usage only.",
+      sunsetDate: "2025-12-31",
       details: southwestTravelCreditDetails,
       lifestyleKey: "southwest",
     }),

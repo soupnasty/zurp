@@ -45,6 +45,7 @@ export const citiStrataPremier: CardDefinition = {
   feeDescriptor: "CITI CARD ANNUAL FEE",
   imageUrl: null,
   isActive: true,
+  lastVerifiedAt: "2026-08-13",
   benefits: [
     // ── Annual Hotel Credit ($100) ──
     b({

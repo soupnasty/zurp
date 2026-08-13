@@ -13,6 +13,8 @@ export const robinhoodGoldEarnConfig: EarnConfig = {
     },
   ],
   caps: [
+    // $3,500/yr 5x portal cap re-verified 2026-08-13 against Robinhood's own
+    // terms (robinhood.com support article).
     {
       capId: "rh_travel_portal_3500",
       categories: ["travel_portal"],

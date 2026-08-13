@@ -21,6 +21,12 @@ export const southwestPriorityEarnConfig: EarnConfig = {
       earnRate: 2,
       label: "Dining",
     },
+    // 2x on gas stations
+    {
+      categories: ["gas_stations"],
+      earnRate: 2,
+      label: "Gas stations",
+    },
   ],
   caps: [],
   annualFee: 229,

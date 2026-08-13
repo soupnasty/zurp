@@ -61,7 +61,7 @@ const globalEntryDetails: BenefitDetails = {
 
 const clearDetails: BenefitDetails = {
   description:
-    "Up to $209/year in statement credits covering a CLEAR Plus membership (expedited security screening at 50+ airports).",
+    "Up to $219/year in statement credits covering a CLEAR Plus membership (currently $219/yr after the 7/1/2026 price increase; expedited security screening at 50+ airports).",
   howToUse: [
     "Sign up for CLEAR Plus at clearme.com",
     "Pay with your Business Platinum card",
@@ -168,6 +168,7 @@ export const amexBusinessPlatinum: CardDefinition = {
   feeDescriptor: "annual membership fee",
   imageUrl: null,
   isActive: true,
+  lastVerifiedAt: "2026-08-13",
   benefits: [
     // ── Semi-annual Hotel Credits ($300/half × 2) ──
     ...expandCycles(
@@ -249,14 +250,14 @@ export const amexBusinessPlatinum: CardDefinition = {
       icon: "Shield",
       category: "travel",
       type: "credit",
-      creditAmount: 209,
+      creditAmount: 219,
       cycle: "annual_calendar",
       merchantPatterns: ["clear", "clearme"],
       autoMatchable: true,
       requiresActivation: false,
       priority: 20,
-      description: "Up to $209/year covering CLEAR Plus membership.",
-      notes: "Covers annual CLEAR Plus membership fee.",
+      description: "Up to $219/year covering CLEAR Plus membership.",
+      notes: "Covers annual CLEAR Plus membership fee ($219/yr as of 7/1/2026).",
       details: clearDetails,
       lifestyleKey: "clear_plus",
     }),

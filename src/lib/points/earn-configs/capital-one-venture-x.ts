@@ -6,11 +6,12 @@ export const ventureXEarnConfig: EarnConfig = {
   pointsCurrency: "capital_one_miles",
   baseRate: 2,
   bonusCategories: [
-    // Portal flights: 5x (match airline merchants first)
+    // Portal flights & vacation rentals: 5x (verified 2026-08-13 — vacation
+    // rentals earn 5x grouped with flights, NOT the 10x hotels/cars rate)
     {
       categories: ["travel_portal"],
       earnRate: 5,
-      label: "Capital One Travel flights",
+      label: "Capital One Travel flights & vacation rentals",
       conditions: {
         merchant_match: [
           "united",
@@ -21,14 +22,16 @@ export const ventureXEarnConfig: EarnConfig = {
           "alaska air",
           "spirit",
           "frontier",
+          "airbnb",
+          "vrbo",
         ],
       },
     },
-    // Portal hotels & rentals: 10x (everything else through portal)
+    // Portal hotels & rental cars: 10x (everything else through portal)
     {
       categories: ["travel_portal"],
       earnRate: 10,
-      label: "Capital One Travel hotels & rentals",
+      label: "Capital One Travel hotels & rental cars",
     },
     // Everything else: 2x (base rate handles this — no explicit bonus entries needed)
   ],

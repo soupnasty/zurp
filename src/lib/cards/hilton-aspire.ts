@@ -12,15 +12,20 @@ const b = (input: BenefitInput) => defineBenefit(CARD_ID, input);
 
 const hiltonResortCreditDetails: BenefitDetails = {
   description:
-    "$400 annual Hilton resort credit distributed as two $200 semi-annual credits for prepaid room rates, resort fees, food and beverage, or other hotel incidentals at Hilton properties. Credits reset semi-annually and do not carry over if unused.",
+    "$400 annual Hilton resort credit distributed as two $200 semi-annual credits for eligible purchases — including room rate, resort fees, food and beverage, and other incidentals — at participating Hilton Resorts (properties on Hilton's eligible resort list, NOT all Hilton properties). Credits reset semi-annually and do not carry over if unused.",
   howToUse: [
-    "Book a stay at any Hilton Honors property",
+    "Check Hilton's eligible resort list for participating Hilton Resorts",
+    "Book a stay at a participating resort",
     "Pay with your Hilton Honors Amex Aspire",
-    "Charge room, food & beverage, resort fees, or incidentals",
+    "Charge room rate, food & beverage, resort fees, or incidentals to the card",
     "Statement credit posts automatically after the charge",
     "Credits reset each 6 months",
   ],
   links: [
+    {
+      label: "Eligible Hilton Resorts",
+      url: "https://www.hilton.com/en/amex-cards/eligible-hotels/",
+    },
     { label: "Hilton Properties", url: "https://www.hilton.com" },
     {
       label: "Amex Benefits",
@@ -31,15 +36,15 @@ const hiltonResortCreditDetails: BenefitDetails = {
 
 const hiltonAirlineDetails: BenefitDetails = {
   description:
-    "$200 annual airline credit distributed as four $50 quarterly credits toward airline tickets, baggage fees, seat selections, or other airline incidentals with any carrier worldwide.",
+    "$200 annual flight credit distributed as four $50 quarterly credits on flight purchases — INCLUDING airfare — made directly with airlines or through AmexTravel.com. No airline pre-selection required and no incidentals-only restriction.",
   howToUse: [
-    "Log in to americanexpress.com",
-    "Go to Benefits → Airline Fee Credit",
-    "Pay for airline purchases with your Hilton Honors Amex Aspire",
+    "Buy a flight directly from any airline, or book through AmexTravel.com",
+    "Pay with your Hilton Honors Amex Aspire",
     "Statement credit posts automatically after the charge",
     "Credits reset each quarter",
   ],
   links: [
+    { label: "AmexTravel.com", url: "https://travel.americanexpress.com" },
     {
       label: "Amex Benefits",
       url: "https://www.americanexpress.com/en-us/benefits/discover/",
@@ -49,7 +54,7 @@ const hiltonAirlineDetails: BenefitDetails = {
 
 const clearPlusCreditDetails: BenefitDetails = {
   description:
-    "$209 annual credit toward CLEAR Plus membership (biometric airport security screening at 50+ U.S. airports).",
+    "$219 annual credit toward CLEAR Plus membership (currently $219/yr after the 7/1/2026 price increase; biometric airport security screening at 50+ U.S. airports).",
   howToUse: [
     "Sign up for CLEAR Plus at clearme.com",
     "Pay with your Hilton Honors Amex Aspire",
@@ -75,6 +80,7 @@ export const hiltonAspire: CardDefinition = {
   feeDescriptor: "annual membership fee",
   imageUrl: null,
   isActive: true,
+  lastVerifiedAt: "2026-08-13",
   benefits: [
     // Non-tracked benefits (certificates, tracked in perk matrix only):
     // - Free Night Certificate (annual)
@@ -101,7 +107,7 @@ export const hiltonAspire: CardDefinition = {
         requiresActivation: false,
         priority: 25,
         notes:
-          "Valid at any Hilton property worldwide for room, F&B, and resort fees.",
+          "Valid only at participating Hilton Resorts (see Hilton's eligible resort list), not all Hilton properties. Covers room rate, F&B, and resort fees.",
         details: hiltonResortCreditDetails,
         lifestyleKey: "hilton_resorts",
       },
@@ -121,11 +127,11 @@ export const hiltonAspire: CardDefinition = {
       ]
     ),
 
-    // ── Quarterly Airline Credits ($50/quarter × 4) ──
+    // ── Quarterly Airline Flight Credits ($50/quarter × 4) ──
     ...expandCycles(
       CARD_ID,
       {
-        name: "Airline Fee Credit",
+        name: "Airline Flight Credit",
         icon: "Plane",
         category: "travel",
         type: "credit",
@@ -141,12 +147,14 @@ export const hiltonAspire: CardDefinition = {
           "alaska airlines",
           "jetblue",
           "alaska air",
+          "amextravel",
+          "amex travel",
         ],
         autoMatchable: true,
         requiresActivation: true,
         priority: 20,
         notes:
-          "Any carrier. Covers baggage, seat upgrades, and incidentals. NOT airfare.",
+          "Flight purchases INCLUDING airfare, made directly with airlines or via AmexTravel.com. No airline pre-selection, no incidentals-only restriction.",
         details: hiltonAirlineDetails,
         lifestyleKey: "airline_fee",
       },
@@ -154,26 +162,26 @@ export const hiltonAspire: CardDefinition = {
         {
           id: "hilton_airline_q1",
           cycle: "quarterly_q1",
-          name: "Airline Fee Credit (Q1)",
-          description: "Up to $50 airline incidental credit (Jan–Mar).",
+          name: "Airline Flight Credit (Q1)",
+          description: "Up to $50 flight credit, airfare included (Jan–Mar).",
         },
         {
           id: "hilton_airline_q2",
           cycle: "quarterly_q2",
-          name: "Airline Fee Credit (Q2)",
-          description: "Up to $50 airline incidental credit (Apr–Jun).",
+          name: "Airline Flight Credit (Q2)",
+          description: "Up to $50 flight credit, airfare included (Apr–Jun).",
         },
         {
           id: "hilton_airline_q3",
           cycle: "quarterly_q3",
-          name: "Airline Fee Credit (Q3)",
-          description: "Up to $50 airline incidental credit (Jul–Sep).",
+          name: "Airline Flight Credit (Q3)",
+          description: "Up to $50 flight credit, airfare included (Jul–Sep).",
         },
         {
           id: "hilton_airline_q4",
           cycle: "quarterly_q4",
-          name: "Airline Fee Credit (Q4)",
-          description: "Up to $50 airline incidental credit (Oct–Dec).",
+          name: "Airline Flight Credit (Q4)",
+          description: "Up to $50 flight credit, airfare included (Oct–Dec).",
         },
       ]
     ),
@@ -185,14 +193,14 @@ export const hiltonAspire: CardDefinition = {
       icon: "Shield",
       category: "travel",
       type: "credit",
-      creditAmount: 209,
+      creditAmount: 219,
       cycle: "annual_calendar",
       merchantPatterns: ["clear", "clearme"],
       autoMatchable: true,
       requiresActivation: false,
       priority: 20,
-      description: "Up to $209/year covering CLEAR Plus membership.",
-      notes: "Covers annual CLEAR Plus membership fee.",
+      description: "Up to $219/year covering CLEAR Plus membership.",
+      notes: "Covers annual CLEAR Plus membership fee ($219/yr as of 7/1/2026).",
       details: clearPlusCreditDetails,
       lifestyleKey: "clear_plus",
     }),

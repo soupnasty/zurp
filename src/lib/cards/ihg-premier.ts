@@ -24,6 +24,24 @@ const globalEntryDetails: BenefitDetails = {
   ],
 };
 
+const unitedTravelBankDetails: BenefitDetails = {
+  description:
+    "$50 in United TravelBank cash each calendar year. Requires registering your MileagePlus number for the benefit. The cash is deposited into your United TravelBank account (not issued as a statement credit) and can be applied toward United flight purchases.",
+  howToUse: [
+    "Register your MileagePlus number for the benefit (required each account)",
+    "$50 in TravelBank cash is deposited into your United TravelBank account",
+    "Apply TravelBank cash toward United flight purchases at checkout on united.com",
+    "New $50 deposit each calendar year",
+  ],
+  links: [
+    { label: "United TravelBank", url: "https://www.united.com/en/us/travelbank" },
+    {
+      label: "Learn More",
+      url: "https://www.chase.com/personal/credit-cards/ihg-rewards-premier",
+    },
+  ],
+};
+
 // ── Card Definition ──
 
 export const ihgPremier: CardDefinition = {
@@ -35,6 +53,7 @@ export const ihgPremier: CardDefinition = {
   feeDescriptor: "annual membership fee",
   imageUrl: null,
   isActive: true,
+  lastVerifiedAt: "2026-08-13",
   benefits: [
     // Non-tracked benefits (certificates, tracked in perk matrix only):
     // - Free Night Certificate (annual, up to 40,000 points value)
@@ -54,6 +73,26 @@ export const ihgPremier: CardDefinition = {
       notes: "Covers application fee only.",
       details: globalEntryDetails,
       lifestyleKey: "global_entry",
+    }),
+    // ── United TravelBank Cash ($50/year) ──
+    // NOTE: Delivered as a TravelBank deposit, not a statement credit, so it
+    // cannot be auto-matched against card transactions.
+    b({
+      id: "ihg_united_travelbank",
+      name: "United TravelBank Cash",
+      icon: "Plane",
+      category: "travel",
+      type: "credit",
+      creditAmount: 50,
+      cycle: "annual_calendar",
+      merchantPatterns: [],
+      autoMatchable: false,
+      requiresActivation: true,
+      priority: 30,
+      description: "$50 in United TravelBank cash per calendar year.",
+      notes:
+        "Requires MileagePlus registration. Deposited to your United TravelBank account (not a statement credit) — mark used manually once deposited.",
+      details: unitedTravelBankDetails,
     }),
   ],
 };

@@ -8,12 +8,12 @@ const b = (input: BenefitInput) => defineBenefit(CARD_ID, input);
 
 const diningCreditDetails: BenefitDetails = {
   description:
-    "Up to $10/month in statement credits at Grubhub, The Cheesecake Factory, Goldbelly, Wine.com, and Five Guys. Must enroll before first purchase \u2014 purchases before enrollment do not trigger retroactive credits. Shared across primary + authorized users ($10 total, not $10 each).",
+    "Up to $10/month in statement credits at Grubhub, Seamless, The Cheesecake Factory, Five Guys, Buffalo Wild Wings, and Wonder (partner lineup updated 6/30/2026 \u2014 Goldbelly and Wine.com are no longer eligible). Must enroll before first purchase \u2014 purchases before enrollment do not trigger retroactive credits. Shared across primary + authorized users ($10 total, not $10 each).",
   howToUse: [
     "Open the Amex app or log in to americanexpress.com",
     "Go to Benefits \u2192 find the Monthly Dining Credit",
     "Tap to enroll in the benefit",
-    "Make a purchase at Grubhub, The Cheesecake Factory, Goldbelly, Wine.com, or Five Guys using your Gold Card",
+    "Make a purchase at Grubhub, Seamless, The Cheesecake Factory, Five Guys, Buffalo Wild Wings, or Wonder using your Gold Card",
     "Statement credit posts within a few days (up to 8 weeks per terms)",
   ],
   links: [
@@ -85,16 +85,17 @@ export const amexGold: CardDefinition = {
   feeDescriptor: "annual membership fee",
   imageUrl: null,
   isActive: true,
+  lastVerifiedAt: "2026-08-13",
   benefits: [
     // ── Monthly Dining Credit ($10/mo) ──
     b({
       id: "gold_dining_credit",
       name: "Monthly Dining Credit", icon: "UtensilsCrossed",
       category: "dining", type: "credit", creditAmount: 10, cycle: "monthly",
-      merchantPatterns: ["grubhub", "cheesecake factory", "goldbelly", "wine.com", "five guys"],
+      merchantPatterns: ["grubhub", "seamless", "cheesecake factory", "five guys", "buffalo wild wings", "wonder"],
       autoMatchable: true, requiresActivation: true, priority: 20,
-      description: "Up to $10/month in statement credits at Grubhub, The Cheesecake Factory, Goldbelly, Wine.com, and Five Guys.",
-      notes: "Must enroll before first purchase. Shared across primary + authorized users ($10 total). Gift cards do not qualify.",
+      description: "Up to $10/month in statement credits at Grubhub, Seamless, The Cheesecake Factory, Five Guys, Buffalo Wild Wings, and Wonder.",
+      notes: "Partner lineup changed 6/30/2026: Goldbelly and Wine.com ended; Seamless, Buffalo Wild Wings, and Wonder added. Must enroll before first purchase. Shared across primary + authorized users ($10 total). Gift cards do not qualify.",
       details: diningCreditDetails,
       lifestyleKey: ["grubhub", "cheesecake_factory"],
     }),

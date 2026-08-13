@@ -21,11 +21,11 @@ export const amexGoldEarnConfig: EarnConfig = {
       earnRate: 3,
       label: "Flights",
     },
-    // 2x on hotels via Amex Travel portal only
+    // 5x on prepaid hotels booked via Amex Travel portal (2026 refresh; was 2x)
     {
       categories: ["travel_portal"],
-      earnRate: 2,
-      label: "Hotels via AmexTravel.com",
+      earnRate: 5,
+      label: "Prepaid hotels via AmexTravel.com",
     },
   ],
   caps: [
@@ -33,6 +33,13 @@ export const amexGoldEarnConfig: EarnConfig = {
       capId: "gold_grocery_25k",
       categories: ["groceries", "grocery_online"],
       maxSpend: 25000,
+      period: "calendar_year",
+    },
+    // 4x restaurants capped at $50K/calendar year, then 1x (effective 1/1/2025)
+    {
+      capId: "gold_dining_50k",
+      categories: ["dining", "coffee", "food_delivery"],
+      maxSpend: 50000,
       period: "calendar_year",
     },
   ],

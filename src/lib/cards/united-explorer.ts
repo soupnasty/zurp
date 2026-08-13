@@ -8,15 +8,15 @@ const b = (input: BenefitInput) => defineBenefit(CARD_ID, input);
 
 const unitedTravelCreditDetails: BenefitDetails = {
   description:
-    "$100 annual United travel credit applied toward any eligible United purchase including airfare, baggage fees, seat selections, and other airline incidentals. Credit is issued each cardmember anniversary year.",
+    "$100 in United TravelBank cash awarded once per calendar year after you spend $10,000 on the card in that calendar year. The cash is deposited into your MileagePlus TravelBank account (not issued as statement credits) and can be applied toward United flight purchases.",
   howToUse: [
-    "Make any United Airlines purchase using your Explorer card",
-    "Up to $100 in statement credits apply automatically",
-    "Credit covers airfare, baggage, seat upgrades, and incidentals",
-    "New credit issued each cardmember anniversary",
+    "Spend $10,000 on your Explorer card in a calendar year",
+    "$100 in TravelBank cash is deposited into your MileagePlus account (allow 6-8 weeks)",
+    "Apply TravelBank cash toward United flight purchases at checkout on united.com",
+    "Awarded once per calendar year; spend counter resets each January 1",
   ],
   links: [
-    { label: "United Airlines", url: "https://www.united.com" },
+    { label: "United TravelBank", url: "https://www.united.com/en/us/travelbank" },
     {
       label: "Learn More",
       url: "https://www.chase.com/personal/credit-cards/united-explorer",
@@ -26,12 +26,12 @@ const unitedTravelCreditDetails: BenefitDetails = {
 
 const rideshareCreditDetails: BenefitDetails = {
   description:
-    "$60 annual airport rideshare credit for ground transportation to and from the airport. Credit is automatically applied as statement credits for eligible airport trips booked through designated rideshare apps.",
+    "Up to $5 per month ($60 per calendar year) in statement credits for rideshare purchases (Uber, Lyft, etc.). Requires annual enrollment through your rideshare account each calendar year. Unused monthly credit does not roll over.",
   howToUse: [
-    "Use your United Explorer card to pay for rideshare trips to or from the airport",
-    "Eligible trips are automatically detected based on pickup/dropoff location",
-    "Statement credits post automatically after qualifying rideshare charges",
-    "Up to $60 per calendar year",
+    "Enroll in the benefit each calendar year (annual registration required)",
+    "Pay for rideshare trips with your United Explorer card",
+    "Statement credits of up to $5 post automatically each month",
+    "Up to $60 per calendar year; unused monthly value is forfeited",
   ],
   links: [
     { label: "United Airlines", url: "https://www.united.com" },
@@ -44,12 +44,12 @@ const rideshareCreditDetails: BenefitDetails = {
 
 const instacartCreditDetails: BenefitDetails = {
   description:
-    "Up to $120 annually in Instacart credits for grocery delivery and convenience item purchases on the Instacart platform. Credits are typically distributed as periodic credits throughout the year.",
+    "Up to $10 per month (up to $120 per calendar year) in statement credits for Instacart purchases. Requires an Instacart+ membership activation with your card. Benefit ends December 31, 2027.",
   howToUse: [
     "Add your United Explorer card as a payment method in the Instacart app",
-    "Make eligible grocery delivery purchases through Instacart",
-    "Statement credits post automatically after qualifying Instacart charges",
-    "Up to $120 per calendar year",
+    "Make eligible purchases through Instacart",
+    "Statement credits of up to $10 post automatically each month",
+    "Unused monthly credit does not roll over; benefit ends 12/31/2027",
   ],
   links: [
     { label: "Instacart", url: "https://www.instacart.com" },
@@ -78,34 +78,58 @@ const unitedHotelsCreditDetails: BenefitDetails = {
   ],
 };
 
+const globalEntryDetails: BenefitDetails = {
+  description:
+    "One statement credit of up to $120 every four years to reimburse the application fee for Global Entry ($120), TSA PreCheck ($78–$98), or NEXUS ($50). Pay the fee with your Explorer card and the credit posts automatically.",
+  howToUse: [
+    "Apply for Global Entry, TSA PreCheck, or NEXUS through the official government site",
+    "Pay the application fee with your United Explorer card",
+    "The statement credit posts automatically within 1–2 billing cycles",
+    "Credit is available once every 4 years",
+  ],
+  links: [
+    { label: "Global Entry Application", url: "https://ttp.cbp.dhs.gov/" },
+    { label: "TSA PreCheck", url: "https://www.tsa.gov/precheck" },
+    {
+      label: "Learn More",
+      url: "https://www.chase.com/personal/credit-cards/united-explorer",
+    },
+  ],
+};
+
 // ── Card Definition ──
 
 export const unitedExplorer: CardDefinition = {
   id: CARD_ID,
-  name: "United\u2122 Explorer Card",
+  name: "United™ Explorer Card",
   issuer: "chase",
   network: "visa",
   annualFee: 150,
   feeDescriptor: "annual membership fee",
   imageUrl: null,
   isActive: true,
+  lastVerifiedAt: "2026-08-13",
   benefits: [
     // United Club One-Time Passes (certificate) tracked in perk matrix only.
+    // ── United TravelBank Cash ($100/year after $10K spend) ──
+    // NOTE: This is a spend-gated TravelBank deposit, NOT auto-matching statement
+    // credits — awarded once per calendar year after $10,000 calendar-year spend.
     b({
       id: "united_travel_credit",
-      name: "United Travel Credit",
+      name: "United TravelBank Cash",
       icon: "Plane",
       category: "travel",
       type: "credit",
       creditAmount: 100,
-      cycle: "annual_anniversary",
-      merchantPatterns: ["united", "united airlines", "united air"],
-      autoMatchable: true,
+      cycle: "annual_calendar",
+      merchantPatterns: [],
+      autoMatchable: false,
       requiresActivation: false,
       priority: 10,
-      description: "Up to $100/year for eligible United Airlines purchases.",
+      description:
+        "$100 in United TravelBank cash once per year after $10,000 calendar-year spend.",
       notes:
-        "Covers airfare, baggage, seat upgrades, and incidentals. Anniversary year cycle.",
+        "Spend-gated: requires $10K spend in the calendar year. Delivered as a TravelBank deposit (usable toward United flights), not a statement credit — mark used manually once deposited.",
       details: unitedTravelCreditDetails,
       lifestyleKey: "united",
     }),
@@ -115,16 +139,16 @@ export const unitedExplorer: CardDefinition = {
       icon: "Car",
       category: "transport",
       type: "credit",
-      creditAmount: 60,
-      cycle: "annual_calendar",
+      creditAmount: 5,
+      cycle: "monthly",
       merchantPatterns: ["uber", "lyft"],
       plaidCategories: ["TRANSPORTATION_RIDESHARE"],
       autoMatchable: true,
-      requiresActivation: false,
+      requiresActivation: true,
       priority: 20,
-      description: "Up to $60/year for rideshare trips to/from the airport.",
+      description: "Up to $5/month ($60/year) in rideshare statement credits.",
       notes:
-        "Eligible trips are auto-detected based on airport pickup/dropoff location.",
+        "Capped at $5 per month; unused value forfeited. Annual enrollment required each calendar year.",
       details: rideshareCreditDetails,
       lifestyleKey: "lyft",
     }),
@@ -134,14 +158,16 @@ export const unitedExplorer: CardDefinition = {
       icon: "ShoppingCart",
       category: "shopping",
       type: "credit",
-      creditAmount: 120,
-      cycle: "annual_calendar",
+      creditAmount: 10,
+      cycle: "monthly",
       merchantPatterns: ["instacart"],
       autoMatchable: true,
       requiresActivation: false,
       priority: 20,
-      description: "Up to $120/year for Instacart grocery delivery purchases.",
-      notes: "Credits distributed periodically throughout the year.",
+      description: "Up to $10/month (up to $120/year) in Instacart credits.",
+      notes:
+        "Monthly use-it-or-lose-it credit. Benefit ends 12/31/2027.",
+      sunsetDate: "2027-12-31",
       details: instacartCreditDetails,
       lifestyleKey: "instacart",
     }),
@@ -162,6 +188,25 @@ export const unitedExplorer: CardDefinition = {
       notes: "Book through United Hotels on united.com. $50 per qualifying stay.",
       details: unitedHotelsCreditDetails,
       lifestyleKey: "hotel_portal",
+    }),
+    // ── Global Entry / TSA PreCheck / NEXUS ($120/4 years) ──
+    b({
+      id: "united_global_entry",
+      name: "Global Entry / TSA PreCheck",
+      icon: "ShieldCheck",
+      category: "travel",
+      type: "credit",
+      creditAmount: 120,
+      cycle: "quadrennial",
+      merchantPatterns: ["global entry", "tsa precheck", "tsa pre", "goes", "nexus", "trusted traveler"],
+      autoMatchable: true,
+      requiresActivation: false,
+      priority: 40,
+      description:
+        "Up to $120 credit for Global Entry, TSA PreCheck, or NEXUS application fee every 4 years.",
+      notes: "Covers application fee only. One program per 4-year cycle.",
+      details: globalEntryDetails,
+      lifestyleKey: "global_entry",
     }),
   ],
 };

@@ -24,7 +24,25 @@ const globalEntryTsaPreCheckDetails: BenefitDetails = {
     { label: "TSA PreCheck", url: "https://www.tsa.gov/precheck" },
     {
       label: "Learn More",
-      url: "https://www.usbank.com/credit-cards/altitude-connect-visa-signature-card.html",
+      url: "https://www.usbank.com/credit-cards/altitude-connect-visa-signature-credit-card.html",
+    },
+  ],
+};
+
+const gigSkyDetails: BenefitDetails = {
+  description:
+    "Complimentary GigSky global eSIM data for international travel. Enroll your Altitude Connect card with GigSky to redeem complimentary data plans. Redeemable through November 30, 2026.",
+  howToUse: [
+    "Download the GigSky app on an eSIM-compatible phone",
+    "Create a GigSky account and add your US Bank Altitude Connect card",
+    "Redeem the complimentary global eSIM data plan before November 30, 2026",
+    "Activate the eSIM data plan when you travel internationally",
+  ],
+  links: [
+    { label: "GigSky", url: "https://www.gigsky.com" },
+    {
+      label: "Learn More",
+      url: "https://www.usbank.com/credit-cards/altitude-connect-visa-signature-credit-card.html",
     },
   ],
 };
@@ -43,6 +61,7 @@ export const usBankAltitudeConnect: CardDefinition = {
   feeDescriptor: "no annual fee",
   imageUrl: null,
   isActive: true,
+  lastVerifiedAt: "2026-08-13",
   benefits: [
     // ── Global Entry/TSA PreCheck Credit ($100 every 4 years) ──
     b({
@@ -63,6 +82,28 @@ export const usBankAltitudeConnect: CardDefinition = {
         "Credit provided once every 4 years from date of last reimbursement. Covers application and renewal fees for expedited security programs.",
       details: globalEntryTsaPreCheckDetails,
       lifestyleKey: "global_entry",
+    }),
+
+    // ── GigSky Global eSIM Data (complimentary, through 11/30/2026) ──
+    // Non-dollar perk modeled like DashPass (subscription, $0 credit).
+    b({
+      id: "altitude_connect_gigsky",
+      name: "GigSky Global eSIM Data",
+      icon: "Globe",
+      category: "subscription",
+      type: "subscription",
+      creditAmount: 0,
+      cycle: "subscription",
+      merchantPatterns: ["gigsky"],
+      autoMatchable: false,
+      requiresActivation: true,
+      priority: 50,
+      sunsetDate: "2026-11-30",
+      description:
+        "Complimentary GigSky global eSIM data for international travel.",
+      notes:
+        "Must enroll with GigSky using your Altitude Connect card. Redeemable through November 30, 2026.",
+      details: gigSkyDetails,
     }),
   ],
 };

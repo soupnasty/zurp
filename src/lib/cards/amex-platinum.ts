@@ -25,10 +25,11 @@ const uberCashDetails: BenefitDetails = {
 
 const uberOneDetails: BenefitDetails = {
   description:
-    "Complimentary Uber One membership (normally $9.99/mo). Includes $0 delivery fees, up to 10% off eligible Uber Eats orders, and 5% off eligible Uber rides. Must link Amex and Uber accounts.",
+    "Up to $120 per calendar year in statement credits reimbursing an auto-renewing Uber One membership charged to your Platinum Card. This is a statement-credit reimbursement, not a direct subscription waiver — you pay for Uber One with the card and the charge is credited back. Uber One includes $0 delivery fees, up to 10% off eligible Uber Eats orders, and 5% off eligible Uber rides.",
   howToUse: [
-    "Link your Amex and Uber accounts via amex.com/uber",
-    "Uber One membership is automatically activated",
+    "Sign up for an auto-renewing Uber One membership in the Uber app",
+    "Pay for the membership with your Platinum Card",
+    "Statement credits (up to $120/calendar year) post automatically to reimburse the membership charge",
     "Benefits apply to eligible Uber rides and Uber Eats orders",
   ],
   links: [
@@ -119,7 +120,7 @@ const hotelCreditDetails: BenefitDetails = {
 
 const saksCreditDetails: BenefitDetails = {
   description:
-    "Up to $50 per half-year ($100 annual total) in statement credits for purchases at Saks Fifth Avenue stores or saks.com. Must enroll before first purchase.",
+    "DISCONTINUED 7/1/2026. Formerly up to $50 per half-year ($100 annual total) in statement credits for purchases at Saks Fifth Avenue stores or saks.com. Replaced by non-guaranteed Amex Offers.",
   howToUse: [
     "Open the Amex app or log in to americanexpress.com",
     "Go to Benefits → find the Saks Fifth Avenue Credit",
@@ -165,7 +166,7 @@ const equinoxDetails: BenefitDetails = {
 
 const clearDetails: BenefitDetails = {
   description:
-    "Up to $209/year in statement credits covering a CLEAR Plus membership (currently $209/yr). CLEAR provides expedited security screening at 50+ airports and select stadiums.",
+    "Up to $219/year in statement credits covering a CLEAR Plus membership (currently $219/yr after the 7/1/2026 price increase). CLEAR provides expedited security screening at 50+ airports and select stadiums.",
   howToUse: [
     "Sign up for CLEAR Plus at clearme.com or at an airport CLEAR pod",
     "Pay with your Platinum Card",
@@ -181,7 +182,7 @@ const globalEntryDetails: BenefitDetails = {
   description:
     "Up to $120 statement credit every 4 years for Global Entry or TSA PreCheck application fees. Applies to the application fee only.",
   howToUse: [
-    "Apply for Global Entry ($120) or TSA PreCheck ($78–$85) through the official government sites",
+    "Apply for Global Entry ($120) or TSA PreCheck (up to $85) through the official government sites",
     "Pay the application fee with your Platinum Card",
     "Statement credit posts automatically after the charge",
   ],
@@ -215,6 +216,7 @@ export const amexPlatinum: CardDefinition = {
   feeDescriptor: "annual membership fee",
   imageUrl: null,
   isActive: true,
+  lastVerifiedAt: "2026-08-13",
   benefits: [
     // ── Quarterly Resy Credits ($100/quarter × 4) ──
     ...expandCycles(CARD_ID, {
@@ -260,18 +262,21 @@ export const amexPlatinum: CardDefinition = {
       { id: "plat_hotel_credit_h2", cycle: "biannual_h2", name: "Hotel Credit (H2)", description: "Up to $300 in hotel credits via FHR/THC on AmexTravel.com (Jul\u2013Dec)." },
     ]),
 
-    // ── Semi-annual Saks Credits ($50/half × 2) ──
+    // ── Semi-annual Saks Credits ($50/half × 2) — DISCONTINUED 7/1/2026 ──
     ...expandCycles(CARD_ID, {
       name: "Saks Fifth Avenue Credit", icon: "ShoppingBag", category: "shopping",
       type: "credit", creditAmount: 50,
       merchantPatterns: ["saks fifth avenue", "saks", "saks.com"],
       autoMatchable: true, requiresActivation: true, priority: 20,
-      notes: "Must enroll before first purchase.",
+      // Kept (not deleted) because users may have usage history. sunsetDate in
+      // the past deactivates them going forward.
+      notes: "Discontinued 7/1/2026, replaced by non-guaranteed Amex Offers. Retained for historical usage only.",
+      sunsetDate: "2026-06-30",
       details: saksCreditDetails,
       lifestyleKey: "saks",
     }, [
-      { id: "plat_saks_h1", cycle: "biannual_h1", name: "Saks Fifth Avenue Credit (H1)", description: "Up to $50 at Saks Fifth Avenue (Jan\u2013Jun)." },
-      { id: "plat_saks_h2", cycle: "biannual_h2", name: "Saks Fifth Avenue Credit (H2)", description: "Up to $50 at Saks Fifth Avenue (Jul\u2013Dec)." },
+      { id: "plat_saks_h1", cycle: "biannual_h1", name: "Saks Fifth Avenue Credit (H1)", description: "Discontinued 7/1/2026: up to $50 at Saks Fifth Avenue (Jan\u2013Jun)." },
+      { id: "plat_saks_h2", cycle: "biannual_h2", name: "Saks Fifth Avenue Credit (H2)", description: "Discontinued 7/1/2026: up to $50 at Saks Fifth Avenue (Jul\u2013Dec)." },
     ]),
 
     // ── Monthly Benefits ──
@@ -334,8 +339,8 @@ export const amexPlatinum: CardDefinition = {
       category: "transport", type: "subscription", creditAmount: 120, cycle: "annual_calendar",
       merchantPatterns: ["uber"],
       autoMatchable: false, requiresActivation: true, priority: 25,
-      description: "Complimentary Uber One membership (valued at ~$120/year).",
-      notes: "Must link Amex and Uber accounts. Includes $0 delivery fees and discounts on rides.",
+      description: "Up to $120/calendar year in statement credits reimbursing an auto-renewing Uber One membership.",
+      notes: "Pay for an auto-renewing Uber One membership with the card; statement credits reimburse the charge (not a direct subscription waiver). Includes $0 delivery fees and discounts on rides.",
       details: uberOneDetails,
       lifestyleKey: "uber",
     }),
@@ -366,11 +371,11 @@ export const amexPlatinum: CardDefinition = {
     b({
       id: "plat_clear",
       name: "CLEAR+ Credit", icon: "Shield",
-      category: "travel", type: "credit", creditAmount: 209, cycle: "annual_calendar",
+      category: "travel", type: "credit", creditAmount: 219, cycle: "annual_calendar",
       merchantPatterns: ["clear", "clearme"],
       autoMatchable: true, requiresActivation: false, priority: 20,
-      description: "Up to $209/year covering CLEAR Plus membership.",
-      notes: "Covers the annual CLEAR Plus membership fee.",
+      description: "Up to $219/year covering CLEAR Plus membership.",
+      notes: "Covers the annual CLEAR Plus membership fee ($219/yr as of 7/1/2026).",
       details: clearDetails,
       lifestyleKey: "clear_plus",
     }),

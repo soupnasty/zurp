@@ -92,7 +92,7 @@ describe("runSimulation", () => {
     expect(["win", "lose", "close"]).toContain(result.headline.type);
   });
 
-  it("applies CSP 10% anniversary bonus", () => {
+  it("applies no CSP anniversary bonus (eliminated in June 2026 refresh)", () => {
     const transactions = [
       makeTx("t1", "2025-06-01", "CHIPOTLE", 100, "dining"),
     ];
@@ -107,9 +107,9 @@ describe("runSimulation", () => {
     })!;
 
     const csp = result.cards[0];
-    // 100 * 3 = 300 points + 10% = 30 bonus = 330 total
-    expect(csp.totalPoints).toBe(330);
-    expect(csp.bonusPoints).toBe(30);
+    // 100 * 3 = 300 points, no anniversary bonus
+    expect(csp.totalPoints).toBe(300);
+    expect(csp.bonusPoints).toBe(0);
   });
 
   it("tracks Gold grocery cap across transactions", () => {
@@ -560,8 +560,8 @@ describe("runSimulation", () => {
         portalMode: true,
       })!;
 
-      // Direct: car_rentals earns at CSR's travel rate (4x) → 600
-      expect(direct.cards[0].totalPoints).toBe(600);
+      // Direct: car_rentals earns 1x base (CSR's 4x is flights + hotels only) → 150
+      expect(direct.cards[0].totalPoints).toBe(150);
       // Portal: car_rentals → travel_portal earns 8x → 1200
       expect(portal.cards[0].totalPoints).toBe(1200);
     });

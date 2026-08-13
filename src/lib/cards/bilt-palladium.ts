@@ -53,6 +53,7 @@ export const biltPalladium: CardDefinition = {
   feeDescriptor: "BILT ANNUAL MEMBERSHIP",
   imageUrl: null,
   isActive: true,
+  lastVerifiedAt: "2026-08-13",
   benefits: [
     // ── Hotel Credit ($400 semi-annual) ──
     ...expandCycles(

@@ -39,6 +39,12 @@ export const citiStrataPremierEarnConfig: EarnConfig = {
       earnRate: 3,
       label: "Flights",
     },
+    // Direct hotel purchases earn 3x ("air travel and other hotel purchases")
+    {
+      categories: ["travel_hotels"],
+      earnRate: 3,
+      label: "Hotels",
+    },
     {
       categories: ["dining", "coffee", "food_delivery"],
       earnRate: 3,
@@ -49,10 +55,26 @@ export const citiStrataPremierEarnConfig: EarnConfig = {
       earnRate: 3,
       label: "Supermarkets",
     },
+    // 3x gas category includes EV charging stations
     {
       categories: ["gas_stations"],
       earnRate: 3,
-      label: "Gas stations",
+      label: "Gas stations & EV charging",
+    },
+    // EV charging networks that Plaid doesn't always classify as gas stations
+    {
+      categories: ["transit", "other"],
+      earnRate: 3,
+      label: "EV charging",
+      conditions: {
+        merchant_match: [
+          "chargepoint",
+          "evgo",
+          "electrify america",
+          "blink charging",
+          "tesla supercharger",
+        ],
+      },
     },
   ],
   caps: [],

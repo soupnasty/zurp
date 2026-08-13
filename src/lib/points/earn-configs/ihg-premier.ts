@@ -53,6 +53,12 @@ export const ihgPremierEarnConfig: EarnConfig = {
       earnRate: 5,
       label: "Dining",
     },
+    // 5x on gas stations (alongside travel/dining)
+    {
+      categories: ["gas_stations"],
+      earnRate: 5,
+      label: "Gas stations",
+    },
   ],
   caps: [],
   annualFee: 99,

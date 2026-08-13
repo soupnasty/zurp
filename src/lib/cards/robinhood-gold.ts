@@ -13,9 +13,11 @@ export const robinhoodGold: CardDefinition = {
   feeDescriptor: "ROBINHOOD GOLD MEMBERSHIP",
   imageUrl: null,
   isActive: true,
+  lastVerifiedAt: "2026-08-13",
   benefits: [
     // Non-tracked benefits (insurance/perks, not statement credits):
-    // - Cell phone protection ($800/claim, 2 claims/yr)
+    // NOTE: This card has NO cell phone protection (verified against
+    // Robinhood's official Visa benefits page).
     // - Purchase protection ($500/claim)
     // - Extended warranty (+1 year)
     // - Return protection (90 days)
@@ -24,6 +26,11 @@ export const robinhoodGold: CardDefinition = {
     // - Roadside assistance
     // - Zero liability protection
 
+    // Deactivated (sunset) rather than deleted — may have usage history.
+    // Accounts opened on/after 2026-07-01 pay a 3% foreign transaction fee;
+    // only accounts opened before 2026-07-01 are grandfathered into no FTF.
+    // Since Compare mostly serves prospective applicants, this benefit is
+    // sunset as of 2026-06-30 (source: robinhood.com FAQ, primary).
     b({
       id: "rh_gold_no_ftf",
       name: "No Foreign Transaction Fees",
@@ -36,7 +43,11 @@ export const robinhoodGold: CardDefinition = {
       autoMatchable: false,
       requiresActivation: false,
       priority: 15,
-      description: "No foreign transaction fees on international purchases.",
+      sunsetDate: "2026-06-30",
+      description:
+        "No foreign transaction fees for accounts opened before July 1, 2026.",
+      notes:
+        "Accounts opened on/after 7/1/2026 pay 3% FTF. Pre-7/2026 accounts are grandfathered into no foreign transaction fees.",
     }),
   ],
 };

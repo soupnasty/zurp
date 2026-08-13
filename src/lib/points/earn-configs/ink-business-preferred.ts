@@ -10,11 +10,11 @@ export const inkBusinessPreferredEarnConfig: EarnConfig = {
   // category taxonomy. The $150,000/year combined cap applies across ALL 3x
   // categories (travel + shipping + internet/phone + advertising).
   bonusCategories: [
-    // 5x on Lyft (through September 2027)
+    // 5x on Lyft — confirmed through 9/30/2027 (verified 2026-08-13)
     {
       categories: ["rideshare"],
       earnRate: 5,
-      label: "Lyft (through Sep 2027)",
+      label: "Lyft (through 9/30/2027)",
       conditions: {
         merchant_match: ["lyft"],
       },

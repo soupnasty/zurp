@@ -16,5 +16,6 @@ export const citiDoubleCash: CardDefinition = {
   feeDescriptor: "no annual fee",
   imageUrl: null,
   isActive: true,
+  lastVerifiedAt: "2026-08-13",
   benefits: [],
 };

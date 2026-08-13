@@ -9,14 +9,14 @@ const b = (input: BenefitInput) => defineBenefit(CARD_ID, input);
 
 // ── Benefit Details ──
 
-const disneyBundleCreditDetails: BenefitDetails = {
+const disneyStreamingCreditDetails: BenefitDetails = {
   description:
-    "Up to $10 per month in statement credits for the Disney+, Hulu, and ESPN+ bundle subscription. Annual value of up to $120. Credit applies only to the official Disney bundle package (not individual services). Must be enrolled and have an eligible active subscription charged to the card.",
+    "Up to $10 per month in statement credits for eligible subscription purchases at Disneyplus.com, Hulu.com, or ESPN — individual services qualify, not just the Disney Bundle. Annual value of up to $120. Must be enrolled and have an eligible active subscription charged to the card.",
   howToUse: [
     "Open the Amex app or log in to americanexpress.com",
-    "Go to Benefits → find the Disney Bundle Credit",
+    "Go to Benefits → find the Disney streaming credit",
     "Tap to enroll in the benefit",
-    "Ensure your Disney+/Hulu/ESPN+ bundle is charged to the Blue Cash Preferred card",
+    "Subscribe to Disney+, Hulu, ESPN, or a bundle and charge it to the Blue Cash Preferred card",
     "The $10 monthly credit posts automatically as a statement credit",
   ],
   links: [
@@ -46,11 +46,12 @@ export const amexBlueCashPreferred: CardDefinition = {
   feeDescriptor: "annual membership fee",
   imageUrl: null,
   isActive: true,
+  lastVerifiedAt: "2026-08-13",
   benefits: [
-    // ── Disney Bundle Credit ($10/mo) ──
+    // ── Disney Streaming Credit ($10/mo) ──
     b({
       id: "bcp_disney_bundle",
-      name: "Disney Bundle Monthly Credit",
+      name: "Disney Streaming Credit",
       icon: "Tv",
       category: "entertainment",
       type: "credit",
@@ -68,10 +69,10 @@ export const amexBlueCashPreferred: CardDefinition = {
       requiresActivation: true,
       priority: 15,
       description:
-        "Up to $10/month in statement credits for the Disney+/Hulu/ESPN+ bundle.",
+        "Up to $10/month in statement credits for Disney+, Hulu, or ESPN subscriptions.",
       notes:
-        "Annual value of $120. Must have official Disney bundle (not individual services) charged to card.",
-      details: disneyBundleCreditDetails,
+        "Annual value of $120. Applies to subscription purchases at Disneyplus.com, Hulu.com, or ESPN — individual services qualify, not bundle-only. Must enroll.",
+      details: disneyStreamingCreditDetails,
       lifestyleKey: "disney_plus",
     }),
   ],

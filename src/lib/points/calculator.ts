@@ -71,9 +71,12 @@ export function getDatePartsInTimezone(
 
 /**
  * Check if a given day+hour falls within a time window.
- * Handles windows where startHour < endHour (same-day, exclusive end hour).
- * Note: For time-window conditions like Citi Nights, endHour should be set
- * such that the last valid hour (23 for 11:59 PM) is < endHour (so use 24).
+ * Same-day windows (startHour < endHour) match [startHour, endHour) on each
+ * day in tw.days. Overnight windows (endHour <= startHour) span midnight into
+ * the following morning: tw.days lists the days the window STARTS, and the
+ * window covers [startHour, 24) on the start day plus [0, endHour) on the
+ * next day (e.g. Citi Nights Fri-Sat 6PM-6AM: days [5, 6], start 18, end 6
+ * covers Fri 6PM→Sat 6AM and Sat 6PM→Sun 6AM).
  * Plaid timestamps are UTC; for production accuracy, convert to card's timezone.
  */
 export function matchesTimeWindow(
@@ -81,18 +84,20 @@ export function matchesTimeWindow(
   hour: number,
   tw: TimeWindow
 ): boolean {
-  // Only support same-day windows (startHour < endHour)
-  // Overnight windows should be modeled with multiple day entries instead
-  if (tw.startHour >= tw.endHour) {
-    // Legacy support: if somehow startHour >= endHour, treat as same-day window
-    // This handles edge cases but overnight windows are not recommended
+  // Same-day window: [startHour, endHour) on a listed day
+  if (tw.startHour < tw.endHour) {
+    for (const startDay of tw.days) {
+      if (day === startDay && hour >= tw.startHour && hour < tw.endHour) {
+        return true;
+      }
+    }
     return false;
   }
 
+  // Overnight window: [startHour, 24) on the start day, [0, endHour) on the next day
   for (const startDay of tw.days) {
-    if (day === startDay && hour >= tw.startHour && hour < tw.endHour) {
-      return true;
-    }
+    if (day === startDay && hour >= tw.startHour) return true;
+    if (day === (startDay + 1) % 7 && hour < tw.endHour) return true;
   }
 
   return false;

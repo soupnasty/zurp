@@ -16,10 +16,12 @@ export const amexBcpEarnConfig: EarnConfig = {
       earnRate: 6,
       label: "Streaming services",
     },
+    // Amex transit = trains, buses, subways, ferries, taxis, rideshare,
+    // parking, tolls. EXCLUDES airfare, cruises, car rentals (those earn 1%).
     {
-      categories: ["transit", "rideshare", "parking", "travel_flights", "travel_other"],
+      categories: ["transit", "rideshare", "parking"],
       earnRate: 3,
-      label: "Transit (taxis, rideshare, parking, trains, buses, flights)",
+      label: "Transit (trains, buses, ferries, taxis, rideshare, parking, tolls)",
     },
     {
       categories: ["gas_stations"],

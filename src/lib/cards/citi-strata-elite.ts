@@ -75,6 +75,7 @@ export const citiStrataElite: CardDefinition = {
   feeDescriptor: "CITI CARD ANNUAL FEE",
   imageUrl: null,
   isActive: true,
+  lastVerifiedAt: "2026-08-13",
   benefits: [
     b({
       id: "citi_hotel_collection",

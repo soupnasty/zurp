@@ -5,6 +5,9 @@ export const wellsFargoAutographJourneyEarnConfig: EarnConfig = {
   cardName: "Wells Fargo Autograph Journey",
   pointsCurrency: "wf_points",
   baseRate: 1,
+  // Transfer partners: 8 airlines at 1:1 (Aer Lingus, Avianca, Flying Blue,
+  // British Airways, Iberia, Virgin Atlantic, JetBlue added Nov 2025, Cathay
+  // Pacific added Apr 2026); hotels: Choice at 1:2 and Wyndham.
   bonusCategories: [
     {
       categories: ["travel_hotels"],
@@ -17,26 +20,16 @@ export const wellsFargoAutographJourneyEarnConfig: EarnConfig = {
       label: "Airlines",
     },
     {
-      categories: ["car_rentals"],
-      earnRate: 4,
-      label: "Rental cars",
-    },
-    {
       categories: ["dining", "coffee", "food_delivery"],
-      earnRate: 4,
-      label: "Dining",
-    },
-    {
-      categories: [
-        "gas_stations",
-        "parking",
-        "transit",
-        "rideshare",
-        "streaming",
-        "phone_services",
-      ],
       earnRate: 3,
-      label: "Gas, parking, transit, rideshare, streaming & phone",
+      label: "Restaurants",
+    },
+    // 3x on other travel (rental cars, cruises, travel agencies, etc.).
+    // Gas, parking, transit, rideshare, streaming, and phone earn 1x base.
+    {
+      categories: ["travel_other", "car_rentals"],
+      earnRate: 3,
+      label: "Other travel",
     },
   ],
   caps: [],
@@ -44,6 +37,6 @@ export const wellsFargoAutographJourneyEarnConfig: EarnConfig = {
   valuation: {
     conservativeCpp: 1.0,
     upsideCpp: 1.5,
-    upsideLabel: "Transfer partners (Flying Blue, Avianca, BA at 1:1)",
+    upsideLabel: "Transfer partners (8 airlines at 1:1, Choice at 1:2)",
   },
 };

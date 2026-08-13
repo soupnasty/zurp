@@ -113,14 +113,9 @@ describe("Points aggregation pipeline", () => {
     expect(categoryAccum.get("other")!.points).toBe(50);
   });
 
-  it("applies anniversary bonus correctly", () => {
+  it("has no anniversary bonus after the June 2026 CSP refresh", () => {
     const config = getEarnConfig("chase_sapphire_preferred")!;
-    expect(config.anniversaryBonus).toBe(0.1);
-
-    const totalPoints = 10000;
-    const bonusPoints = Math.round(totalPoints * config.anniversaryBonus!);
-    expect(bonusPoints).toBe(1000);
-    expect(totalPoints + bonusPoints).toBe(11000);
+    expect(config.anniversaryBonus).toBeUndefined();
   });
 
   it("applies caps for Amex Gold grocery", () => {

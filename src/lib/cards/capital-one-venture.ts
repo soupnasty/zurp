@@ -8,12 +8,10 @@ const b = (input: BenefitInput) => defineBenefit(CARD_ID, input);
 
 const travelCreditDetails: BenefitDetails = {
   description:
-    "Up to $250 annual statement credit for eligible travel purchases. Resets each calendar year. Covers airline tickets, hotels, rental cars, vacation rentals, tour operators, and travel agencies. Does not cover rideshare, gas, parking, or meals during travel.",
+    "One-time $250 Capital One Travel credit that was part of a first-year welcome offer (offer expired April 2026). This was never a recurring annual benefit — it applied only to the first cardholder year for accounts opened under that offer. Retained here for cardholders who redeemed it during their first year.",
   howToUse: [
-    "Make an eligible travel purchase (airline, hotel, rental car, etc.)",
-    "Charge to your Capital One Venture card",
-    "Statement credit posts automatically within 1-2 billing cycles",
-    "Resets Jan 1 each year; unused credits do not roll over",
+    "This credit was a one-time welcome-offer component and is no longer offered",
+    "If you opened your account under the offer, the credit applied to Capital One Travel bookings in your first year only",
   ],
   links: [
     { label: "Capital One Travel", url: "https://travel.capitalone.com" },
@@ -56,16 +54,22 @@ export const capitalOneVenture: CardDefinition = {
   id: CARD_ID,
   name: "Capital One Venture Rewards",
   issuer: "capital_one",
-  network: "mastercard",
+  // Visa Signature product (previously misconfigured as Mastercard)
+  network: "visa",
   annualFee: 95,
   feeDescriptor: "CAPITAL ONE ANNUAL FEE",
   imageUrl: null,
   isActive: true,
+  lastVerifiedAt: "2026-08-13",
   benefits: [
-    // ── Annual Travel Credit ($250) ──
+    // ── $250 Travel Credit (SUNSET — one-time welcome-offer component) ──
+    // Verified 2026-08-13: this does NOT exist as a recurring annual benefit.
+    // It was a one-time first-year credit under a welcome offer that expired
+    // ~April 2026. Deactivated via past sunsetDate (not deleted) to preserve
+    // usage history for cardholders who redeemed it.
     b({
       id: "cov_annual_travel_credit",
-      name: "Annual Travel Credit",
+      name: "$250 Travel Credit (First Year)",
       icon: "Plane",
       category: "travel",
       type: "credit",
@@ -76,7 +80,10 @@ export const capitalOneVenture: CardDefinition = {
       priority: 50,
       merchantPatterns: ["capital one travel", "capitalone travel"],
       description:
-        "$250 annual statement credit for eligible travel purchases. Resets each calendar year.",
+        "One-time $250 Capital One Travel credit from a first-year welcome offer (expired April 2026). Not a recurring benefit.",
+      notes:
+        "Was a one-time welcome-offer component, not an annual credit. Offer expired ~April 2026; kept for usage history.",
+      sunsetDate: "2026-04-30",
       details: travelCreditDetails,
       lifestyleKey: "travel_portal",
     }),

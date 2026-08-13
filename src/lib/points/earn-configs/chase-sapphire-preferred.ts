@@ -22,6 +22,19 @@ export const cspEarnConfig: EarnConfig = {
       label: "Online grocery",
     },
     {
+      categories: ["gas_stations"],
+      earnRate: 3,
+      label: "Gas & EV charging",
+    },
+    {
+      // June 2026 refresh: vacation home rentals earn 3x (up from 2x general
+      // travel). Must precede the Direct travel row — first match wins.
+      categories: ["travel_hotels", "travel_other"],
+      earnRate: 3,
+      label: "Vacation home rentals",
+      conditions: { merchant_match: ["airbnb", "vrbo"] },
+    },
+    {
       categories: ["travel_flights", "travel_hotels", "travel_other", "car_rentals", "transit"],
       earnRate: 2,
       label: "Direct travel",
@@ -58,10 +71,15 @@ export const cspEarnConfig: EarnConfig = {
   ],
   caps: [],
   annualFee: 95,
-  anniversaryBonus: 0.10,
+  // Note: the 10% anniversary points bonus was eliminated in the June 2026
+  // refresh (final bonus posts Jan 2027).
   valuation: {
+    // Chase Travel portal baseline is 1.0cpp; Points Boost offers up to
+    // 1.5cpp (1.75cpp premium cabins) on select bookings — the flat 1.25cpp
+    // portal era is over. Upside lowered from 2.0: Hyatt transfers devalue
+    // to 4:3 for CSP effective Oct 1, 2026 (CSR keeps 1:1).
     conservativeCpp: 1.0,
-    upsideCpp: 2.0,
-    upsideLabel: "With transfer partners (Hyatt, United)",
+    upsideCpp: 1.8,
+    upsideLabel: "With transfer partners (United; Hyatt at 4:3)",
   },
 };

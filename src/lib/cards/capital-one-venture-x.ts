@@ -60,6 +60,7 @@ export const capitalOneVentureX: CardDefinition = {
   feeDescriptor: "CAPITAL ONE ANNUAL FEE",
   imageUrl: null,
   isActive: true,
+  lastVerifiedAt: "2026-08-13",
   benefits: [
     b({
       id: "vx_travel_credit",

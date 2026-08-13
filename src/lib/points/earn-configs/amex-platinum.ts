@@ -17,7 +17,14 @@ export const amexPlatinumEarnConfig: EarnConfig = {
       label: "Prepaid hotels via AmexTravel.com",
     },
   ],
-  caps: [],
+  caps: [
+    {
+      capId: "plat_flights_500k",
+      categories: ["travel_flights"],
+      maxSpend: 500000,
+      period: "calendar_year",
+    },
+  ],
   annualFee: 895,
   valuation: {
     conservativeCpp: 1.0,

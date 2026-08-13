@@ -14,8 +14,11 @@ const ISSUER_ALIASES: Record<string, string[]> = {
   wells_fargo: ["wells fargo", "wellsfargo"],
   us_bank: ["us bank", "u.s. bank", "usbank"],
   capital_one: ["capital one", "capitalone"],
-  // Apple Card transitioned from Goldman Sachs to Chase in Jan 2026; detect both
-  chase: ["apple card", "goldman sachs", "goldman", "gs bank"],
+  // Apple Card is migrating from Goldman Sachs to Chase (announced Jan 2026,
+  // ~24-month transition). Goldman still services accounts, so the card's issuer
+  // stays goldman_sachs; once Plaid reports Chase as the institution, "apple card"
+  // in the account name still resolves via detectCard's name match.
+  goldman_sachs: ["goldman sachs", "goldman", "gs bank", "apple card"],
 };
 
 /**
@@ -50,6 +53,10 @@ export function detectCard(
     const issuerSpaced = issuer.replace(/_/g, " ");
     const productName = nameParts.replace(issuerSpaced, "").replace(issuer, "").trim();
 
+    // Substring matching means "SavorOne" accounts also match the "Savor" card.
+    // That's usually right (SavorOne holders were migrated to Savor in Oct 2024),
+    // but Capital One later reused the SavorOne name for a separate fair-credit
+    // card with an annual fee — those accounts will be misdetected as Savor.
     if (productName && combined.includes(productName)) {
       return { cardId: card.id, confidence: "high" };
     }
