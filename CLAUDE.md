@@ -374,6 +374,7 @@ Connection health alerts (`src/lib/notifications.ts`) surface stale/reauth/disco
 - `docs/architecture/design-principles.md` — S-tier SaaS dashboard design checklist
 - `docs/engines/insights-engine.md` — Insights Engine v3 spec (categories, scoring, templates, display rules, suppression)
 - `docs/engines/points-engine.md` — Points earn model spec (category taxonomy, earn rates, caps)
+- `docs/engines/llm-classification-tier.md` — LLM merchant-classification tier spec (Tier L cache, model policy; not yet implemented)
 - `docs/styling/style-guide.md` — Brand colors, typography, spacing, motion
 - `docs/catalogs/` — Card benefit catalogs organized by tier (tier-1, tier-2, tier-3) covering 30 cards
 - `docs/terms/` — Privacy policy, terms of service, security documentation
