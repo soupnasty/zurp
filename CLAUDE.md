@@ -29,22 +29,19 @@ npm run db:studio    # Open Drizzle Studio
 
 ## Architecture
 
-### Page Philosophy — Time Windows & Intent
+### Page Philosophy — Two Pages, Two Questions
 
-Each main page has a distinct purpose and time window. This separation is fundamental to how data is queried, computed, and displayed.
+The dashboard is two pages for one card. Each has its own question and time window; don't mix them.
 
 | Page | Time Window | Intent |
 |------|------------|--------|
-| **Compare** (`/dashboard/compare`) | Rolling 365 days (or all available if < 1 year) | "Which card would have performed best for your actual spending?" Simulates points, benefits, and fees across all 30 cards using the full trailing year of transaction data. |
-| **Track** (`/dashboard/track`) | Current cycle per benefit | "Are you maximizing your current card this period?" Shows current-cycle benefit usage (monthly, quarterly, annual anniversary, etc.) and current-period points earning. Helps users hit caps before credits expire. |
-| **Insights** (`/dashboard/insights`) | Both current + prior cycles | "What should you do differently?" Generators have access to current cycle benefit usage (what's been redeemed, what's expiring) AND prior cycle spending patterns (to identify trends, missed credits, competitor redirects). |
+| **Rewards** (`/dashboard`) | Current card year (anniversary → day before next; calendar year when unknown) | "What have I earned from this card so far, and what am I not using?" Earned = credits used + points (no fee comparison). Not using yet = credits left through card-year end (every remaining period, not just the current one), one-time activations, points missed on the same spending (P2), expired credits. |
+| **Verdict** (`/dashboard/verdict`) | Rolling 365 days (or all available), annualized | "Is this still the right card for next year?" KEEP / SWITCH / TOSS-UP / NOT YET against the best alternative, with reasons, a robustness check across assumptions, and issuer-grounded next steps. |
 
-**Key implications:**
-- Compare page simulations use rolling 365-day window — no anniversary date dependency
-- Track page benefit usage queries `benefitUsage` for the **current cycle period only** (via `getCurrentCycleBounds`)
-- Track page points summary uses the current anniversary year (or rolling 365 days if no anniversary date)
-- When a benefit cycle just rolled over, Track correctly shows $0 — this is expected behavior
-- Insight generators receive both current and prior cycle context to produce actionable recommendations
+**Key rules:**
+- Rewards never judges the fee. Keep/switch judgments live only on Verdict (and the `renewal_verdict` alert, which uses the same logic), so the two can't disagree.
+- Verdict tie band: a gap under max($100, 5%) is a toss-up in either direction; among alternatives tied with the best, compare against the lowest-fee one. Below 6 months of data every outcome shows NOT YET (the raw lean is still shown).
+- Old routes redirect: `/dashboard/track`, `/insights`, `/alerts` → Rewards; `/dashboard/compare` → Verdict.
 
 ### Design System (Tailwind v4)
 
@@ -58,7 +55,7 @@ Dark-first. Never pure black or pure white.
 
 **Backgrounds**: Deep `#0a0e17` (page bg), Card `#111827` (surfaces), Card Hover `#1a2236`, Elevated `#1e293b` (modals/dropdowns)
 
-**Text**: Primary `#f0f2f5` (headlines, key values), Secondary `#7a8ba8` (body, descriptions), Dim `#4a5568` (captions, fees)
+**Text**: Primary `#f0f2f5` (headlines, key values), Secondary `#7a8ba8` (body, descriptions), Dim `#7282a0` (captions; the lowest contrast that still passes WCAG AA on page and card backgrounds — never go dimmer for text)
 
 **Accents** — each color has a strict semantic role:
 - Cyan `#22d3ee` — CTAs, links, interactive elements, brand. If it's clickable, use cyan.
@@ -200,7 +197,7 @@ src/lib/insights/
 
 **Integration points**:
 - `generateAndPersistInsights(userId)` called after `processTransactionsForConnection()` in engine orchestrator
-- `getInsightsForDisplay(userId, surface, max)` called in insights page
+- There is no Insights page: A1/A2 insights with a `benefitId` show as "from your spending" hints on Rewards credit rows, P2 feeds Rewards' "earn more on the same spending"
 - `expireStaleInsights(userId)` called at the start of `generateAndPersistInsights` in the insights orchestrator
 - `/api/insights/dismiss` records dismissals and triggers suppression
 
@@ -208,16 +205,41 @@ src/lib/insights/
 
 On-demand simulation engine that answers "which card earns the most for your actual spending?"
 
-- **Category mapper** (`categories.ts`): tiered classification — user override (`category_overrides` table, high) → merchant name match (high) → Plaid detailed category (medium) → Plaid primary category (low; `GENERAL_MERCHANDISE` splits online/in-store via `payment_channel`) → `other`. User corrections come from the Compare tab's "Unclassified spend" panel via `POST /api/transactions/reclassify` (keyed by normalized merchant name, one correction covers all transactions from that merchant; triggers `recomputeSummaries`). `overrides.ts` has `getCategoryOverridesMap` + `getUnclassifiedMerchants`. Ambiguous mega-merchants (Amazon/Walmart/Target, `deferToPlaid` flag) yield to Plaid's `FOOD_AND_DRINK_GROCERIES` signal per-transaction. Uses 26-category taxonomy separate from the 8-category spending system.
+- **Category mapper** (`categories.ts`): tiered classification — user override (`category_overrides` table, high) → merchant name match (high) → Plaid detailed category (medium) → Plaid primary category (low; `GENERAL_MERCHANDISE` splits online/in-store via `payment_channel`) → `other`. User corrections come from the Verdict page's "Unclassified spend" panel via `POST /api/transactions/reclassify` (keyed by normalized merchant name, one correction covers all transactions from that merchant; triggers `recomputeSummaries`). `overrides.ts` has `getCategoryOverridesMap` + `getUnclassifiedMerchants`. Ambiguous mega-merchants (Amazon/Walmart/Target, `deferToPlaid` flag) yield to Plaid's `FOOD_AND_DRINK_GROCERIES` signal per-transaction. Uses 26-category taxonomy separate from the 8-category spending system.
 - **Merchant map** (`merchant-map.ts`): ~300 static merchant→category entries with priority-based matching. Prefix/contains matches are word-boundary guarded (apostrophe = boundary) so short patterns can't match inside longer words; `noBoundary: true` opts out for deliberately truncated patterns. Includes low-priority generic descriptor words (`restaurant`, `pizza`, `coffee`, `parking`, …) that catch long-tail independents.
 - **Earn configs** (`earn-configs/`): Per-card earn rate definitions (bonus categories, caps, conditions, point valuations). 30 card earn configs across tier-1 (CSR, CSP, Amex Platinum), tier-2 (CFF, CFU, CBC Everyday, Citi Custom Cash, Citi Double Cash, Discover it, USBAC, WF Active Cash, WF Autograph Journey), tier-0 (CBC Preferred, Amex Gold, Citi Strata Elite, Citi Strata Premier, Venture X, Venture, Robinhood Gold, Bilt Palladium), and tier-3 (Amex Business Platinum, Apple Card, Capital One SavorOne, Delta SkyMiles Platinum, Hilton Honors Aspire, IHG One Rewards Premier, Chase Ink Business Preferred, Southwest Rapid Rewards Priority, United Explorer, World of Hyatt).
 - **Calculator** (`calculator.ts`): Per-transaction points calculation with cap tracking. Supports `time_window` conditions for time-based earn rates (e.g., Citi Nights).
 - **Simulator** (`simulator.ts`): Full pipeline — classify → calculate per card → aggregate → compute net value (points + benefits - fee). Supports `portalMode` to reclassify travel as `travel_portal`.
 - **Perk matrix** (`perk-matrix.ts`): Static benefit comparison data for the Benefits & Perks tab (30 cards).
 - **Queries** (`queries.ts`): Server-only DB queries for transaction data (includes `datetime` for time-window matching).
-- **Orchestrator** (`index.ts`): `computeComparison(userId, options?)` — main entry point called from the compare page. Accepts `{ portalMode?: boolean }`.
+- **Orchestrator** (`index.ts`): `computeComparison(userId, options?)` — main entry point called from the Verdict page. Accepts `{ portalMode?: boolean }`.
 
 No new DB tables — computed on-demand from existing transaction data.
+
+### Rewards (`src/lib/rewards/`)
+
+Pure card-year math (no DB) behind the Rewards page, plus one server query:
+- `card-year.ts` — `getCardYear(anniversaryDate)`: anniversary-bounded, calendar-year fallback (same as the engine's `annual_anniversary` fallback)
+- `earned.ts` — credits used this card year; quadrennial usage counts only if recorded this card year; subscriptions accrue monthly from activation
+- `unclaimed.ts` — credit left from now to card-year end across all remaining periods, respecting `activeMonths` and `sunsetDate`; rows grouped by `displayGroup ?? name` (DoorDash sub-credits, StubHub H1/H2)
+- `expired.ts` — credit left in periods closed this card year (split before/after the user joined) + card-year capture rate
+- `turn-on.ts` — subscriptions and `requiresActivation` credits to switch on; a credit that has ever paid out counts as on
+- `preferences.ts` — validation for `POST /api/benefits/preferences`
+- `queries.ts` — `getRewardsView(userId, cardProfileId)` assembles the page
+
+**`benefit_preferences` table**: per benefit — `hidden` ("not for me": excluded from totals and capture rate), `reminder_mode` (`auto` | `custom` | `off`) + `reminder_lead_days`, `activated_at`. Grouped rows write every member.
+
+### Verdict (`src/lib/verdict/`)
+
+- `decide.ts` — `decideVerdict(cards, usersCardId, vMode, bMode, monthCount)`; `MIN_MONTHS_FOR_VERDICT = 6`
+- `robustness.ts` — re-decides under all 9 valuation × benefit settings
+- `reasons.ts` — structured points / benefits / fee / category reasons from the same numbers
+- `next-steps.ts` — checklist, deadline and "what you'd give up" from the verdict + issuer policy; never tells a no-fee cardholder to close
+- `src/lib/cards/issuer-policies.ts` — per-issuer fee-refund window (Chase/Amex: 30 days from the fee statement; Citi/Capital One unpublished; Wells Fargo/Bilt/Robinhood none), product-change targets, points-on-close, retention. Sourced and dated (`verifiedAt`); re-verify with the card audit.
+
+### Alerts (`src/lib/alerts/`)
+
+Calendar-born alert stream (dedup by `(userId, dedupKey)`, future email source via `emailedAt`). `credit_expiring` follows the lead-time ladder unless the user set a reminder (custom lead days skip the minimum and habit suppression; off/hidden silences it). `renewal_verdict` fires T−30 with the Verdict page's answer. There is no Alerts tab: alerts highlight Rewards rows and drive the Rewards nav badge; Rewards regenerates alerts on view and marks them read.
 
 ### Card Registry
 
@@ -290,8 +312,8 @@ src/
 │   ├── layout.tsx          # Root layout (fonts, ThemeProvider)
 │   ├── page.tsx            # Landing page
 │   ├── login/              # Auth pages (login, verify, error)
-│   ├── onboarding/         # Multi-step wizard (card select, Plaid, processing)
-│   ├── dashboard/          # Main app: compare/, track/, insights/ + tabbed shell
+│   ├── onboarding/         # Wizard (card select, Plaid, processing, card-year)
+│   ├── dashboard/          # Rewards (page.tsx) + verdict/; track|insights|alerts|compare are redirects
 │   ├── benefits/           # Redirect stub → /dashboard
 │   ├── spending/           # Redirect stub → /dashboard?tab=track
 │   ├── compare/            # Redirect stub → /dashboard?tab=compare
@@ -311,6 +333,9 @@ src/
 ├── lib/
 │   ├── engine/             # Pure matching engine + tests
 │   ├── insights/           # Insights Engine v3 (generators, scoring, orchestrator, suppression)
+│   ├── rewards/            # Card-year earned / unclaimed / expired math + Rewards query
+│   ├── verdict/            # Keep/switch decision, reasons, robustness, next steps
+│   ├── alerts/             # Alert stream (credit_expiring, renewal_verdict, connection_broken)
 │   ├── spending/           # Spending analysis (categories, queries)
 │   ├── cards/              # Card definitions registry + auto-detection (30 cards)
 │   ├── points/             # Points earn model (category mapper, earn configs, simulator)
@@ -374,7 +399,7 @@ Connection health alerts (`src/lib/notifications.ts`) surface stale/reauth/disco
 - `docs/architecture/design-principles.md` — S-tier SaaS dashboard design checklist
 - `docs/engines/insights-engine.md` — Insights Engine v3 spec (categories, scoring, templates, display rules, suppression)
 - `docs/engines/points-engine.md` — Points earn model spec (category taxonomy, earn rates, caps)
-- `docs/engines/llm-classification-tier.md` — LLM merchant-classification tier spec (Tier L cache, model policy; not yet implemented)
+- `docs/engines/llm-classification-tier.md` — LLM merchant-classification tier spec (Tier L cache, model policy; implemented — model eval still to run)
 - `docs/styling/style-guide.md` — Brand colors, typography, spacing, motion
 - `docs/catalogs/` — Card benefit catalogs organized by tier (tier-1, tier-2, tier-3) covering 30 cards
 - `docs/terms/` — Privacy policy, terms of service, security documentation

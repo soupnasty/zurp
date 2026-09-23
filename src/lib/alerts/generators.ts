@@ -1,5 +1,5 @@
 import type { BenefitCycle } from "@/lib/types";
-import type { RenewalStatus } from "@/lib/home/queries";
+import type { RenewalStatus } from "./queries";
 import type { VerdictDisplay } from "@/lib/verdict/decide";
 import type {
   AlertCandidate,

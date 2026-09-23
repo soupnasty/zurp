@@ -1,6 +1,5 @@
 import { requireAuth } from "@/lib/auth-helpers";
 import { getCardProfiles } from "@/lib/queries";
-import { hasUnseenInsights } from "@/lib/insights/queries";
 import { getUnreadAlertCount } from "@/lib/alerts/queries";
 import { AppShell } from "@/components/AppShell";
 
@@ -13,9 +12,8 @@ export default async function SettingsLayout({
 }) {
   const user = await requireAuth();
 
-  const [cardProfilesList, hasNew, unreadAlerts] = await Promise.all([
+  const [cardProfilesList, unreadAlerts] = await Promise.all([
     getCardProfiles(user.id!),
-    hasUnseenInsights(user.id!),
     getUnreadAlertCount(user.id!),
   ]);
 
@@ -34,7 +32,7 @@ export default async function SettingsLayout({
   return (
     <AppShell
       userEmail={user.email ?? undefined}
-      dashboardNav={{ hasNewInsights: hasNew, unreadAlerts, cardProfiles }}
+      dashboardNav={{ unreadAlerts, cardProfiles }}
     >
       {children}
     </AppShell>

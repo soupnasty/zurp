@@ -2,6 +2,7 @@ import "server-only";
 import { db } from "@/db";
 import { eq, and, isNull, inArray, desc } from "drizzle-orm";
 import * as schema from "@/db/schema";
+import { getCardDefinition } from "@/lib/cards";
 
 export type AlertRow = typeof schema.alerts.$inferSelect;
 
@@ -75,4 +76,40 @@ export async function dismissAlert(userId: string, alertId: string) {
     .where(
       and(eq(schema.alerts.id, alertId), eq(schema.alerts.userId, userId))
     );
+}
+
+export interface RenewalStatus {
+  /** ISO date of the next fee renewal. */
+  renewsAt: string;
+  daysUntil: number;
+  annualFee: number;
+}
+
+/**
+ * When a fee card's annual fee next posts. Null when the card has no fee
+ * or no anniversary date yet.
+ */
+export async function getRenewalStatus(
+  userId: string,
+  cardProfileId: string
+): Promise<RenewalStatus | null> {
+  const profile = await db.query.cardProfiles.findFirst({
+    where: and(eq(schema.cardProfiles.userId, userId), eq(schema.cardProfiles.id, cardProfileId)),
+  });
+  if (!profile || !profile.anniversaryDate) return null;
+
+  const cardDef = getCardDefinition(profile.cardType);
+  if (!cardDef || cardDef.annualFee <= 0) return null;
+
+  // Next renewal: anniversary advanced year by year until it's in the future
+  const now = new Date();
+  const renewal = new Date(profile.anniversaryDate);
+  while (renewal <= now) {
+    renewal.setUTCFullYear(renewal.getUTCFullYear() + 1);
+  }
+  return {
+    renewsAt: renewal.toISOString(),
+    daysUntil: Math.ceil((renewal.getTime() - now.getTime()) / (24 * 60 * 60 * 1000)),
+    annualFee: cardDef.annualFee,
+  };
 }

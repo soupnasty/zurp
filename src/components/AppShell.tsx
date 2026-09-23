@@ -20,7 +20,6 @@ import { resolveActiveCard } from "@/lib/resolve-card";
 type Tab = "rewards" | "verdict";
 
 export interface DashboardNavProps {
-  hasNewInsights: boolean;
   unreadAlerts: number;
   cardProfiles: Array<{
     id: string;

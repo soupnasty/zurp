@@ -21,7 +21,7 @@
   /* Extended palette */
   --color-card-hover: #1a2236;
   --color-elevated: #1e293b;
-  --color-dim: #4a5568;
+  --color-dim: #7282a0; /* ≥4.5:1 on page and card backgrounds (WCAG AA) */
   --color-accent-blue: #60a5fa;
   --color-accent-purple: #a78bfa;
   --color-accent-cyan: #22d3ee;

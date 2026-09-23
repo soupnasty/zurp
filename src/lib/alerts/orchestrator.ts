@@ -2,7 +2,7 @@ import { db } from "@/db";
 import { eq, and, inArray } from "drizzle-orm";
 import * as schema from "@/db/schema";
 import { getCardDefinition } from "@/lib/cards";
-import { getRenewalStatus } from "@/lib/home/queries";
+import { getRenewalStatus } from "./queries";
 import { readComparison } from "@/lib/points/comparison-reader";
 import { decideVerdict } from "@/lib/verdict/decide";
 import {
