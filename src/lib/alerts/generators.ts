@@ -1,6 +1,6 @@
 import type { BenefitCycle } from "@/lib/types";
 import type { RenewalStatus } from "@/lib/home/queries";
-import { isEffectivelyTied } from "@/lib/points/tie-band";
+import type { VerdictDisplay } from "@/lib/verdict/decide";
 import type {
   AlertCandidate,
   CreditGroupState,
@@ -112,59 +112,58 @@ export function generateCreditExpiryAlerts(
   return out;
 }
 
-export type RenewalVerdict = "keep" | "close_call" | "reconsider";
+export interface RenewalVerdictInput {
+  state: VerdictDisplay;
+  /** The card the verdict compares against. */
+  compareToName: string;
+  /** compareTo.net − yours.net under the default assumptions. */
+  gap: number;
+  /** The user's card under the default assumptions. */
+  points: number;
+  benefits: number;
+}
+
+const VERDICT_LABEL: Record<VerdictDisplay, string> = {
+  keep: "KEEP",
+  switch: "SWITCH",
+  toss_up: "TOSS-UP",
+  not_yet: "NOT YET",
+};
 
 /**
  * renewal_verdict — fires inside the T−30 window before the fee posts.
- * Verdict reuses the tie band: a net inside the band is a close call,
- * not a win or loss.
+ * Carries the same verdict as the Verdict page (best alternative, tie
+ * band), so the alert and the page never disagree.
  */
 export function generateRenewalVerdictAlert(
   cardProfileId: string,
   cardName: string,
-  renewal: Pick<
-    RenewalStatus,
-    "renewsAt" | "daysUntil" | "annualFee" | "creditsCaptured" | "pointsValue" | "netSoFar"
-  >,
-  now: Date = new Date()
+  renewal: Pick<RenewalStatus, "renewsAt" | "daysUntil" | "annualFee">,
+  verdict: RenewalVerdictInput
 ): AlertCandidate | null {
   if (renewal.daysUntil > 30) return null;
 
   const renewsAt = new Date(renewal.renewsAt);
-  const totalValue = renewal.creditsCaptured + renewal.pointsValue;
-
-  let verdict: RenewalVerdict;
-  if (isEffectivelyTied(totalValue, renewal.annualFee)) {
-    verdict = "close_call";
-  } else if (renewal.netSoFar > 0) {
-    verdict = "keep";
-  } else {
-    verdict = "reconsider";
-  }
-
-  const verdictLabel: Record<RenewalVerdict, string> = {
-    keep: "KEEP",
-    close_call: "CLOSE CALL",
-    reconsider: "RECONSIDER",
-  };
-
-  const bodyByVerdict: Record<RenewalVerdict, string> = {
-    keep: `~$${totalValue.toLocaleString()} captured vs the $${renewal.annualFee.toLocaleString()} fee. Call for a retention offer anyway — they work on keepers too.`,
-    close_call: `~$${totalValue.toLocaleString()} captured vs the $${renewal.annualFee.toLocaleString()} fee — inside the noise band. Call for a retention offer before deciding.`,
-    reconsider: `~$${totalValue.toLocaleString()} captured vs the $${renewal.annualFee.toLocaleString()} fee. Call retention first; if no offer, a downgrade keeps your points alive.`,
+  const gap = `~$${Math.abs(Math.round(verdict.gap)).toLocaleString()}/yr`;
+  const bodyByVerdict: Record<VerdictDisplay, string> = {
+    keep: `Your card nets ${gap} more than the best alternative, ${verdict.compareToName}. Nothing to do.`,
+    switch: `${verdict.compareToName} would net you ${gap} more. Ask for a retention offer first, then decide before the fee posts.`,
+    toss_up: `Within ${gap} of ${verdict.compareToName}, too close to call. Ask for a retention offer before deciding.`,
+    not_yet: `Not enough spending history for a verdict yet.`,
   };
 
   return {
     type: "renewal_verdict",
     dedupKey: `renewal_verdict:${cardProfileId}:${renewsAt.getUTCFullYear()}`,
     severity: "action",
-    title: `Renewal verdict: ${verdictLabel[verdict]} — ${cardName}`,
-    body: `Fee renews ${fmtDate(renewsAt)} (${renewal.daysUntil}d). ${bodyByVerdict[verdict]}`,
+    title: `Renewal verdict: ${VERDICT_LABEL[verdict.state]} — ${cardName}`,
+    body: `Fee renews ${fmtDate(renewsAt)} (${renewal.daysUntil}d). ${bodyByVerdict[verdict.state]}`,
     payload: {
-      verdict,
-      netSoFar: renewal.netSoFar,
-      creditsCaptured: renewal.creditsCaptured,
-      pointsValue: renewal.pointsValue,
+      verdict: verdict.state,
+      compareTo: verdict.compareToName,
+      gap: verdict.gap,
+      creditsCaptured: verdict.benefits,
+      pointsValue: verdict.points,
       annualFee: renewal.annualFee,
       renewsAt: renewal.renewsAt,
       daysUntil: renewal.daysUntil,

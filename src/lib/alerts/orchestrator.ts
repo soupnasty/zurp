@@ -3,6 +3,8 @@ import { eq, and, inArray } from "drizzle-orm";
 import * as schema from "@/db/schema";
 import { getCardDefinition } from "@/lib/cards";
 import { getRenewalStatus } from "@/lib/home/queries";
+import { readComparison } from "@/lib/points/comparison-reader";
+import { decideVerdict } from "@/lib/verdict/decide";
 import {
   generateCreditExpiryAlerts,
   generateRenewalVerdictAlert,
@@ -58,15 +60,28 @@ export async function generateAndPersistAlerts(userId: string) {
       )
     );
 
-    const renewal = await getRenewalStatus(userId, profile.id);
-    if (renewal) {
-      const alert = generateRenewalVerdictAlert(
-        profile.id,
-        profile.cardLabel ?? cardDef.name,
-        renewal,
-        now
-      );
-      if (alert) candidates.push(alert);
+    // Simulations exist only for the active profile (readComparison).
+    const renewal = profile.isActive ? await getRenewalStatus(userId, profile.id) : null;
+    if (renewal && renewal.daysUntil <= 30) {
+      const comparison = await readComparison(userId, false);
+      const verdict = comparison
+        ? decideVerdict(comparison.cards, profile.cardType, "realistic", "proven", comparison.monthCount)
+        : null;
+      if (verdict) {
+        const alert = generateRenewalVerdictAlert(
+          profile.id,
+          profile.cardLabel ?? cardDef.name,
+          renewal,
+          {
+            state: verdict.state,
+            compareToName: verdict.compareTo.cardName,
+            gap: verdict.gap,
+            points: verdict.yours.points,
+            benefits: verdict.yours.benefits,
+          }
+        );
+        if (alert) candidates.push(alert);
+      }
     }
   }
 

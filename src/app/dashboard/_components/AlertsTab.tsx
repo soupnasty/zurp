@@ -50,8 +50,16 @@ function dotColor(alert: SerializedAlert): string {
 
 const VERDICT_COLORS: Record<string, string> = {
   keep: "var(--color-success)",
-  close_call: "var(--color-warning)",
-  reconsider: "var(--color-danger)",
+  toss_up: "var(--color-warning)",
+  switch: "var(--color-danger)",
+  not_yet: "var(--text-secondary)",
+};
+
+const VERDICT_LABELS: Record<string, string> = {
+  keep: "KEEP",
+  toss_up: "TOSS-UP",
+  switch: "SWITCH",
+  not_yet: "NOT YET",
 };
 
 export function AlertsTab({ active, closed }: AlertsTabProps) {
@@ -210,17 +218,12 @@ function FeaturedVerdict({
   const fee = Number(alert.payload.annualFee ?? 0);
   const days = Number(alert.payload.daysUntil ?? 0);
 
-  const verdictLabel =
-    verdict === "close_call"
-      ? "CLOSE CALL"
-      : verdict === "reconsider"
-        ? "RECONSIDER"
-        : "KEEP";
+  const verdictLabel = VERDICT_LABELS[verdict] ?? "KEEP";
 
   const tint =
-    verdict === "close_call"
+    verdict === "toss_up"
       ? { border: "rgba(251,191,36,0.35)", bg: "rgba(251,191,36,0.05)" }
-      : verdict === "reconsider"
+      : verdict === "switch"
         ? { border: "rgba(248,113,113,0.35)", bg: "rgba(248,113,113,0.05)" }
         : { border: "rgba(52,211,153,0.35)", bg: "rgba(52,211,153,0.05)" };
 
