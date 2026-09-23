@@ -9,8 +9,9 @@ import {
   generateCreditExpiryAlerts,
   generateRenewalVerdictAlert,
   generateConnectionAlerts,
+  resolveReminder,
 } from "./generators";
-import type { AlertCandidate, CreditGroupState } from "./types";
+import type { AlertCandidate, BenefitPreference, CreditGroupState } from "./types";
 
 /**
  * Generate and persist alerts for a user. Runs after every sync (and,
@@ -52,10 +53,18 @@ export async function generateAndPersistAlerts(userId: string) {
       },
     });
 
+    const prefRows = await db.query.benefitPreferences.findMany({
+      where: and(
+        eq(schema.benefitPreferences.userId, userId),
+        eq(schema.benefitPreferences.cardProfileId, profile.id)
+      ),
+    });
+    const prefs = new Map(prefRows.map((p) => [p.benefitId, p]));
+
     candidates.push(
       ...generateCreditExpiryAlerts(
         profile.id,
-        buildCreditGroups(cardDef, usage, now),
+        buildCreditGroups(cardDef, usage, now, prefs),
         now
       )
     );
@@ -179,7 +188,8 @@ function buildCreditGroups(
     amountRemaining: number;
     cycleEnd: Date;
   }>,
-  now: Date
+  now: Date,
+  prefs: Map<string, BenefitPreference> = new Map()
 ): CreditGroupState[] {
   const benefitById = new Map(cardDef.benefits.map((b) => [b.id, b]));
 
@@ -247,6 +257,11 @@ function buildCreditGroups(
       remaining: Math.round(current.remaining * 100) / 100,
       cycleEnd: current.cycleEnd,
       recentFullUse,
+      reminder: resolveReminder(
+        cardDef.benefits
+          .filter((b) => (b.displayGroup ?? b.id) === key)
+          .map((b) => prefs.get(b.id))
+      ),
     });
   }
 

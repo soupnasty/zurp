@@ -3,8 +3,10 @@ import type { RenewalStatus } from "@/lib/home/queries";
 import type { VerdictDisplay } from "@/lib/verdict/decide";
 import type {
   AlertCandidate,
+  BenefitPreference,
   CreditGroupState,
   ConnectionState,
+  ReminderPreference,
 } from "./types";
 
 /**
@@ -59,6 +61,20 @@ function daysUntil(now: Date, then: Date): number {
 }
 
 /**
+ * One reminder setting for an alert group from its members' preferences.
+ * Hidden or off on any member silences the group; otherwise the shortest
+ * custom lead time wins; otherwise auto.
+ */
+export function resolveReminder(prefs: (BenefitPreference | undefined)[]): ReminderPreference {
+  const set = prefs.filter((p): p is BenefitPreference => !!p);
+  if (set.some((p) => p.hidden || p.reminderMode === "off")) return { mode: "off", leadDays: null };
+  const leads = set
+    .filter((p) => p.reminderMode === "custom" && p.reminderLeadDays !== null)
+    .map((p) => p.reminderLeadDays as number);
+  return leads.length > 0 ? { mode: "custom", leadDays: Math.min(...leads) } : { mode: "auto", leadDays: null };
+}
+
+/**
  * credit_expiring — a credit with remaining balance approaching its
  * period end, per the lead-time ladder.
  */
@@ -71,14 +87,24 @@ export function generateCreditExpiryAlerts(
 
   for (const g of groups) {
     const rule = expiryRule(g.cycle);
-    if (!rule) continue;
-    if (g.remaining < rule.minRemaining) continue;
+    if (!rule || g.reminder?.mode === "off") continue;
+
+    // A reminder the user set replaces the ladder's lead time, and is
+    // never filtered by the minimum or by habit suppression.
+    const customLead =
+      g.reminder?.mode === "custom" && g.reminder.leadDays !== null
+        ? g.reminder.leadDays
+        : null;
+    const leadDays = customLead ?? rule.leadDays;
+    if (g.remaining <= 0) continue;
+    if (customLead === null && g.remaining < rule.minRemaining) continue;
 
     const days = daysUntil(now, g.cycleEnd);
-    if (days < 0 || days > rule.leadDays) continue;
+    if (days < 0 || days > leadDays) continue;
 
     // Habit suppression: the user demonstrably doesn't need this nudge.
     if (
+      customLead === null &&
       rule.habitStreak !== null &&
       g.recentFullUse.length >= rule.habitStreak &&
       g.recentFullUse.slice(0, rule.habitStreak).every(Boolean)
@@ -102,8 +128,9 @@ export function generateCreditExpiryAlerts(
         remaining: g.remaining,
         daysLeft: Math.max(0, days),
         stage: escalated ? "escalated" : "initial",
+        userReminder: customLead !== null,
       },
-      effectiveAt: new Date(g.cycleEnd.getTime() - rule.leadDays * DAY_MS),
+      effectiveAt: new Date(g.cycleEnd.getTime() - leadDays * DAY_MS),
       expiresAt: g.cycleEnd,
       cardProfileId,
     });

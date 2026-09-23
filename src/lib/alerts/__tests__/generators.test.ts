@@ -3,6 +3,7 @@ import {
   generateCreditExpiryAlerts,
   generateRenewalVerdictAlert,
   generateConnectionAlerts,
+  resolveReminder,
 } from "../generators";
 import type { CreditGroupState } from "../types";
 
@@ -111,6 +112,43 @@ describe("generateCreditExpiryAlerts", () => {
   it("skips subscription benefits", () => {
     const sub = makeGroup({ cycle: "subscription", cycleEnd: daysFromNow(5) });
     expect(generateCreditExpiryAlerts("cp1", [sub], NOW)).toHaveLength(0);
+  });
+});
+
+describe("user reminders", () => {
+  it("never alerts when reminders are off", () => {
+    const g = makeGroup({ reminder: { mode: "off", leadDays: null } });
+    expect(generateCreditExpiryAlerts("cp1", [g], NOW)).toHaveLength(0);
+  });
+
+  it("uses a custom lead time in place of the ladder", () => {
+    // 15 days out: outside the monthly 10-day ladder, inside a 20-day reminder
+    const g = makeGroup({ cycleEnd: daysFromNow(15), reminder: { mode: "custom", leadDays: 20 } });
+    const [alert] = generateCreditExpiryAlerts("cp1", [g], NOW);
+    expect(alert.payload.userReminder).toBe(true);
+    expect(alert.effectiveAt).toEqual(daysFromNow(-5));
+    // A 3-day reminder stays quiet 8 days out, even though the ladder would fire
+    const late = makeGroup({ reminder: { mode: "custom", leadDays: 3 } });
+    expect(generateCreditExpiryAlerts("cp1", [late], NOW)).toHaveLength(0);
+  });
+
+  it("skips the minimum and habit suppression for a reminder the user set", () => {
+    const g = makeGroup({
+      remaining: 5,
+      recentFullUse: [true, true, true],
+      reminder: { mode: "custom", leadDays: 10 },
+    });
+    expect(generateCreditExpiryAlerts("cp1", [g], NOW)).toHaveLength(1);
+    expect(generateCreditExpiryAlerts("cp1", [{ ...g, reminder: undefined }], NOW)).toHaveLength(0);
+  });
+
+  it("resolves a group's setting from its members", () => {
+    const auto = { hidden: false, reminderMode: "auto", reminderLeadDays: null };
+    const custom = (n: number) => ({ hidden: false, reminderMode: "custom", reminderLeadDays: n });
+    expect(resolveReminder([undefined, undefined])).toEqual({ mode: "auto", leadDays: null });
+    expect(resolveReminder([auto, custom(7), custom(3)])).toEqual({ mode: "custom", leadDays: 3 });
+    expect(resolveReminder([custom(7), { ...auto, hidden: true }])).toEqual({ mode: "off", leadDays: null });
+    expect(resolveReminder([{ ...auto, reminderMode: "off" }])).toEqual({ mode: "off", leadDays: null });
   });
 });
 
