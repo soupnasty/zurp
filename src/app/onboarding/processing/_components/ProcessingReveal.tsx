@@ -215,7 +215,7 @@ export function ProcessingReveal({
         // Fail silently — selections can be changed later on compare page
       }
 
-      window.location.href = "/dashboard/compare";
+      window.location.href = "/dashboard/verdict";
     },
     []
   );

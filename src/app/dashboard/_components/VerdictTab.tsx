@@ -2,27 +2,29 @@
 
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Info } from "lucide-react";
-import { Modal } from "@/components/ui/Modal";
 import { Leaderboard } from "./Leaderboard";
 import { ValuationToggle } from "./ValuationToggle";
 import { BenefitAssumptionToggle } from "./BenefitAssumptionToggle";
 import { saveLifestyleSelections } from "@/app/onboarding/actions";
 import { computeLifestyleBenefits } from "@/lib/points/lifestyle-valuation";
-import { isEffectivelyTied } from "@/lib/points/tie-band";
 import { UnclassifiedSpendPanel } from "./UnclassifiedSpendPanel";
+import { VerdictSummary } from "./VerdictSummary";
+import type { IssuerPolicy } from "@/lib/cards/issuer-policies";
 import type { SerializedComparison } from "./types";
 import type { ValuationMode, BenefitAssumptionMode, CardSimulation } from "@/lib/points/types";
 import type { UnclassifiedMerchant } from "@/lib/points/overrides";
 
-interface CompareTabProps {
+interface VerdictTabProps {
   comparison: SerializedComparison | null;
   activeCardType: string;
   activeCardName: string;
-  activeCardFee: number;
   lifestyleKeys: string[];
   syncStatus: "pending" | "initial" | "complete";
   unclassifiedMerchants?: UnclassifiedMerchant[];
+  yourPointsCurrency: string | null;
+  issuerPolicy: IssuerPolicy | null;
+  /** ISO date the next annual fee posts; null without an anniversary. */
+  feePostsAt: string | null;
 }
 
 /** Get the net value for a card at the given valuation + benefit assumption modes. */
@@ -51,11 +53,6 @@ export function getBenefitsForMode(card: CardSimulation, bMode: BenefitAssumptio
   return card.benefitsByMode[bMode];
 }
 
-function fmt(n: number): string {
-  const abs = Math.abs(Math.round(n));
-  return n >= 0 ? `+$${abs.toLocaleString()}` : `-$${abs.toLocaleString()}`;
-}
-
 const SHORT_MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 function formatPeriod(start: string, end: string): string {
@@ -64,15 +61,17 @@ function formatPeriod(start: string, end: string): string {
   return `${SHORT_MONTHS[s.getMonth()]} ${s.getFullYear()} – ${SHORT_MONTHS[e.getMonth()]} ${e.getFullYear()}`;
 }
 
-export function CompareTab({
+export function VerdictTab({
   comparison,
   activeCardType,
   activeCardName,
-  activeCardFee,
   lifestyleKeys,
   syncStatus,
   unclassifiedMerchants,
-}: CompareTabProps) {
+  yourPointsCurrency,
+  issuerPolicy,
+  feePostsAt,
+}: VerdictTabProps) {
   const router = useRouter();
   const [vMode, setVMode] = useState<ValuationMode>("realistic");
   // Default to "proven" — the only benefits mode grounded in matched
@@ -134,33 +133,21 @@ export function CompareTab({
     card.rank = i + 1;
   });
 
-  const userCard = sorted.find((c) => c.cardId === activeCardType);
-  const bestCard = sorted[0];
-
-  const userRank = userCard?.rank ?? 0;
-  const userNet = userCard ? getNetForModes(userCard, vMode, bMode) : 0;
-  const bestNet = bestCard ? getNetForModes(bestCard, vMode, bMode) : 0;
-  const gap = bestCard && userCard ? bestNet - userNet : 0;
-
-  // Breakdown for net value tooltip
-  const userPoints = userCard ? getPointsForMode(userCard, vMode) : 0;
-  const userBenefits = userCard ? getBenefitsForMode(userCard, bMode) : 0;
-
   return (
     <div>
       {/* Card header */}
       <div className="mb-5">
         <span
-          className="text-[10px] font-bold uppercase tracking-[2.5px] text-[var(--text-secondary)]"
+          className="text-[12px] font-bold uppercase tracking-[1.5px] text-[var(--text-secondary)]"
           style={{ fontFamily: "var(--font-mono)" }}
         >
-          Your card
+          Verdict · for your next card year
         </span>
         <h1 className="mt-1 text-xl md:text-2xl font-bold text-[var(--text-primary)]">
-          {activeCardName}
+          Is the {activeCardName} still your best card?
         </h1>
         <span
-          className="text-[10px] md:text-[12px] text-[var(--text-secondary)] whitespace-nowrap"
+          className="text-[12px] text-[var(--text-secondary)]"
           style={{ fontFamily: "var(--font-mono)" }}
         >
           {comparison.totalTransactions.toLocaleString()} transactions | {comparison.monthCount}mo | {formatPeriod(comparison.analysisPeriod.start, comparison.analysisPeriod.end)}
@@ -174,18 +161,23 @@ export function CompareTab({
         </span>
       </div>
 
-      {/* Summary stats — Net hero, Rank, Gap */}
-      <CompareSummary
-        userNet={userNet}
-        userPoints={userPoints}
-        userBenefits={userBenefits}
-        annualFee={activeCardFee}
-        userRank={typeof userRank === "number" ? userRank : 0}
-        totalCards={comparison.totalCards}
-        gap={gap}
-        tied={isEffectivelyTied(userNet, bestNet)}
+      <VerdictSummary
+        cards={cards}
+        activeCardType={activeCardType}
+        vMode={vMode}
+        bMode={bMode}
+        monthCount={comparison.monthCount}
+        yourPointsCurrency={yourPointsCurrency}
+        issuerPolicy={issuerPolicy}
+        feePostsAt={feePostsAt}
       />
 
+      <h2
+        className="mt-8 mb-2 text-[12px] font-bold uppercase tracking-[1.5px] text-[var(--text-secondary)]"
+        style={{ fontFamily: "var(--font-mono)" }}
+      >
+        Assumptions and all {comparison.totalCards} cards
+      </h2>
       <div className="mt-3 mb-1 md:mt-6 md:mb-2 grid grid-cols-1 md:grid-cols-2 items-end gap-1.5 md:gap-4">
         <ValuationToggle mode={vMode} onChange={setVMode} />
         <BenefitAssumptionToggle
@@ -241,237 +233,6 @@ const BMODE_FOOTNOTE: Record<BenefitAssumptionMode, string> = {
   my_picks: "from your lifestyle picks plus matched transactions",
   all_credits: "assuming every credit is fully used",
 };
-
-// ── Compare Summary Card ──
-
-function CompareSummary({
-  userNet,
-  userPoints,
-  userBenefits,
-  annualFee,
-  userRank,
-  totalCards,
-  gap,
-  tied,
-}: {
-  userNet: number;
-  userPoints: number;
-  userBenefits: number;
-  annualFee: number;
-  userRank: number;
-  totalCards: number;
-  gap: number;
-  tied: boolean;
-}) {
-  const [showNetTip, setShowNetTip] = useState(false);
-  const [showNetModal, setShowNetModal] = useState(false);
-
-  const netBreakdownContent = (
-    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-      <div className="flex justify-between" style={{ fontFamily: "var(--font-mono)", fontSize: 13, fontWeight: 700 }}>
-        <span style={{ color: "var(--color-accent-blue)" }}>Points</span>
-        <span style={{ color: "var(--color-accent-blue)" }}>${Math.round(userPoints).toLocaleString()}</span>
-      </div>
-      <div className="flex justify-between" style={{ fontFamily: "var(--font-mono)", fontSize: 13, fontWeight: 700 }}>
-        <span style={{ color: "var(--color-accent-purple)" }}>Benefits</span>
-        <span style={{ color: "var(--color-accent-purple)" }}>${Math.round(userBenefits).toLocaleString()}</span>
-      </div>
-      <div className="flex justify-between" style={{ fontFamily: "var(--font-mono)", fontSize: 13, fontWeight: 700 }}>
-        <span style={{ color: "var(--color-danger)" }}>Fees</span>
-        <span style={{ color: "var(--color-danger)" }}>-${annualFee.toLocaleString()}</span>
-      </div>
-      <div
-        style={{
-          borderTop: "1px solid var(--border-subtle)",
-          paddingTop: 8,
-          marginTop: 2,
-        }}
-        className="flex justify-between"
-      >
-        <span style={{ fontFamily: "var(--font-mono)", fontSize: 13, fontWeight: 700, color: userNet >= 0 ? "var(--color-success)" : "var(--color-danger)" }}>Net</span>
-        <span style={{ fontFamily: "var(--font-mono)", fontSize: 13, fontWeight: 700, color: userNet >= 0 ? "var(--color-success)" : "var(--color-danger)" }}>{fmt(userNet)}</span>
-      </div>
-    </div>
-  );
-
-  return (
-    <>
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr 1fr",
-        gap: 1,
-        background: "rgba(255,255,255,0.06)",
-        border: "1px solid rgba(255,255,255,0.06)",
-        borderRadius: 16,
-      }}
-    >
-      {/* Net Value — hero */}
-      <div className="px-3 py-4 md:px-6 md:py-5" style={{ background: "var(--bg-secondary)", borderRadius: "15px 0 0 15px" }}>
-        <span
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: 10,
-            fontWeight: 700,
-            textTransform: "uppercase",
-            letterSpacing: "2px",
-            color: "var(--text-secondary)",
-            display: "block",
-          }}
-        >
-          Net
-        </span>
-        <div className="flex items-center gap-1.5 md:gap-2">
-          <span
-            className="text-[20px] md:text-[28px]"
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontWeight: 700,
-              color: userNet >= 0 ? "var(--color-success)" : "var(--color-danger)",
-              lineHeight: 1.2,
-            }}
-          >
-            ~{fmt(userNet)}
-          </span>
-          {/* Desktop: hover tooltip */}
-          <div
-            className="relative hidden md:block"
-            onMouseEnter={() => setShowNetTip(true)}
-            onMouseLeave={() => setShowNetTip(false)}
-          >
-            <Info
-              size={16}
-              strokeWidth={2}
-              className="cursor-help text-[var(--text-dim)] transition-colors hover:text-[var(--text-secondary)]"
-            />
-            {showNetTip && (
-              <div
-                className="absolute left-1/2 top-full z-50 mt-2 -translate-x-1/2"
-                style={{
-                  width: 220,
-                  borderRadius: 10,
-                  border: "1px solid var(--border-subtle)",
-                  background: "var(--bg-elevated)",
-                  padding: "10px 14px",
-                  boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
-                }}
-              >
-                <div className="absolute left-1/2 bottom-full -translate-x-1/2 border-4 border-transparent border-b-[var(--bg-elevated)]" />
-                {netBreakdownContent}
-              </div>
-            )}
-          </div>
-          {/* Mobile: tap opens modal */}
-          <button
-            className="md:hidden"
-            onClick={() => setShowNetModal(true)}
-            aria-label="Net value breakdown"
-          >
-            <Info
-              size={16}
-              strokeWidth={2}
-              className="text-[var(--text-dim)]"
-            />
-          </button>
-        </div>
-      </div>
-
-      {/* Rank */}
-      <div className="px-3 py-4 md:px-6 md:py-5" style={{ background: "var(--bg-secondary)" }}>
-        <span
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: 10,
-            fontWeight: 700,
-            textTransform: "uppercase",
-            letterSpacing: "2px",
-            color: "var(--text-secondary)",
-            display: "block",
-          }}
-        >
-          Rank
-        </span>
-        <span
-          className="text-[20px] md:text-[28px]"
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontWeight: 700,
-            lineHeight: 1.2,
-            whiteSpace: "nowrap",
-          }}
-        >
-          <span style={{ color: "var(--color-accent-cyan)" }}>{userRank}</span>
-          <span style={{ color: "var(--text-dim)", fontWeight: 400, fontSize: "0.6em" }}>/</span>
-          <span style={{ color: "var(--text-secondary)", fontSize: "0.6em" }}>{totalCards}</span>
-        </span>
-      </div>
-
-      {/* Gap to #1 */}
-      <div className="px-3 py-4 md:px-6 md:py-5" style={{ background: "var(--bg-secondary)", borderRadius: "0 15px 15px 0" }}>
-        <span
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: 10,
-            fontWeight: 700,
-            textTransform: "uppercase",
-            letterSpacing: "2px",
-            color: "var(--text-secondary)",
-            display: "block",
-          }}
-        >
-          Gap to #1
-        </span>
-        {gap > 0 ? (
-          <span
-            className="text-[20px] md:text-[28px]"
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontWeight: 700,
-              // A gap inside the tie band is assumption noise, not a
-              // verdict — don't paint it as a loss.
-              color: tied ? "var(--text-secondary)" : "var(--color-danger)",
-              lineHeight: 1.2,
-            }}
-          >
-            ~-${Math.round(gap).toLocaleString()}
-          </span>
-        ) : (
-          <span
-            className="text-[20px] md:text-[28px]"
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontWeight: 700,
-              color: "var(--text-secondary)",
-              lineHeight: 1.2,
-            }}
-          >
-            $0
-          </span>
-        )}
-        {gap === 0 ? (
-          <span style={{ display: "block", fontSize: 11, color: "var(--text-secondary)", marginTop: 2 }}>
-            You&apos;re #1
-          </span>
-        ) : tied ? (
-          <span style={{ display: "block", fontSize: 11, color: "var(--text-secondary)", marginTop: 2 }}>
-            effectively tied — within assumption noise
-          </span>
-        ) : null}
-      </div>
-
-    </div>
-
-    {/* Mobile net breakdown modal */}
-    <Modal
-      open={showNetModal}
-      onClose={() => setShowNetModal(false)}
-      title="Net value breakdown"
-    >
-      {netBreakdownContent}
-    </Modal>
-    </>
-  );
-}
 
 // ── Sync Processing Animation ──
 

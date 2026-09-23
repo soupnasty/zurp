@@ -67,7 +67,7 @@ export async function saveLifestyleSelections(
 
   try {
     await setLifestyleSelections(user.id!, selectedKeys);
-    revalidatePath("/dashboard/compare");
+    revalidatePath("/dashboard/verdict");
     return { success: true };
   } catch (e) {
     console.error("[saveLifestyleSelections] error:", e);

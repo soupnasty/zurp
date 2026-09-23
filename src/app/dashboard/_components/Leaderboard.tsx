@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ChevronRight } from "lucide-react";
 import { StackedBar } from "./StackedBar";
-import { getNetForModes, getPointsForMode, getBenefitsForMode } from "./CompareTab";
+import { getNetForModes, getPointsForMode, getBenefitsForMode } from "./VerdictTab";
 import { getCardDefinition } from "@/lib/cards";
 import type { CardSimulation, ValuationMode, BenefitAssumptionMode, CategoryEarnSummary } from "@/lib/points/types";
 import type { BenefitCycle } from "@/lib/types";

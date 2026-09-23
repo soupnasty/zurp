@@ -1,7 +1,7 @@
 "use client";
 
 import type { CardSimulation, HeadlineVerdict, ValuationMode, BenefitAssumptionMode } from "@/lib/points/types";
-import { getNetForModes, getPointsForMode, getBenefitsForMode } from "./CompareTab";
+import { getNetForModes, getPointsForMode, getBenefitsForMode } from "./VerdictTab";
 
 interface HeadToHeadProps {
   headline: HeadlineVerdict;
