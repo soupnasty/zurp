@@ -8,10 +8,8 @@ import {
   ChevronLeft,
   ChevronRight,
   BarChart3,
-  Home,
-  Target,
-  Lightbulb,
-  Bell,
+  Gift,
+  Scale,
   RefreshCw,
   Check,
 } from "lucide-react";
@@ -19,7 +17,7 @@ import type { ReactNode } from "react";
 import { CardSelectorDropdown } from "./CardSelectorDropdown";
 import { resolveActiveCard } from "@/lib/resolve-card";
 
-type Tab = "home" | "compare" | "track" | "insights" | "alerts";
+type Tab = "rewards" | "verdict";
 
 export interface DashboardNavProps {
   hasNewInsights: boolean;
@@ -43,11 +41,8 @@ interface AppShellProps {
 }
 
 const dashboardTabs: { id: Tab; label: string; icon: typeof BarChart3 }[] = [
-  { id: "home", label: "Home", icon: Home },
-  { id: "compare", label: "Compare", icon: BarChart3 },
-  { id: "track", label: "Track", icon: Target },
-  { id: "insights", label: "Insights", icon: Lightbulb },
-  { id: "alerts", label: "Alerts", icon: Bell },
+  { id: "rewards", label: "Rewards", icon: Gift },
+  { id: "verdict", label: "Verdict", icon: Scale },
 ];
 
 function relativeTime(iso: string): string {
@@ -96,18 +91,13 @@ export function AppShell({ children, userEmail, dashboardNav }: AppShellProps) {
   const hasDashboardNav = !!dashboardNav;
   const isSettings = pathname.startsWith("/settings");
 
-  // Derive active tab from pathname; bare /dashboard is Home
-  const activeTab: Tab | null = pathname.startsWith("/dashboard/track")
-    ? "track"
-    : pathname.startsWith("/dashboard/insights")
-      ? "insights"
-      : pathname.startsWith("/dashboard/alerts")
-        ? "alerts"
-        : pathname.startsWith("/dashboard/compare")
-          ? "compare"
-        : pathname.startsWith("/dashboard")
-          ? "home"
-          : null;
+  // Derive active tab from pathname; bare /dashboard is Rewards
+  const activeTab: Tab | null =
+    pathname.startsWith("/dashboard/verdict") || pathname.startsWith("/dashboard/compare")
+      ? "verdict"
+      : pathname.startsWith("/dashboard")
+        ? "rewards"
+        : null;
 
   // Preserve ?card= param across tab navigation
   const cardParam = searchParams.get("card");
@@ -160,7 +150,7 @@ export function AppShell({ children, userEmail, dashboardNav }: AppShellProps) {
         {/* Logo */}
         <div className="flex h-14 items-center border-b border-[var(--border-default)] px-4">
           {!collapsed ? (
-            <Link href="/dashboard/compare" className="flex items-center gap-2">
+            <Link href="/dashboard" className="flex items-center gap-2">
               <LogoSvg id="nav" />
               <span
                 className="text-[15px] font-bold tracking-normal text-[var(--text-primary)]"
@@ -170,7 +160,7 @@ export function AppShell({ children, userEmail, dashboardNav }: AppShellProps) {
               </span>
             </Link>
           ) : (
-            <Link href="/dashboard/compare" className="mx-auto">
+            <Link href="/dashboard" className="mx-auto">
               <LogoSvg id="nav-c" />
             </Link>
           )}
@@ -244,7 +234,7 @@ export function AppShell({ children, userEmail, dashboardNav }: AppShellProps) {
                   return (
                     <li key={id}>
                       <Link
-                        href={id === "home" ? `/dashboard${cardSuffix}` : `/dashboard/${id}${cardSuffix}`}
+                        href={id === "rewards" ? `/dashboard${cardSuffix}` : `/dashboard/${id}${cardSuffix}`}
                         className={`flex w-full items-center gap-3 rounded-[var(--radius-md)] px-3 py-2 text-[14px] font-medium transition-colors duration-[var(--duration-fast)] ${
                           active
                             ? "bg-[rgba(34,211,238,0.1)] text-[var(--color-accent-cyan)]"
@@ -254,12 +244,12 @@ export function AppShell({ children, userEmail, dashboardNav }: AppShellProps) {
                       >
                         <span className="relative">
                           <Icon size={20} strokeWidth={1.75} />
-                          {id === "alerts" && (dashboardNav?.unreadAlerts ?? 0) > 0 && collapsed && (
+                          {id === "rewards" && (dashboardNav?.unreadAlerts ?? 0) > 0 && collapsed && (
                             <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-[var(--color-warning)]" />
                           )}
                         </span>
                         {!collapsed && <span>{label}</span>}
-                        {!collapsed && id === "alerts" && (dashboardNav?.unreadAlerts ?? 0) > 0 && (
+                        {!collapsed && id === "rewards" && (dashboardNav?.unreadAlerts ?? 0) > 0 && (
                           <span
                             className="ml-auto rounded-full px-2 py-0.5 text-[9px]"
                             style={{
@@ -342,7 +332,7 @@ export function AppShell({ children, userEmail, dashboardNav }: AppShellProps) {
               return (
                 <Link
                   key={id}
-                  href={id === "home" ? `/dashboard${cardSuffix}` : `/dashboard/${id}${cardSuffix}`}
+                  href={id === "rewards" ? `/dashboard${cardSuffix}` : `/dashboard/${id}${cardSuffix}`}
                   className={`flex flex-col items-center gap-0.5 rounded-[var(--radius-md)] px-3 py-1.5 text-[10px] font-medium transition-colors duration-[var(--duration-fast)] ${
                     active
                       ? "text-[var(--color-accent-cyan)]"
@@ -351,7 +341,7 @@ export function AppShell({ children, userEmail, dashboardNav }: AppShellProps) {
                 >
                   <span className="relative">
                     <Icon size={20} strokeWidth={1.75} />
-                    {id === "alerts" && (dashboardNav?.unreadAlerts ?? 0) > 0 && (
+                    {id === "rewards" && (dashboardNav?.unreadAlerts ?? 0) > 0 && (
                       <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-[var(--color-warning)]" />
                     )}
                   </span>
@@ -374,7 +364,7 @@ export function AppShell({ children, userEmail, dashboardNav }: AppShellProps) {
         ) : (
           <>
             <Link
-              href="/dashboard/compare"
+              href="/dashboard"
               className="flex flex-col items-center gap-0.5 rounded-[var(--radius-md)] px-3 py-1.5 text-[10px] font-medium text-[var(--text-secondary)] transition-colors duration-[var(--duration-fast)] hover:text-[var(--text-primary)]"
             >
               <BarChart3 size={20} strokeWidth={1.75} />

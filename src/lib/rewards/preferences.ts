@@ -6,6 +6,8 @@ export const MAX_REMINDER_LEAD_DAYS = 90;
 export interface PreferenceUpdate {
   benefitIds: string[];
   hidden?: boolean;
+  /** True when the user turned the credit on (activation-required credits). */
+  activated?: boolean;
   reminderMode?: ReminderMode;
   reminderLeadDays?: number | null;
 }
@@ -36,6 +38,11 @@ export function parsePreferenceUpdate(
     update.hidden = b.hidden;
   }
 
+  if (b.activated !== undefined) {
+    if (typeof b.activated !== "boolean") return { ok: false, error: "activated must be a boolean" };
+    update.activated = b.activated;
+  }
+
   if (b.reminderMode !== undefined) {
     if (!REMINDER_MODES.includes(b.reminderMode as ReminderMode)) {
       return { ok: false, error: "reminderMode must be auto, custom or off" };
@@ -52,7 +59,7 @@ export function parsePreferenceUpdate(
     }
   }
 
-  if (update.hidden === undefined && update.reminderMode === undefined) {
+  if (update.hidden === undefined && update.activated === undefined && update.reminderMode === undefined) {
     return { ok: false, error: "Nothing to update" };
   }
   return { ok: true, update };

@@ -3,6 +3,7 @@ import { getCardYear } from "../card-year";
 import { computeEarnedCredits } from "../earned";
 import { computeUnclaimed } from "../unclaimed";
 import { computeExpired } from "../expired";
+import { buildTurnOn } from "../turn-on";
 import type { RewardsBenefit, UsageRow } from "../types";
 
 const d = (s: string) => new Date(`${s}T00:00:00.000Z`);
@@ -215,6 +216,42 @@ describe("computeExpired", () => {
 
   it("returns a null capture rate before any period has closed", () => {
     expect(computeExpired([LYFT], [], YEAR, null, NOW).capture).toBeNull();
+  });
+});
+
+describe("buildTurnOn", () => {
+  const rows = [row("stub_h2", "2026-H2", "2026-07-01", "2026-12-31", 0, 150)];
+  const benefits = [STUB_H1, STUB_H2, APPLE, LYFT];
+  const unclaimed = computeUnclaimed(benefits, rows, YEAR, ANNIV, NOW);
+
+  it("values a subscription through the end of the card year", () => {
+    const items = buildTurnOn(benefits, unclaimed, [], new Set(), YEAR, NOW);
+    const apple = items.find((i) => i.key === "Apple TV+")!;
+    // Sep 2026 → Mar 2027 = 7 months at $10
+    expect(apple).toMatchObject({ kind: "subscription", value: 70, monthly: 10, on: false });
+  });
+
+  it("offers activation for credits that need it, valued at what it unlocks", () => {
+    const items = buildTurnOn(benefits, unclaimed, [], new Set(), YEAR, NOW);
+    const stub = items.find((i) => i.key === "StubHub Credit")!;
+    expect(stub).toMatchObject({ kind: "activation", value: 300, on: false });
+    expect(stub.benefitIds.sort()).toEqual(["stub_h1", "stub_h2"]);
+    expect(items.find((i) => i.key === "Lyft Credit")).toBeUndefined();
+  });
+
+  it("marks items on and sorts them after the ones still to do", () => {
+    const items = buildTurnOn(
+      benefits,
+      unclaimed,
+      [{ benefitId: "apple", activatedAt: d("2026-06-01") }],
+      new Set(["stub_h1", "stub_h2"]),
+      YEAR,
+      NOW
+    );
+    expect(items.every((i) => i.on)).toBe(true);
+    // Activating once covers both halves.
+    const one = buildTurnOn(benefits, unclaimed, [], new Set(["stub_h1"]), YEAR, NOW);
+    expect(one.find((i) => i.key === "StubHub Credit")!.on).toBe(true);
   });
 });
 

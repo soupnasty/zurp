@@ -11,8 +11,9 @@ import { createRateLimiter } from "@/lib/rate-limiter";
 const preferencesLimiter = createRateLimiter(60_000, 30);
 
 /**
- * Set per-credit preferences: hide a credit ("not for me") and/or choose
- * its reminder (auto / custom lead days / off). A grouped Rewards row
+ * Set per-credit preferences: hide a credit ("not for me"), mark an
+ * activation-required credit as turned on, and/or choose its reminder
+ * (auto / custom lead days / off). A grouped Rewards row
  * sends all of its benefit IDs.
  */
 export async function POST(request: Request) {
@@ -49,7 +50,11 @@ export async function POST(request: Request) {
     if (!parsed.ok) {
       return NextResponse.json({ error: parsed.error }, { status: 400 });
     }
-    const { benefitIds, ...fields } = parsed.update;
+    const { benefitIds, activated, ...rest } = parsed.update;
+    const fields = {
+      ...rest,
+      ...(activated !== undefined && { activatedAt: activated ? new Date() : null }),
+    };
 
     for (const benefitId of benefitIds) {
       await db

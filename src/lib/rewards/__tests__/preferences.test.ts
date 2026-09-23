@@ -18,6 +18,13 @@ describe("parsePreferenceUpdate", () => {
     });
   });
 
+  it("accepts turning a credit on", () => {
+    expect(parsePreferenceUpdate({ benefitIds: ["lyft"], activated: true }, VALID)).toEqual({
+      ok: true,
+      update: { benefitIds: ["lyft"], activated: true },
+    });
+  });
+
   it("clears the lead time for auto and off", () => {
     const r = parsePreferenceUpdate({ benefitIds: ["lyft"], reminderMode: "off", reminderLeadDays: 5 }, VALID);
     expect(r).toEqual({ ok: true, update: { benefitIds: ["lyft"], reminderMode: "off", reminderLeadDays: null } });

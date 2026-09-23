@@ -2,62 +2,46 @@ import { redirect } from "next/navigation";
 import { requireAuth } from "@/lib/auth-helpers";
 import { getCardProfiles } from "@/lib/queries";
 import { resolveActiveCard } from "@/lib/resolve-card";
-import { getInsightsForDisplay } from "@/lib/insights/orchestrator";
-import {
-  getCaptureRate,
-  getRenewalStatus,
-  getExpiringCredits,
-  getCompareSnapshot,
-} from "@/lib/home/queries";
-import { HomeTab } from "./_components/HomeTab";
+import { getRewardsView } from "@/lib/rewards/queries";
+import { generateAndPersistAlerts } from "@/lib/alerts/orchestrator";
+import { markAllAlertsRead } from "@/lib/alerts/queries";
+import { RewardsTab } from "./_components/RewardsTab";
 
 export const dynamic = "force-dynamic";
 
-export default async function DashboardHomePage({
+export default async function RewardsPage({
   searchParams,
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const params = await searchParams;
 
-  // Legacy links: /dashboard?tab=track etc. still route to their tabs
-  const tab = typeof params.tab === "string" ? params.tab : null;
-  if (tab && ["compare", "track", "insights"].includes(tab)) {
+  // Legacy links: /dashboard?tab=compare goes to Verdict; the other old
+  // tabs (track, insights, alerts) now live on this page.
+  if (params.tab === "compare") {
     const card = typeof params.card === "string" ? `?card=${params.card}` : "";
-    redirect(`/dashboard/${tab}${card}`);
+    redirect(`/dashboard/verdict${card}`);
   }
 
   const user = await requireAuth();
   const cardProfilesList = await getCardProfiles(user.id!);
   const activeCard = resolveActiveCard(cardProfilesList, params.card);
 
-  const [captureRate, renewal, expiring, snapshot, insights] =
-    await Promise.all([
-      getCaptureRate(user.id!, activeCard.id),
-      getRenewalStatus(user.id!, activeCard.id),
-      getExpiringCredits(user.id!, activeCard.id),
-      getCompareSnapshot(user.id!, activeCard.id),
-      getInsightsForDisplay(user.id!, "home", 3),
-    ]);
+  // Refresh reminders on view: the calendar may have moved since the last
+  // sync even if no new transactions arrived.
+  try {
+    await generateAndPersistAlerts(user.id!);
+  } catch (err) {
+    console.error("Alert generation failed:", err);
+  }
 
-  const queue = insights.primary.map((i) => ({
-    id: i.id,
-    category: i.category as string,
-    renderedTitle: i.renderedTitle,
-    renderedBody: i.renderedBody,
-    templateVars: i.templateVars,
-  }));
+  const view = await getRewardsView(user.id!, activeCard.id);
+  // Reminders are shown on the rows below, so the nav badge can clear.
+  await markAllAlertsRead(user.id!);
 
-  return (
-    <HomeTab
-      activeCardName={activeCard.name}
-      activeCardFee={activeCard.annualFee}
-      captureRate={captureRate}
-      renewal={renewal}
-      expiring={expiring}
-      queue={queue}
-      snapshot={snapshot}
-      lastSyncedAt={activeCard.lastSyncedAt?.toISOString() ?? null}
-    />
-  );
+  if (!view) {
+    return <p className="text-[var(--text-secondary)]">We couldn&apos;t load this card.</p>;
+  }
+
+  return <RewardsTab view={view} cardName={activeCard.name} annualFee={activeCard.annualFee} />;
 }

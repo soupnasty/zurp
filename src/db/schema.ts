@@ -596,6 +596,9 @@ export const benefitPreferences = pgTable(
     // 'auto' (lead-time ladder) | 'custom' (reminderLeadDays) | 'off'
     reminderMode: text("reminder_mode").notNull().default("auto"),
     reminderLeadDays: integer("reminder_lead_days"),
+    // Set when the user turns on a credit that requires activation
+    // (StubHub, Exclusive Tables). Subscriptions use benefit_overrides.
+    activatedAt: timestamp("activated_at", { mode: "date" }),
     updatedAt: timestamp("updated_at", { mode: "date" })
       .notNull()
       .$defaultFn(() => new Date()),
