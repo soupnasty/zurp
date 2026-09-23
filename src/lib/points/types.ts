@@ -33,6 +33,7 @@ export type MatchSource =
   | "user_override"
   | "merchant_name"
   | "plaid_category"
+  | "llm"
   | "fallback";
 
 export interface CategoryAssignment {

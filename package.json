@@ -16,6 +16,7 @@
     "test:run": "vitest run"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.116.0",
     "@auth/drizzle-adapter": "^1.11.1",
     "@fontsource/space-mono": "^5.2.9",
     "@neondatabase/serverless": "^1.0.2",

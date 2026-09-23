@@ -1,5 +1,10 @@
 import type { EarnCategory } from "./types";
 
+/** Runtime guard for the EarnCategory union. */
+export function isEarnCategory(value: string): value is EarnCategory {
+  return value in EARN_CATEGORY_LABELS;
+}
+
 export const EARN_CATEGORY_LABELS: Record<EarnCategory, string> = {
   dining: "Dining",
   groceries: "Groceries",

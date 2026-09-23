@@ -21,6 +21,7 @@ import type {
 import type { MatcherTransaction } from "@/lib/types";
 import { categoryNotExcluded } from "./tx-filter";
 import { getCategoryOverridesMap } from "./overrides";
+import { getMerchantClassificationsMap } from "./llm-classifier";
 
 const TRAVEL_CATEGORIES: EarnCategory[] = [
   "travel_flights",
@@ -44,7 +45,10 @@ export async function computeAndPersistSimulations(
   });
   if (!cardProfile) return;
 
-  const overrides = await getCategoryOverridesMap(userId);
+  const [overrides, llmClassifications] = await Promise.all([
+    getCategoryOverridesMap(userId),
+    getMerchantClassificationsMap(),
+  ]);
 
   // Fetch qualifying transactions for this connection
   const txs = await db.query.transactions.findMany({
@@ -61,6 +65,7 @@ export async function computeAndPersistSimulations(
       datetime: true,
       merchantName: true,
       merchantNameRaw: true,
+      merchantEntityId: true,
       amount: true,
       plaidCategoryPrimary: true,
       plaidCategoryDetailed: true,
@@ -113,7 +118,12 @@ export async function computeAndPersistSimulations(
       tx.merchantName,
       tx.plaidCategoryPrimary,
       tx.plaidCategoryDetailed,
-      { paymentChannel: tx.paymentChannel, overrides }
+      {
+        paymentChannel: tx.paymentChannel,
+        merchantEntityId: tx.merchantEntityId,
+        overrides,
+        llmClassifications,
+      }
     );
     return { ...tx, assignment };
   });

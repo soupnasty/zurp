@@ -367,6 +367,77 @@ describe("classifyForPoints", () => {
     });
   });
 
+  describe("Tier L: LLM merchant cache", () => {
+    it("classifies an unknown merchant from the cache", () => {
+      const result = classifyForPoints("AFFEMITY", null, null, {
+        llmClassifications: new Map([["affemity", "fitness"]]),
+      });
+      expect(result.category).toBe("fitness");
+      expect(result.confidence).toBe("medium");
+      expect(result.matchSource).toBe("llm");
+      expect(result.matchedValue).toBe("affemity");
+    });
+
+    it("prefers the entity-ID key over the name key", () => {
+      const result = classifyForPoints("SQ *BLUE OAK", null, null, {
+        merchantEntityId: "abc123",
+        llmClassifications: new Map([
+          ["ent:abc123", "dining"],
+          ["blue oak", "fitness"],
+        ]),
+      });
+      expect(result.category).toBe("dining");
+      expect(result.matchedValue).toBe("ent:abc123");
+    });
+
+    it("Plaid detailed (Tier 2) outranks the LLM cache", () => {
+      const result = classifyForPoints(
+        "AFFEMITY",
+        null,
+        "PERSONAL_CARE_GYMS_AND_FITNESS_CENTERS",
+        { llmClassifications: new Map([["affemity", "streaming"]]) }
+      );
+      expect(result.category).toBe("fitness");
+      expect(result.matchSource).toBe("plaid_category");
+      expect(result.confidence).toBe("medium");
+    });
+
+    it("LLM cache outranks the coarse Plaid primary tier", () => {
+      const result = classifyForPoints("MYSTERY GYM", "FOOD_AND_DRINK", null, {
+        llmClassifications: new Map([["mystery gym", "fitness"]]),
+      });
+      expect(result.category).toBe("fitness");
+      expect(result.matchSource).toBe("llm");
+    });
+
+    it("a cached 'other' abstention does not shadow Tier 2b", () => {
+      const result = classifyForPoints("MYSTERY MERCHANT", "FOOD_AND_DRINK", null, {
+        llmClassifications: new Map([["mystery merchant", "other"]]),
+      });
+      // LLM abstained; the primary-category fallback still applies
+      expect(result.category).toBe("dining");
+      expect(result.confidence).toBe("low");
+      expect(result.matchSource).toBe("plaid_category");
+    });
+
+    it("a cached 'other' with no other signal falls through to fallback", () => {
+      const result = classifyForPoints("MYSTERY MERCHANT", null, null, {
+        llmClassifications: new Map([["mystery merchant", "other"]]),
+      });
+      expect(result.category).toBe("other");
+      expect(result.matchSource).toBe("fallback");
+    });
+
+    it("user override (Tier 0) outranks the LLM cache", () => {
+      const result = classifyForPoints("AFFEMITY", null, null, {
+        overrides: new Map([["affemity", "shopping_online"]]),
+        llmClassifications: new Map([["affemity", "fitness"]]),
+      });
+      expect(result.category).toBe("shopping_online");
+      expect(result.matchSource).toBe("user_override");
+    });
+  });
+
   describe("Tier 1 takes priority over Tier 2", () => {
     it("merchant match wins over Plaid category", () => {
       // Starbucks should be coffee even if Plaid says dining

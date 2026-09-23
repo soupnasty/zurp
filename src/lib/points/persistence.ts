@@ -11,6 +11,7 @@ import { getEarnConfig } from "./earn-configs";
 import { getCurrentCycleBounds } from "@/lib/engine/cycle-utils";
 import { categoryNotExcluded } from "./tx-filter";
 import { getCategoryOverridesMap } from "./overrides";
+import { getMerchantClassificationsMap } from "./llm-classifier";
 
 import type { CapState, EarnCategory } from "./types";
 
@@ -42,7 +43,10 @@ export async function computeAndPersistPointsSummary(
   const config = getEarnConfig(cardType);
   if (!config) return;
 
-  const overrides = await getCategoryOverridesMap(userId);
+  const [overrides, llmClassifications] = await Promise.all([
+    getCategoryOverridesMap(userId),
+    getMerchantClassificationsMap(),
+  ]);
 
   // Fetch qualifying transactions for this connection
   const txs = await db.query.transactions.findMany({
@@ -58,6 +62,7 @@ export async function computeAndPersistPointsSummary(
       date: true,
       datetime: true,
       merchantName: true,
+      merchantEntityId: true,
       amount: true,
       plaidCategoryPrimary: true,
       plaidCategoryDetailed: true,
@@ -116,7 +121,12 @@ export async function computeAndPersistPointsSummary(
       tx.merchantName,
       tx.plaidCategoryPrimary,
       tx.plaidCategoryDetailed,
-      { paymentChannel: tx.paymentChannel, overrides }
+      {
+        paymentChannel: tx.paymentChannel,
+        merchantEntityId: tx.merchantEntityId,
+        overrides,
+        llmClassifications,
+      }
     );
 
     // Pass the signed amount: the calculator returns negative points for

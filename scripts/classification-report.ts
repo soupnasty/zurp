@@ -17,6 +17,8 @@ import { classifyForPoints } from "../src/lib/points/categories";
 import { isPaymentTransaction } from "../src/lib/points/calculator";
 import { EXCLUDED_CATEGORIES } from "../src/lib/points/tx-filter";
 import { normalizeMerchantName } from "../src/lib/engine/normalize";
+import { isEarnCategory } from "../src/lib/points/category-labels";
+import type { EarnCategory } from "../src/lib/points/types";
 
 const fmt = (n: number) =>
   n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
@@ -29,11 +31,20 @@ async function main() {
   const sql = neon(process.env.DATABASE_URL);
   const db = drizzle({ client: sql, schema });
 
+  const llmRows = await db.query.merchantClassifications.findMany({
+    columns: { merchantKey: true, category: true },
+  });
+  const llmClassifications = new Map<string, EarnCategory>();
+  for (const r of llmRows) {
+    if (isEarnCategory(r.category)) llmClassifications.set(r.merchantKey, r.category);
+  }
+
   const txs = await db.query.transactions.findMany({
     columns: {
       userId: true,
       merchantName: true,
       merchantNameRaw: true,
+      merchantEntityId: true,
       amount: true,
       plaidCategoryPrimary: true,
       plaidCategoryDetailed: true,
@@ -68,18 +79,24 @@ async function main() {
       tx.merchantName,
       tx.plaidCategoryPrimary,
       tx.plaidCategoryDetailed,
-      { paymentChannel: tx.paymentChannel }
+      {
+        paymentChannel: tx.paymentChannel,
+        merchantEntityId: tx.merchantEntityId,
+        llmClassifications,
+      }
     );
     totalSpend += tx.amount;
 
     const tier =
       a.matchSource === "merchant_name"
         ? "tier1 merchant map (high)"
-        : a.matchSource === "plaid_category"
-          ? a.confidence === "medium"
-            ? "tier2 plaid detailed (medium)"
-            : "tier2b plaid primary (low)"
-          : "tier3 unclassified";
+        : a.matchSource === "llm"
+          ? "tierL llm cache (medium)"
+          : a.matchSource === "plaid_category"
+            ? a.confidence === "medium"
+              ? "tier2 plaid detailed (medium)"
+              : "tier2b plaid primary (low)"
+            : "tier3 unclassified";
     const t = byTier.get(tier) ?? { spend: 0, count: 0 };
     t.spend += tx.amount;
     t.count++;

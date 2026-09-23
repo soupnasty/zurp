@@ -124,8 +124,16 @@ const PLAID_PRIMARY_MAP: Record<string, EarnCategory> = {
 export interface ClassifyContext {
   /** Plaid payment_channel: "online" | "in store" | "other" */
   paymentChannel?: string | null;
+  /** Plaid merchant_entity_id — preferred Tier L cache key when present. */
+  merchantEntityId?: string | null;
   /** Per-user corrections keyed by normalized merchant name. */
   overrides?: ReadonlyMap<string, EarnCategory>;
+  /**
+   * Global LLM merchant-classification cache (Tier L), keyed by
+   * "ent:<entity id>" or normalized merchant name.
+   * See docs/engines/llm-classification-tier.md.
+   */
+  llmClassifications?: ReadonlyMap<string, EarnCategory>;
 }
 
 /**
@@ -136,6 +144,8 @@ export interface ClassifyContext {
  *         `deferToPlaid` (Amazon, Walmart, Target) yield to Plaid's
  *         grocery signal so grocery runs aren't binned as shopping.
  * Tier 2: Plaid detailed category (medium confidence)
+ * Tier L: Cached LLM merchant classification (medium confidence). A cached
+ *         "other" is an abstention and falls through to Tier 2b.
  * Tier 2b: Plaid primary category (low confidence — coarse but real)
  * Tier 3: Fallback → "other" (low confidence)
  */
@@ -198,6 +208,28 @@ export function classifyForPoints(
         matchSource: "plaid_category",
         matchedValue: plaidCategoryDetailed,
       };
+    }
+  }
+
+  // Tier L: cached LLM merchant classification
+  if (context?.llmClassifications) {
+    const keys: string[] = [];
+    if (context.merchantEntityId) keys.push(`ent:${context.merchantEntityId}`);
+    if (normalized) keys.push(normalized);
+    for (const key of keys) {
+      const cached = context.llmClassifications.get(key);
+      if (cached === undefined) continue;
+      if (cached !== "other") {
+        return {
+          category: cached,
+          confidence: "medium",
+          matchSource: "llm",
+          matchedValue: key,
+        };
+      }
+      // "other" is a recorded abstention — the coarse Plaid primary tier
+      // below still gets its shot.
+      break;
     }
   }
 
