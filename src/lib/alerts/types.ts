@@ -40,6 +40,21 @@ export interface CreditGroupState {
    * newest first. Drives habit suppression.
    */
   recentFullUse: boolean[];
+  /** The user's reminder choice for this credit; absent means auto. */
+  reminder?: ReminderPreference;
+}
+
+/** Stored per benefit in benefit_preferences. */
+export interface BenefitPreference {
+  hidden: boolean;
+  reminderMode: string;
+  reminderLeadDays: number | null;
+}
+
+/** Resolved for one alert group. */
+export interface ReminderPreference {
+  mode: "auto" | "custom" | "off";
+  leadDays: number | null;
 }
 
 export interface ConnectionState {

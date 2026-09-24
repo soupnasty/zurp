@@ -2,13 +2,16 @@ import { db } from "@/db";
 import { eq, and, inArray } from "drizzle-orm";
 import * as schema from "@/db/schema";
 import { getCardDefinition } from "@/lib/cards";
-import { getRenewalStatus } from "@/lib/home/queries";
+import { getRenewalStatus } from "./queries";
+import { readComparison } from "@/lib/points/comparison-reader";
+import { decideVerdict } from "@/lib/verdict/decide";
 import {
   generateCreditExpiryAlerts,
   generateRenewalVerdictAlert,
   generateConnectionAlerts,
+  resolveReminder,
 } from "./generators";
-import type { AlertCandidate, CreditGroupState } from "./types";
+import type { AlertCandidate, BenefitPreference, CreditGroupState } from "./types";
 
 /**
  * Generate and persist alerts for a user. Runs after every sync (and,
@@ -50,23 +53,44 @@ export async function generateAndPersistAlerts(userId: string) {
       },
     });
 
+    const prefRows = await db.query.benefitPreferences.findMany({
+      where: and(
+        eq(schema.benefitPreferences.userId, userId),
+        eq(schema.benefitPreferences.cardProfileId, profile.id)
+      ),
+    });
+    const prefs = new Map(prefRows.map((p) => [p.benefitId, p]));
+
     candidates.push(
       ...generateCreditExpiryAlerts(
         profile.id,
-        buildCreditGroups(cardDef, usage, now),
+        buildCreditGroups(cardDef, usage, now, prefs),
         now
       )
     );
 
-    const renewal = await getRenewalStatus(userId, profile.id);
-    if (renewal) {
-      const alert = generateRenewalVerdictAlert(
-        profile.id,
-        profile.cardLabel ?? cardDef.name,
-        renewal,
-        now
-      );
-      if (alert) candidates.push(alert);
+    // Simulations exist only for the active profile (readComparison).
+    const renewal = profile.isActive ? await getRenewalStatus(userId, profile.id) : null;
+    if (renewal && renewal.daysUntil <= 30) {
+      const comparison = await readComparison(userId, false);
+      const verdict = comparison
+        ? decideVerdict(comparison.cards, profile.cardType, "realistic", "proven", comparison.monthCount)
+        : null;
+      if (verdict) {
+        const alert = generateRenewalVerdictAlert(
+          profile.id,
+          profile.cardLabel ?? cardDef.name,
+          renewal,
+          {
+            state: verdict.state,
+            compareToName: verdict.compareTo.cardName,
+            gap: verdict.gap,
+            points: verdict.yours.points,
+            benefits: verdict.yours.benefits,
+          }
+        );
+        if (alert) candidates.push(alert);
+      }
     }
   }
 
@@ -164,7 +188,8 @@ function buildCreditGroups(
     amountRemaining: number;
     cycleEnd: Date;
   }>,
-  now: Date
+  now: Date,
+  prefs: Map<string, BenefitPreference> = new Map()
 ): CreditGroupState[] {
   const benefitById = new Map(cardDef.benefits.map((b) => [b.id, b]));
 
@@ -232,6 +257,11 @@ function buildCreditGroups(
       remaining: Math.round(current.remaining * 100) / 100,
       cycleEnd: current.cycleEnd,
       recentFullUse,
+      reminder: resolveReminder(
+        cardDef.benefits
+          .filter((b) => (b.displayGroup ?? b.id) === key)
+          .map((b) => prefs.get(b.id))
+      ),
     });
   }
 

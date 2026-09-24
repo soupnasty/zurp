@@ -83,7 +83,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | `npm test` | Run tests in watch mode |
 | `npm run test:run` | Run tests once (CI) |
 | `npm run db:generate` | Generate Drizzle migration files |
-| `npm run db:migrate` | Run pending migrations |
+| `npm run db:migrate` | Don't use — `drizzle/` migrations were never applied (see `drizzle/README.md`) |
 | `npm run db:push` | Push schema directly to database (dev) |
 | `npm run db:seed` | Seed cards and benefits from the card registry |
 | `npm run db:studio` | Open Drizzle Studio (DB GUI) |
@@ -186,19 +186,16 @@ To add a new card:
 
 ### Design System
 
-Tailwind v4 with CSS-based config (no `tailwind.config.ts`). All tokens defined in `src/app/globals.css` via `@theme inline`:
-
-- **Dark-first palette**: Void `#0D1117`, Surface `#161B22`, Frost `#E6EDF3`, Signal `#58A6FF`
-- **Typography**: Inter (body), JetBrains Mono (data/numbers)
-- **Spacing**: 4px base unit
-- **Motion**: `ease-out-expo` easing, 150ms/300ms/500ms durations
-- **Shadows**: Glow-based in dark mode, traditional in light mode
-
-Custom utility classes:
-- `.font-data` — JetBrains Mono for dollar amounts and numbers
-- `.label-caps` — Uppercase, letter-spaced caption labels
+Tailwind v4 with CSS-based config (no `tailwind.config.ts`). All tokens live in `src/app/globals.css` via `@theme inline`: dark-first palette with semantic accents (cyan = interactive, blue = points, purple = credits, red = fees, green = the recommended card only), DM Sans for text and Space Mono for numbers and labels.
 
 Full reference: `docs/styling/style-guide.md`
+
+### Dashboard
+
+Two pages for the active card:
+
+- **Rewards** (`/dashboard`) — what you've earned this card year (credits used + points) and what you aren't using yet: credits left through card-year end, one-time activations, points missed on the same spending, and expired credits. Per-credit "not for me" and reminders.
+- **Verdict** (`/dashboard/verdict`) — KEEP / SWITCH / TOSS-UP / NOT YET for next card year against the best alternative, with reasons and issuer-specific next steps.
 
 ## Project Structure
 
@@ -220,15 +217,12 @@ src/
 │   │   ├── actions.ts            #   Server actions
 │   │   ├── processing/           #   Post-link processing screen
 │   │   └── _components/          #   Wizard steps (OnboardingWizard, CardSelection)
-│   ├── dashboard/                # Main app (tabbed dashboard)
-│   │   ├── page.tsx              #   Dashboard shell (tab routing)
+│   ├── dashboard/                # Main app
+│   │   ├── page.tsx              #   Rewards
 │   │   ├── layout.tsx            #   Dashboard layout
-│   │   ├── compare/              #   Card comparison (points earn simulation, perk matrix)
-│   │   ├── track/                #   Current-cycle benefit usage + points tracking
-│   │   ├── insights/             #   Generated insights feed
-│   │   ├── _components/          #   CompareTab, TrackTab, InsightsTab, BenefitsSection,
-│   │   │                         #   Leaderboard, HeadToHead, SummaryStrip, SyncBanner, ...
-│   │   └── _lib/                 #   classify-benefits, resolve-card
+│   │   ├── verdict/              #   Keep / switch verdict (simulation, leaderboard)
+│   │   ├── compare/, track/, insights/, alerts/  # Redirects to Verdict / Rewards
+│   │   └── _components/          #   RewardsTab, VerdictTab, VerdictSummary, Leaderboard, SyncBanner, ...
 │   ├── benefits/                 # Redirect stub → /dashboard
 │   ├── spending/                 # Redirect stub → /dashboard?tab=track
 │   ├── compare/                  # Redirect stub → /dashboard?tab=compare
@@ -277,13 +271,16 @@ src/
 │   │   ├── anniversary-detector.ts  # Annual fee detection
 │   │   ├── orchestrator.ts       #   DB integration layer
 │   │   └── __tests__/            #   Unit tests
-│   ├── insights/                 # Insights Engine v2
-│   │   ├── generators/           #   8 insight generators (pure functions)
+│   ├── insights/                 # Insights Engine v3
+│   │   ├── generators/           #   12 insight generators (pure functions)
 │   │   ├── scoring.ts            #   5-factor weighted scoring
 │   │   ├── templates.ts          #   Copy templates + interpolation
 │   │   ├── orchestrator.ts       #   DB bridge: persist, display, expire
 │   │   ├── queries.ts            #   Server-only DB queries
 │   │   └── __tests__/            #   Unit tests
+│   ├── rewards/                  # Card-year earned / unclaimed / expired math + Rewards query
+│   ├── verdict/                  # Keep/switch decision, reasons, robustness, next steps
+│   ├── alerts/                   # Alert stream (credit reminders, renewal verdict, connections)
 │   ├── spending/                 # Spending analysis
 │   │   ├── categories.ts         #   Transaction categorization
 │   │   ├── queries.ts            #   Monthly transaction queries
@@ -346,12 +343,7 @@ For development, use `db:push` to sync schema directly:
 npm run db:push
 ```
 
-For production, generate and run migrations:
-
-```bash
-npm run db:generate   # Creates migration SQL files
-npm run db:migrate    # Applies pending migrations
-```
+Production uses the same `db:push` flow. Don't run `db:migrate`: the files in `drizzle/` were never applied (see `drizzle/README.md`). When `db:push` proposes anything destructive, stop and apply additive SQL instead.
 
 ### Plaid Webhook
 
@@ -381,6 +373,7 @@ The handler processes `TRANSACTIONS` webhooks (`INITIAL_UPDATE`, `HISTORICAL_UPD
 | `POST/DELETE` | `/api/benefits/flag` | Required | Add/remove transaction ↔ benefit matches |
 | `POST/DELETE` | `/api/benefits/redeem` | Required | Mark/unmark a benefit as redeemed |
 | `POST/DELETE` | `/api/benefits/activate` | Required | Activate/deactivate a subscription benefit |
+| `POST` | `/api/benefits/preferences` | Required | Hide a credit, mark it turned on, or set its reminder |
 | `GET` | `/api/benefits/usage` | Required | Returns benefit usage data |
 | `GET` | `/api/transactions` | Required | Paginated transaction list |
 | `POST` | `/api/insights/dismiss` | Required | Dismiss an insight |
@@ -403,7 +396,7 @@ Card definitions live in `src/lib/cards/`. See `docs/catalogs/` for full benefit
 
 - `docs/architecture/zurp.md` — Full app spec (data model, matching engine, benefits)
 - `docs/architecture/design-principles.md` — Dashboard design checklist
-- `docs/engines/insights-engine.md` — Insights Engine v2 spec (categories, scoring, templates, display rules)
+- `docs/engines/insights-engine.md` — Insights Engine v3 spec (categories, scoring, templates, display rules)
 - `docs/engines/points-engine.md` — Points earn model spec (category taxonomy, earn rates, caps)
 - `docs/styling/style-guide.md` — Brand colors, typography, spacing, motion
 - `docs/catalogs/` — Card benefit catalogs (CSR, CSP, Amex Gold, Amex Platinum)

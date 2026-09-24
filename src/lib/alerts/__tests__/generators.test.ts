@@ -3,6 +3,7 @@ import {
   generateCreditExpiryAlerts,
   generateRenewalVerdictAlert,
   generateConnectionAlerts,
+  resolveReminder,
 } from "../generators";
 import type { CreditGroupState } from "../types";
 
@@ -114,58 +115,91 @@ describe("generateCreditExpiryAlerts", () => {
   });
 });
 
+describe("user reminders", () => {
+  it("never alerts when reminders are off", () => {
+    const g = makeGroup({ reminder: { mode: "off", leadDays: null } });
+    expect(generateCreditExpiryAlerts("cp1", [g], NOW)).toHaveLength(0);
+  });
+
+  it("uses a custom lead time in place of the ladder", () => {
+    // 15 days out: outside the monthly 10-day ladder, inside a 20-day reminder
+    const g = makeGroup({ cycleEnd: daysFromNow(15), reminder: { mode: "custom", leadDays: 20 } });
+    const [alert] = generateCreditExpiryAlerts("cp1", [g], NOW);
+    expect(alert.payload.userReminder).toBe(true);
+    expect(alert.effectiveAt).toEqual(daysFromNow(-5));
+    // A 3-day reminder stays quiet 8 days out, even though the ladder would fire
+    const late = makeGroup({ reminder: { mode: "custom", leadDays: 3 } });
+    expect(generateCreditExpiryAlerts("cp1", [late], NOW)).toHaveLength(0);
+  });
+
+  it("skips the minimum and habit suppression for a reminder the user set", () => {
+    const g = makeGroup({
+      remaining: 5,
+      recentFullUse: [true, true, true],
+      reminder: { mode: "custom", leadDays: 10 },
+    });
+    expect(generateCreditExpiryAlerts("cp1", [g], NOW)).toHaveLength(1);
+    expect(generateCreditExpiryAlerts("cp1", [{ ...g, reminder: undefined }], NOW)).toHaveLength(0);
+  });
+
+  it("resolves a group's setting from its members", () => {
+    const auto = { hidden: false, reminderMode: "auto", reminderLeadDays: null };
+    const custom = (n: number) => ({ hidden: false, reminderMode: "custom", reminderLeadDays: n });
+    expect(resolveReminder([undefined, undefined])).toEqual({ mode: "auto", leadDays: null });
+    expect(resolveReminder([auto, custom(7), custom(3)])).toEqual({ mode: "custom", leadDays: 3 });
+    expect(resolveReminder([custom(7), { ...auto, hidden: true }])).toEqual({ mode: "off", leadDays: null });
+    expect(resolveReminder([{ ...auto, reminderMode: "off" }])).toEqual({ mode: "off", leadDays: null });
+  });
+});
+
 describe("generateRenewalVerdictAlert", () => {
-  const base = {
+  const renewal = {
     renewsAt: daysFromNow(23).toISOString(),
     daysUntil: 23,
     annualFee: 795,
-    creditsCaptured: 1886,
-    pointsValue: 1600,
-    netSoFar: 2691,
+  };
+  const verdict = {
+    state: "keep" as const,
+    compareToName: "Wells Fargo Active Cash",
+    gap: -365,
+    points: 640,
+    benefits: 1040,
   };
 
-  it("fires KEEP inside the T-30 window when clearly ahead", () => {
-    const alert = generateRenewalVerdictAlert("cp1", "Chase Sapphire Reserve", base, NOW)!;
+  it("fires KEEP inside the T-30 window, naming the best alternative", () => {
+    const alert = generateRenewalVerdictAlert("cp1", "Chase Sapphire Reserve", renewal, verdict)!;
     expect(alert.payload.verdict).toBe("keep");
     expect(alert.title).toContain("KEEP");
+    expect(alert.body).toContain("~$365/yr more than the best alternative, Wells Fargo Active Cash");
     expect(alert.dedupKey).toBe(`renewal_verdict:cp1:2026`);
   });
 
   it("stays quiet outside the window", () => {
     expect(
-      generateRenewalVerdictAlert("cp1", "CSR", { ...base, daysUntil: 45 }, NOW)
+      generateRenewalVerdictAlert("cp1", "CSR", { ...renewal, daysUntil: 45 }, verdict)
     ).toBeNull();
   });
 
-  it("calls the tie band a close call", () => {
-    // total 850 vs fee 795 → inside max(100, 5%) band
+  it("says SWITCH with the alternative and the gap", () => {
     const alert = generateRenewalVerdictAlert(
       "cp1",
       "CSR",
-      { ...base, creditsCaptured: 500, pointsValue: 350, netSoFar: 55 },
-      NOW
+      renewal,
+      { ...verdict, state: "switch", compareToName: "Amex Gold", gap: 260 }
     )!;
-    expect(alert.payload.verdict).toBe("close_call");
+    expect(alert.title).toContain("SWITCH");
+    expect(alert.body).toContain("Amex Gold would net you ~$260/yr more");
+    expect(alert.body).toContain("retention offer");
   });
 
-  it("says RECONSIDER when clearly behind", () => {
-    const alert = generateRenewalVerdictAlert(
-      "cp1",
-      "CSR",
-      { ...base, creditsCaptured: 100, pointsValue: 150, netSoFar: -545 },
-      NOW
-    )!;
-    expect(alert.payload.verdict).toBe("reconsider");
-    expect(alert.body).toContain("downgrade");
+  it("calls a tie-band gap a TOSS-UP", () => {
+    const alert = generateRenewalVerdictAlert("cp1", "CSR", renewal, { ...verdict, state: "toss_up", gap: 15 })!;
+    expect(alert.payload.verdict).toBe("toss_up");
+    expect(alert.title).toContain("TOSS-UP");
   });
 
   it("escalates at T-7", () => {
-    const alert = generateRenewalVerdictAlert(
-      "cp1",
-      "CSR",
-      { ...base, daysUntil: 6 },
-      NOW
-    )!;
+    const alert = generateRenewalVerdictAlert("cp1", "CSR", { ...renewal, daysUntil: 6 }, verdict)!;
     expect(alert.payload.stage).toBe("escalated");
   });
 });

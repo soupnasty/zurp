@@ -9,6 +9,7 @@ import { computeComparison } from "@/lib/points";
 import { getAllEarnConfigs } from "@/lib/points/earn-configs";
 import { setLifestyleSelections } from "@/lib/lifestyle-queries";
 import { revalidatePath } from "next/cache";
+import { updateAnniversaryDate } from "@/app/settings/actions";
 
 export async function createCardProfile(
   cardType: string,
@@ -67,7 +68,7 @@ export async function saveLifestyleSelections(
 
   try {
     await setLifestyleSelections(user.id!, selectedKeys);
-    revalidatePath("/dashboard/compare");
+    revalidatePath("/dashboard/verdict");
     return { success: true };
   } catch (e) {
     console.error("[saveLifestyleSelections] error:", e);
@@ -178,4 +179,15 @@ export async function getRevealData(
     monthCount: comparison.monthCount,
     totalTransactions: comparison.totalTransactions,
   };
+}
+
+/**
+ * Onboarding card-year step: store the anniversary the user entered. The
+ * year is the most recent past occurrence of that month and day.
+ */
+export async function saveCardYear(cardProfileId: string, month: number, day: number) {
+  const now = new Date();
+  let year = now.getUTCFullYear();
+  if (Date.UTC(year, month - 1, day) > now.getTime()) year -= 1;
+  await updateAnniversaryDate(cardProfileId, month, year, day);
 }

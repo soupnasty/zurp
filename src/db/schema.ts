@@ -572,6 +572,46 @@ export const benefitOverrides = pgTable(
   ]
 );
 
+// ── Benefit Preferences (per-credit user choices) ──
+// "Not for me" (hidden: out of Rewards totals and the capture rate) and
+// reminder control for credit_expiring alerts. One row per benefit; a
+// grouped Rewards row (DoorDash, StubHub H1/H2) writes all its members.
+
+export const benefitPreferences = pgTable(
+  "benefit_preferences",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    cardProfileId: text("card_profile_id")
+      .notNull()
+      .references(() => cardProfiles.id, { onDelete: "cascade" }),
+    benefitId: text("benefit_id")
+      .notNull()
+      .references(() => benefits.id, { onDelete: "cascade" }),
+    hidden: boolean("hidden").notNull().default(false),
+    // 'auto' (lead-time ladder) | 'custom' (reminderLeadDays) | 'off'
+    reminderMode: text("reminder_mode").notNull().default("auto"),
+    reminderLeadDays: integer("reminder_lead_days"),
+    // Set when the user turns on a credit that requires activation
+    // (StubHub, Exclusive Tables). Subscriptions use benefit_overrides.
+    activatedAt: timestamp("activated_at", { mode: "date" }),
+    updatedAt: timestamp("updated_at", { mode: "date" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => [
+    unique("benefit_preferences_unique").on(
+      table.userId,
+      table.cardProfileId,
+      table.benefitId
+    ),
+  ]
+);
+
 // ── Card Simulations (precomputed comparison data) ──
 
 export const cardSimulations = pgTable(

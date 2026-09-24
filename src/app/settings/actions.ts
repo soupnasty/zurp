@@ -12,7 +12,8 @@ import { reprocessAllTransactions } from "@/lib/engine/orchestrator";
 export async function updateAnniversaryDate(
   cardProfileId: string,
   month: number,
-  year: number
+  year: number,
+  day = 1
 ) {
   const user = await requireAuth();
 
@@ -24,7 +25,7 @@ export async function updateAnniversaryDate(
     throw new Error("Unauthorized");
   }
 
-  const date = new Date(Date.UTC(year, month - 1, 1));
+  const date = new Date(Date.UTC(year, month - 1, day));
 
   await db
     .update(schema.cardProfiles)
